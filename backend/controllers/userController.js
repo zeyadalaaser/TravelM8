@@ -16,9 +16,26 @@ const registerAdmin = async (req, res) => {
 
     res.status(201).json({ message: "Admin registered successfully" });
   } catch (error) {
-    console.error("Registration error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-module.exports = { registerAdmin };
+const deleteAccount = async (req, res) =>{
+  const { username } = req.body;
+
+  try {
+    const deletedUser = await User.deleteOne({ username});
+    if (deletedUser.deletedCount > 0) {
+      return res.status(200).json({ message: "User deleted successfully" });
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+
+}
+
+module.exports = { registerAdmin, deleteAccount };

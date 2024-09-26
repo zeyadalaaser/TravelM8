@@ -4,6 +4,7 @@ const connectDB = require("./backend/config/db");
 const userController = require("./backend/controllers/userController");
 const touristController = require("./backend/controllers/touristController");
 const activityCategoryController = require("./backend/controllers/activityCategoryController");
+const preferenceTagsController = require("./backend/controllers/preferenceTagsController");
 require("dotenv").config();
 
 const app = express();
@@ -55,6 +56,13 @@ app.delete(
   "/api/activity-category/:id",
   activityCategoryController.deleteActivityCategory
 );
+
+app.delete("/api/delete-user/:username", userController.deleteAccount);
+
+app.post("/Create-Tag", preferenceTagsController.createPreferenceTag);
+app.get("/GetAll-Tag",preferenceTagsController.getAllPreferenceTags);
+app.put("/UpdateTag",preferenceTagsController.updatePreferenceTag);
+app.delete("/DeleteTag",preferenceTagsController.deletePreferenceTag);
 
 // Start server
 const PORT = process.env.PORT || 3000;
