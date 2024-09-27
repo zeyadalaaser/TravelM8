@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose';  //to communicate with the db
 import Product from '../models/productModel.js';
 
 
@@ -48,7 +48,36 @@ export const deleteProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find({}); 
+    const { minPrice, maxPrice, sortByRating, search } = req.query;  //here ba-retrieve el query parameter (min,max) and sorting that the user will put in the request
+    
+    //My Filter Logic
+    let filter = {};   //this is empty filter object and if user did not provide min and max, will retrieve all products
+    if (minPrice || maxPrice) {
+      filter.Price = {}; //ba-initialize empty price filter object
+      if (minPrice) filter.Price.$gte = parseFloat(minPrice);  // Price >= minPrice
+      if (maxPrice) filter.Price.$lte = parseFloat(maxPrice);  // Price <= maxPrice
+    }
+
+    //Search Logic 
+      if (search) {
+        filter.Name = { $regex: search, $options: 'i' }; // 'i' makes it case-insensitive; ya3ny masln product and PRODUCT ; bei-treat the uppercase and lowercase the same 
+      }
+
+    //Sorting Logic
+    let sortCondition = {};
+    if (sortByRating === 'asc') {
+      sortCondition.Rating = 1;  // Ascending order; 1 means in mongodb ascending 
+    } else if (sortByRating === 'desc') { 
+      sortCondition.Rating = -1; // Descending order; -1 means in mongodb descending 
+    }
+
+
+    const products = await Product.find(filter).sort(sortCondition);  //hena will find the products with the given price filter or sorting
+    
+    if (products.length === 0) {  //el condition da 3alashan law 3amal serach 3ala product msh mawgood in the db
+      return res.status(404).json({ success: false, message: 'No products found matching the search criteria' });
+    }
+
     res.status(200).json({success : true , data: products}); 
   } catch (error) {
     console.log("error in ftching products:", error.message);
