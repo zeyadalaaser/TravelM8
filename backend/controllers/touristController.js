@@ -11,7 +11,7 @@ const registerTourist = async (req, res) => {
         .status(400)
         .json({ message: "Username already taken for tourists" });
     }
-
+    
     const hashedPassword = await bcrypt.hash(password, 10);
     const newTourist = new Tourist({ username, password: hashedPassword });
     await newTourist.save();

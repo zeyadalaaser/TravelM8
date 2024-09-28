@@ -1,10 +1,10 @@
 const PreferenceTags = require("../models/preferenceTagsModel");
-; 
+
 
 
 
 const createPreferenceTag = async (req, res) => {
-  console.log("PreferenceTags:", PreferenceTags);
+  
   const { name } = req.body; 
   try {
     const newTag = new PreferenceTags({ name });

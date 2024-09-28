@@ -1,5 +1,6 @@
 const ActivityCategory = require("../models/activityCategoryModel");
 
+
 // Create a new activity category
 const createActivityCategory = async (req, res) => {
   const { name } = req.body; // Only get name
