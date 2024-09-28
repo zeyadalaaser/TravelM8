@@ -1,9 +1,9 @@
-const PreferenceTags = require("../models/preferenceTagsModel");
+import PreferenceTags from '../models/preferenceTagsModel.js';
 
 
 
 
-const createPreferenceTag = async (req, res) => {
+export const createPreferenceTag = async (req, res) => {
   
   const { name } = req.body; 
   try {
@@ -16,7 +16,7 @@ const createPreferenceTag = async (req, res) => {
   }
 };
 
-const getAllPreferenceTags = async (req, res) => {
+export const getAllPreferenceTags = async (req, res) => {
   try {
     const tags = await PreferenceTags.find(); 
     res.status(200).json(tags);
@@ -26,7 +26,7 @@ const getAllPreferenceTags = async (req, res) => {
 };
 
 
-const updatePreferenceTag = async (req, res) => {
+export const updatePreferenceTag = async (req, res) => {
   const { name, newname } = req.body; 
   try {
     const updatedTag = await PreferenceTags.findOneAndUpdate({ name },{ name: newname },{ new: true } );
@@ -43,7 +43,7 @@ const updatePreferenceTag = async (req, res) => {
 };
 
 
-const deletePreferenceTag = async (req, res) => {
+export const deletePreferenceTag = async (req, res) => {
   const { name } = req.body;
   try {
     const deletedTag = await PreferenceTags.deleteOne({ name });
@@ -57,9 +57,9 @@ const deletePreferenceTag = async (req, res) => {
   }
 };
 
-module.exports = {
+/*module.exports = {
   createPreferenceTag,
   getAllPreferenceTags,
   updatePreferenceTag,
   deletePreferenceTag,
-};
+};*/

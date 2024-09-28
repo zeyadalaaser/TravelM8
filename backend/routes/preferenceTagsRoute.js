@@ -1,5 +1,5 @@
 import expresss from 'express';
-import {createPreferenceTag, getAllPreferenceTags, updatePreferenceTag, deletePreferenceTag} from './backend/controllers/preferenceTagsController.js';
+import {createPreferenceTag, getAllPreferenceTags, updatePreferenceTag, deletePreferenceTag} from '../controllers/preferenceTagsController.js';
 
 const router =expresss.Router();
 

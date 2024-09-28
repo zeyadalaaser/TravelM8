@@ -1,8 +1,8 @@
-const ActivityCategory = require("../models/activityCategoryModel");
+import ActivityCategory from '../models/activityCategoryModel.js';
 
 
 // Create a new activity category
-const createActivityCategory = async (req, res) => {
+export const createActivityCategory = async (req, res) => {
   const { name } = req.body; // Only get name
   try {
     const newCategory = new ActivityCategory({ name });
@@ -15,7 +15,7 @@ const createActivityCategory = async (req, res) => {
 };
 
 // Get all activity categories
-const getAllActivityCategories = async (req, res) => {
+export const getAllActivityCategories = async (req, res) => {
   try {
     const categories = await ActivityCategory.find();
     res.status(200).json(categories);
@@ -26,7 +26,7 @@ const getAllActivityCategories = async (req, res) => {
 };
 
 // Update an activity category
-const updateActivityCategory = async (req, res) => {
+export const updateActivityCategory = async (req, res) => {
   const { id } = req.params;
   const { name } = req.body; // Only get name
   try {
@@ -46,7 +46,7 @@ const updateActivityCategory = async (req, res) => {
 };
 
 // Delete an activity category
-const deleteActivityCategory = async (req, res) => {
+export const deleteActivityCategory = async (req, res) => {
   const { id } = req.params;
   try {
     const deletedCategory = await ActivityCategory.findByIdAndDelete(id);
@@ -61,9 +61,9 @@ const deleteActivityCategory = async (req, res) => {
 };
 
 // Export all functions
-module.exports = {
+/*module.exports = {
   createActivityCategory,
   getAllActivityCategories,
   updateActivityCategory,
   deleteActivityCategory,
-};
+};*/

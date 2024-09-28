@@ -1,7 +1,11 @@
-const User = require("../models/userModel");
-const bcrypt = require("bcrypt");
+//const User = require('../models/userModel');
+//const bcrypt = require("bcrypt");
 
-const registerAdmin = async (req, res) => {
+import User from '../models/userModel.js';
+import bcrypt from 'bcrypt';
+
+
+export const registerAdmin = async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -20,7 +24,7 @@ const registerAdmin = async (req, res) => {
   }
 };
 
-const deleteAccount = async (req, res) =>{
+export const deleteAccount = async (req, res) =>{
   const { username } = req.body;
 
   try {
@@ -38,4 +42,4 @@ const deleteAccount = async (req, res) =>{
 
 }
 
-module.exports = { registerAdmin, deleteAccount };
+//module.exports = { registerAdmin, deleteAccount };

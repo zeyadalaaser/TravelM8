@@ -17,7 +17,7 @@ const __dirname = path.resolve();
 
 app.use(express.json()); // allows us to accept JSON data in the req.body
 
-app.use('/activitycategory', activityCategoryRoute);
+app.use('/activityCategory', activityCategoryRoute);
 app.use('/admin', adminRoute);
 app.use('/preferenceTags', preferenceTagsRoute);
 app.use('/touristRoute', touristRoute);

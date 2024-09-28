@@ -1,5 +1,5 @@
 import expresss from 'express';
-import {createActivityCategory, getAllActivityCategories, updateActivityCategory, deleteActivityCategory} from "./backend/controllers/activityCategoryController.js"
+import {createActivityCategory, getAllActivityCategories, updateActivityCategory, deleteActivityCategory} from '../controllers/activityCategoryController.js';
 
 const router =expresss.Router();
 

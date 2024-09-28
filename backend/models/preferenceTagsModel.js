@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const preferenceTagsSchema = new mongoose.Schema({
   name: {
@@ -8,4 +8,4 @@ const preferenceTagsSchema = new mongoose.Schema({
 });
 
 const PreferenceTags = mongoose.model("PreferenceTags", preferenceTagsSchema);
-module.exports = PreferenceTags;  
+export default PreferenceTags;  

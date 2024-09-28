@@ -1,7 +1,7 @@
-const Tourist = require("../models/touristModel"); // Update the path to point to the correct model file
-const bcrypt = require("bcrypt");
+import Tourist from '../models/touristModel.js'; // Update the path to point to the correct model file
+import bcrypt from 'bcrypt';
 
-const registerTourist = async (req, res) => {
+export const registerTourist = async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -23,4 +23,4 @@ const registerTourist = async (req, res) => {
   }
 };
 
-module.exports = { registerTourist };
+//module.exports = { registerTourist };

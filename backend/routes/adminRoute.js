@@ -1,5 +1,5 @@
 import expresss from 'express';
-import {registerAdmin, deleteAccount} from "./backend/controllers/userController.js"
+import {registerAdmin, deleteAccount} from '../controllers/userController.js';
 
 const router =expresss.Router();
 

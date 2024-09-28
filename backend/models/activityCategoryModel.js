@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 const activityCategorySchema = new mongoose.Schema({
   name: {
@@ -12,4 +12,4 @@ const ActivityCategory = mongoose.model(
   "ActivityCategory",
   activityCategorySchema
 );
-module.exports = ActivityCategory;
+export default ActivityCategory;
