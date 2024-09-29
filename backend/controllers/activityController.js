@@ -117,4 +117,4 @@ const deleteActivity = async(req,res) => {
 
 
 
-export {createNewActivity, getAllActivities, getActivityById, updateActivity, getMyActivities, adeleteActivity};
+export {createNewActivity, getAllActivities, getActivityById, updateActivity, getMyActivities, deleteActivity};

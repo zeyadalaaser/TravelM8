@@ -3,6 +3,7 @@ import {
     createNewActivity, 
     getAllActivities, 
     getActivityById,
+    getMyActivities,
     updateActivity,
     deleteActivity 
 } from "../controllers/activityController.js"; 
