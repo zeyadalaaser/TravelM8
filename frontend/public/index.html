@@ -30,7 +30,7 @@
       }
       .form-group {
         margin-bottom: 20px;
-        position: relative; /* Allow positioning of eye icon */
+        position: relative;
       }
       input[type="text"],
       input[type="password"] {
@@ -47,13 +47,13 @@
       }
       .eye-icon {
         position: absolute;
-        right: 10px; /* Space from the right */
+        right: 10px;
         top: 50%;
-        transform: translateY(-50%); /* Center vertically */
+        transform: translateY(-50%);
         cursor: pointer;
-        width: 30px; /* Adjusted size for smaller icons */
-        height: 30px; /* Adjusted size for smaller icons */
-        object-fit: contain; /* Ensure the icon maintains aspect ratio */
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
       }
       .buttons {
         display: flex;
@@ -84,16 +84,26 @@
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
 
-        const response = await fetch("/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        });
+        try {
+          const response = await fetch("/admin/register", {
+            // Updated URL
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
 
-        const result = await response.json();
-        alert(result.message);
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Registration failed");
+          }
+
+          const result = await response.json();
+          alert(result.message);
+        } catch (error) {
+          alert(error.message); // Display error message to the user
+        }
       }
 
       function togglePasswordVisibility() {
@@ -137,14 +147,14 @@
           />
           <img
             id="eyeClose"
-            src="eye-close.png"
+            src="./eye-close.png"
             alt="Eye Closed"
             class="eye-icon"
             onclick="togglePasswordVisibility()"
           />
           <img
             id="eyeOpen"
-            src="eye-open.png"
+            src="./eye-open.png"
             alt="Eye Open"
             class="eye-icon"
             onclick="togglePasswordVisibility()"
@@ -153,7 +163,7 @@
         </div>
         <div class="buttons">
           <button type="submit" class="register-button">Register</button>
-          <a href="user.html" class="back-button">Back to Landing Page</a>
+          <a href="/user" class="back-button">Back to Landing Page</a>
         </div>
       </form>
     </div>

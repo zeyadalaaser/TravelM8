@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tourist Registration</title>
     <style>
+      /* Same styles as before */
       body {
         font-family: Arial, sans-serif;
         display: flex;
@@ -30,7 +31,7 @@
       }
       .form-group {
         margin-bottom: 20px;
-        position: relative; /* Allow positioning of eye icon */
+        position: relative;
       }
       input[type="text"],
       input[type="password"] {
@@ -47,13 +48,13 @@
       }
       .eye-icon {
         position: absolute;
-        right: 10px; /* Space from the right */
+        right: 10px;
         top: 50%;
-        transform: translateY(-50%); /* Center vertically */
+        transform: translateY(-50%);
         cursor: pointer;
-        width: 30px; /* Adjusted size for smaller icons */
-        height: 30px; /* Adjusted size for smaller icons */
-        object-fit: contain; /* Ensure the icon maintains aspect ratio */
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
       }
       .buttons {
         display: flex;
@@ -84,16 +85,27 @@
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
 
-        const response = await fetch("/register-tourist", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
-        });
+        try {
+          const response = await fetch("/tourist/register-tourist", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
 
-        const result = await response.json();
-        alert(result.message);
+          const result = await response.json();
+
+          if (!response.ok) {
+            alert(result.message); // Alert the error message
+          } else {
+            alert(result.message); // Alert success message
+            document.getElementById("registerForm").reset();
+          }
+        } catch (error) {
+          alert("Registration failed. Please try again.");
+          console.error("Error during registration:", error);
+        }
       }
 
       function togglePasswordVisibility() {
@@ -134,7 +146,7 @@
         </div>
         <div class="buttons">
           <button type="submit" class="register-button">Register</button>
-          <a href="user.html" class="back-button">Back to Landing Page</a>
+          <a href="/user" class="back-button">Back to Landing Page</a>
         </div>
       </form>
     </div>

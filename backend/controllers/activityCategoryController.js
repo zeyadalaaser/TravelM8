@@ -25,14 +25,17 @@ export const getAllActivityCategories = async (req, res) => {
 };
 
 // Update an activity category
+// Update an activity category by name
+// Update an activity category by name
 export const updateActivityCategory = async (req, res) => {
-  const { name, newName } = req.body; // Get current name and new name from the body
+  const { name, newName } = req.body; // Expect both current and new name from the request body
   try {
     const updatedCategory = await ActivityCategory.findOneAndUpdate(
       { name }, // Find by current name
       { name: newName }, // Update to the new name
-      { new: true }
+      { new: true } // Return the updated document
     );
+
     if (!updatedCategory) {
       return res.status(404).json({ message: "Category not found" });
     }
@@ -42,35 +45,17 @@ export const updateActivityCategory = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-// Delete an activity category
+// Delete an activity category by name
 export const deleteActivityCategory = async (req, res) => {
-  const { name } = req.body; // Get the name from the body
-  if (!name) {
-    return res.status(400).json({ message: "Name is required" });
-  }
-
+  const { name } = req.body; // Get the name of the category to delete from the request body
   try {
-    // Use a case-insensitive regular expression to find the category
-    const deletedCategory = await ActivityCategory.findOneAndDelete({
-      name: { $regex: new RegExp(`^${name}$`, "i") },
-    });
-
+    const deletedCategory = await ActivityCategory.findOneAndDelete({ name }); // Find and delete by name
     if (!deletedCategory) {
       return res.status(404).json({ message: "Category not found" });
     }
-
     res.status(200).json({ message: "Activity category deleted successfully" });
   } catch (error) {
     console.error("Error deleting activity category:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-// Export all functions
-/*module.exports = {
-  createActivityCategory,
-  getAllActivityCategories,
-  updateActivityCategory,
-  deleteActivityCategory,
-};*/
