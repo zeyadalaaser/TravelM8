@@ -1,21 +1,19 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const sellerSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
     unique: true,
+    immutable: true,
   },
  
   name: {
     type: String,
-    required: false,
-    unique: true,
   },
   description: {
     type: String,
-    required: false,
-    unique: true,
   },
   
   email: {
@@ -27,20 +25,23 @@ const sellerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-//   role: {
-//     type: String,
-//     enum: ['tourist', 'tour_guide', 'advertiser', 'seller'],
-//     required: false,
-//   },
-  // Fields for tourists only
-  
- 
+  isAccepted: {
+    type: Boolean,
+    default: false,
+  },
 }, 
     { 
     timestamps: true 
     });
 
-
+    sellerSchema.pre('save', async function (next) {
+      if (!this.isModified('password')) {
+          next();
+      }
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+      next();
+    });
 
 const Seller= mongoose.model("Seller", sellerSchema);
 export default Seller;

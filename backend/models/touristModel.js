@@ -1,17 +1,22 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
+import bcrypt from 'bcryptjs';
+import moment from 'moment';
 
 const touristSchema = new Schema({
-  Username: {
+  username: {
     type: String,
     required: true,
+    unique: true,
+    immutable: true,
   },
  
-  Email: {
+  email: {
     type: String,
     required: true,
+    unique: true,
   },
-  Password: {
+  password: {
     type: String,
     required: true,
     validate: function(value) {
@@ -22,31 +27,33 @@ const touristSchema = new Schema({
   mobileNumber: {
     type: String,
     required: true,
+    unique:true,
   },
-  Nationality: {
+  nationality: {
     type: String,
     required: true,
   },
   dob: {
     type: Date,
     required: true,
+    immutable: true,  // This ensures that dob cannot be changed after creation
     validate: {
       validator: function(value) {
-        // Check if the user is at least 18 years old
         const age = moment().diff(moment(value), 'years');
-        return age >= 18;
+        return age >= 18; // Returns false if the age is less than 18
       },
-      message: 'You must be at least 18 years old.'
+      message: 'You must be at least 18 years old to register.'
     }
   },
-  Occupation:{  // student/job
+  occupation:{  // student/job
     type: String,
     required: true,
 },
 
-  Wallet:{
+  wallet:{
     type: Number,
     required: false,
+    immutable: true,
   },
 
 }, { timestamps: true });
@@ -54,13 +61,21 @@ const touristSchema = new Schema({
 
 
 // Prevent dob from being updated after it's initially set
-userSchema.pre('save', function(next) {
+touristSchema.pre('save', function(next) {
   if (this.isModified('dob') && !this.isNew) {
     return next(new Error('Date of Birth cannot be changed once set.'));
   }
   next();
 });
 
+touristSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+      next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
-const Tourist = mongoose.model('Tourist', touristSchema);
-module.exports = Tourist;
+const Tourist= mongoose.model("Tourist", touristSchema);
+export default Tourist;

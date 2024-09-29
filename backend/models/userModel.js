@@ -23,15 +23,18 @@ const userSchema = new mongoose.Schema({
   // Fields for tourists only
   dob: {
     type: Date,
+    required: function() {return this.role == 'tourist';},
   },
   mobileNumber: {
     type: String,
   },
   nationality: {
     type: String,
+    required: function() {return this.role == 'tourist';},
   },
   occupation: {
     type: String, // e.g., 'student' or 'job'
+    required: function() {return this.role == 'tourist';},
   },
 }, 
     { 

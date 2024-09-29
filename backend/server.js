@@ -3,6 +3,8 @@ import path from "path";
 import dotenv from "dotenv"
 import routerAdvertiser from './routes/advertiserRoute.js';
 import routerSeller from './routes/sellerRoute.js';
+import routerTourGuide from "./routes/tourguideRoute.js";
+import routerTourist from "./routes/touristRoute.js";
 
 dotenv.config({path:'../.env'});
 
@@ -25,3 +27,5 @@ app.listen(PORT, () => {
 
 app.use( routerAdvertiser);
 app.use( routerSeller);
+app.use(routerTourGuide);
+app.use(routerTourist);

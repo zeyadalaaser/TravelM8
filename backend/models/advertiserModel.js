@@ -1,10 +1,12 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const advertiserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
     unique: true,
+    immutable: true,
   },
   email: {
     type: String,
@@ -17,22 +19,30 @@ const advertiserSchema = new mongoose.Schema({
   },
   website: {
     type: String,
-    required: false,
-    unique: true,
   },
   hotline: {
     type: Number,
-    required: false,
-    unique: true,
   },
   
-  
+  isAccepted: {
+    type: Boolean,
+    default: false,
+  },
  
 }, 
     { 
     timestamps: true 
     });
 
+
+advertiserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+      next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
 
 const Advertiser= mongoose.model("Advertiser", advertiserSchema);

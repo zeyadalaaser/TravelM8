@@ -1,10 +1,10 @@
-import Seller from '../models/sellerModel.js'; 
+import Tourist from '../models/touristModel.js'; 
 
 export const createUser = async(req,res) => {
    //add a new user to the database with 
-   const {username, name, description, email, password} = req.body;
+   const {username, email, password, mobileNumber, nationality, dob, occupation} = req.body;
    try{
-      const user = await Seller.create({username, name, description, email, password});
+      const user = await Tourist.create({username, email, password, mobileNumber, nationality, dob, occupation});
       res.status(200).json(user);
    }catch(error){
       res.status(400).json({error:error.message});
@@ -15,7 +15,7 @@ export const createUser = async(req,res) => {
 export const updateUser = async (req, res) => {
    const {username} = req.params;
    try{
-      const updatedUser = await Seller.findOneAndUpdate(
+      const updatedUser = await Tourist.findOneAndUpdate(
          { username },        
          req.body,         
          { new: true, runValidators: true }          
@@ -33,11 +33,9 @@ export const updateUser = async (req, res) => {
   export const getUsers = async (req, res) => {
     //retrieve all users from the database
     try{
-       const users = await Seller.find({});
+       const users = await Tourist.find({});
        res.status(200).json(users);
     }catch(error){
        res.status(400).json({error:error.message});
     }
  }
- 
-
