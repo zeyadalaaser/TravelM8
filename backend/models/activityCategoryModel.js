@@ -7,8 +7,5 @@ const activityCategorySchema = new mongoose.Schema({
   },
 });
 
-const ActivityCategory = mongoose.model(
-  "ActivityCategory",
-  activityCategorySchema
-);
+const ActivityCategory = mongoose.model("ActivityCategory", activityCategorySchema);
 export default ActivityCategory;

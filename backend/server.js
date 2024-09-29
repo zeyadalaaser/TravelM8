@@ -21,10 +21,10 @@ app.listen(PORT, () => {
 
 
 app.use(express.json()); // allows us to accept JSON data in the req.body
-app.use("/activityCategory", activityCategoryRoute);
-app.use("/admin", adminRoute);
-app.use("/preferenceTags", preferenceTagsRoute);
-app.use("/tourist", touristRoute); // Fixed route for tourists
+app.use(activityCategoryRoute);
+app.use(adminRoute);
+app.use(preferenceTagsRoute);
+app.use(touristRoute); // Fixed route for tourists
 app.use(activityRoute);
 
 
