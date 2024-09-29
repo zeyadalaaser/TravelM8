@@ -1,4 +1,5 @@
 import activityModel from "../models/activityModel.js";
+import { getActivities } from "../services/activities/activityServices.js";
 
 const createNewActivity = async(req, res) => {
 
@@ -42,12 +43,7 @@ const createNewActivity = async(req, res) => {
 }
 
 const getAllActivities = async(req, res) => {
-    try{
-        const activities = await activityModel.find({});
-        res.status(200).json(activities);
-    }catch(error){
-        res.status(400).json({message: "unsuccessful retrieval of data"});
-    }
+    res.status(200).json(await getActivities(req.query, {}));
 }
 
 const getActivityById = async(req,res) => {
