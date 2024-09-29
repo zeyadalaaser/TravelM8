@@ -1,5 +1,4 @@
-import ActivityCategory from '../models/activityCategoryModel.js';
-
+import ActivityCategory from "../models/activityCategoryModel.js";
 
 // Create a new activity category
 export const createActivityCategory = async (req, res) => {
@@ -27,12 +26,11 @@ export const getAllActivityCategories = async (req, res) => {
 
 // Update an activity category
 export const updateActivityCategory = async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body; // Only get name
+  const { name, newName } = req.body; // Get current name and new name from the body
   try {
-    const updatedCategory = await ActivityCategory.findByIdAndUpdate(
-      id,
-      { name },
+    const updatedCategory = await ActivityCategory.findOneAndUpdate(
+      { name }, // Find by current name
+      { name: newName }, // Update to the new name
       { new: true }
     );
     if (!updatedCategory) {
@@ -47,12 +45,21 @@ export const updateActivityCategory = async (req, res) => {
 
 // Delete an activity category
 export const deleteActivityCategory = async (req, res) => {
-  const { id } = req.params;
+  const { name } = req.body; // Get the name from the body
+  if (!name) {
+    return res.status(400).json({ message: "Name is required" });
+  }
+
   try {
-    const deletedCategory = await ActivityCategory.findByIdAndDelete(id);
+    // Use a case-insensitive regular expression to find the category
+    const deletedCategory = await ActivityCategory.findOneAndDelete({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+
     if (!deletedCategory) {
       return res.status(404).json({ message: "Category not found" });
     }
+
     res.status(200).json({ message: "Activity category deleted successfully" });
   } catch (error) {
     console.error("Error deleting activity category:", error);
