@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
-const HistoricalPlace = require("../models/historicalPlacesModel.js");
+import HistoricalPlace from "../models/historicalPlacesModel.js";
 //const  mongoose = require('mongoose');
 
 
 
-const createHistoricalPlace= async (req, res) => {
+export const createHistoricalPlace= async (req, res) => {
     try {
-      const { name, description, location, image, openingHours, price } = req.body;
+      const { name, description, location, image, openingHours, price,tags } = req.body;
   
       if (!name || !description || !location || !image || !openingHours || !price) {
         return res.status(400).json({ message: "All fields are required." });
       }
       // Create a new HistoricalPlace instance
-      const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,          
+      const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags         
       });
   
         await newPlace.save();
@@ -27,10 +27,11 @@ const createHistoricalPlace= async (req, res) => {
    
 
   
-const getAllHistoricalPlaces= async(req,res)=>{
+export const getAllHistoricalPlaces= async(req,res)=>{
 
     try {
         const places= await HistoricalPlace.find();
+        
         res.status(200).json(places);
          
 
@@ -40,14 +41,19 @@ const getAllHistoricalPlaces= async(req,res)=>{
     }
 };
 
-const deleteHistoricalPLace=async(req,res)=>{
+export const deleteHistoricalPLace=async(req,res)=>{
  
  const {id}= req.params;
  try {
+  if(!mongoose.Types.ObjectId.isValid(id)){
+    return res.status(404).json({  message:"Historical place not found; invalid id"});
+  }
+   
   const deletedPlace = await HistoricalPlace.findByIdAndDelete(id);
   if (!deletedPlace) {
     return res.status(404).json({ message: "Historical Place not found" });
   }
+
   res.status(200).json({ message: "Historical Place deleted successfully" });
 } catch (error) {
   console.error("Error deleting Historical Place:", error);
@@ -56,21 +62,21 @@ const deleteHistoricalPLace=async(req,res)=>{
 };
 
 
-const updateHistoricalPLace = async (req, res) => {
+export const updateHistoricalPLace = async (req, res) => {
   
   try {
     const { id } = req.params;   
     const updatedData = req.body;  
-
-    // Find the historical place by ID and update it
+    if(!mongoose.Types.ObjectId.isValid(id)){
+      return res.status(404).json({  message:"Historical place not found; invalid id"});
+    }
+     
     const updatedPlace = await HistoricalPlace.findByIdAndUpdate(id, updatedData, {
       new: true, 
-      runValidators: true // Ensure that the update obeys schema validation
+      runValidators: true  
     });
-
-    // If the place is not found
     if (!updatedPlace) {
-      return res.status(404).json({ message: "Historical place not found" });
+      return res.status(404).json({ message: "Historical Place not found" });
     }
 
     res.status(200).json({ message: "Historical place updated successfully", updatedPlace });
@@ -81,17 +87,20 @@ const updateHistoricalPLace = async (req, res) => {
 };
  
 
-const createTags=async(req,res)=>{
+export const createTags=async(req,res)=>{
 
     try {
       const { id } = req.params;  
       const { type, historicalPeriod } = req.body;  
       // Find the historical place by ID
-      const place = await HistoricalPlace.findById(id);
-      
-      if (!place) {
-        return res.status(404).json({ message: "Historical place not found." });
+      if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(404).json({  message:"Historical place not found; invalid id"});
       }
+      const place = await HistoricalPlace.findById(id);
+      if (!place) {
+        return res.status(404).json({ message: "Historical Place not found" });
+      }
+    
   
       // Update the type and/or historical period
       if (type) 
@@ -99,6 +108,7 @@ const createTags=async(req,res)=>{
       if (historicalPeriod) 
         place.tags.historicalPeriod = historicalPeriod;
       await place.save();
+      
   
       res.status(200).json({ message: "Tags updated successfully", place });
     } catch (error) {
@@ -108,7 +118,7 @@ const createTags=async(req,res)=>{
   }
 };
 
-const filterbyTags =async(req,res)=>{
+export const filterbyTags =async(req,res)=>{
   try {
     const { type, historicalPeriod } = req.query;  
 
@@ -139,5 +149,4 @@ const filterbyTags =async(req,res)=>{
 
   
 
-module.exports = { createHistoricalPlace ,getAllHistoricalPlaces,deleteHistoricalPLace,
-  updateHistoricalPLace,createTags,};
+//module.exports = { getAllHistoricalPlaces,deleteHistoricalPLace,updateHistoricalPLace, };

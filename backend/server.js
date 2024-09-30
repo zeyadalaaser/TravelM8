@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv"
 import activityRoute from "/routes/activityRoute.js"
+import historicalPlacesRoute from "../backend/routes/historicalPlacesRoute.js"
 
 dotenv.config({path:'../.env'});
 
@@ -14,6 +15,7 @@ const __dirname = path.resolve();
 
 app.use(express.json()); // allows us to accept JSON data in the req.body
 app.use(activityRoute);
+app.use(historicalPlacesRoute);
 
 
 app.listen(PORT, () => {
