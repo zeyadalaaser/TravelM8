@@ -1,12 +1,12 @@
-import TouristGovernor from "../models/touristModel.js"; // Ensure the path is correct
+import TourismGovernor from "../models/tourismGovernorModel.js"; // Ensure the path is correct
 import bcrypt from "bcrypt";
 
-export const registerTourist = async (req, res) => {
+const registerGovernor = async (req, res) => {
   const { username, password } = req.body;
 
   try {
     // Check if the username already exists
-    const existingTourist = await TouristGovernor.findOne({ username });
+    const existingTourist = await TourismGovernor.findOne({ username });
     if (existingTourist) {
       return res
         .status(400)
@@ -15,12 +15,12 @@ export const registerTourist = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    // Create a new touristGovernor
-    const newTouristGovernor = new TouristGovernor({
+    // Create a new TourismGovernor
+    const newTourismGovernor = new TourismGovernor({
       username,
       password: hashedPassword,
     });
-    await newTouristGovernor.save();
+    await newTourismGovernor.save();
 
     res.status(201).json({ message: "Tourist registered successfully" });
   } catch (error) {
@@ -28,3 +28,5 @@ export const registerTourist = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export {registerGovernor};

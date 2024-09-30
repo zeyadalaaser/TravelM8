@@ -1,21 +1,18 @@
-//const User = require('../models/userModel');
-//const bcrypt = require("bcrypt");
-
-import User from '../models/userModel.js';
+import Admin from '../models/adminModel.js';
 import bcrypt from 'bcrypt';
 
 
-export const registerAdmin = async (req, res) => {
+const registerAdmin = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ username });
+    const existingUser = await Admin.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: "Username already taken" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword });
+    const newUser = new Admin({ username, password: hashedPassword });
     await newUser.save();
 
     res.status(201).json({ message: "Admin registered successfully" });
@@ -24,11 +21,11 @@ export const registerAdmin = async (req, res) => {
   }
 };
 
-export const deleteAccount = async (req, res) =>{
+const deleteAccount = async (req, res) =>{
   const { username } = req.body;
 
   try {
-    const deletedUser = await User.deleteOne({ username});
+    const deletedUser = await User.deleteOne({ username }); //User from which db collection??????????
     if (deletedUser.deletedCount > 0) {
       return res.status(200).json({ message: "User deleted successfully" });
     } else {
@@ -42,4 +39,4 @@ export const deleteAccount = async (req, res) =>{
 
 }
 
-//module.exports = { registerAdmin, deleteAccount };
+export {registerAdmin, deleteAccount};

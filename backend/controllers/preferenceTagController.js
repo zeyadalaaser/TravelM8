@@ -1,13 +1,10 @@
-import PreferenceTags from '../models/preferenceTagsModel.js';
+import PreferenceTag from '../models/preferenceTagModel.js';
 
-
-
-
-export const createPreferenceTag = async (req, res) => {
+const createPreferenceTag = async (req, res) => {
   
   const { name } = req.body; 
   try {
-    const newTag = new PreferenceTags({ name });
+    const newTag = new PreferenceTag({ name });
     await newTag.save();
     res.status(201).json(newTag); 
   } catch (error) {
@@ -16,9 +13,9 @@ export const createPreferenceTag = async (req, res) => {
   }
 };
 
-export const getAllPreferenceTags = async (req, res) => {
+const getAllPreferenceTags = async (req, res) => {
   try {
-    const tags = await PreferenceTags.find(); 
+    const tags = await PreferenceTag.find(); 
     res.status(200).json(tags);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -26,10 +23,10 @@ export const getAllPreferenceTags = async (req, res) => {
 };
 
 
-export const updatePreferenceTag = async (req, res) => {
+const updatePreferenceTag = async (req, res) => {
   const { name, newname } = req.body; 
   try {
-    const updatedTag = await PreferenceTags.findOneAndUpdate({ name },{ name: newname },{ new: true } );
+    const updatedTag = await PreferenceTag.findOneAndUpdate({ name },{ name: newname },{ new: true } );
 
     if (!updatedTag) {
       return res.status(404).json({ message: "Tag not found" });
@@ -43,10 +40,10 @@ export const updatePreferenceTag = async (req, res) => {
 };
 
 
-export const deletePreferenceTag = async (req, res) => {
+const deletePreferenceTag = async (req, res) => {
   const { name } = req.body;
   try {
-    const deletedTag = await PreferenceTags.deleteOne({ name });
+    const deletedTag = await PreferenceTag.deleteOne({ name });
     if (deletedTag.deletedCount === 0) { 
       return res.status(404).json({ message: "Tag not found" });
     }
@@ -57,9 +54,4 @@ export const deletePreferenceTag = async (req, res) => {
   }
 };
 
-/*module.exports = {
-  createPreferenceTag,
-  getAllPreferenceTags,
-  updatePreferenceTag,
-  deletePreferenceTag,
-};*/
+export {createPreferenceTag, getAllPreferenceTags, updatePreferenceTag, deletePreferenceTag};

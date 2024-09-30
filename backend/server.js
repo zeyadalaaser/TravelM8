@@ -3,8 +3,8 @@ import path from "path";
 import dotenv from "dotenv";
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
-import preferenceTagsRoute from "./routes/preferenceTagsRoute.js";
-import touristRoute from "./routes/touristRoute.js";
+import preferenceTagRoute from "./routes/preferenceTagRoute.js";
+import tourismGovernorRoute from "./routes/tourismGovernorRoute.js";
 import { connectDB } from "./config/db.js";
 
 dotenv.config({path:'../.env'});
@@ -23,8 +23,8 @@ app.listen(PORT, () => {
 app.use(express.json()); // allows us to accept JSON data in the req.body
 app.use(activityCategoryRoute);
 app.use(adminRoute);
-app.use(preferenceTagsRoute);
-app.use(touristRoute); // Fixed route for tourists
+app.use(preferenceTagRoute);
+app.use(tourismGovernorRoute); // Fixed route for tourists
 app.use(activityRoute);
 
 

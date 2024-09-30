@@ -12,7 +12,7 @@ const createNewActivity = async(req, res) => {
             tags,
             discount,
             isBookingOpen,
-            //advertiserId => add its logic from idk the session or sum
+            advertiserId=1, //=> add its logic from idk the session or sum
         } = req.body;
 
         const newActivity = {
@@ -24,7 +24,7 @@ const createNewActivity = async(req, res) => {
             tags,
             discount,
             isBookingOpen,
-            //advertiserId
+            advertiserId
         };
         
         const validateNewActivity = Object.values(newActivity).every(value => value !== undefined && value !== null);
@@ -84,12 +84,15 @@ const updateActivity = async(req, res) => {
     }
 }
 
+//advertiser only
 const getMyActivities = async(req, res) => {    
     let activities;
-    if(user.type === "advertiser")
+    if(user.type === "advertiser"){
         activities = await activityModel.find({advertiserId: user.id});
-    else if(user.type === "tour_guide"){
-       ///activities = await activityModel.find({advertiserId: user.id});    
+        if(activity.length == 0)
+            res.status(204);
+        else
+            res.status(200).json({activity});
     }else{
         res.status(400).json({message:"enter a valid id"});
     }
@@ -105,12 +108,9 @@ const deleteActivity = async(req,res) => {
             res.status(400).json({message:"unseuccessful deletion of activity"});
 
         }
- 
     }else{
         res.status(400).json({message:"enter a valid id"});
     }
 }
-
-
 
 export {createNewActivity, getAllActivities, getActivityById, updateActivity, getMyActivities, deleteActivity};
