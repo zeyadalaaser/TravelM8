@@ -6,8 +6,8 @@ const registerGovernor = async (req, res) => {
 
   try {
     // Check if the username already exists
-    const existingTourist = await TourismGovernor.findOne({ username });
-    if (existingTourist) {
+    const existingGovernor = await TourismGovernor.findOne({ username });
+    if (existingGovernor) {
       return res
         .status(400)
         .json({ message: "Username already taken for tourists" });

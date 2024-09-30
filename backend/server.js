@@ -1,15 +1,16 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
+import { connectDB } from "./config/db.js";
+
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import preferenceTagRoute from "./routes/preferenceTagRoute.js";
 import tourismGovernorRoute from "./routes/tourismGovernorRoute.js";
 import advertiserRoute from './routes/advertiserRoute.js';
 import sellerRoute from './routes/sellerRoute.js';
-import tourGuideRoute from "./routes/tourguideRoute.js";
+import tourGuideRoute from "./routes/tourGuideRoute.js";
 import touristRoute from "./routes/touristRoute.js";
-import { connectDB } from "./config/db.js";
 
 dotenv.config({path:'../.env'});
 
@@ -25,15 +26,15 @@ app.listen(PORT, () => {
 
 
 app.use(express.json()); // allows us to accept JSON data in the req.body
-app.use(activityCategoryRoute);
-app.use(adminRoute);
-app.use(preferenceTagRoute);
-app.use(tourismGovernorRoute); // Fixed route for tourists
-app.use(activityRoute);
-app.use(advertiserRoute);
-app.use(sellerRoute);
-app.use(tourGuideRoute);
-app.use(touristRoute);
+app.use("/api", activityCategoryRoute);
+app.use("/api", adminRoute);
+app.use("/api", preferenceTagRoute);
+app.use("/api", tourismGovernorRoute); // Fixed route for tourists
+app.use("/api", activityRoute);
+app.use("/api", advertiserRoute);
+app.use("/api", sellerRoute);
+app.use("/api", tourGuideRoute);
+app.use("/api", touristRoute);
 
 
 // app.use(express.static("frontend/public")); // Serve static files from the public directory inside frontend

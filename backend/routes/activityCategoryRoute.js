@@ -9,8 +9,8 @@ import {
 const router = express.Router();
 
 // Activity Category CRUD Routes
-router.post("/api/activity-categories", createActivityCategory);
-router.get("/api/activity-categories", getAllActivityCategories);
+router.post("/activity-categories", createActivityCategory);
+router.get("/activity-categories", getAllActivityCategories);
 // router.put("/api/activity-category", updateActivityCategory); // if we're updating by name
 //router.delete("/api/activity-category", deleteActivityCategory); // if we're deleting by name
 // router.put("/api/activity-categories/:id", updateActivityCategory); // if we're updating by id

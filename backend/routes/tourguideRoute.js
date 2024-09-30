@@ -1,10 +1,12 @@
 import express from 'express';
-const routerTourGuide = express.Router();
-import { createUser, updateUser, getUsers } from '../controllers/tourguideController.js';
+import { createTourGuide, updateTourGuide, getTourGuides } from '../controllers/tourGuideController.js';
+
+
+const router = express.Router();
 
 // Define the routes
-routerTourGuide.post('/addTourGuide', createUser);              // Create a new user with website, hotline, etc.
-routerTourGuide.put('/updateTourGuide/:username', updateUser);        // Update user information by email
-routerTourGuide.get('/getTourGuides', getUsers);                 // Read user by email
+router.post('/tour-guides', createTourGuide);              // Create a new user with website, hotline, etc.
+router.put('/tour-guides/:username', updateTourGuide);        // Update user information by email
+router.get('/tour-guides', getTourGuides);                 // Read user by email
 
-export default routerTourGuide; 
+export default router; 

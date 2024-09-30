@@ -8,10 +8,10 @@ import {
 
 const router = expresss.Router();
 
-router.post("/api/preference-tags", createPreferenceTag);
-router.get("/api/preference-tags", getAllPreferenceTags);
-router.put("/api/preference-tags/:id", updatePreferenceTag);
-router.delete("/api/preference-tags/:id", deletePreferenceTag);
+router.post("/preference-tags", createPreferenceTag);
+router.get("/preference-tags", getAllPreferenceTags);
+router.put("/preference-tags/:id", updatePreferenceTag);
+router.delete("/preference-tags/:id", deletePreferenceTag);
 
 
 

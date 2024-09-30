@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const tourguideSchema = new mongoose.Schema({
+const tourGuideSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
@@ -35,7 +35,7 @@ const tourguideSchema = new mongoose.Schema({
     timestamps: true 
     });
 
-    tourguideSchema.pre('save', async function (next) {
+    tourGuideSchema.pre('save', async function (next) {
         if (!this.isModified('password')) {
             next();
         }
@@ -44,5 +44,5 @@ const tourguideSchema = new mongoose.Schema({
         next();
       });
 
-const TourGuide= mongoose.model("TourGuide", tourguideSchema);
+const TourGuide= mongoose.model("TourGuide", tourGuideSchema);
 export default TourGuide;
