@@ -11,6 +11,8 @@ import advertiserRoute from './routes/advertiserRoute.js';
 import sellerRoute from './routes/sellerRoute.js';
 import tourGuideRoute from "./routes/tourGuideRoute.js";
 import touristRoute from "./routes/touristRoute.js";
+import productRoute from './routes/productRoute.js'; 
+
 
 dotenv.config({path:'../.env'});
 
@@ -35,6 +37,7 @@ app.use("/api", advertiserRoute);
 app.use("/api", sellerRoute);
 app.use("/api", tourGuideRoute);
 app.use("/api", touristRoute);
+app.use('/products',productRoute);
 
 
 // app.use(express.static("frontend/public")); // Serve static files from the public directory inside frontend
