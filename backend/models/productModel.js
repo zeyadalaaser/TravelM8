@@ -1,46 +1,53 @@
 import mongoose from 'mongoose';
+import Seller from './sellerModel.js'
 
 const productSchema = new mongoose.Schema({
-    Name:{
+    name:{
         type: String,
         required: true 
     },
 
-    Image:{
+    image:{
         type: String,
         required: true
     },
 
-    Price:{
+    price:{
         type: Number,
         required: true,
         min: 0   //3amaltaha 3alashan a validate en cannot have negative number
     },
 
-    Quantity:{
+    quantity:{
         type: Number,
         required: true
     },
 
-    Description:{
+    description:{
         type: String,
         default: null
     },
 
-    Seller: {
-        type: String,
-        enum: ['VTP', 'External Seller'], 
+    seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seller',
         required: true
       },
 
-    Rating:{
+    sellerType: {
+        type: String,
+        enum: ['VTP', 'External Seller'],
+        required: true
+    },
+
+    rating:{
         type: Number,
         default: null,
         min: 0,
         max: 5
     },
 
-    Reviews:{
+    reviews:{
         type: String,
         default: null
     }

@@ -37,7 +37,7 @@ app.use("/api", advertiserRoute);
 app.use("/api", sellerRoute);
 app.use("/api", tourGuideRoute);
 app.use("/api", touristRoute);
-app.use('/products',productRoute);
+app.use('/api/products',productRoute);
 
 
 // app.use(express.static("frontend/public")); // Serve static files from the public directory inside frontend
