@@ -5,12 +5,16 @@ import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import preferenceTagRoute from "./routes/preferenceTagRoute.js";
 import tourismGovernorRoute from "./routes/tourismGovernorRoute.js";
+import advertiserRoute from './routes/advertiserRoute.js';
+import sellerRoute from './routes/sellerRoute.js';
+import tourGuideRoute from "./routes/tourguideRoute.js";
+import touristRoute from "./routes/touristRoute.js";
 import { connectDB } from "./config/db.js";
 
 dotenv.config({path:'../.env'});
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 const __dirname = path.resolve();
 
@@ -26,6 +30,10 @@ app.use(adminRoute);
 app.use(preferenceTagRoute);
 app.use(tourismGovernorRoute); // Fixed route for tourists
 app.use(activityRoute);
+app.use(advertiserRoute);
+app.use(sellerRoute);
+app.use(tourGuideRoute);
+app.use(touristRoute);
 
 
 // app.use(express.static("frontend/public")); // Serve static files from the public directory inside frontend
