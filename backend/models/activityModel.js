@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import ActivityCategory from './activityCategoryModel.js';
 
 const activitySchema = new mongoose.Schema({
 
@@ -23,7 +24,6 @@ const activitySchema = new mongoose.Schema({
     
     price: {
         type: mongoose.Schema.Types.Mixed,
-        required: true,
         validate: {
             validator: (v) => {
                 return (
@@ -36,11 +36,10 @@ const activitySchema = new mongoose.Schema({
         
     },
 
-
     category: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ActivityCategory',
         required: true,
-        //include an array of categories available
     },
 
     tags: [{
@@ -64,7 +63,7 @@ const activitySchema = new mongoose.Schema({
 
     advertiserId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        //ref: 'User',
         required: true,
     },
     
