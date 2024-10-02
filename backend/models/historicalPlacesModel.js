@@ -61,5 +61,5 @@ tags: {
     
  });
 
-const HistoricalPlaces = mongoose.model("HistoricalPlaces", HistoricalSchema);
-export default HistoricalPlaces;
+const HistoricalPlace = mongoose.model("HistoricalPlace", HistoricalSchema);
+export default HistoricalPlace;

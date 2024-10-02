@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
-import Activity from './activityModel';
-
-const Activity = require('./Activity');
+import Activity from './activityModel.js';
 
 const itineraySchema = new mongoose.Schema({
     activities: [
@@ -76,7 +74,7 @@ const itineraySchema = new mongoose.Schema({
     },
     preferences: {
         type: [String], // Fixed preferences as an array of strings
-        enum: ['historic', 'beaches', 'family-friendly', 'shopping'], // Enumerate valid preferences
+        enum: ['historic', 'beaches', 'family-friendly', 'shopping'], // SHould refrence tagsModel
         required: true,
     }
 });
