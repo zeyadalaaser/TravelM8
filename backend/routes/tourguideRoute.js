@@ -5,8 +5,8 @@ import { createTourGuide, updateTourGuide, getTourGuides } from '../controllers/
 const router = express.Router();
 
 // Define the routes
-router.post('/tour-guides', createTourGuide);              // Create a new user with website, hotline, etc.
-router.put('/tour-guides/:username', updateTourGuide);        // Update user information by email
-router.get('/tour-guides', getTourGuides);                 // Read user by email
+router.post('/tourguides', createTourGuide);              // Create a new user with website, hotline, etc.
+router.put('/tourguides/:username', updateTourGuide);        // Update user information by email
+router.get('/tourguides', getTourGuides);                 // Read user by email
 
 export default router; 

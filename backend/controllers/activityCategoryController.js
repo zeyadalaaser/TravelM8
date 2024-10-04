@@ -25,24 +25,24 @@ export const getAllActivityCategories = async (req, res) => {
 };
 
 // Update an activity category by name
-// export const updateActivityCategory = async (req, res) => {
-//   const { name, newName } = req.body; // Expect both current and new name from the request body
-//   try {
-//     const updatedCategory = await ActivityCategory.findOneAndUpdate(
-//       { name }, // Find by current name
-//       { name: newName }, // Update to the new name
-//       { new: true } // Return the updated document
-//     );
+export const updateActivityCategory = async (req, res) => {
+  const { name, newName } = req.body; // Expect both current and new name from the request body
+  try {
+    const updatedCategory = await ActivityCategory.findOneAndUpdate(
+      { name }, // Find by current name
+      { name: newName }, // Update to the new name
+      { new: true } // Return the updated document
+    );
 
-//     if (!updatedCategory) {
-//       return res.status(404).json({ message: "Category not found" });
-//     }
-//     res.status(200).json(updatedCategory);
-//   } catch (error) {
-//     console.error("Error updating activity category:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
+    if (!updatedCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    res.status(200).json(updatedCategory);
+  } catch (error) {
+    console.error("Error updating activity category:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 
 // Delete an activity category by name
