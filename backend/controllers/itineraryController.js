@@ -19,7 +19,13 @@ export const createItinerary = async (req, res) => {
 // read/retrieve all itineraries 
 export const readItineraries = async (req, res) => {
     try {
-        const itineraries = await Itinerary.find().populate('activities'); // Fetch all itineraries and populate activities
+        const { upcoming } = req.query;
+        const filters = {};
+
+        if (upcoming === 'true')
+            filters['availableSlots.startTime'] = { $gte: new Date() };
+
+        const itineraries = await Itinerary.find(filters).populate('activities'); // Fetch all itineraries and populate activities
         res.status(200).json(itineraries); // Send the list of itineraries in the response
     } catch (error) {
         res.status(500).json({
