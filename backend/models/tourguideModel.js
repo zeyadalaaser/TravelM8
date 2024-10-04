@@ -5,7 +5,6 @@ import validator from "validator";
 const tourGuideSchema = new mongoose.Schema({
   name:{
     type: String,
-    required:true
   },
   
   username: {
