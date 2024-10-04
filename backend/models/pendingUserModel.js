@@ -18,6 +18,15 @@ const pendingUserSchema = new mongoose.Schema({
         return /[a-zA-Z]/.test(value) && /\d/.test(value);
     }
    },
+   email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: (email) => validator.isEmail(email), // Using Validator.js
+      message: 'Please enter a valid email address.',
+  },
+  },
   type: {
     type: String,
     enum: ["Seller", "Advertiser", "TourGuide"],
