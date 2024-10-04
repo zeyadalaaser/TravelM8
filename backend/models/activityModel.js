@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import ActivityCategory from './activityCategoryModel.js';
+import PreferenceTag from './preferenceTagModel.js';
+import Advertiser from './advertiserModel.js'
 
 const activitySchema = new mongoose.Schema({
 
@@ -19,7 +21,7 @@ const activitySchema = new mongoose.Schema({
     },
 
     location: {
-
+        //google maps
     },
     
     price: {
@@ -43,7 +45,8 @@ const activitySchema = new mongoose.Schema({
     },
 
     tags: [{
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'PreferenceTag',
         required: true,
     }],
 
@@ -63,7 +66,7 @@ const activitySchema = new mongoose.Schema({
 
     advertiserId: {
         type: mongoose.Schema.Types.ObjectId,
-        //ref: 'User',
+        ref: 'Advertiser',
         required: true,
     },
     

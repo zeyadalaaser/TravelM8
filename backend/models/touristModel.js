@@ -5,6 +5,11 @@ import moment from 'moment';
 import validator from "validator";
 
 const touristSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  
   username: {
     type: String,
     required: true,
@@ -20,7 +25,7 @@ const touristSchema = new Schema({
     validate: {
       validator: (email) => validator.isEmail(email), // Using Validator.js
       message: 'Please enter a valid email address.',
-  },
+    },
   },
   password: {
     type: String,
@@ -34,7 +39,7 @@ const touristSchema = new Schema({
   mobileNumber: {
     type: Number,
     required: true,
-    unique:true,
+     
   },
   nationality: {
     type: String,

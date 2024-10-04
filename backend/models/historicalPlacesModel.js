@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+import tourismGovernor from './tourismGovernorModel.js';
 const HistoricalSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -12,6 +12,7 @@ const HistoricalSchema = new mongoose.Schema({
     },
 
     location: {
+      /// google maps
       type: String,
       required: true
     },
@@ -21,23 +22,38 @@ const HistoricalSchema = new mongoose.Schema({
         required: true,
     },
 
-   // openingHours: {
-     //   open: String,  required: true,// Example: "09:00"
-     // close: String,  required: true,// Example: "17:00"
-    //},
+
       openingHours: {
         open: { type: String, required: true },
         close: { type: String, required: true },
       },
 
-    price: {
-  type: Number,    
-  required: true,
-  validate: {
-    validator: (v) => v > 0,
-    message: "Price must be a positive number!"
-  }
-},
+    price: [{
+      type: {
+        type: String,
+        required: true
+      },
+      price: {
+        type: Number,
+        required:true,
+        validate: {
+          validator: (v) => v > 0,
+          message: "Regular price must be a positive number!"
+        }
+       
+      }
+    }],
+
+    
+  
+    
+  // type: Number,    
+  // required: true,
+  // validate: {
+  //   validator: (v) => v > 0,
+  //   message: "Price must be a positive number!"
+  // }
+
  
 
 
@@ -55,11 +71,11 @@ tags: {
 
     TourismGovernorId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        //required: true,
+        ref: 'tourismGovernor',
+        required: true,
    },
     
  });
 
-const HistoricalPlace = mongoose.model("HistoricalPlace", HistoricalSchema);
-export default HistoricalPlace;
+const HistoricalPlaces = mongoose.model("HistoricalPlaces", HistoricalSchema);
+export default HistoricalPlaces;

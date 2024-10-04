@@ -7,5 +7,8 @@ const preferenceTagSchema = new mongoose.Schema({
   },
 });
 
+preferenceTagSchema.index({ name: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });
+
+
 const PreferenceTag = mongoose.model("PreferenceTag", preferenceTagSchema);
 export default PreferenceTag;  

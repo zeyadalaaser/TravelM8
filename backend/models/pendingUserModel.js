@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 
-const tourismGovernorSchema = new mongoose.Schema({
+const pendingUserSchema = new mongoose.Schema({
   username: { 
     type: String, 
     required: true, 
@@ -18,10 +18,15 @@ const tourismGovernorSchema = new mongoose.Schema({
         return /[a-zA-Z]/.test(value) && /\d/.test(value);
     }
    },
+  type: {
+    type: String,
+    enum: ["Seller", "Advertiser", "TourGuide"],
+    required: true  
+  }
 });
 
-const TourismGovernor = mongoose.model(
-  "TourismGovernor",
-  tourismGovernorSchema
+const PendingUser = mongoose.model(
+  "PendingUser",
+  pendingUserSchema
 );
-export default TourismGovernor;
+export default PendingUser;

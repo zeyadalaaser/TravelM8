@@ -1,7 +1,21 @@
 import mongoose from 'mongoose';
 import Activity from './activityModel.js';
+import Place from './historicalPlacesModel.js';
+import TourGuide from './tourguideModel.js'
+import PrefernceTags from './preferenceTagModel.js'
 
 const itineraySchema = new mongoose.Schema({
+    
+    name: {
+        type: String,
+        required: true,
+    },
+
+    description: {
+        type: String,
+        required: true
+    },
+
     activities: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -9,32 +23,15 @@ const itineraySchema = new mongoose.Schema({
             required: true // Makes the field required
         }
     ],
-    sites:{
-        type: [String],
-        required: true,
-    },    
-    timeline: [
+
+    sites: [
         {
-            event: {
-                type: String,
-                required: true,
-            },
-            startTime: {
-                type: Date,
-                required: true,
-            },
-            endTime: {
-                type: Date,
-                required: true,
-            },
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Place',
+            required: true
         }
-    ],
-////////////////////////////////////???????????????/??????
-    activityDuration: {
-        type: String, // or `Number`, if storing as minutes/hours
-        required: true,
-    },
-////////////////////////////////////
+    ],    
+
     tourLanguage:{
         type: String,
         required: true,
@@ -44,6 +41,7 @@ const itineraySchema = new mongoose.Schema({
         required: true,
         min: 0, 
     },
+
     availableSlots: [
         {
             date: {
@@ -58,25 +56,64 @@ const itineraySchema = new mongoose.Schema({
                 type: String,
                 required: true,
             },
+            timeline: [
+                {
+                    referenceModel: {
+                        type: String,
+                        required: true,
+                        enum: ['Activity', 'Place'], // Specify the models that can be referenced
+                    },
+                    event: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        refPath: 'referenceModel',
+                        required: true 
+                    },
+                    startTime: {
+                        type: Date,
+                        required: true,
+                    },
+                    endTime: {
+                        type: Date,
+                        required: true,
+                    },
+                }
+            ],
+            numberOfBookkings :{
+                 type: Number,
+                 min: 0
+            }
         }
     ],
+
     accessibility: {
         type: String,
         required: true,
     },
-    pickupLocation: {
+
+    pickUpLocation: {
+        //google maps
         type: String,
         required: true, 
     },
-    dropoffLocation: {
+
+    dropOffLocation: {
+        //google maps
         type: String,
         required: true, 
     },
-    preferences: {
-        type: [String], // Fixed preferences as an array of strings
-        enum: ['historic', 'beaches', 'family-friendly', 'shopping'], // SHould refrence tagsModel
+
+    tags: [{
+        type: mongoose.Schema.Types.ObjectId, // Fixed preferences as an array of strings
+        ref:'PrefernceTags',   // SHould refrence tagsModel
         required: true,
-    }
+    }],
+
+    tourGuideId :{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'TourGuide',
+        required: true,
+    },
+
 });
 
 const Itinerary = mongoose.model("Itinerary", itineraySchema);

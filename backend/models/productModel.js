@@ -28,17 +28,11 @@ const productSchema = new mongoose.Schema({
         default: null
     },
 
-    seller: {
+    sellerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Seller',
         required: true
       },
-
-    sellerType: {
-        type: String,
-        enum: ['VTP', 'External Seller'],
-        required: true
-    },
 
     rating:{
         type: Number,

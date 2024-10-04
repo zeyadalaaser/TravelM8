@@ -3,6 +3,11 @@ import bcrypt from 'bcryptjs';
 import validator from "validator";
 
 const tourGuideSchema = new mongoose.Schema({
+  name:{
+    type: String,
+    required:true
+  },
+  
   username: {
     type: String,
     required: true,
@@ -17,7 +22,7 @@ const tourGuideSchema = new mongoose.Schema({
     validate: {
       validator: (email) => validator.isEmail(email), // Using Validator.js
       message: 'Please enter a valid email address.',
-  },
+    },
   },
   password: {
     type: String,
@@ -28,15 +33,19 @@ const tourGuideSchema = new mongoose.Schema({
       return /[a-zA-Z]/.test(value) && /\d/.test(value);
     }
   },
-  mobile: {
+  mobileNumber: {
     type: Number,
   },
   yearsOfExperience: {
     type: Number,
   },
-  previousWork: {
+  previousWork:[ {
     type: String,
-  },
+  }],
+  languages:[ {
+    type: String,
+  }],
+  
 }, 
     { 
     timestamps: true 
