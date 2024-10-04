@@ -1,10 +1,10 @@
 import express from 'express';
 import Guest from './models/Guest.js';
-import Admin from './models/Admin.js';
-import Tourist from './models/Tourist.js';
-import TourGuide from './models/TourGuide.js';
-import Seller from './models/Seller.js';
-import Advertiser from './models/Advertiser.js';
+import Admin from './models/adminModel.js';
+import Tourist from './models/touristModel.js';
+import TourGuide from './models/tourguideModel.js';
+import Seller from './models/sellerModel.js';
+import Advertiser from './models/advertiserModel.js';
 
 const router = express.Router();
 
