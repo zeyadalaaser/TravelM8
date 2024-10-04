@@ -1,10 +1,10 @@
-const Itinerary = require('../models/itineraryModel.js');
-const Activity = require('../models/activityModel.js');
+import Itinerary from '../models/itineraryModel.js';
+import Activity from '../models/activityModel.js';
 
 //const { default: mongoose } = require('mongoose');
 
 //create new itinerary 
-const createItinerary = async (req, res) => {
+export const createItinerary = async (req, res) => {
     try {
         const newItinerary = new Itinerary(req.body); // Create a new instance of the Itinerary model
         await newItinerary.save(); // Save the new itinerary to the database
@@ -17,7 +17,7 @@ const createItinerary = async (req, res) => {
 };
 
 // read/retrieve all itineraries 
-const readItineraries = async (req, res) => {
+export const readItineraries = async (req, res) => {
     try {
         const itineraries = await Itinerary.find().populate('activities'); // Fetch all itineraries and populate activities
         res.status(200).json(itineraries); // Send the list of itineraries in the response
@@ -28,7 +28,7 @@ const readItineraries = async (req, res) => {
 };
 
 // update an itinerary in the database
-const updateItinerary = async (req, res) => {
+export const updateItinerary = async (req, res) => {
     try {
         const { id } = req.params; // Get itinerary ID from URL parameters
         const updatedItinerary = await Itinerary.findByIdAndUpdate(id, req.body, { new: true }); // Update the itinerary
@@ -47,7 +47,7 @@ const updateItinerary = async (req, res) => {
 };
 
 // delete an itinerary from the database
-const deleteItinerary = async (req, res) => {
+export const deleteItinerary = async (req, res) => {
 
     /////////////////////////////////////////////////////////////////////////////////
     ///??????????????????? cannot be deleted if bookings are already made
@@ -70,7 +70,7 @@ const deleteItinerary = async (req, res) => {
     }
 };
 
-const filterItineraries = async (req, res) => {
+export const filterItineraries = async (req, res) => {
     try {
         const { budget, date, preferences, language } = req.query;
 
@@ -121,7 +121,7 @@ const filterItineraries = async (req, res) => {
     }
 };
 
-const searchItems = async (req, res) => {
+export const searchItems = async (req, res) => {
     try {
         const { name, category, tags } = req.query;
 
@@ -155,6 +155,3 @@ const searchItems = async (req, res) => {
         res.status(500).json({ message: 'Error searching for items', error: error.message });
     }
 };
-
-module.exports = { createItinerary, readItineraries, updateItinerary, 
-                    deleteItinerary,filterItineraries, searchItems };
