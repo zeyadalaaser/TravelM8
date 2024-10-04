@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
+import validator from "validator";
 
 const touristSchema = new Schema({
   username: {
@@ -9,15 +10,21 @@ const touristSchema = new Schema({
     required: true,
     unique: true,
     immutable: true,
+    match: /^[a-zA-Z0-9]{3,16}$/,
   },
  
   email: {
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validator: (email) => validator.isEmail(email), // Using Validator.js
+      message: 'Please enter a valid email address.',
+  },
   },
   password: {
     type: String,
+    minlength: 6,
     required: true,
     validate: function(value) {
         // Regular expression to check if the password has at least one letter and one number
@@ -25,7 +32,7 @@ const touristSchema = new Schema({
       }
   },
   mobileNumber: {
-    type: String,
+    type: Number,
     required: true,
     unique:true,
   },

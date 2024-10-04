@@ -12,7 +12,9 @@ import sellerRoute from './routes/sellerRoute.js';
 import tourGuideRoute from "./routes/tourGuideRoute.js";
 import touristRoute from "./routes/touristRoute.js";
 import productRoute from './routes/productRoute.js'; 
+import activityRoute from "./routes/activityRoute.js"
 import historicalPlacesRoute from "./routes/historicalPlacesRoute.js"
+
 
 
 

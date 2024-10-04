@@ -2,11 +2,11 @@ import express from 'express';
 import { createTourist, updateTourist, getTourists } from '../controllers/touristController.js';
 
 
-const router = express.Router();
+const touristRoute = express.Router();
 
 // Define the routes
-router.post('/tourists', createTourist);              // Create a new user with website, hotline, etc.
-router.put('/tourists/:username', updateTourist);        // Update user information by email
-router.get('/tourists', getTourists);                 // Read user by email
+touristRoute.post('/tourists', createTourist);              // Create a new user with website, hotline, etc.
+touristRoute.put('/tourists/:username', updateTourist);        // Update user information by email
+touristRoute.get('/tourists', getTourists);                 // Read user by email
 
-export default router; 
+export default touristRoute; 

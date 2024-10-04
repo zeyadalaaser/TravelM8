@@ -1,17 +1,16 @@
 import TourismGovernor from "../models/tourismGovernorModel.js"; // Ensure the path is correct
 import bcrypt from "bcrypt";
+import { checkUniqueUsername } from "../helpers/signupHelper.js"; 
 
 const registerGovernor = async (req, res) => {
   const { username, password } = req.body;
+  const isNotUnique = await checkUniqueUsername(username);
+
+        if (isNotUnique) {
+            return res.status(400).json({ message: 'Username is already in use.' });
+        }
 
   try {
-    // Check if the username already exists
-    const existingGovernor = await TourismGovernor.findOne({ username });
-    if (existingGovernor) {
-      return res
-        .status(400)
-        .json({ message: "Username already taken for tourists" });
-    }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);

@@ -1,8 +1,14 @@
 import Tourist from '../models/touristModel.js'; 
+import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
 
 export const createTourist = async(req,res) => {
    //add a new Tourist to the database with 
    const {username, email, password, mobileNumber, nationality, dob, occupation} = req.body;
+   const isNotUnique = await checkUniqueUsernameEmail(username, email);
+
+        if (isNotUnique) {
+            return res.status(400).json({ message: 'Username or email is already in use.' });
+        }
    try{
       const tourist = await Tourist.create({username, email, password, mobileNumber, nationality, dob, occupation});
       res.status(200).json(tourist);

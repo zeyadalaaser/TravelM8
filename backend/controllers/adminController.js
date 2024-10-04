@@ -1,20 +1,22 @@
 import Admin from '../models/adminModel.js';
-import Tourist from './models/touristModel.js';
-import TourGuide from './models/tourGuideModel.js';
-import Seller from './models/sellerModel.js';
-import Advertiser from './models/advertiserModel.js';
+import Tourist from '../models/touristModel.js';
+import TourGuide from '../models/tourguideModel.js';
+import Seller from '../models/sellerModel.js';
+import Advertiser from '../models/advertiserModel.js';
 import bcrypt from 'bcrypt';
-
+import { checkUniqueUsername } from "../helpers/signupHelper.js"; 
 
 
 const registerAdmin = async (req, res) => {
   const { username, password } = req.body;
+  const isNotUnique = await checkUniqueUsername(username);
+
+        if (isNotUnique) {
+            return res.status(400).json({ message: 'Username is already in use.' });
+        }
 
   try {
-    const existingUser = await Admin.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: "Username already taken" });
-    }
+    
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new Admin({ username, password: hashedPassword });
