@@ -11,9 +11,9 @@ function createFilterStage(budget, startDate, endDate, upcoming, category) {
     const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
         startDate ? new Date(startDate) : null;
 
-    if (start) filters.date = { $gte: start }; // Filter by startDate or current date for upcoming
+    if (start) filters.date = { $gte: start.toISOString() }; // Filter by startDate or current date for upcoming
 
-    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
+    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate).toISOString() };
 
     if (budget) {
         const [minBudget, maxBudget] = budget.split('-').map(Number);
@@ -59,13 +59,14 @@ function createRatingStage(entityType, includeRatings, minRating) {
         {
             $lookup: {
                 from: "ratings",
-                localField: "_id",  // (in entity) Entity's ID
-                foreignField: "entityId",  // (in rating) Rating's entityId
-                as: "ratings"  // Add the ratings to each activity as an array
+                let: { currentEntityId: "$_id" },  // Pass the entity's _id as currentEntityId
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$entityId", "$$currentEntityId"] } } },  // Match only ratings for the current entity
+                    { $match: { entityType: entityType } },  // Match the entityType inside the lookup
+                    { $unset: ["entityId", "entityType"] }  // Remove entityId and entityType from each rating
+                ],
+                as: "ratings"
             }
-        },
-        {
-            $match: { "ratings.entityType": entityType } // Only keep ratings for activities
         },
         {
             $addFields: {
@@ -74,19 +75,19 @@ function createRatingStage(entityType, includeRatings, minRating) {
             }
         },
         ...(minRating ? [{ $match: { averageRating: { $gte: Number(minRating) } } }] : []),
-        ...(!includeRatings ? [{ $unset: "ratings" }] : [])
+        ...(includeRatings === "false" ? [{ $unset: "ratings" }] : [])
     ];
 }
 
-export async function getActivities({ includeRatings, budget, date, upcoming, category, minRating, sortBy, order }) {
-    const filters = createFilterStage(budget, date, upcoming, category);
+export async function getActivities({ includeRatings, budget, startDate, endDate, upcoming, category, minRating, sortBy, order }) {
+    const filters = createFilterStage(budget, startDate, endDate, upcoming, category);
     const sortStage = createSortStage(sortBy, order);
     const addRatingStage = createRatingStage('Activity', includeRatings, minRating);
 
     const aggregationPipeline = [
         { $match: filters },
         ...addRatingStage,
-        { $sort: sortStage }
+        ...(sortBy ? [{ $sort: sortStage }] : [])
     ];
 
     // Execute the aggregation pipeline

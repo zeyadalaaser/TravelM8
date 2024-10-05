@@ -21,7 +21,8 @@ const activitySchema = new mongoose.Schema({
     },
 
     location: {
-        //google maps
+        type: String,
+        required: true,
     },
     
     price: {
