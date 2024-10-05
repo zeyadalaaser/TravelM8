@@ -78,8 +78,8 @@ function createRatingStage(entityType, includeRatings, minRating) {
     ];
 }
 
-export async function getActivities({ includeRatings, budget, date, upcoming, category, minRating, sortBy, order }) {
-    const filters = createFilterStage(budget, date, upcoming, category);
+export async function getActivities({ includeRatings, budget, startDate, endDate, upcoming, category, minRating, sortBy, order }) {
+    const filters = createFilterStage(budget, startDate, endDate, upcoming, category);
     const sortStage = createSortStage(sortBy, order);
     const addRatingStage = createRatingStage('Activity', includeRatings, minRating);
 
