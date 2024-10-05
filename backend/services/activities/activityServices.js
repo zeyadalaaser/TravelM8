@@ -1,6 +1,6 @@
 import Activity from "../../models/activityModel.js";
 
-function createFilterStage(budget, startDate, endDate, upcoming, category) {
+function createFilterStage(budget, startDate, endDate, upcoming, categoryName) {
     const filters = {};
 
     const now = new Date();
@@ -41,8 +41,8 @@ function createFilterStage(budget, startDate, endDate, upcoming, category) {
         ];
     }
 
-    if (category) {
-        filters.category = category;
+    if (categoryName) {
+        filters.categoryName = categoryName;
     }
 
     return filters;
@@ -50,7 +50,47 @@ function createFilterStage(budget, startDate, endDate, upcoming, category) {
 
 function createSortStage(sortBy, order) {
     const orderValue = order === "desc" ? -1 : 1; // Determine sort order
-    return sortBy ? { [sortBy]: orderValue } : {}; // Return sort stage as an object
+    return sortBy ? [{ $sort: { [sortBy]: orderValue } }] : []; // Return sort stage as an object
+}
+
+function createCategoryStage() {
+    return [
+        {
+            $lookup: {
+                from: "activitycategories",  // Collection to join (e.g., categories)
+                localField: "category",  // Field in activities (category ID)
+                foreignField: "_id",  // Field in categories collection (ID of category)
+                as: "categoryDetails"  // Field to store the populated category details
+            }
+        },
+        {
+            $addFields: {
+                categoryName: { $arrayElemAt: ["$categoryDetails.name", 0] },  // Directly add category name from categoryDetails
+            }
+        },
+        {
+            $unset: "categoryDetails"  // Remove the categoryDetails object if it's no longer needed
+        }
+    ];
+}
+
+function createAdvertiserStage() {
+    return [
+        {
+            $lookup: {
+                from: "advertisers",       // The collection to join with
+                localField: "advertiserId", // Field in the activity collection
+                foreignField: "_id",        // Field in the advertiser collection
+                as: "advertiser"            // Name of the field to store the result
+            }
+        },
+        {
+            $unwind: {
+                path: "$advertiser",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+    ];
 }
 
 // only entityType is a required parameter
@@ -79,17 +119,22 @@ function createRatingStage(entityType, includeRatings, minRating) {
     ];
 }
 
-export async function getActivities({ includeRatings, budget, startDate, endDate, upcoming, category, minRating, sortBy, order }) {
-    const filters = createFilterStage(budget, startDate, endDate, upcoming, category);
+export async function getActivities({ includeRatings, budget, startDate, endDate, upcoming, categoryName, minRating, sortBy, order }) {
+    const categoryStage = createCategoryStage();
+    const filters = createFilterStage(budget, startDate, endDate, upcoming, categoryName);
     const sortStage = createSortStage(sortBy, order);
     const addRatingStage = createRatingStage('Activity', includeRatings, minRating);
+    const advertiserStage = createAdvertiserStage();
 
     const aggregationPipeline = [
+        ...categoryStage,
         { $match: filters },
         ...addRatingStage,
-        ...(sortBy ? [{ $sort: sortStage }] : [])
+        ...sortStage,
+        ...advertiserStage
     ];
 
+    console.log(aggregationPipeline);
     // Execute the aggregation pipeline
     const activities = await Activity.aggregate(aggregationPipeline);
     return activities;
