@@ -3,7 +3,8 @@ import { createItinerary,
     readItineraries, 
     updateItinerary,
     deleteItinerary,
-    filterItineraries }
+    //filterItineraries 
+}
  from "../controllers/itineraryController.js"; 
 
  const router = express.Router();

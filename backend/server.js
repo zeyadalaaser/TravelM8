@@ -15,6 +15,7 @@ import productRoute from './routes/productRoute.js';
 import activityRoute from "./routes/activityRoute.js"
 import historicalPlacesRoute from "./routes/historicalPlacesRoute.js"
 import itineraryRoute from "./routes/itineraryRoute.js";
+import pendingUserRoute from "./routes/pendingUserRoute.js";
 
 
 
@@ -45,6 +46,7 @@ app.use("/api", touristRoute);
 app.use('/api/products',productRoute);
 app.use("/api", historicalPlacesRoute);
 app.use("/api", itineraryRoute);
+app.use("/api", pendingUserRoute);
 
 
 

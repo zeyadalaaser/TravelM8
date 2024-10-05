@@ -6,7 +6,7 @@ const router =expresss.Router();
 // Admin Registration Route
 
 router.post("/admins/register", registerAdmin);
-router.delete("/users/:username", deleteAccount);
+router.delete("/users", deleteAccount);
 
 
 export default router;
