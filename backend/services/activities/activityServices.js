@@ -59,13 +59,13 @@ function createRatingStage(entityType, includeRatings, minRating) {
         {
             $lookup: {
                 from: "ratings",
-                localField: "_id",  // (in entity) Entity's ID
-                foreignField: "entityId",  // (in rating) Rating's entityId
-                as: "ratings"  // Add the ratings to each activity as an array
+                let: { currentEntityId: "$_id" },  // Pass the entity's _id as currentEntityId
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$entityId", "$$currentEntityId"] } } },  // Match only ratings for the current entity
+                    { $match: { entityType: entityType } }  // Match the entityType inside the lookup
+                ],
+                as: "ratings"
             }
-        },
-        {
-            $match: { "ratings.entityType": entityType } // Only keep ratings for activities
         },
         {
             $addFields: {
