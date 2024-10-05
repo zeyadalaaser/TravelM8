@@ -4,6 +4,6 @@ import { createReview } from '../controllers/ratingController.js';
 const router = express.Router();
 
 // Route to create a new review
-router.post('/', createReview);
+router.post('/ratings', createReview);
 
 export default router;

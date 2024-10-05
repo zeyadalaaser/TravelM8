@@ -30,6 +30,7 @@ export const createReview = async (req, res) => {
 
         // Update the average rating for the product
         const averageRating = await calculateAverageRating(entityId);
+        console.log(averageRating);
         await Product.findByIdAndUpdate(entityId, { rating: averageRating });
 
         res.status(201).json(review);
