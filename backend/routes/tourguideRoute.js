@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTourGuide, updateTourGuide, getTourGuides } from '../controllers/tourGuideController.js';
+import { createTourGuide, updateTourGuide, getTourGuides } from '../controllers/tourguideController.js';
 
 
 const router = express.Router();
@@ -8,5 +8,6 @@ const router = express.Router();
 router.post('/tourguides', createTourGuide);              // Create a new user with website, hotline, etc.
 router.put('/tourguides/:username', updateTourGuide);        // Update user information by email
 router.get('/tourguides', getTourGuides);                 // Read user by email
+
 
 export default router; 
