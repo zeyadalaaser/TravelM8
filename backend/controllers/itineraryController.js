@@ -26,11 +26,12 @@ export const readItineraries = async (req, res) => {
         if (upcoming === 'true')
             filters['availableSlots.startTime'] = { $gte: new Date() };
 
-        const itineraries = await Itinerary.find(filters).populate('activities'); // Fetch all itineraries and populate activities
-        res.status(200).json(itineraries); // Send the list of itineraries in the response
+        const itineraries = await Itinerary.find(filters).populate('activities').populate(
+          'historicalSites');  
+        res.status(200).json(itineraries);  
     } catch (error) {
         res.status(500).json({
-             message: 'Error fetching itineraries', error: error.message }); // Send error response if something goes wrong
+             message: 'Error fetching itineraries', error: error.message });   
     }
 };
    //TourGuide only
@@ -66,8 +67,7 @@ export const updateItinerary = async (req, res) => {
             message: 'Error updating itinerary', error: error.message }); // Send error response if something goes wrong
     }
 };
-
-// delete an itinerary from the database
+ 
 export const deleteItinerary = async (req, res) => {
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -75,25 +75,38 @@ export const deleteItinerary = async (req, res) => {
     /////////////////////////////////////////////////////////////////////////////////
 
     try {
-        const { id } = req.params; // Get itinerary ID from URL parameters
-        const deletedItinerary = await Itinerary.findByIdAndDelete(id); // Find the itinerary by ID and delete
+        const { id } = req.params;  
+        const itinerary = await Itinerary.findById(id);
 
-        if (!deletedItinerary) {
-            return res.status(404).json({
-                 message: 'Itinerary not found' }); // Handle case where itinerary is not found
+        if (!itinerary) {
+          return res.status(404).json({ message: 'Itinerary not found' });
         }
+        
+        let hasBookings = false;   
 
-        res.status(200).json({
-             message: 'Itinerary deleted successfully' }); // Send success response
+        for (let i = 0; i < itinerary.availableSlots.length; i++) {
+            if (itinerary.availableSlots[i].numberOfBookings > 0) {
+                hasBookings = true;
+                break;   
+            }
+        }
+        
+        if (hasBookings) {
+            console.log('Itinerary has bookings:', itinerary.availableSlots);
+            return res.status(400).json({ message: 'Cannot delete itinerary with existing bookings' });
+        }
+        const deletedItinerary = await Itinerary.findByIdAndDelete(id);  
+
+        res.status(200).json({message: 'Itinerary deleted successfully' }); 
     } catch (error) {
         res.status(500).json({ 
             message: 'Error deleting itinerary', error: error.message }); // Send error response if something goes wrong
     }
 };
 
-export const filterItineraries = async (req, res) => {
-    try {
-        const { budget, date, preferences, language } = req.query;
+// export const filterItineraries = async (req, res) => {
+//     try {
+//         const { budget, date, preferences, language } = req.query;
 
 //         const fixedPreferences = ['historic', 'beaches', 'family-friendly', 'shopping']; // Fixed array of preferences
 //         const filterCriteria = {};   
@@ -141,45 +154,116 @@ export const filterItineraries = async (req, res) => {
 //         res.status(500).json({ message: 'Error filtering itineraries', error: error.message });
 //     }
 // };
+export const filterItineraries = async (req, res) => {
+  try {
+    const { budget, tags, language, date } = req.query;   
 
-export const searchItems = async (req, res) => {
-    try {
-        // Destructure search parameters from the request query
-        const { name, category, tags } = req.query;
-    
-        // Initialize empty filter objects for each collection
-        const activityFilter = {};
-        const historicalPlacesFilter = {};
-        const itineraryFilter = {};
-    
-        // Name Filtering: Apply to both Activities and Historical Places
-        if (name) {
-          const regexName = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial match
-          activityFilter.name = regexName;
-          historicalPlacesFilter.name = regexName;
-          itineraryFilter.name = regexName;
-        }
-    
-        // Category Filtering: Apply only to Activities
-        if (category) {
-          activityFilter.category = category.toLowerCase();  // Exact match for category
-        }
-    
-        // Tags Filtering: Apply only to Historical Places and activities
-        if (tags) {
-          const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
-          activityFilter.tags = { $in: tagsArray };
-          historicalPlacesFilter.tags = { $in: tagsArray }; // Match any tag in the array
-        }
+    const query = {};
 
-        // Execute the query, populating any referenced fields
-        const items = await Activity.find(filterCriteria)
-            .populate('category') // Populate category reference
-            .populate('tags');    // Populate tags reference
-
-        // Return the filtered results
-        res.status(200).json({ results: items });
-    } catch (error) {
-        res.status(500).json({ message: 'Error searching for items', error: error.message });
+    if (budget) {
+      const budgetArray = budget.split(',').map(Number);  
+      if (budgetArray.length === 2) {  
+          const [min, max] = budgetArray;  
+          query.price = {
+              $or: [
+                  { $lte: min },   
+                  { $gte: min, $lte: max } 
+              ]
+          };
+      }
     }
+
+    // Tags filter (match any itinerary that contains the specified tags)
+    if (tags) {
+      query.tags = { $in: tags.split(',') };  // Split the tags if provided as a comma-separated string
+    }
+
+    if (language) {
+      query.tourLanguage = language;
+    }
+
+     
+    if (date) {
+      const startDate = new Date(date);
+      const endDate = new Date(date);
+      endDate.setHours(23, 59, 59, 999); // Set to end of the day
+
+      query['availableSlots.date'] = {
+        $gte: startDate,  
+        $lte: endDate,    
+      };
+    }
+
+    // Fetch filtered itineraries
+    const itineraries = await Itinerary.find(query)
+      .populate('activities')  
+      .populate('historicalSites')  
+      .populate('tags');   
+     
+
+    res.status(200).json(itineraries);
+  } catch (error) {
+    console.error("Error filtering itineraries:", error);
+    res.status(500).json({ message: "Server error. Could not filter itineraries." });
+  }
 };
+export const searchItems = async (req, res) => {
+  try {
+       
+      const { name, category, tags } = req.query;
+   
+      const activityFilter = {};
+      const historicalPlacesFilter = {};
+      const itineraryFilter = {};
+  
+      // Name Filtering: Apply to both Activities and Historical Places
+      if (name) {
+        const regexName = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial match
+        activityFilter.name = regexName;
+        historicalPlacesFilter.name = regexName;
+        itineraryFilter.name = regexName;
+      }
+  
+      // Category Filtering: Apply only to Activities
+      if (category) {
+        activityFilter.category = category.toLowerCase();    
+      }
+  
+      // Tags Filtering: Apply only to Historical Places and activities
+      if (tags) {
+        const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
+        activityFilter.tags = { $in: tagsArray };
+        historicalPlacesFilter.tags = { $in: tagsArray }; // Match any tag in the array
+      }
+  
+      // Perform searches for each collection
+      const activities = await Activity.find(activityFilter);
+      const historicalPlace = await historicalPlaces.find(historicalPlacesFilter);
+      const itineraries = await Itinerary.find(itineraryFilter).populate('activities').populate(
+          'historicalSites');
+  
+      const results = { activities, historicalPlace, itineraries }; // Combine results from both collections
+  
+      // If no results found, send a 404 response
+      if (activities.length === 0 && historicalPlaces.length === 0 && itineraries.length==0) {
+        return res.status(404).json({
+          success: false,
+          message: 'No matching results found for the given criteria',
+        });
+      }
+  
+      // Return the combined results
+      res.status(200).json({
+        success: true,
+        message: 'Results fetched successfully',
+        results,
+      });
+    } catch (error) {
+      // Handle any server errors
+      res.status(500).json({
+        success: false,
+        message: 'Error occurred while searching',
+        error: error.message,
+      });
+    }
+  };

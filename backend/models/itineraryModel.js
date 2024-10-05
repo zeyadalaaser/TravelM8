@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import Activity from './activityModel.js';
-import Place from './historicalPlacesModel.js';
+import HistoricalPlaces from './historicalPlacesModel.js';
 import TourGuide from './tourguideModel.js'
-import PrefernceTags from './preferenceTagModel.js'
+import PrefernceTag from './preferenceTagModel.js'
 
 const itineraySchema = new mongoose.Schema({
     
@@ -27,7 +27,7 @@ const itineraySchema = new mongoose.Schema({
     historicalSites: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Place',
+            ref: 'HistoricalPlaces',
             required: true
         }
     ],    
@@ -61,7 +61,7 @@ const itineraySchema = new mongoose.Schema({
                     referenceModel: {
                         type: String,
                         required: true,
-                        enum: ['Activity', 'Place'], // Specify the models that can be referenced
+                        enum: ['Activity', 'HistoricalPlaces'], // Specify the models that can be referenced
                     },
                     event: {
                         type: mongoose.Schema.Types.ObjectId,
@@ -104,7 +104,7 @@ const itineraySchema = new mongoose.Schema({
 
     tags: [{
         type: mongoose.Schema.Types.ObjectId, // Fixed preferences as an array of strings
-        ref:'PrefernceTags',   // SHould refrence tagsModel
+        ref:'PrefernceTag',   // SHould refrence tagsModel
         required: true,
     }],
 
