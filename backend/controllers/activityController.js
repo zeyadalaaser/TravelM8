@@ -56,24 +56,14 @@ const getAllActivities = async (req, res) => {
     res.status(200).json(await getActivities(req.query, {}));
 }
 
-// export const readActivities=async(req,res)=>{
-//     try {
-//         const activities= await activityModel.find().populate('advertiserId','username');
-        
-//         res.status(200).json(activities);
-         
-
-//     } catch (error) {
-//         console.error("Error fetching activities:", error);
-//       res.status(500).json({ message: "Internal server error" });
-//     }
-// };
-
 const getActivityById = async(req,res) => {
     const activityId = req.params.id;
     if (mongoose.Types.ObjectId.isValid(activityId)) {
         try {
-            const activity = await activityModel.findById(activityId).populate('advertiserId','username');
+            const activity = await activityModel.findById(activityId)
+                .populate('advertiserId','username')
+                .populate('category','name')
+                .populate('tags','name');
             if (activity.length == 0)
                 res.status(204);
             else
@@ -98,7 +88,11 @@ const updateActivity = async (req, res) => {
                 activityId,
                 { $set: updateFields },
                 { new: true, runValidators: true } // Return updated user and apply validation
-            ).populate('advertiserId','username');
+            ).populate('advertiserId','username')
+            .populate('category','name')
+            .populate('tags','name');
+
+        if (activity.length == 0)
             res.status(200).json({ message: "successfully updated the activity", newActivity });
 
         } catch (error) {
@@ -112,9 +106,14 @@ const updateActivity = async (req, res) => {
 //advertiser only
 const getMyActivities = async (req, res) => {
     const { advertiserId } = req.body; // logic of "my"
+    console.log(advertiserId);
     if (mongoose.Types.ObjectId.isValid(advertiserId)) {
         try{
-            const activities = await activityModel.find({ advertiserId}).populate('advertiserId','username');
+            const activities = await activityModel.find({ advertiserId: advertiserId})
+                .populate('advertiserId','username')
+                .populate('category','name')
+                .populate('tags','name');
+            
             res.status(200).json({ activities });
         }catch(error){
             res.status(406).json({ message: error.message });
@@ -128,7 +127,11 @@ const deleteActivity = async (req, res) => {
     const activityId = req.params.id;
     if (mongoose.Types.ObjectId.isValid(activityId)) {
         try {
-            const activityDeleted = await activityModel.findByIdAndDelete(activityId).populate('advertiserId','username');
+            const activityDeleted = await activityModel.findByIdAndDelete(activityId)
+            .populate('advertiserId','username')
+            .populate('category','name')
+            .populate('tags','name');
+        if (activity.length == 0)
             res.status(200).json({ message: "Activity successfully deleted", activityDeleted});
         } catch (error) {
             res.status(400).json({ message: "unseuccessful deletion of activity" });

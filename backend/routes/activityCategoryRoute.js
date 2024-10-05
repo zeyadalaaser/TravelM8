@@ -13,6 +13,6 @@ router.post("/activity-categories", createActivityCategory);
 router.get("/activity-categories", getAllActivityCategories);
 router.put("/activity-categories", updateActivityCategory); // if we're updating by name
 // router.delete("/activity-categories/:id", deleteActivityCategory);
-router.delete("/activity-categories", deleteActivityCategory);
+router.delete("/activity-categories/:name", deleteActivityCategory);
 
 export default router;
