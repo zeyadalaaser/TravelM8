@@ -55,8 +55,19 @@ const createNewActivity = async (req, res) => {
 const getAllActivities = async (req, res) => {
     res.status(200).json(await getActivities(req.query, {}));
 }
+export const readActivities=async(req,res)=>{
+    try {
+        const activities= await activityModel.find();
+        
+        res.status(200).json(activities);
+         
 
-const getActivityById = async (req, res) => {
+    } catch (error) {
+        console.error("Error fetching activities:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+};
+const getActivityById = async(req,res) => {
     const activityId = req.params.id;
     if (mongoose.Types.ObjectId.isValid(activityId)) {
         try {

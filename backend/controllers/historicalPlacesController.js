@@ -48,7 +48,7 @@ export const getAllHistoricalPlaces= async(req,res)=>{
          
 
     } catch (error) {
-        console.error("Error fetching activity categories:", error);
+        console.error("Error fetching historical places:", error);
       res.status(500).json({ message: "Internal server error" });
     }
 };
