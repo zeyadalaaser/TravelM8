@@ -104,9 +104,9 @@ export const deleteItinerary = async (req, res) => {
     }
 };
 
-// export const filterItineraries = async (req, res) => {
-//     try {
-//         const { budget, date, preferences, language } = req.query;
+//export const filterItineraries = async (req, res) => {
+    // try {
+        // const { budget, date, preferences, language } = req.query;
 
 //         const fixedPreferences = ['historic', 'beaches', 'family-friendly', 'shopping']; // Fixed array of preferences
 //         const filterCriteria = {};   
