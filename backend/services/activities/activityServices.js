@@ -86,7 +86,7 @@ export async function getActivities({ includeRatings, budget, date, upcoming, ca
     const aggregationPipeline = [
         { $match: filters },
         ...addRatingStage,
-        { $sort: sortStage }
+        ...(sortBy ? [{ $sort: sortStage }] : [])
     ];
 
     // Execute the aggregation pipeline
