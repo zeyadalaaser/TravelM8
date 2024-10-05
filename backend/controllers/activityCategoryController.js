@@ -44,7 +44,6 @@ export const updateActivityCategory = async (req, res) => {
   }
 };
 
-
 // Delete an activity category by name
 // export const deleteActivityCategory = async (req, res) => {
 //   const { name } = req.body; // Get the name of the category to delete from the request body
@@ -64,25 +63,21 @@ export const updateActivityCategory = async (req, res) => {
 // export const updateActivityCategory = async (req, res) => {
 //   const { id } = req.params; // Get the category ID from the request parameters
 //   const { newName } = req.body; // Expect the new name from the request body
-
 //   try {
 //     const updatedCategory = await ActivityCategory.findByIdAndUpdate(
 //       id, // Find by ID
 //       { name: newName }, // Update to the new name
 //       { new: true } // Return the updated document
 //     );
-
 //     if (!updatedCategory) {
 //       return res.status(404).json({ message: "Category not found" });
 //     }
-    
 //     res.status(200).json(updatedCategory);
 //   } catch (error) {
 //     console.error("Error updating activity category:", error);
 //     res.status(500).json({ message: "Internal server error" });
 //   }
 // };
-
 
 //delete using id
 export const deleteActivityCategory = async (req, res) => {

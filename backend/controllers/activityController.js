@@ -1,7 +1,6 @@
 import activityModel from "../models/activityModel.js";
 import mongoose from "mongoose";
 import { getActivities } from "../services/activities/activityServices.js";
-import Activity from "../models/activityModel.js";
 
 const createNewActivity = async (req, res) => {
 
@@ -82,7 +81,7 @@ const updateActivity = async (req, res) => {
         const updateFields = Object.fromEntries(
             Object.entries(req.body).filter(([key, value]) => value != null));
         try {
-            const newActivity = await Activity.findByIdAndUpdate(
+            const newActivity = await activityModel.findByIdAndUpdate(
                 activityId,
                 { $set: updateFields },
                 { new: true, runValidators: true } // Return updated user and apply validation
@@ -99,15 +98,16 @@ const updateActivity = async (req, res) => {
 
 //advertiser only
 const getMyActivities = async (req, res) => {
-    let activities;
-    if (user.type === "advertiser") {
-        activities = await activityModel.find({ advertiserId: user.id });
-        if (activity.length == 0)
-            res.status(204);
-        else
-            res.status(200).json({ activity });
+    const { advertiserId } = req.body; // logic of "my"
+    if (mongoose.Types.ObjectId.isValid(advertiserId)) {
+        try{
+            const activities = await activityModel.find({ advertiserId});
+            res.status(200).json({ activities });
+        }catch(error){
+            res.status(406).json({ message: error.message });
+        }
     } else {
-        res.status(400).json({ message: "enter a valid id" });
+        res.status(408).json({ message: "enter a valid id" });
     }
 }
 

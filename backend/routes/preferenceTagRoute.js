@@ -10,8 +10,9 @@ const router = expresss.Router();
 
 router.post("/preference-tags", createPreferenceTag);
 router.get("/preference-tags", getAllPreferenceTags);
-router.put("/preference-tags/:id", updatePreferenceTag);
-router.delete("/preference-tags/:id", deletePreferenceTag);
+router.put("/preference-tags", updatePreferenceTag);
+// router.delete("/preference-tags/:id", deletePreferenceTag);
+router.delete("/preference-tags", deletePreferenceTag);
 
 
 
