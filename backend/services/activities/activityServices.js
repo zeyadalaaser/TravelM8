@@ -11,9 +11,9 @@ function createFilterStage(budget, startDate, endDate, upcoming, category) {
     const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
         startDate ? new Date(startDate) : null;
 
-    if (start) filters.date = { $gte: start }; // Filter by startDate or current date for upcoming
+    if (start) filters.date = { $gte: start.toISOString() }; // Filter by startDate or current date for upcoming
 
-    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
+    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate).toISOString() };
 
     if (budget) {
         const [minBudget, maxBudget] = budget.split('-').map(Number);
@@ -62,7 +62,8 @@ function createRatingStage(entityType, includeRatings, minRating) {
                 let: { currentEntityId: "$_id" },  // Pass the entity's _id as currentEntityId
                 pipeline: [
                     { $match: { $expr: { $eq: ["$entityId", "$$currentEntityId"] } } },  // Match only ratings for the current entity
-                    { $match: { entityType: entityType } }  // Match the entityType inside the lookup
+                    { $match: { entityType: entityType } },  // Match the entityType inside the lookup
+                    { $unset: ["entityId", "entityType"] }  // Remove entityId and entityType from each rating
                 ],
                 as: "ratings"
             }
@@ -74,7 +75,7 @@ function createRatingStage(entityType, includeRatings, minRating) {
             }
         },
         ...(minRating ? [{ $match: { averageRating: { $gte: Number(minRating) } } }] : []),
-        ...(!includeRatings ? [{ $unset: "ratings" }] : [])
+        ...(includeRatings === "false" ? [{ $unset: "ratings" }] : [])
     ];
 }
 
