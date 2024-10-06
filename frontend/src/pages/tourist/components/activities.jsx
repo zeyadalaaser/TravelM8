@@ -19,11 +19,8 @@ export function Attractions({ attractions }) {
                         <p className="text-sm text-gray-600 mb-2">{attraction.description}</p>
                         <div className="flex items-center text-sm text-gray-600 mb-2">
                             <Clock className="w-4 h-4 mr-1" />
-                            {attraction.date}
+                            {attraction.date.slice(0, 10)}
                         </div>
-                        {attraction.cancellation && (
-                            <div className="text-sm text-green-600 mb-2">{attraction.cancellation}</div>
-                        )}
                         <div className="text-xl font-bold">
                             {Array.isArray(attraction.price) && attraction.price.length === 2
                                 ? `from $${attraction.price[0]}`

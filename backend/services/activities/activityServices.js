@@ -11,9 +11,9 @@ function createFilterStage(budget, startDate, endDate, upcoming, categoryName) {
     const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
         startDate ? new Date(startDate) : null;
 
-    if (start) filters.date = { $gte: start.toISOString() }; // Filter by startDate or current date for upcoming
+    if (start) filters.date = { $gte: start }; // Filter by startDate or current date for upcoming
 
-    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate).toISOString() };
+    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
     if (budget) {
         const [minBudget, maxBudget] = budget.split('-').map(Number);

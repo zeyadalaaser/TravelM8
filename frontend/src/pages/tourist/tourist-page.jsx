@@ -23,7 +23,6 @@ export default function TouristPage() {
         const fetchActivities = async () => {
           const fetchedActivities = await getActivities(location.search);
           setActivities(fetchedActivities);
-          console.log(fetchedActivities);
         };
     
         fetchActivities();
