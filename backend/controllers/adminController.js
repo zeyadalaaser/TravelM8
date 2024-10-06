@@ -118,4 +118,12 @@ export const getUsers = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Error fetching users" });
     }
+
+export const getAllAdmins => = async (req, res) => {
+  try{
+    const allAdmins = await Admin.find({});
+    res.status(200).json(allAdmins);
+  }catch(error){
+    res.status(500).send("Server error");
+  
 };
