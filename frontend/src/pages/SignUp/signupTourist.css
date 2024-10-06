@@ -42,9 +42,19 @@ html, body {
   gap: 20px; /* Space between grid items */
 }
 
+.registration-form textarea {
+  height: 80px; /* Adjust as needed for multi-line textboxes */
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
+  
 }
 
 .form-group label {

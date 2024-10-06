@@ -5,6 +5,7 @@ import axios from 'axios'; // Import Axios
 
 export default function TouristRegistration() {
   const [formData, setFormData] = useState({
+    name:'',
     username: '',
     email: '',
     password: '',
@@ -101,6 +102,29 @@ export default function TouristRegistration() {
     );
   }
 
+  const nationalities = [
+    "Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguan", "Argentine", "Armenian", "Australian", 
+    "Austrian", "Azerbaijani", "Bahamian", "Bahraini", "Bangladeshi", "Barbadian", "Belarusian", "Belgian", "Belizean", 
+    "Beninese", "Bhutanese", "Bolivian", "Bosnian", "Botswanan", "Brazilian", "British", "Bruneian", "Bulgarian", "Burkinabé", 
+    "Burmese", "Burundian", "Cabo Verdean", "Cambodian", "Cameroonian", "Canadian", "Central African", "Chadian", "Chilean", 
+    "Chinese", "Colombian", "Comoran", "Congolese", "Costa Rican", "Croatian", "Cuban", "Cypriot", "Czech", "Danish", 
+    "Djiboutian", "Dominican", "Dutch", "East Timorese", "Ecuadorean", "Egyptian", "Emirati", "Equatorial Guinean", "Eritrean", 
+    "Estonian", "Ethiopian", "Fijian", "Filipino", "Finnish", "French", "Gabonese", "Gambian", "Georgian", "German", 
+    "Ghanaian", "Greek", "Grenadian", "Guatemalan", "Guinea-Bissauan", "Guinean", "Guyanese", "Haitian", "Honduran", "Hungarian", 
+    "Icelander", "Indian", "Indonesian", "Iranian", "Iraqi", "Irish", "Israeli", "Italian", "Ivorian", "Jamaican", "Japanese", 
+    "Jordanian", "Kazakhstani", "Kenyan", "Kittian and Nevisian", "Kuwaiti", "Kyrgyz", "Laotian", "Latvian", "Lebanese", 
+    "Liberian", "Libyan", "Liechtensteiner", "Lithuanian", "Luxembourger", "Macedonian", "Malagasy", "Malawian", "Malaysian", 
+    "Maldivian", "Malian", "Maltese", "Marshallese", "Mauritanian", "Mauritian", "Mexican", "Micronesian", "Moldovan", "Monacan", 
+    "Mongolian", "Moroccan", "Mozambican", "Namibian", "Nauruan", "Nepalese", "New Zealander", "Nicaraguan", "Nigerian", "Nigerien", 
+    "North Korean", "Norwegian", "Omani", "Pakistani", "Palauan", "Panamanian", "Papua New Guinean", "Paraguayan", "Peruvian", 
+    "Polish", "Portuguese", "Qatari", "Romanian", "Russian", "Rwandan", "Saint Lucian", "Salvadoran", "Samoan", "San Marinese", 
+    "Sao Tomean", "Saudi", "Senegalese", "Serbian", "Seychellois", "Sierra Leonean", "Singaporean", "Slovakian", "Slovenian", 
+    "Solomon Islander", "Somali", "South African", "South Korean", "Spanish", "Sri Lankan", "Sudanese", "Surinamer", "Swazi", 
+    "Swedish", "Swiss", "Syrian", "Taiwanese", "Tajik", "Tanzanian", "Thai", "Togolese", "Tongan", "Trinidadian or Tobagonian", 
+    "Tunisian", "Turkish", "Tuvaluan", "Ugandan", "Ukrainian", "Uruguayan", "Uzbek", "Vanuatuan", "Venezuelan", "Vietnamese", 
+    "Yemeni", "Zambian", "Zimbabwean"
+  ];
+
   return (
     <><div
           className="background-image"
@@ -125,7 +149,21 @@ export default function TouristRegistration() {
       Join to unlock the best of TravelM8</h2>
               {errors.submit && <div className="error">{errors.submit}</div>} {/* Display error messages here */}
               <form onSubmit={handleSubmit} className="registration-form">
-                  {['email', 'username', 'password','nationality'].map((field, index) => (
+
+
+              <div className="form-group">
+                            <label htmlFor="name" >Full Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder= "Enter your Name"
+                                required />
+                        </div>
+
+                  {['email', 'username', 'password'].map((field, index) => (
                       <div key={index} className="form-group">
                           <label htmlFor={field}> {field.charAt(0).toUpperCase() + field.slice(1)}</label>
                           <input
@@ -134,11 +172,15 @@ export default function TouristRegistration() {
                               name={field}
                               value={formData[field]}
                               onChange={handleChange}
-                              required />
+                              required
+                              placeholder= {`Enter your ${field}`} />
                           {errors[field] && <span className="error">{errors[field]}</span>}
                       </div>
                       
                   ))}
+
+
+                  
 
                     <div className="form-group">
                           <label htmlFor="dob" >Date Of Birth</label>
@@ -159,8 +201,28 @@ export default function TouristRegistration() {
                               name="mobileNumber"
                               value={formData.mobileNumber}
                               onChange={handleChange}
+                              placeholder= "Enter your Mobile Number"
                               required />
                       </div>
+
+
+                      <div className="form-group">
+                      <label htmlFor="nationality">Nationality</label>
+                      <select
+                        id="nationality"
+                        name="nationality"
+                        value={formData.nationality}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select your nationality</option>
+                        {nationalities.map((nationality, index) => (
+                          <option key={index} value={nationality}>
+                            {nationality}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
                   <div className="form-group">
                       <label htmlFor="occupation">Occupation</label>
@@ -187,4 +249,7 @@ export default function TouristRegistration() {
           </div></><Footer /></></> 
 
   );
+
 }
+
+
