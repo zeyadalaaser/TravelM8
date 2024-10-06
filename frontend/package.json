@@ -10,7 +10,6 @@
     "preview": "vite preview",
     "start": "vite"
   },
-
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.2",
