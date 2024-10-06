@@ -1,11 +1,23 @@
 import useRouter from '@/hooks/useRouter'; 
+import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function SortSelection() {
 
     const { searchParams, navigate, location } = useRouter();
+    const [selected, setSelected] = useState('featured-?');
+
+    useEffect(() => {
+        const sortBy = searchParams.get('sortBy');
+        const order = searchParams.get('order');
+
+        if (sortBy)
+            setSelected(`${sortBy}-${order}`);
+
+    }, [searchParams]);
 
     const handleSort = (value) => {
+        setSelected(value);
         const [sortBy, order] = value.split('-');
 
         if (sortBy === 'featured') {
@@ -20,7 +32,7 @@ export function SortSelection() {
         navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
     };
 
-    return <Select defaultValue="featured-?" onValueChange={handleSort}>
+    return <Select value={selected} onValueChange={handleSort}>
         <SelectTrigger className="w-[180px] !ring-0">
             <SelectValue placeholder="Sort by" />
         </SelectTrigger>

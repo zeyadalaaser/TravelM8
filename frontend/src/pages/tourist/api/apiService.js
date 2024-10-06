@@ -7,5 +7,5 @@ const apiClient = axios.create({
 });
 
 export async function getActivities(query) {
-    return await apiClient.get('activities' + query);
+    return (await apiClient.get('activities' + query)).data;
 }
