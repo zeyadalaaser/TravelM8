@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './signupTourist.css';
-import backgroundImage from './assets/background.jpeg';
+import backgroundImage from '/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/assets/backgroundtourist.jpg';
 import axios from 'axios'; // Import Axios
 
 export default function TouristRegistration() {
@@ -105,24 +105,29 @@ export default function TouristRegistration() {
     <><div
           className="background-image"
           style={{ backgroundImage: `url(${backgroundImage})` }} // Set the background image source here
-      ></div><><><nav className="navbar">
-          <div className="navbar-left">
-              <img src="./src/assets/logo4.jpg" alt="TravelM8" className="logo" />
-          </div>
-          <div className="navbar-right">
-              <button className="nav-button">Home</button>
-              <button className="nav-button">About Us</button>
-              <button className="nav-button">Our Services</button>
-              <button className="nav-button">Contact Us</button>
-              <button className="nav-login-button">Login</button>
-          </div>
-      </nav><div className="registration-container">
-              <h2>Tourist Registration</h2>
+      ></div><>
+      <><nav className="navbar">
+      <div className="navbar-container">
+        <div className="navbar-left">
+          <img src="./src/assets/logo4.jpg" alt="TravelM8" className="logo" />
+        </div>
+        <div className="navbar-right">
+          <button className="nav-button">Home</button>
+          <button className="nav-button">About Us</button>
+          <button className="nav-button">Our Services</button>
+          <button className="nav-button">Contact Us</button>
+          <button className="nav-login-button">Login</button>
+        </div>
+      </div>
+    </nav>
+      <div className="registration-container">
+      <h2 className="form-title">
+      Join to unlock the best of TravelM8</h2>
               {errors.submit && <div className="error">{errors.submit}</div>} {/* Display error messages here */}
               <form onSubmit={handleSubmit} className="registration-form">
-                  {['email', 'username', 'password', 'mobileNumber', 'nationality', 'dob'].map((field, index) => (
+                  {['email', 'username', 'password','nationality'].map((field, index) => (
                       <div key={index} className="form-group">
-                          <label htmlFor={field}>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+                          <label htmlFor={field}> {field.charAt(0).toUpperCase() + field.slice(1)}</label>
                           <input
                               type={field === 'dob' ? 'date' : field === 'password' ? 'password' : 'text'}
                               id={field}
@@ -132,10 +137,33 @@ export default function TouristRegistration() {
                               required />
                           {errors[field] && <span className="error">{errors[field]}</span>}
                       </div>
+                      
                   ))}
 
+                    <div className="form-group">
+                          <label htmlFor="dob" >Date Of Birth</label>
+                          <input
+                              type="date"
+                              id="dob"
+                              name="dob"
+                              value={formData.dob}
+                              onChange={handleChange}
+                              required />
+                      </div>
+
+                      <div className="form-group">
+                          <label htmlFor="mobileNumber" >Mobile Number</label>
+                          <input
+                              type="text"
+                              id="mobileNumber"
+                              name="mobileNumber"
+                              value={formData.mobileNumber}
+                              onChange={handleChange}
+                              required />
+                      </div>
+
                   <div className="form-group">
-                      <label htmlFor="occupation">Occupation:</label>
+                      <label htmlFor="occupation">Occupation</label>
                       <select
                           id="occupation"
                           name="occupation"
@@ -153,6 +181,9 @@ export default function TouristRegistration() {
                   <button type="submit" className="submit-btn">Register</button>
               </form>
               {message && <div className="message">{message}</div>} {/* Display success or failure message */}
+              <p className="already-registered">
+                    Already registered? <a href="/signin" className="signin-link">Sign in here</a>
+                </p>
           </div></><Footer /></></> 
 
   );
