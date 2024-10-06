@@ -43,7 +43,7 @@ const touristSchema = new Schema({
    },
 
   mobileNumber: {
-    type: Number,
+    type: String,
     required: true,
      
   },

@@ -36,7 +36,7 @@ const tourGuideSchema = new mongoose.Schema({
   role: { type: String, default: 'TourGuide' },
 
   mobileNumber: {
-    type: Number,
+    type: String,
   },
   yearsOfExperience: {
     type: Number,
