@@ -10,7 +10,7 @@ const Admin = () => {
   const registerUser = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("/api/admin/register", {
+      const response = await axios.post("/api/admins/register", {
         username,
         password,
       });
@@ -23,7 +23,8 @@ const Admin = () => {
 
   const fetchAdmins = async () => {
     try {
-      const response = await axios.get("/api/admin");
+      const response = await axios.get("/api/admins");
+      console.log(response);
       setAdmins(response.data);
     } catch (error) {
       console.error("Error fetching admins:", error);

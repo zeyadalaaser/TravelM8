@@ -10,7 +10,6 @@ import FormPage from '@/pages/SignUp/signupTourguide.jsx';
 import FormPageSeller from '@/pages/SignUp/signupSeller.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
-import TouristPage from './pages/tourist/tourist-page.jsx'
 //import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx"
 //import "./styles/main.css";
 import ActivityCategories from "./services/ActivityCategories"; // Ensure this path is correct
@@ -26,7 +25,6 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
-        <Route path="/sign-up-tourist" element={<SignUpForm/>} />
         <Route path="/tourist" element={<TouristPage/>} />
         <Route path="/deleteUser" element={<DeleteUser/>} />
         <Route path="/preferenceTag" element={<PreferenceTag/>} />
