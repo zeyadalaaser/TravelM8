@@ -4,7 +4,7 @@ import { createItinerary,
     updateItinerary,
     deleteItinerary,
     filterItineraries ,
-    getMyItineraries
+    getMyItineraries,searchItems2
 }
  from "../controllers/itineraryController.js"; 
 
@@ -15,7 +15,8 @@ import { createItinerary,
  router.put("/itineraries/:id", updateItinerary); // Update an itinerary by ID
  router.delete("/itineraries/:id", deleteItinerary); // Delete an itinerary by ID
  router.get("/myItineraries", getMyItineraries); // Retrieve my itineraries
- router.get("/Filteritineraries",filterItineraries);
+ router.get("/FilterItineraries",filterItineraries);
+ router.get("/searchItineraries",searchItems2);
  //router.filter("/itineraries/:id",filterItineraries);
 
  export default router;

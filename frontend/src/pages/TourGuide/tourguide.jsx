@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-//import "/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/pages/TourGuide/profileTemplate.css";
-import "./profileTemplate.css";
+import "@/pages/TourGuide/profileTemplate.jsx";
+
 
 
 const Mytourguide = () => {
@@ -15,6 +15,9 @@ const Mytourguide = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const [message, setMessage] = useState(''); 
+    const [messageType, setMessageType] = useState('');  
+
     try {
       // Send PUT request to update user data by username
       const response = await axios.put(`http://localhost:5001/api/tourguides/${username}`, {
@@ -24,11 +27,11 @@ const Mytourguide = () => {
         mobileNumber,
         previousWork
       });
-      console.log('Response:', response.data);
-      alert('User information updated successfully!');
+      setMessage('User created successfully!');
+      setMessageType('success');  
     } catch (error) {
-      console.error('Error updating data:', error);
-      alert('Failed to update user information.');
+      setMessage('Error during signup. Please try again.');
+      setMessageType('error');  
     }
   };
 

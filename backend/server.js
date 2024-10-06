@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from "path";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
+import cors from "cors";///////////////////////////////
 
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
@@ -22,13 +23,13 @@ import loginRoute from "./routes/loginRoute.js";
 
 
 
-
 dotenv.config({path:'../.env'});
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
 const __dirname = path.resolve();
+
 
 
 app.use(cors({
@@ -38,6 +39,7 @@ app.use(cors({
 }));
 
 app.options('*', cors()); 
+
 
 
 
@@ -58,31 +60,10 @@ app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
 app.use('/api/auth', loginRoute);
 
+
 app.listen(PORT, () => {
   connectDB();
   console.log("Server started at http://localhost:" + PORT);
 });
 
-//app.use(cors({ origin: 'http://localhost:5173' })); 
 
-
-// app.use(express.static("frontend/public")); // Serve static files from the public directory inside frontend
-
-// Serve HTML pages from the public folder
-// app.get("/user", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/public/user.html")); // Landing page
-// });
-
-// app.get("/admin", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/public/index.html")); // Admin registration page
-// });
-
-// app.get("/tourist", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/public/index2.html")); // Tourist registration page
-// });
-
-// // New Route for Activity Categories
-// app.get("/activityCategory", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/public/activities.html")); // Serve the activity categories HTML page
-// });
-// =======

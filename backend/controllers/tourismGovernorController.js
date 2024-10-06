@@ -21,11 +21,22 @@ const registerGovernor = async (req, res) => {
     });
     await newTourismGovernor.save();
 
-    res.status(201).json({ message: "Tourist registered successfully" });
+    res.status(201).json({ message: "Tourism Governor registered successfully" });
   } catch (error) {
     console.error("Tourist registration error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-export {registerGovernor};
+
+const fetchTourismGovernors = async (req, res) => {
+  try {
+    const governors = await TourismGovernor.find({}, "username");
+    res.status(200).json(governors);
+  } catch (error) {
+    console.error("Error fetching tourism governors:", error);
+    res.status(500).json({ message: "Error fetching tourism governors." });
+  }
+};
+
+export {registerGovernor, fetchTourismGovernors};

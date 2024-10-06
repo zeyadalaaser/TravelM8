@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './profileTemplate.css';
 import { Search, Menu, User, Heart, ShoppingCart } from 'lucide-react';
-import ItineraryManager from '../../itinerary';
+import ItineraryManager from '@/pages/TourGuide/itinerary.jsx';
 import Mytourguide from './tourguide';
+import axios from 'axios';
+
 const ProfileTemplate = () => {
 
 
@@ -15,43 +17,42 @@ const ProfileTemplate = () => {
     previousWork: ''
   });
 
-  
+  const [message, setMessage] = useState(''); 
+  const [messageType, setMessageType] = useState('');  
 
   const [notifications, setNotifications] = useState([]);
   const [activeTab, setActiveTab] = useState('profile');
 
-  useEffect(() => {
-    // Simulating fetching profile data
-    setProfile({
-      username: 'JohnDoe',
-      email: 'john@example.com',
-      password: '********',
-      yearsOfExperience: 5,
-      mobileNumber: '1234567890',
-      previousWork: 'Software Developer at XYZ Corp'
-    });
-
-    // Simulating fetching itineraries
-  
-
-    // Simulating fetching notifications
-    setNotifications([
-      { id: 1, message: 'New event in your area!', date: '2023-10-10' }
-    ]);
-  }, []);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleProfileSubmit = (e) => {
-    e.preventDefault();
-    console.log('Updated Profile:', profile);
-    // Here you would typically send the updated profile to your backend
+  const handleProfileSubmit = async (event) => {
+    event.preventDefault();
+    
+    // Create an object that will store only the changed fields
+    const updatedFields = {};
+    
+    // Check each field to see if it has changed, and if so, add it to updatedFields
+    if (profile.email !== "") updatedFields.email = profile.email;
+    if (profile.password !== "") updatedFields.password = profile.password;
+    if (profile.yearsOfExperience !== 0) updatedFields.yearsOfExperience = profile.yearsOfExperience;
+    if (profile.mobileNumber !== "") updatedFields.mobileNumber = profile.mobileNumber;
+    if (profile.previousWork !== "") updatedFields.previousWork = profile.previousWork;
+  
+    try {
+      // Send only the updated fields in the PUT request
+      const response = await axios.put(`http://localhost:5001/api/tourguides/${profile.username}`, updatedFields);
+  
+      setMessage('Profile updated successfully');
+      setMessageType('success');
+    } catch (error) {
+      setMessage('Error updating profile. Please try again.');
+      setMessageType('error');
+    }
   };
-
-
 
   const deleteNotification = (id) => {
     setNotifications(prev => prev.filter(notification => notification.id !== id));
@@ -104,7 +105,7 @@ const ProfileTemplate = () => {
     setCurrentItinerary(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleItinerarySubmit = (e) => {
     e.preventDefault();
     if (isEditing) {
       setItineraries(prev => prev.map(item => item.id === currentItinerary.id ? currentItinerary : item));
@@ -175,29 +176,40 @@ const ProfileTemplate = () => {
               {activeTab === 'profile' && (
                   <div className="profile-section">
                       <h2>Profile</h2>
+                      {message && (
+                    <div className={messageType === 'success' ? 'success-message' : 'error-message'}>
+                        {message}
+                    </div>
+                )}
                       <form onSubmit={handleProfileSubmit}>
-                          <label htmlFor="username">Username</label>
-                          <input type="text" name="username" value={profile.username} onChange={handleProfileChange} placeholder="Username" />
-                          <label htmlFor="email">Email</label>
-                          <input type="email" name="email" value={profile.email} onChange={handleProfileChange} placeholder="Email" />
-                          <label htmlFor="password">Password</label>
-                          <input type="password" name="password" value={profile.password} onChange={handleProfileChange} placeholder="Password" />
-                          <label htmlFor="yearsOfExperience">Years Of Experience</label>
-                          <input type="number" name="yearsOfExperience" value={profile.yearsOfExperience} onChange={handleProfileChange} placeholder="Years of Experience" />
-                          <label htmlFor="mobileNumber">Mobile Number</label>
-                          <input type="tel" name="mobileNumber" value={profile.mobileNumber} onChange={handleProfileChange} placeholder="Mobile Number" />
-                          <label htmlFor="previousWork">Previous Work</label>
-                          <textarea name="previousWork" value={profile.previousWork} onChange={handleProfileChange} placeholder="Previous Work"></textarea>
-                          <button type="submit">Update Profile</button>
-                          <Mytourguide />
-                      </form>
+  <label htmlFor="username">Username</label>
+  <input type="text" name="username" value={profile.username} onChange={handleProfileChange} placeholder="Username" required />
+
+  <label htmlFor="email">Email</label>
+  <input type="email" name="email" value={profile.email} onChange={handleProfileChange} placeholder="Email"  />
+
+  <label htmlFor="password">Password</label>
+  <input type="password" name="password" value={profile.password} onChange={handleProfileChange} placeholder="Password"  />
+
+  <label htmlFor="yearsOfExperience">Years Of Experience</label>
+  <input type="number" name="yearsOfExperience" value={profile.yearsOfExperience} onChange={handleProfileChange} placeholder="Years of Experience"  />
+
+  <label htmlFor="mobileNumber">Mobile Number</label>
+  <input type="tel" name="mobileNumber" value={profile.mobileNumber} onChange={handleProfileChange} placeholder="Mobile Number"  />
+
+  <label htmlFor="previousWork">Previous Work</label>
+  <textarea name="previousWork" value={profile.previousWork} onChange={handleProfileChange} placeholder="Previous Work"></textarea>
+
+  <button type="submit">Update Profile</button>
+</form>
+
                   </div>
               )}
 
               {activeTab === 'itinerary' && (
                   <div className="itinerary-manager">
                       <h2>Itinerary Manager</h2>
-                      <form onSubmit={handleSubmit} className="itinerary-form">
+                      <form onSubmit={handleItinerarySubmit} className="itinerary-form">
                           {/* Form inputs remain unchanged */}
                           <input
                               type="text"
@@ -275,7 +287,6 @@ const ProfileTemplate = () => {
                               onChange={handleInputChange}
                               placeholder="Drop-off Location" />
                           <button type="submit">{isEditing ? 'Update Itinerary' : 'Add Itinerary'}</button>
-                          <ItineraryManager />
                       </form>
                       <div className="itinerary-list">
                           {itineraries.map(itinerary => (
@@ -300,7 +311,6 @@ const ProfileTemplate = () => {
                                   <div className="itinerary-actions">
                                       <button onClick={() => editItinerary(itinerary)} className="edit-btn">Edit</button>
                                       <button onClick={() => deleteItinerary(itinerary.id)} className="delete-btn">Delete</button>
-                                      <ItineraryManager />
                                   </div>
                               </div>
                           ))}

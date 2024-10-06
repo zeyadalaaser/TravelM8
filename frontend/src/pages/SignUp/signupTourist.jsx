@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './signupTourist.css';
-//import backgroundImage from '/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/assets/backgroundtourist.jpg';
-import backgroundImage from "../../assets/backgroundtourist.jpg";
+import backgroundImage from '@/assets/backgroundtourist.jpg';
 import axios from 'axios'; // Import Axios
 
 export default function TouristRegistration() {
