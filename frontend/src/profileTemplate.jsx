@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './profileTemplate.css';
 import { Search, Menu, User, Heart, ShoppingCart } from 'lucide-react';
-
+import ItineraryManager from './itinerary';
+import Mytourguide from './tourguide';
 const ProfileTemplate = () => {
 
 
@@ -142,6 +143,9 @@ const ProfileTemplate = () => {
   
 
   return (
+    <div>
+      <ItineraryManager />
+      <Mytourguide />
     
     <><nav className="navbar">
           <div className="navbar-left">
@@ -315,6 +319,7 @@ const ProfileTemplate = () => {
                   </div>
               )}
           </div></>
+          </div>
   );
 };
 

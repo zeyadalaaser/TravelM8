@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 
-const tourguide = () => {
+const Mytourguide = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -91,4 +91,7 @@ const tourguide = () => {
   );
 };
 
-export default tourguide;
+export default Mytourguide;
+
+
+
