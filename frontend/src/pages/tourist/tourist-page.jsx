@@ -1,29 +1,55 @@
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-
-import { DateFilter } from "./components/filters/date-filter"
-import { RatingFilter } from "./components/filters/rating-filter"
-import { PriceFilter } from "./components/filters/price-filter"
-
-import { SortSelection } from "./components/sort-selection"
-import { Attractions } from "./components/attractions"
-import { SearchBar } from "./components/search"
-import { ClearFilters } from './components/filters/clear-filters';
-import { getActivities } from "./api/apiService"
+"use client"
 import useRouter from "@/hooks/useRouter"
-import { useState, useEffect } from "react"
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ClearFilters } from '@/pages/tourist/components/filters/clear-filters';
+import { DateFilter } from "@/pages/tourist/components/filters/date-filter";
+import { RatingFilter } from "@/pages/tourist/components/filters/rating-filter";
+import { PriceFilter } from "@/pages/tourist/components/filters/price-filter";
+import { CategoryFilter } from "@/pages/tourist/components/filters/category-filter";
+import { SortSelection } from "@/pages/tourist/components/filters/sort-selection";
+import { Attractions } from "@/pages/tourist/components/activities";
+import { SearchBar } from "@/pages/tourist/components/filters/search";
+import { getActivities } from "@/pages/tourist/api/apiService";
+
 
 
 export default function TouristPage() {
 
-    const { location } = useRouter();
+    const { location, navigate } = useRouter();
+
+useEffect(() => {
+    // Check if the user has a token
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login"); // Redirect to login page if no token
+      return;
+    }
+
+    // Decode the JWT token to get the role
+    const userRole = getRoleFromToken(token);
+    if (userRole !== "Tourist") {
+      navigate("/login"); // Redirect if the role is not 'tourist'
+      return;
+    }
+  }, [navigate]);
+
+  // Function to decode JWT and get user role
+  function getRoleFromToken(token) {
+    const decoded = JSON.parse(atob(token.split(".")[1])); // Decode the token
+    return decoded.role; // Get the role from the token
+  }
+
+
+   
     const [activities, setActivities] = useState([]);
 
     useEffect(() => {
         const fetchActivities = async () => {
           const fetchedActivities = await getActivities(location.search);
           setActivities(fetchedActivities);
-          console.log(fetchedActivities);
         };
     
         fetchActivities();
@@ -46,6 +72,8 @@ export default function TouristPage() {
                     <PriceFilter />
                     <Separator className="mt-5" />
                     <RatingFilter />
+                    <Separator className="mt-7" />
+                    <CategoryFilter />
                 </div>
                 <div className="w-full md:w-3/4">
                     <div className="flex justify-between items-center mb-4">

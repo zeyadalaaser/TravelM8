@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import './signup.css';
 import { Menu } from 'lucide-react';
 import axios from 'axios';
+
 import backgroundImage from '@/assets/background.jpeg';
 
-const FormPage = () => {
+
+const FormPageSeller = () => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -94,4 +96,4 @@ const FormPage = () => {
     );
 };
 
-export default FormPage;
+export default FormPageSeller

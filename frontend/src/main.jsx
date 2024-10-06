@@ -1,19 +1,25 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
-import SignUpForm from '@/pages/SignUp/signupTourist.jsx'
-//import ProfileTemplate from '@/pages/TourGuide/profileTemplate.jsx'
+
+import TouristPage from '@/pages/tourist/tourist-page.jsx';
+import TourGuide from '@/pages/TourGuide/tourguide.jsx'
+import Login from '@/pages/SignIn/Login.jsx'; 
+import SignupGeneral from '@/pages/SignUp/SignupGeneral.jsx';
+import TouristRegistration from '@/pages/SignUp/signupTourist.jsx'
+import FormPage from '@/pages/SignUp/signupTourguide.jsx';
+import FormPageSeller from '@/pages/SignUp/signupSeller.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 import TouristPage from './pages/tourist/tourist-page.jsx'
-import DeleteUser from './pages/admin/deleteUser-page.jsx'
-import PreferenceTag from './pages/admin/preferenceTag-page.jsx';
-import Dashboard from './pages/admin/dashboard.jsx';
 //import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx"
 //import "./styles/main.css";
 import ActivityCategories from "./services/ActivityCategories"; // Ensure this path is correct
 import Admin from "./services/Admin"; // Import the Admin component
-import TourismGovernor from "./services/TourismGovernor";       
+import TourismGovernor from "./services/TourismGovernor";  
+import DeleteUser from './pages/admin/deleteUser-page.jsx'
+import PreferenceTag from './pages/admin/preferenceTag-page.jsx';
+import Dashboard from './pages/admin/dashboard.jsx';     
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
