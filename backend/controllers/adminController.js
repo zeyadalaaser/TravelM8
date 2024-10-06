@@ -32,7 +32,7 @@ export const registerAdmin = async (req, res) => {
 };
 
 export const deleteAccount = async (req, res) => {
-    const { username, type } = req.query; // Get username and user type from query params
+    const { username, type } = req.body; // Get username and user type from request body
 
     if (!username || !type) {
         return res.status(400).send('Username and user type are required');
@@ -95,6 +95,7 @@ export const deleteAccount = async (req, res) => {
     }
 };
 
+
 export const getUsers = async (req, res) => {
     try {
         
@@ -117,4 +118,12 @@ export const getUsers = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Error fetching users" });
     }
+
+export const getAllAdmins => = async (req, res) => {
+  try{
+    const allAdmins = await Admin.find({});
+    res.status(200).json(allAdmins);
+  }catch(error){
+    res.status(500).send("Server error");
+  
 };

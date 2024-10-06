@@ -2,7 +2,8 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
-import cors from 'cors';
+import cors from "cors";///////////////////////////////
+
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import preferenceTagRoute from "./routes/preferenceTagRoute.js";
@@ -17,9 +18,7 @@ import historicalPlacesRoute from "./routes/historicalPlacesRoute.js"
 import itineraryRoute from "./routes/itineraryRoute.js";
 import pendingUserRoute from "./routes/pendingUserRoute.js";
 import ratingRoute from './routes/ratingRoute.js';
-//import loginRoute from "./routes/loginRoute.js";
-
-
+import loginRoute from "./routes/loginRoute.js";
 
 
 dotenv.config({path:'../.env'});
@@ -30,8 +29,9 @@ const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
 app.use(cors({
-  origin: 'http://localhost:5173' // Frontend server URL
+  origin: 'http://localhost:5173', // Change this if your frontend URL changes
 }));
+
 
 app.listen(PORT, () => {
   connectDB();
@@ -54,7 +54,7 @@ app.use("/api", historicalPlacesRoute);
 app.use("/api", itineraryRoute);
 app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
-//app.use('/api/auth', loginRoute);
+app.use('/api/auth', loginRoute);
 
 
 

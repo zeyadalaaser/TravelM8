@@ -28,4 +28,15 @@ const registerGovernor = async (req, res) => {
   }
 };
 
-export {registerGovernor};
+
+const fetchTourismGovernors = async (req, res) => {
+  try {
+    const governors = await TourismGovernor.find({}, "username");
+    res.status(200).json(governors);
+  } catch (error) {
+    console.error("Error fetching tourism governors:", error);
+    res.status(500).json({ message: "Error fetching tourism governors." });
+  }
+};
+
+export {registerGovernor, fetchTourismGovernors};

@@ -1,3 +1,4 @@
+import Activity from '../models/activityModel.js';
 import PreferenceTag from '../models/preferenceTagModel.js';
 
 const createPreferenceTag = async (req, res) => {
@@ -44,9 +45,15 @@ const deletePreferenceTag = async (req, res) => {
   const { name } = req.body;
   try {
     const deletedTag = await PreferenceTag.deleteOne({ name });
-    if (deletedTag.deletedCount === 0) { 
+    if (!deletedTag) { 
       return res.status(404).json({ message: "Tag not found" });
     }
+
+    const tagId = deletedTag._id;
+    await Activity.updateMany(
+      { tags: tagId },             // Match activities containing the tag
+      { $pull: { tags: tagId } }    // Remove the tag from the tags array
+    );
     res.status(200).json({ message: "Tag deleted successfully" });
   } catch (error) {
     console.error("Error deleting Tag:", error);
