@@ -74,4 +74,5 @@ const CloseButton = styled.button`
   }
 `;
 
+
 export default Sidebar;
