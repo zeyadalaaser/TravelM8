@@ -6,9 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search } from "lucide-react"
 
 export function SearchBar() {
-    const [searchTerm, setSearchTerm] = useState("");
-    const [searchCategory, setSearchCategory] = useState("name");
-    return <div className="mb-6">
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchCategory, setSearchCategory] = useState("name");
+
+  return <div className="mb-6">
     <div className="relative flex items-center">
       <div className="relative flex-grow">
         <Input
@@ -16,7 +17,7 @@ export function SearchBar() {
           placeholder="Search in"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="rounded-r-none pl-10 !ring-0" 
+          className="rounded-r-none pl-10 !ring-0"
         />
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
       </div>

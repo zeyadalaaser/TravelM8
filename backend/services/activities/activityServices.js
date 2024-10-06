@@ -134,7 +134,6 @@ export async function getActivities({ includeRatings, budget, startDate, endDate
         ...advertiserStage
     ];
 
-    console.log(aggregationPipeline);
     // Execute the aggregation pipeline
     const activities = await Activity.aggregate(aggregationPipeline);
     return activities;
