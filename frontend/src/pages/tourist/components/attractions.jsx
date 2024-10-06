@@ -17,21 +17,21 @@ export function Attractions({ attractions }) {
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <Star
                                     key={star}
-                                    className={`w-4 h-4 ${star <= Math.floor(attraction.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                                    className={`w-4 h-4 ${star <= Math.floor(attraction.averageRating) ? "text-yellow-400 fill-current" : "text-gray-300"
                                         }`}
                                 />
                             ))}
-                            <span className="ml-2 text-sm text-gray-600">{attraction.reviews} reviews</span>
+                            <span className="ml-2 text-sm text-gray-600">{attraction.totalRatings} reviews</span>
                         </div>
                         <p className="text-sm text-gray-600 mb-2">{attraction.description}</p>
                         <div className="flex items-center text-sm text-gray-600 mb-2">
                             <Clock className="w-4 h-4 mr-1" />
-                            {attraction.duration}
+                            {attraction.date}
                         </div>
                         {attraction.cancellation && (
                             <div className="text-sm text-green-600 mb-2">{attraction.cancellation}</div>
                         )}
-                        <div className="text-xl font-bold">from ${attraction.price.toFixed(2)}</div>
+                        <div className="text-xl font-bold">from ${attraction.price?.length === 2 ? attraction.price[0] : attraction.price}</div>
                     </div>
                 </div>
             </Card>

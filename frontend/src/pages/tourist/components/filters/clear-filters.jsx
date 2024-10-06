@@ -18,7 +18,9 @@ export function ClearFilters() {
         navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
     };
 
-    const hasOtherFilters = searchParams.has('sortBy') && searchParams.has('order') && searchParams.size > 2;
+    const hasOtherFilters = [...searchParams.keys()].filter(
+        (key) => key !== 'sortBy' && key !== 'order'
+      ).length > 0;
 
     return (
         <>

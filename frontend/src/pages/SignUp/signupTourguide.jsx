@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './signup.css';
 import { Menu } from 'lucide-react';
 import axios from 'axios';
-import backgroundImage from '/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/assets/background.jpeg';
+import backgroundImage from '@/assets/background.jpeg';
 
 const FormPage = () => {
     const [formData, setFormData] = useState({

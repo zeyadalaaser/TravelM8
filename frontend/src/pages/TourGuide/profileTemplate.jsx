@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './profileTemplate.css';
 import { Search, Menu, User, Heart, ShoppingCart } from 'lucide-react';
-import ItineraryManager from '/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/pages/TourGuide/itinerary.jsx';
+import ItineraryManager from '@/pages/TourGuide/itinerary.jsx';
 import Mytourguide from './tourguide';
 import axios from 'axios';
 
