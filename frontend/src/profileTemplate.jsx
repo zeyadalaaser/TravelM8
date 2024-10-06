@@ -144,8 +144,8 @@ const ProfileTemplate = () => {
 
   return (
     <div>
-      <ItineraryManager />
-      <Mytourguide />
+      {/* <ItineraryManager />
+      <Mytourguide /> */}
     
     <><nav className="navbar">
           <div className="navbar-left">
@@ -189,6 +189,7 @@ const ProfileTemplate = () => {
                           <label htmlFor="previousWork">Previous Work</label>
                           <textarea name="previousWork" value={profile.previousWork} onChange={handleProfileChange} placeholder="Previous Work"></textarea>
                           <button type="submit">Update Profile</button>
+                          <Mytourguide />
                       </form>
                   </div>
               )}
@@ -274,6 +275,7 @@ const ProfileTemplate = () => {
                               onChange={handleInputChange}
                               placeholder="Drop-off Location" />
                           <button type="submit">{isEditing ? 'Update Itinerary' : 'Add Itinerary'}</button>
+                          <ItineraryManager />
                       </form>
                       <div className="itinerary-list">
                           {itineraries.map(itinerary => (
@@ -298,6 +300,7 @@ const ProfileTemplate = () => {
                                   <div className="itinerary-actions">
                                       <button onClick={() => editItinerary(itinerary)} className="edit-btn">Edit</button>
                                       <button onClick={() => deleteItinerary(itinerary.id)} className="delete-btn">Delete</button>
+                                      <ItineraryManager />
                                   </div>
                               </div>
                           ))}
