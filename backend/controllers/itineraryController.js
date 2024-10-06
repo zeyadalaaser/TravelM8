@@ -1,6 +1,8 @@
 import Itinerary from '../models/itineraryModel.js';
 import Activity from '../models/activityModel.js';
-import historicalPlaces from '../models/historicalPlacesModel.js'
+import HistoricalPlaces from '../models/historicalPlacesModel.js'
+import PreferenceTag from '../models/preferenceTagModel.js'
+import ActivityCategory from '../models/activityCategoryModel.js'
 import mongoose from "mongoose";
 //create new itinerary 
 export const createItinerary = async (req, res) => {
@@ -133,11 +135,15 @@ export const filterItineraries = async (req, res) => {
     
     if (tags) {
       const tagsArray = tags.split(',').map(tag => tag.trim()); // Trim any whitespace
-      console.log(tagsArray);
-      //query.tags = { $elemMatch: { name: { $in: tagsArray } } };
+      // console.log(tagsArray);
+      // //query.tags = { $elemMatch: { name: { $in: tagsArray } } };
       
-      query.tags=tags;
-      console.log(query.tags);
+      // query.tags=tags;
+      // console.log(query.tags);
+
+      query['tags'] = {
+        $in: await PreferenceTag.find({ name: { $in: tagsArray } }).select('_id')
+      };
 
     }
 
@@ -156,8 +162,6 @@ export const filterItineraries = async (req, res) => {
         $lte: endDate,    
       };
     }
-
-    // Fetch filtered itineraries
     const itineraries = await Itinerary.find(query)
       .populate('activities')  
       .populate('historicalSites')  
@@ -170,59 +174,151 @@ export const filterItineraries = async (req, res) => {
     res.status(500).json({ message: "Server error. Could not filter itineraries." });
   }
 };
-export const searchItems = async (req, res) => {
-  try {
+
+
+// export const searchItems = async (req, res) => {
+//   try {
        
-      const { name, category, tags } = req.query;
+//       const { name, category, tags } = req.query;
    
+//       const activityFilter = {};
+//       const historicalPlacesFilter = {};
+//       const itineraryFilter = {};
+       
+
+//       if (name) {
+//         const regexName = { $regex: name, $options: 'i' };  
+//         activityFilter.title = regexName;
+//         historicalPlacesFilter.name = regexName;
+//         itineraryFilter.name = regexName;
+//       }
+  
+//       if (category) {
+//         //activityFilter.category = category.toLowerCase()
+//        // const categoryResult = await ActivityCategory.findOne({ name: category.toLowerCase() });
+//        const tagsArray = category.split(',').map(category => category.trim());
+//         activityFilter.category = { $in: await ActivityCategory.find({ name: { $in: tagsArray } }).select('_id') };
+//         // const activities = await Activity.find(activityFilter);
+//         // return  res.status(200).json(activities);
+//       }
+    
+//       if (tags) {
+//         const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
+//          activityFilter['tags'] = { $in: await PreferenceTag.find({ name: { $in: tagsArray } }).select('_id') };
+//        historicalPlacesFilter.tags = { $in: tagsArray };
+//         itineraryFilter['tags']={ $in: await PreferenceTag.find({ name: { $in: tagsArray } }).select('_id') };   
+      
+//       }
+       
+//       const activities =  await Activity.find(activityFilter) ;
+//       const historicalPlace = await HistoricalPlaces.find(historicalPlacesFilter);
+//       const itineraries = await Itinerary.find(itineraryFilter).populate('activities').populate(
+//           'historicalSites');
+          
+  
+//       const results = { activities, historicalPlace, itineraries };  
+  
+      
+//       if (activities.length === 0 && historicalPlace.length === 0 && itineraries.length==0) {
+//         return res.status(404).json({
+//           success: false,
+//           message: 'No matching results found for the given criteria',
+//         });
+//       }
+ 
+//       res.status(200).json({
+//         success: true,
+//         message: 'Results fetched successfully',
+//         results,
+//       });
+//     } catch (error) {
+//       res.status(500).json({
+//         success: false,
+//         message: 'Error occurred while searching',
+//         error: error.message,
+//       });
+//     }
+//   };
+  export const searchItems2 = async (req, res) => {
+    try {
+      const { name, category, tags } = req.query;
+  
+      // Filters for different models
       const activityFilter = {};
       const historicalPlacesFilter = {};
       const itineraryFilter = {};
   
-      // Name Filtering: Apply to both Activities and Historical Places
+      // Filter by name (case-insensitive)
       if (name) {
-        const regexName = { $regex: name, $options: 'i' }; // Case-insensitive regex for partial match
-        activityFilter.name = regexName;
+        const regexName = { $regex: name, $options: 'i' };
+        activityFilter.title = regexName;
         historicalPlacesFilter.name = regexName;
         itineraryFilter.name = regexName;
       }
   
-      // Category Filtering: Apply only to Activities
+      // Filter by category (if present)
       if (category) {
-        activityFilter.category = category.toLowerCase();    
+        const categoryArray = category.split(',').map(category => category.trim());
+  
+        const categoryIds = await ActivityCategory.find({
+          name: { $in: categoryArray }
+        }).select('_id');
+  
+        if (categoryIds.length > 0) {
+          activityFilter.category = { $in: categoryIds.map(cat => cat._id) };
+        }
       }
   
-      // Tags Filtering: Apply only to Historical Places and activities
+      // Filter by tags (if present)
       if (tags) {
         const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
-        activityFilter.tags = { $in: tagsArray };
-        historicalPlacesFilter.tags = { $in: tagsArray }; // Match any tag in the array
+       
+       
+  
+        const tagIds = await PreferenceTag.find({
+          name: { $in: tagsArray }
+        }).select('_id');
+  
+        if (tagIds.length > 0) {
+          activityFilter.tags = { $in: tagIds.map(tag => tag._id) };
+          historicalPlacesFilter.tags = { $in: tagsArray }; // Assuming tag names for historical places
+         itineraryFilter.tags = { $in: tagIds.map(tag => tag._id) };
+         
+        }
       }
   
-      // Perform searches for each collection
-      const activities = await Activity.find(activityFilter);
-      const historicalPlace = await historicalPlaces.find(historicalPlacesFilter);
-      const itineraries = await Itinerary.find(itineraryFilter).populate('activities').populate(
-          'historicalSites');
+      // Fetch results only if there are valid filters
+      const activities = Object.keys(activityFilter).length > 0
+        ? await Activity.find(activityFilter)
+        : [];
+      const historicalPlaces = Object.keys(historicalPlacesFilter).length > 0
+        ? await HistoricalPlaces.find(historicalPlacesFilter)
+        : [];
+      const itineraries = Object.keys(itineraryFilter).length > 0
+        ? await Itinerary.find(itineraryFilter)
+          .populate('activities')
+          .populate('historicalSites')
+        : [];
   
-      const results = { activities, historicalPlace, itineraries }; // Combine results from both collections
+      const results = { activities, historicalPlaces, itineraries };
   
-      // If no results found, send a 404 response
-      if (activities.length === 0 && historicalPlaces.length === 0 && itineraries.length==0) {
+      // If all arrays are empty, return a 404
+      if (activities.length === 0 && historicalPlaces.length === 0 && itineraries.length === 0) {
         return res.status(404).json({
           success: false,
           message: 'No matching results found for the given criteria',
         });
       }
   
-      // Return the combined results
+      // Return success with results
       res.status(200).json({
         success: true,
         message: 'Results fetched successfully',
         results,
       });
     } catch (error) {
-      // Handle any server errors
+      // Handle any errors
+      console.error('Error occurred while searching:', error);
       res.status(500).json({
         success: false,
         message: 'Error occurred while searching',
@@ -230,3 +326,4 @@ export const searchItems = async (req, res) => {
       });
     }
   };
+  
