@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Activity from './activityModel.js';
 import HistoricalPlaces from './historicalPlacesModel.js';
 import TourGuide from './tourguideModel.js'
-import PrefernceTag from './preferenceTagModel.js'
+import PreferenceTag from './preferenceTagModel.js'
 
 const itineraySchema = new mongoose.Schema({
     
@@ -78,7 +78,7 @@ const itineraySchema = new mongoose.Schema({
                     },
                 }
             ],
-            numberOfBookkings :{
+            numberOfBookings :{
                  type: Number,
                  min: 0
             }
@@ -104,7 +104,7 @@ const itineraySchema = new mongoose.Schema({
 
     tags: [{
         type: mongoose.Schema.Types.ObjectId, // Fixed preferences as an array of strings
-        ref:'PrefernceTag',   // SHould refrence tagsModel
+        ref:'PreferenceTag',   // SHould refrence tagsModel
         required: true,
     }],
 

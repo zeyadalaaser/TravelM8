@@ -11,12 +11,12 @@ export const createHistoricalPlace= async (req, res) => {
       if (!name || !description || !location || !image || !openingHours || !price) {
         return res.status(400).json({ message: "All fields are required." });
       }
-      // Create a new HistoricalPlace instance
+      
       const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags         
       });
   
         await newPlace.save();
-      // Respond with the saved document
+
       res.status(201).json({message:" Historical place created successfully",newPlace});
     } catch (error) {
       console.error("Error creating new historical place:", error);
