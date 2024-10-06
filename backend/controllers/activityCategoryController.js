@@ -1,4 +1,5 @@
 import ActivityCategory from "../models/activityCategoryModel.js";
+import Activity from "../models/activityModel.js";
 
 // Create a new activity category
 export const createActivityCategory = async (req, res) => {
@@ -52,6 +53,7 @@ export const deleteActivityCategory = async (req, res) => {
     if (!deletedCategory) {
       return res.status(404).json({ message: "Category not found" });
     }
+    // await Activity.deleteMany({category:name}); ///deletes all activities of this category??????????
     res.status(200).json({ message: "Activity category deleted successfully" });
   } catch (error) {
     console.error("Error deleting activity category:", error);
