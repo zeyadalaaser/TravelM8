@@ -1,0 +1,177 @@
+body {
+  font-family: Arial, sans-serif;/* Background color for the whole page */
+  margin: 0;
+  padding: 0;
+}
+
+
+
+.form-container {
+  width: 500px; /* Width of the form */
+  margin: 120px auto; /* Adjust this top margin to move the form down */
+  padding: 20px; /* Padding around the form */
+  background-color: white; /* Background color for the form */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow effect */
+  position: relative;
+  left: 25%;
+  overflow: hidden;
+}
+
+
+.background-image {
+  position: absolute; /* Position the image absolutely */
+  top: 0;
+  left: 0;
+  width: 100%; /* Make the image cover the entire area */
+  height: 100%; 
+  background-size: cover; /* Make the image cover the container */
+  background-position: center; /* Center the image */
+  opacity: 0.5; /* Adjust opacity (0 = transparent, 1 = opaque) */
+  z-index: -1; /* Place it behind other content */
+}
+
+.nav-login-button {
+  background-color: #87af7b; /* Background color */
+  color: #fff; /* Text color */
+  border: none; /* No border */
+  padding: 10px 20px; /* Padding inside the button */
+  border-radius: 20px; /* Rounded corners */
+  cursor: pointer; /* Cursor changes to pointer */
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.nav-login-button:hover {
+  background-color: #518251; /* Change background color on hover */
+}
+
+
+
+.navbar {
+  position: fixed; /* Fix the navbar at the top */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* Ensure the navbar is on top of other content */
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent to blend with the background */
+  padding: 10px; /* Add some padding */
+}
+
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  margin-right: 80px;
+}
+
+.nav-button {
+  background: none; /* No background for buttons */
+  border: none; /* No border */
+  padding: 10px 15px; /* Padding for buttons */
+  margin-right: 15px; /* Space between buttons */
+  cursor: pointer; /* Change cursor to pointer */
+  font-size: 16px; /* Adjust font size */
+  color: #000000; /* Text color */
+}
+
+.nav-button:hover {
+  background-color: #fffefe;
+  color: #518251; /* Change text color on hover */
+}
+
+
+.navbar-left{
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon, .nav-icon {
+  width: 24px;
+  height: 24px;
+  margin: 0 50px;
+  cursor: pointer;
+}
+
+.logo {
+  height: 80px; /* Set your desired height */
+  width: auto; 
+  margin-left: 10px;
+}
+
+.navbar-center {
+  flex-grow: 1;
+  max-width: 500px;
+  margin: 0 20px;
+}
+
+
+
+.form-title {
+  text-align: left; /* Center title text */
+  margin-bottom: 20px; /* Space below title */
+  font-weight: normal;
+}
+
+.contact-form {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack items vertically */
+}
+
+label {
+  margin-bottom: 5px; /* Space below labels */
+  font-weight: bold; /* Make labels bold */
+}
+
+input, select, textarea {
+  margin-bottom: 15px; /* Space below input fields */
+  padding: 10px; /* Padding inside input fields */
+  border: 1px solid #ccc; /* Border for input fields */
+  border-radius: 4px; /* Rounded corners */
+  font-size: 16px; /* Font size for input fields */
+}
+
+textarea {
+  resize: none; /* Disable resizing */
+  height: 100px; /* Set height for textarea */
+}
+
+.submit-button {
+  background-color: #87af7b; /* Button background color */
+  color: rgb(255, 255, 255); /* Button text color */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners */
+  padding: 10px; /* Padding inside the button */
+  cursor: pointer; /* Cursor changes to pointer */
+  margin-top: 15px;
+}
+
+.submit-button:hover {
+  background-color: #518251; /* Change button color on hover */
+}
+
+.success-message {
+  color: green;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.already-registered {
+  margin-top: 20px; /* Space above the statement */
+  font-size: 14px; /* Font size */
+  text-align: center; /* Center the text */
+}
+
+.signin-link {
+  color: #518251; /* Link color */
+  text-decoration: underline; /* Underline link */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.signin-link:hover {
+  color: #87af7b; /* Change link color on hover */
+}
