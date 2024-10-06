@@ -134,17 +134,6 @@ const updateActivity = async (req, res) => {
             .populate('tags', 'name');
 
             // Check if the activity was updated
-            if (!newActivity) {
-                return res.status(404).json({ message: "Activity not found" });
-            }
-
-            // Return success response
-            res.status(200).json({ message: "Successfully updated the activity", newActivity });
-                { new: true, runValidators: true } // Return updated document and apply validation
-            )
-            .populate('advertiserId', 'username')
-            .populate('category', 'name')
-            .populate('tags', 'name');
 
             // Check if the activity was updated
             if (!newActivity) {
@@ -164,7 +153,7 @@ const updateActivity = async (req, res) => {
         res.status(400).json({ message: "Invalid activity ID" });
     }
 };
-};
+
 
 //advertiser only
 const getMyActivities = async (req, res) => {
