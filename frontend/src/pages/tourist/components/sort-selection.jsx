@@ -1,15 +1,34 @@
+import useRouter from '@/hooks/useRouter'; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function SortSelection() {
-    return <Select defaultValue="featured">
+
+    const { searchParams, navigate, location } = useRouter();
+
+    const handleSort = (value) => {
+        const [sortBy, order] = value.split('-');
+
+        if (sortBy === 'featured') {
+            searchParams.delete('sortBy');
+            searchParams.delete('order');
+        }
+        else {
+            searchParams.set('sortBy', sortBy);
+            searchParams.set('order', order);
+        }
+
+        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    };
+
+    return <Select defaultValue="featured-?" onValueChange={handleSort}>
         <SelectTrigger className="w-[180px] !ring-0">
             <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>
-            <SelectItem value="featured">Featured</SelectItem>
-            <SelectItem value="price-low-high">Price: Low to High</SelectItem>
-            <SelectItem value="price-high-low">Price: High to Low</SelectItem>
-            <SelectItem value="rating">Rating</SelectItem>
+            <SelectItem value="featured-?">Featured</SelectItem>
+            <SelectItem value="price-asc">Price: Low to High</SelectItem>
+            <SelectItem value="price-desc">Price: High to Low</SelectItem>
+            <SelectItem value="averageRating-desc">Rating</SelectItem>
         </SelectContent>
     </Select>
 }
