@@ -4,6 +4,7 @@ import logo from "../assets/logo4.jpg";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { VscChromeClose } from "react-icons/vsc";
 import { AiOutlineMenu } from "react-icons/ai"; // Icon for the sidebar toggle
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import Sidebar from "./Sidebar"; // Import the Sidebar component
 
 export default function Navbar() {
@@ -31,19 +32,24 @@ export default function Navbar() {
 
         <ul>
           <li>
-            <a href="#home">Home</a>
+            <Link to="#home">Home</Link>
           </li>
           <li>
-            <a href="#services">About</a>
+            <Link to="#services">About</Link>
           </li>
           <li>
-            <a href="#recommend">Places</a>
+            <Link to="#recommend">Places</Link>
           </li>
           <li>
-            <a href="#testimonials">Testimonials</a>
+            <Link to="#testimonials">Testimonials</Link>
+          </li>
+          <li>
+            <Link to="/login">Login</Link> {/* Link to Login page */}
+          </li>
+          <li>
+            <Link to="/signup">Sign Up</Link> {/* Link to Sign Up page */}
           </li>
         </ul>
-
       </Nav>
 
       {/* Sidebar Toggle Button */}
@@ -57,30 +63,42 @@ export default function Navbar() {
       <ResponsiveNav state={navbarState}>
         <ul>
           <li>
-            <a href="#home" onClick={() => setNavbarState(false)}>
+            <Link to="#home" onClick={() => setNavbarState(false)}>
               Home
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#services" onClick={() => setNavbarState(false)}>
+            <Link to="#services" onClick={() => setNavbarState(false)}>
               About
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#recommend" onClick={() => setNavbarState(false)}>
+            <Link to="#recommend" onClick={() => setNavbarState(false)}>
               Places
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="#testimonials" onClick={() => setNavbarState(false)}>
+            <Link to="#testimonials" onClick={() => setNavbarState(false)}>
               Testimonials
-            </a>
+            </Link>
+          </li>
+          <li>
+            <Link to="/pages/signIn/login" onClick={() => setNavbarState(false)}> {/* Link to Login page */}
+              Login
+            </Link>
+          </li>
+          <li>
+            <Link to="/pages/SignUp/SignupGeneral" onClick={() => setNavbarState(false)}> {/* Link to Login page */}
+              Login
+            </Link>
           </li>
         </ul>
       </ResponsiveNav>
     </>
   );
 }
+
+
 
 const Nav = styled.nav`
   display: flex;
