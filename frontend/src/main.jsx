@@ -4,7 +4,7 @@ import App from './App.jsx'
 //import TouristPage from '@/pages/tourist/tourist-page.jsx';
 //import SignUpForm from './signupTourist.jsx'
 //import ProfileTemplate from './profileTemplate.jsx'
-import AdminPage from '@/pages/admin/admin-page.jsx'
+//import AdminPage from '@/pages/admin/admin-page.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 
