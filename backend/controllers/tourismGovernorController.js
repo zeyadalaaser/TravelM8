@@ -21,7 +21,7 @@ const registerGovernor = async (req, res) => {
     });
     await newTourismGovernor.save();
 
-    res.status(201).json({ message: "Tourist registered successfully" });
+    res.status(201).json({ message: "Tourism Governor registered successfully" });
   } catch (error) {
     console.error("Tourist registration error:", error);
     res.status(500).json({ message: "Internal server error" });
