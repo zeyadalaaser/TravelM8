@@ -5,9 +5,9 @@ import { DateFilter } from "./components/filters/date-filter"
 import { RatingFilter } from "./components/filters/rating-filter"
 import { PriceFilter } from "./components/filters/price-filter"
 
-import { SortSelection } from "./components/sort-selection"
-import { Attractions } from "./components/attractions"
-import { SearchBar } from "./components/search"
+import { SortSelection } from "./components/filters/sort-selection"
+import { Attractions } from "./components/activities"
+import { SearchBar } from "./components/filters/search"
 import { ClearFilters } from './components/filters/clear-filters';
 import { getActivities } from "./api/apiService"
 import useRouter from "@/hooks/useRouter"
