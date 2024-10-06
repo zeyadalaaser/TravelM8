@@ -1,19 +1,17 @@
 import Itinerary from '../models/itineraryModel.js';
 import Activity from '../models/activityModel.js';
 import historicalPlaces from '../models/historicalPlacesModel.js'
-
-//const { default: mongoose } = require('mongoose');
-
+import mongoose from "mongoose";
 //create new itinerary 
 export const createItinerary = async (req, res) => {
     try {
-        const newItinerary = new Itinerary(req.body); // Create a new instance of the Itinerary model
-        await newItinerary.save(); // Save the new itinerary to the database
+        const newItinerary = new Itinerary(req.body);  
+        await newItinerary.save(); 
         res.status(201).json({
-             message: 'Itinerary added successfully', itinerary: newItinerary }); // Send a success response
+             message: 'Itinerary added successfully', itinerary: newItinerary });  
     } catch (error) {
         res.status(500).json({ 
-            message: 'Error adding itinerary', error: error.message }); // Send error response if something goes wrong
+            message: 'Error adding itinerary', error: error.message });    
     }
 };
 
@@ -27,133 +25,89 @@ export const readItineraries = async (req, res) => {
             filters['availableSlots.startTime'] = { $gte: new Date() };
 
         const itineraries = await Itinerary.find(filters).populate('activities').populate(
-          'historicalSites');  
+          'historicalSites').populate("tags").populate("tourGuideId");  
         res.status(200).json(itineraries);  
     } catch (error) {
         res.status(500).json({
              message: 'Error fetching itineraries', error: error.message });   
     }
 };
+
    //TourGuide only
    export const getMyItineraries = async(req, res) => {    
-    let itineraries;
-    if(user.type === "TourGuide"){
-        itineraries = await Itinerary.find({tourGuideId: user.id}).populate('activities').populate(
-            'historicalSites');
-        if(itineraries.length == 0)
-            res.status(204);
+    try{
+    const {tourGuideId}=req.body;
+    if(!mongoose.Types.ObjectId.isValid(tourGuideId)){
+      return res.status(404).json({ message:"Enter a valid id"});
+    }
+       const itineraries = await Itinerary.find({tourGuideId}).populate('activities').populate(
+            'historicalSites').populate("tags").populate("tourGuideId");
+        if(itineraries.length==0)
+          return  res.status(404).json({message:"no itineraries found"});
         else
-            res.status(200).json({itineraries});
-    }else{
-        res.status(400).json({message:"enter a valid id"});
+          return  res.status(200).json({itineraries});
+}catch(error){
+       return res.status(400).json({ message: 'Error', error: error.message});
     }
   };
 
 // update an itinerary in the database
 export const updateItinerary = async (req, res) => {
     try {
-        const { id } = req.params; // Get itinerary ID from URL parameters
-        const updatedItinerary = await Itinerary.findByIdAndUpdate(id, req.body, { new: true }); // Update the itinerary
+        const { id } = req.params; 
+        const updatedItinerary = await Itinerary.findByIdAndUpdate(id, req.body, { new: true }).populate('activities').populate(
+          'historicalSites').populate("tags").populate("tourGuideId"); 
 
         if (!updatedItinerary) {
             return res.status(404).json({
-                 message: 'Itinerary not found' }); // Handle case where itinerary is not found
+                 message: 'Itinerary not found' });  
         }
 
         res.status(200).json({ 
-            message: 'Itinerary updated successfully', itinerary: updatedItinerary }); // Send success response
+            message: 'Itinerary updated successfully', itinerary: updatedItinerary });   
     } catch (error) {
         res.status(500).json({ 
-            message: 'Error updating itinerary', error: error.message }); // Send error response if something goes wrong
+            message: 'Error updating itinerary', error: error.message });  
     }
 };
  
 export const deleteItinerary = async (req, res) => {
 
-    /////////////////////////////////////////////////////////////////////////////////
-    ///??????????????????? cannot be deleted if bookings are already made
-    /////////////////////////////////////////////////////////////////////////////////
-
     try {
         const { id } = req.params;  
-        const itinerary = await Itinerary.findById(id);
+        const itineraryToBeDeleted = await Itinerary.findById(id);
 
-        if (!itinerary) {
+        if (!itineraryToBeDeleted) {
           return res.status(404).json({ message: 'Itinerary not found' });
         }
         
         let hasBookings = false;   
-
-        for (let i = 0; i < itinerary.availableSlots.length; i++) {
-            if (itinerary.availableSlots[i].numberOfBookings > 0) {
+        const slots = itineraryToBeDeleted.availableSlots;
+        console.log(hasBookings);
+        for (let i = 0; i < slots.length; i++) {
+            console.log('Checking slot:', slots[i]); 
+            console.log(slots[i].numberOfBookings);
+            if (slots[i].numberOfBookings > 0) {
                 hasBookings = true;
+                console.log(hasBookings);
                 break;   
             }
         }
         
         if (hasBookings) {
-            console.log('Itinerary has bookings:', itinerary.availableSlots);
+            console.log('Itinerary has bookings:', slots);
             return res.status(400).json({ message: 'Cannot delete itinerary with existing bookings' });
-        }
-        const deletedItinerary = await Itinerary.findByIdAndDelete(id);  
+        }else{
+        const deletedItinerary = await Itinerary.findByIdAndDelete(id);  }
 
-        res.status(200).json({message: 'Itinerary deleted successfully' }); 
+         return res.status(200).json({message: 'Itinerary deleted successfully' }); 
     } catch (error) {
-        res.status(500).json({ 
-            message: 'Error deleting itinerary', error: error.message }); // Send error response if something goes wrong
+       return res.status(500).json({ 
+            message: 'Error deleting itinerary', error: error.message }); 
     }
 };
 
-//export const filterItineraries = async (req, res) => {
-    // try {
-        // const { budget, date, preferences, language } = req.query;
 
-//         const fixedPreferences = ['historic', 'beaches', 'family-friendly', 'shopping']; // Fixed array of preferences
-//         const filterCriteria = {};   
-
-        
-//         // Budget filtering: expects budget to be an array [min, max]
-
-//         if (budget) {
-//             const budgetArray = budget.split(',').map(Number); // Convert to array of numbers
-//             if (budgetArray.length === 2) { // Ensure the array has exactly two values
-//                 const [min, max] = budgetArray; // Destructure the array
-//                 // Include values less than the min and within the min-max range
-//                 filterCriteria.price = {
-//                     $or: [
-//                         { $lte: min }, // Prices less than or equal to min
-//                         { $gte: min, $lte: max } // Prices within the range [min, max]
-//                     ]
-//                 };
-//             }
-//         }
-
-//         // Date filtering
-//         if (date) {
-//             const availableDate = new Date(date);
-//             filterCriteria.availableDates = { $gte: availableDate }; // Upcoming dates
-//         } 
-//         // Preferences filtering
-//         if (preferences) {
-//           //  const prefArray = preferences.split(',');
-//            // const validPreferences = prefArray.filter(pref => fixedPreferences.includes(pref));
-//             //filterCriteria.preferences = { $in: validPreferences };  
-//             filterCriteria.preferences =preferences;
-//         }
-
-//         // Language filtering
-//         if (tourLanguage) {
-//             filterCriteria.tourLanguage = tourLanguage; // Exact match for language
-//         }
-
-//         const itineraries = await Itinerary.find(filterCriteria).populate('activities').populate(
-//             'historicalSites');
-//         res.status(200).json(itineraries); // Return the filtered itineraries
-
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error filtering itineraries', error: error.message });
-//     }
-// };
 export const filterItineraries = async (req, res) => {
   try {
     const { budget, tags, language, date } = req.query;   
@@ -161,21 +115,30 @@ export const filterItineraries = async (req, res) => {
     const query = {};
 
     if (budget) {
-      const budgetArray = budget.split(',').map(Number);  
+      const budgetArray = budget.split('-').map(Number);  
       if (budgetArray.length === 2) {  
+       
           const [min, max] = budgetArray;  
-          query.price = {
-              $or: [
-                  { $lte: min },   
-                  { $gte: min, $lte: max } 
-              ]
-          };
-      }
+          query.$or = [
+            { price: { $lte: min } },    
+            { price: { $gte: min, $lte: max } }  
+        ];
+      }  else if (budgetArray.length === 1) {  
+        const [min] = budgetArray; 
+        query.price = { $lte: min }; 
+    }
+      
     }
 
-    // Tags filter (match any itinerary that contains the specified tags)
+    
     if (tags) {
-      query.tags = { $in: tags.split(',') };  // Split the tags if provided as a comma-separated string
+      const tagsArray = tags.split(',').map(tag => tag.trim()); // Trim any whitespace
+      console.log(tagsArray);
+      //query.tags = { $elemMatch: { name: { $in: tagsArray } } };
+      
+      query.tags=tags;
+      console.log(query.tags);
+
     }
 
     if (language) {
@@ -198,7 +161,7 @@ export const filterItineraries = async (req, res) => {
     const itineraries = await Itinerary.find(query)
       .populate('activities')  
       .populate('historicalSites')  
-      .populate('tags');   
+      .populate('tags').populate("tourGuideId");   
      
 
     res.status(200).json(itineraries);
