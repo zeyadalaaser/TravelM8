@@ -4,6 +4,12 @@ import Seller from "../models/sellerModel.js";
 import TourGuide from "../models/tourguideModel.js";
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
 
+// Function to hash password
+const hashPassword = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+  };
+
 export const createPendingUser = async (req,res) => {
     const {username, email, password, type} = req.body;
     const isNotUnique = await checkUniqueUsernameEmail(username, email);
@@ -12,7 +18,8 @@ export const createPendingUser = async (req,res) => {
              return res.status(400).json({ message: 'Username or email is already in use.' });
          }
     try{
-       const pending = await PendingUser.create({username,  email, password, type});
+       const hashedPassword = await hashPassword(password); 
+       const pending = await PendingUser.create({ username, email, password: hashedPassword, type });
        res.status(200).json(pending);
     }catch(error){
        res.status(400).json({error:error.message});
@@ -33,12 +40,17 @@ export const acceptPendingUser = async (req, res) => {
       }
       
       const type = pending.type;
+      const hashedPassword = await hashPassword(password);
+
+
+
+      
 
       // Prepare the new user data to be added
       const newUser = {
           username: pending.username,
           email: pending.email,
-          password: pending.password,
+          password: pending.hashedPassword,
       };
       
       let result;

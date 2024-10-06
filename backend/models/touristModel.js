@@ -6,8 +6,8 @@ import validator from "validator";
 
 const touristSchema = new Schema({
   name: {
-    type: String,
-    required: true
+    type: String
+   
   },
   
   username: {
@@ -36,6 +36,11 @@ const touristSchema = new Schema({
         return /[a-zA-Z]/.test(value) && /\d/.test(value);
       }
   },
+
+  role: { 
+    type: String, default: 'Tourist'
+   },
+
   mobileNumber: {
     type: Number,
     required: true,
@@ -65,6 +70,7 @@ const touristSchema = new Schema({
   wallet:{
     type: Number,
     required: false,
+    default: 0,
     immutable: true,
   },
 
