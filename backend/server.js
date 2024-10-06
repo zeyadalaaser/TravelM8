@@ -17,7 +17,7 @@ import historicalPlacesRoute from "./routes/historicalPlacesRoute.js"
 import itineraryRoute from "./routes/itineraryRoute.js";
 import pendingUserRoute from "./routes/pendingUserRoute.js";
 import ratingRoute from './routes/ratingRoute.js';
-import loginRoute from "./routes/loginRoute.js";
+//import loginRoute from "./routes/loginRoute.js";
 
 
 
@@ -50,7 +50,7 @@ app.use("/api", historicalPlacesRoute);
 app.use("/api", itineraryRoute);
 app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
-app.use('/api/auth', loginRoute);
+//app.use('/api/auth', loginRoute);
 
 
 
