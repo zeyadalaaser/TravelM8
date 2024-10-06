@@ -19,7 +19,7 @@ const tourismGovernorSchema = new mongoose.Schema({
     }
    },
 
-   role: { type: String, default: 'Tourism Governor' }
+  //  role: { type: String, default: 'Tourism Governor' }
 });
 
 const TourismGovernor = mongoose.model(

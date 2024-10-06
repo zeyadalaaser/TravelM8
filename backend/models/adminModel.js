@@ -11,7 +11,7 @@ const adminSchema = new mongoose.Schema({
         return /[a-zA-Z]/.test(value) && /\d/.test(value);
     }
    },
-   role: { type: String, default: 'Admin' }
+  //  role: { type: String, default: 'Admin' }
 });
 
 const Admin = mongoose.model("Admin", adminSchema);

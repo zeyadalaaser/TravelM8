@@ -6,6 +6,7 @@ import ProfileTemplate from '@/pages/TourGuide/profileTemplate.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 import TouristPage from './pages/tourist/tourist-page.jsx'
+import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
