@@ -7,6 +7,7 @@ import '@/pages/TourismGovernor/TourismGovernorDashboard.css';
 
 export default function TourismGovernorDashboard() {
   const [historicalPlaces, setHistoricalPlaces] = useState([]);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     // Fetch historical places from API
@@ -15,7 +16,13 @@ export default function TourismGovernorDashboard() {
 
   const fetchHistoricalPlaces = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/getAllPlaces');
+      const response = await fetch('http://localhost:5001/api/myPlaces', {
+        method: 'GET', // Specify the HTTP method
+        headers: {
+          'Content-Type': 'application/json', // Set content type if needed
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
+      });
       const data = await response.json();
       setHistoricalPlaces(data);
     } catch (error) {

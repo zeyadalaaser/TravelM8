@@ -38,10 +38,6 @@ const touristSchema = new Schema({
       }
   },
 
-  // role: { 
-  //   type: String, default: 'Tourist'
-  //  },
-
   mobileNumber: {
     type: String,
     required: true,

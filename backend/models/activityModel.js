@@ -21,8 +21,14 @@ const activitySchema = new mongoose.Schema({
     },
 
     location: {
-        type: String,
-        required: true,
+        lat: {
+            type: Number,
+            required: true,
+        },
+        lng: {
+            type: Number,
+            required: true,
+        }
     },
     
     price: {
