@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 import HistoricalPlace from "../models/historicalPlacesModel.js";
-//const  mongoose = require('mongoose');
-
 
 
 export const createHistoricalPlace= async (req, res) => {
@@ -22,19 +20,21 @@ export const createHistoricalPlace= async (req, res) => {
       console.error("Error creating new historical place:", error);
       res.status(500).json({ message: "Server error. Could not create the historical place." });
     }
-  }; 
+}; 
 
-   //TourismGovernor only
-export const getMyPlaces = async(req, res) => {    
+//TourismGovernor only
+export const getMyPlaces = async (req, res) => {
+  const userId = req.user.userId;
+  const userRole = req.user.role;
   let Places;
-  if(user.type === "TourismGovernor"){
-      Places = await HistoricalPlace.find({TourismGovernorId: user.id});
-      if(Places.length == 0)
-          res.status(204);
-      else
-          res.status(200).json({Places});
-  }else{
-      res.status(400).json({message:"enter a valid id"});
+  if (userRole === "TourismGovernor") {
+    Places = await HistoricalPlace.find({ TourismGovernorId: userId });
+    if (Places.length == 0)
+      res.status(204);
+    else
+      res.status(200).json({ Places });
+  } else {
+    res.status(400).json({ message: "enter a valid id" });
   }
 };
 

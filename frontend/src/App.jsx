@@ -9,6 +9,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Services from "./components/Services";
 import Testimonials from "./components/Testimonials";
 import scrollreveal from "scrollreveal";
+import Places from "./components/Map"; 
 
 export default function App() {
   // State to manage sidebar visibility

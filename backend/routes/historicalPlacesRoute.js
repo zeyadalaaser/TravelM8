@@ -9,6 +9,8 @@ import {
     getMyPlaces}
  from "../controllers/historicalPlacesController.js"; 
 
+ import verifyToken from '../services/tokenDecodingService.js'
+
 const router = express.Router();
 
 router.post("/addPlace", createHistoricalPlace);  
@@ -17,7 +19,7 @@ router.put("/updatePlace/:id", updateHistoricalPLace);
 router.delete("/deletePlace/:id", deleteHistoricalPLace); 
 router.put("/createTag/:id",createTags);
 router.get("/filterbyTags",filterbyTags);
-router.get("/myPlaces", getMyPlaces); // Retrieve my places
+router.get("/myPlaces",verifyToken, getMyPlaces); // Retrieve my places
 
 
 
