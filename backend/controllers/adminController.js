@@ -10,6 +10,7 @@ import Product from '../models/productModel.js';
 import Activity from '../models/activityModel.js';
 import TourismGovernor from '../models/tourismGovernorModel.js';
 import HistoricalPlaces from '../models/historicalPlacesModel.js';
+import Rating from '../models/ratingModel.js';
 
 
 export const registerAdmin = async (req, res) => {

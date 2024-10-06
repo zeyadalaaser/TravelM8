@@ -18,6 +18,8 @@ const tourismGovernorSchema = new mongoose.Schema({
         return /[a-zA-Z]/.test(value) && /\d/.test(value);
     }
    },
+
+   role: { type: String, default: 'Tourism Governor' }
 });
 
 const TourismGovernor = mongoose.model(
