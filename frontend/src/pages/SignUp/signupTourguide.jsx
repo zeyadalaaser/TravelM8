@@ -4,6 +4,7 @@ import { Menu } from 'lucide-react';
 import axios from 'axios';
 import backgroundImage from '@/assets/background.jpeg';
 
+
 const FormPage = () => {
     const [formData, setFormData] = useState({
         username: '',

@@ -1,9 +1,8 @@
 import express from "express";
+import cors from 'cors';
 import path from "path";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
-import cors from "cors";///////////////////////////////
-
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import preferenceTagRoute from "./routes/preferenceTagRoute.js";
@@ -21,6 +20,7 @@ import ratingRoute from './routes/ratingRoute.js';
 import loginRoute from "./routes/loginRoute.js";
 
 
+
 dotenv.config({path:'../.env'});
 
 const app = express();
@@ -28,15 +28,17 @@ const PORT = process.env.PORT || 5001;
 
 const __dirname = path.resolve();
 
+
+
 app.use(cors({
-  origin: 'http://localhost:5173', // Change this if your frontend URL changes
+  origin: 'http://localhost:5173', // Allow your frontend origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+  credentials: true // If you are sending cookies or authorization headers
 }));
 
+app.options('*', cors()); 
 
-app.listen(PORT, () => {
-  connectDB();
-  console.log("Server started at http://localhost:" + PORT);
-});
+
 
 
 app.use(express.json()); // allows us to accept JSON data in the req.body
@@ -57,24 +59,9 @@ app.use("/api", ratingRoute);
 app.use('/api/auth', loginRoute);
 
 
+app.listen(PORT, () => {
+  connectDB();
+  console.log("Server started at http://localhost:" + PORT);
+});
 
-// app.use(express.static("frontend/public")); // Serve static files from the public directory inside frontend
 
-// Serve HTML pages from the public folder
-// app.get("/user", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/public/user.html")); // Landing page
-// });
-
-// app.get("/admin", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/public/index.html")); // Admin registration page
-// });
-
-// app.get("/tourist", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/public/index2.html")); // Tourist registration page
-// });
-
-// // New Route for Activity Categories
-// app.get("/activityCategory", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/public/activities.html")); // Serve the activity categories HTML page
-// });
-// =======

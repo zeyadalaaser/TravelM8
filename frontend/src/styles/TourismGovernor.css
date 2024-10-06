@@ -1,0 +1,65 @@
+.container {
+  max-width: 1000px; /* Same as Admin */
+  margin: 0 auto; /* Center the container */
+  padding: 20px; /* Same as Admin */
+  border: 1px solid #ccc; /* Same as Admin */
+  border-radius: 5px; /* Same as Admin */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Same as Admin */
+}
+
+h1 {
+  text-align: center; /* Same as Admin */
+}
+
+.form-group {
+  margin-bottom: 15px; /* Same as Admin */
+}
+
+.form-group label {
+  display: block; /* Same as Admin */
+  margin-bottom: 5px; /* Same as Admin */
+}
+
+.form-group input {
+  width: 100%; /* Same as Admin */
+  padding: 10px; /* Same as Admin */
+  border: 1px solid #ccc; /* Same as Admin */
+  border-radius: 4px; /* Same as Admin */
+}
+
+.buttons {
+  display: flex; /* Same as Admin */
+  justify-content: space-between; /* Same as Admin */
+}
+
+.register-button {
+  padding: 10px 20px; /* Same as Admin */
+  background-color: #28a745; /* Same as Admin */
+  color: white; /* Same as Admin */
+  border: none; /* Same as Admin */
+  border-radius: 4px; /* Same as Admin */
+  cursor: pointer; /* Same as Admin */
+}
+
+.register-button:hover {
+  background-color: #218838; /* Same as Admin */
+}
+
+.back-button {
+  padding: 10px 20px; /* Same as Admin */
+  background-color: #007bff; /* Same as Admin */
+  color: white; /* Same as Admin */
+  text-decoration: none; /* Same as Admin */
+  border-radius: 4px; /* Same as Admin */
+}
+
+.back-button:hover {
+  background-color: #0069d9; /* Same as Admin */
+}
+
+.eye-icon {
+  cursor: pointer; /* Same as Admin */
+  width: 20px; /* Same as Admin */
+  height: 20px; /* Same as Admin */
+  margin-left: -30px; /* Adjust as needed */
+}

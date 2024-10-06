@@ -1,6 +1,6 @@
 import Activity from "../../models/activityModel.js";
 
-function createFilterStage(budget, startDate, endDate, upcoming, categoryName) {
+function createFilterStage(price, startDate, endDate, upcoming, categoryName) {
     const filters = {};
 
     const now = new Date();
@@ -11,12 +11,12 @@ function createFilterStage(budget, startDate, endDate, upcoming, categoryName) {
     const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
         startDate ? new Date(startDate) : null;
 
-    if (start) filters.date = { $gte: start.toISOString() }; // Filter by startDate or current date for upcoming
+    if (start) filters.date = { $gte: start }; // Filter by startDate or current date for upcoming
 
-    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate).toISOString() };
+    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
-    if (budget) {
-        const [minBudget, maxBudget] = budget.split('-').map(Number);
+    if (price) {
+        const [minBudget, maxBudget] = price.split('-').map(Number);
 
         filters.$or = [
             {
@@ -119,9 +119,9 @@ function createRatingStage(entityType, includeRatings, minRating) {
     ];
 }
 
-export async function getActivities({ includeRatings, budget, startDate, endDate, upcoming, categoryName, minRating, sortBy, order }) {
+export async function getActivities({ includeRatings, price, startDate, endDate, upcoming, categoryName, minRating, sortBy, order }) {
     const categoryStage = createCategoryStage();
-    const filters = createFilterStage(budget, startDate, endDate, upcoming, categoryName);
+    const filters = createFilterStage(price, startDate, endDate, upcoming, categoryName);
     const sortStage = createSortStage(sortBy, order);
     const addRatingStage = createRatingStage('Activity', includeRatings, minRating);
     const advertiserStage = createAdvertiserStage();

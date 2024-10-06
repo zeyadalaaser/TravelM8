@@ -1,7 +1,6 @@
-import { Clock, Star } from "lucide-react";
+import { Clock } from "lucide-react";
 import { Card } from "@/components/ui/card";
-
-
+import { Stars } from "./stars";
 
 export function Attractions({ attractions }) {
     return <div className="space-y-4">
@@ -14,24 +13,19 @@ export function Attractions({ attractions }) {
                     <div className="w-full md:w-2/3 p-4">
                         <h3 className="text-xl font-semibold mb-2">{attraction.title}</h3>
                         <div className="flex items-center mb-2">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <Star
-                                    key={star}
-                                    className={`w-4 h-4 ${star <= Math.floor(attraction.averageRating) ? "text-yellow-400 fill-current" : "text-gray-300"
-                                        }`}
-                                />
-                            ))}
+                            <Stars rating={attraction.averageRating} />
                             <span className="ml-2 text-sm text-gray-600">{attraction.totalRatings} reviews</span>
                         </div>
                         <p className="text-sm text-gray-600 mb-2">{attraction.description}</p>
                         <div className="flex items-center text-sm text-gray-600 mb-2">
                             <Clock className="w-4 h-4 mr-1" />
-                            {attraction.date}
+                            {attraction.date.slice(0, 10)}
                         </div>
-                        {attraction.cancellation && (
-                            <div className="text-sm text-green-600 mb-2">{attraction.cancellation}</div>
-                        )}
-                        <div className="text-xl font-bold">from ${attraction.price?.length === 2 ? attraction.price[0] : attraction.price}</div>
+                        <div className="text-xl font-bold">
+                            {Array.isArray(attraction.price) && attraction.price.length === 2
+                                ? `$${attraction.price[0]}-$${attraction.price[1]}`
+                                : `$${attraction.price}`}
+                        </div>
                     </div>
                 </div>
             </Card>
