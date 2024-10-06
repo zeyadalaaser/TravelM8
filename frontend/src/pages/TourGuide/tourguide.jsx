@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import "/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/pages/TourGuide/profileTemplate.css";
+//import "/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/pages/TourGuide/profileTemplate.css";
+import "./profileTemplate.css";
 
 
 const Mytourguide = () => {
