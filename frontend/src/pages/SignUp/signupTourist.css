@@ -1,0 +1,234 @@
+html, body {
+  height: 100%; /* Ensure the body covers the entire viewport */
+  margin: 0; /* Reset default margins */
+  display: flex;
+  flex-direction: column;
+}
+
+.registration-container {
+  max-width: 750px; /* Increased width to fit elements better */
+  margin: 90px auto;
+  padding: 30px; /* Added more padding */
+  background-color: #6d9c5e;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  position: relative;
+  background-color: rgba(249, 249, 249, 0.9); /* Added transparency */
+}
+
+.background-image {
+  position: absolute; /* Position the image absolutely */
+  top: 65px;
+  left: 0;
+  width: 100%; /* Make the image cover the entire area */
+  height: 100%; 
+  background-size: cover; /* Make the image cover the container */
+  background-position: center; /* Center the image */
+  opacity: 0.7; /* Adjust opacity (0 = transparent, 1 = opaque) */
+  z-index: -1; /* Place it behind other content */
+}
+
+.form-title {
+  font-size: 1.5em; /* Increase font size */
+  font-weight: bold; /* Make the text bold */
+  text-align: left; /* Optional: centers the title */
+  margin-bottom: 20px; /* Optional: adds spacing below the title */
+}
+
+
+.registration-form {
+  display: grid; /* Using grid for layout */
+  grid-template-columns: 1fr 1fr; /* Two columns */
+  gap: 20px; /* Space between grid items */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+  padding: 12px; /* Increased padding */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px; /* Slightly smaller font size */
+}
+
+.error {
+  color: #ff0000;
+  font-size: 12px; /* Slightly smaller error message font */
+  margin-top: 5px;
+}
+
+.submit-btn {
+  grid-column: span 2; /* Button spans both columns */
+  background-color: #87af7b;
+  color: white;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #518251;
+}
+
+.registration-success {
+  text-align: center;
+  padding: 20px;
+  background-color: #d4edda;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.registration-success h2 {
+  color: #155724;
+  margin-bottom: 10px;
+}
+
+.registration-success p {
+  color: #155724;
+}
+
+@media (max-width: 600px) {
+  .registration-form {
+    grid-template-columns: 1fr; /* Stacks fields in a single column on smaller screens */
+  }
+
+  .registration-container {
+    padding: 20px; /* Adjust padding for smaller screens */
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 14px;
+  }
+}
+
+.nav-login-button {
+  background-color: #87af7b; /* Background color */
+  color: #fff; /* Text color */
+  border: none; /* No border */
+  padding: 10px 20px; /* Padding inside the button */
+  border-radius: 20px; /* Rounded corners */
+  cursor: pointer; /* Cursor changes to pointer */
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.nav-login-button:hover {
+  background-color: #518251; /* Change background color on hover */
+}
+
+
+
+/* Navbar.css */
+
+.navbar {
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Optional: Adds a blurred background effect */
+  padding: 7px 20px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center; /* Align items vertically in the center */
+  justify-content: space-between; /* Space out left and right items */
+}
+
+.navbar-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  height: 50px; /* Adjust size as needed */
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center; /* Align buttons vertically in the center */
+  gap: 15px;
+}
+
+.nav-button {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.nav-button:hover {
+  color: #518251; /* Change to your brand color */
+}
+
+
+
+
+footer {
+  background-color: #6d9c5e; /* Footer background color */
+  color: white;
+  text-align: center;
+  padding: 40px; /* Space inside footer */
+  position: relative; /* Position relative to main container */
+  z-index: 0; /* Send footer behind form */
+  min-height: 70px; /* Set minimum height */
+  width: 100%; /* Make footer full width */
+   /* Align footer to bottom */
+}
+
+.footer p {
+  margin:0;
+  color: #000000;
+}
+
+.footer a {
+  color: #007bff; /* Link color */
+  text-decoration: none; /* Remove underline */
+}
+
+.footer a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+.message.success {
+  background-color: #d4edda; /* Green background for success */
+  color: #155724; /* Dark green text */
+}
+
+.message.error {
+  background-color: #f8d7da; /* Red background for error */
+  color: #721c24; /* Dark red text */
+}
+
+.already-registered {
+  margin-top: 20px; /* Space above the statement */
+  font-size: 14px; /* Font size */
+  text-align: center; /* Center the text */
+}
+
+.signin-link {
+  color: #518251; /* Link color */
+  text-decoration: underline; /* Underline link */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.signin-link:hover {
+  color: #87af7b; /* Change link color on hover */
+}

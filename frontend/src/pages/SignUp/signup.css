@@ -1,0 +1,163 @@
+body {
+  font-family: Arial, sans-serif;/* Background color for the whole page */
+  margin: 0;
+  padding: 0;
+}
+
+
+
+.form-container {
+    max-width: 500px; /* Increased width to fit elements better */
+    margin: 150px auto;
+    padding: 60px; /* Added more padding */
+    background-color: #6d9c5e;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    left: 21%;
+    background-color: rgba(249, 249, 249, 0.9); /* Added transparency */
+}
+
+
+.background-image {
+  position: absolute; /* Position the image absolutely */
+  top: 0;
+  left: 0;
+  width: 100%; /* Make the image cover the entire area */
+  height: 100%; 
+  background-size: cover; /* Make the image cover the container */
+  background-position: center; /* Center the image */
+  opacity: 0.5; /* Adjust opacity (0 = transparent, 1 = opaque) */
+  z-index: -1; /* Place it behind other content */
+}
+
+.nav-login-button {
+  background-color: #87af7b; /* Background color */
+  color: #fff; /* Text color */
+  border: none; /* No border */
+  padding: 10px 20px; /* Padding inside the button */
+  border-radius: 20px; /* Rounded corners */
+  cursor: pointer; /* Cursor changes to pointer */
+  font-size: 16px; /* Font size */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.nav-login-button:hover {
+  background-color: #518251; /* Change background color on hover */
+}
+
+
+.navbar {
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Optional: Adds a blurred background effect */
+  padding: 10px 20px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center; /* Align items vertically in the center */
+  justify-content: space-between; /* Space out left and right items */
+}
+
+.navbar-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  height: 50px; /* Adjust size as needed */
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center; /* Align buttons vertically in the center */
+  gap: 15px;
+}
+
+.nav-button {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.nav-button:hover {
+  color: #518251; /* Change to your brand color */
+}
+
+
+
+.form-title {
+  text-align: center; /* Center title text */
+  margin-bottom: 20px; /* Space below title */
+  font-weight: bold;
+}
+
+.contact-form {
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack items vertically */
+}
+
+label {
+  margin-bottom: 5px;
+    color: #555;
+    font-weight: bold; /* Make labels bold */
+}
+
+input, select, textarea {
+    padding: 12px; /* Increased padding */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;  /* Font size for input fields */
+}
+
+textarea {
+  resize: none; /* Disable resizing */
+  height: 100px; /* Set height for textarea */
+}
+
+.submit-button {
+  background-color: #87af7b; /* Button background color */
+  color: rgb(255, 255, 255); /* Button text color */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners */
+  padding: 10px; /* Padding inside the button */
+  cursor: pointer; /* Cursor changes to pointer */
+  margin-top: 15px;
+}
+
+.submit-button:hover {
+  background-color: #518251; /* Change button color on hover */
+}
+
+.success-message {
+  color: green;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.already-registered {
+  margin-top: 20px; /* Space above the statement */
+  font-size: 14px; /* Font size */
+  text-align: center; /* Center the text */
+}
+
+.signin-link {
+  color: #518251; /* Link color */
+  text-decoration: underline; /* Underline link */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.signin-link:hover {
+  color: #87af7b; /* Change link color on hover */
+}

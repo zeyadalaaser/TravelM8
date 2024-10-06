@@ -9,4 +9,5 @@ router.post('/tourguides', createTourGuide);              // Create a new user w
 router.put('/tourguides/:username', updateTourGuide);        // Update user information by email
 router.get('/tourguides', getTourGuides);                 // Read user by email
 
+
 export default router; 

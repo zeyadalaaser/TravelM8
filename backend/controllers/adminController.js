@@ -4,32 +4,31 @@ import TourGuide from '../models/tourguideModel.js';
 import Seller from '../models/sellerModel.js';
 import Advertiser from '../models/advertiserModel.js';
 import bcrypt from 'bcrypt';
-import { checkUniqueUsername } from "../helpers/signupHelper.js"; 
+import { checkUniqueUsername } from "../helpers/signupHelper.js";
 import Itinerary from '../models/itineraryModel.js';
 import Product from '../models/productModel.js';
 import Activity from '../models/activityModel.js';
 import TourismGovernor from '../models/tourismGovernorModel.js';
 import HistoricalPlaces from '../models/historicalPlacesModel.js';
+import Rating from '../models/ratingModel.js';
 
 
 export const registerAdmin = async (req, res) => {
-  const { username, password } = req.body;
-  const isNotUnique = await checkUniqueUsername(username);
+    const { username, password } = req.body;
+    const isNotUnique = await checkUniqueUsername(username);
 
-        if (isNotUnique) {
-            return res.status(400).json({ message: 'Username is already in use.' });
-        }
+    if (isNotUnique) {
+        return res.status(400).json({ message: 'Username is already in use.' });
+    }
 
-  try {
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new Admin({ username, password: hashedPassword });
-    await newUser.save();
-
-    res.status(201).json({ message: "Admin registered successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-  }
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new Admin({ username, password: hashedPassword });
+        await newUser.save();
+        res.status(201).json({ message: "Admin registered successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
 };
 
 export const deleteAccount = async (req, res) => {
@@ -93,5 +92,29 @@ export const deleteAccount = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
+    }
+};
+
+export const getUsers = async (req, res) => {
+    try {
+        
+        const admins = await Admin.find({}, 'username');
+        const tourists = await Tourist.find({}, 'username');
+        const tourGuides = await TourGuide.find({}, 'username');
+        const sellers = await Seller.find({}, 'username');
+        const advertisers = await Advertiser.find({}, 'username');
+
+        const users = [
+            ...admins.map(user => ({ username: user.username, type: 'Admin' })),
+            ...tourists.map(user => ({ username: user.username, type: 'Tourist' })),
+            ...tourGuides.map(user => ({ username: user.username, type: 'TourGuide' })),
+            ...sellers.map(user => ({ username: user.username, type: 'Seller' })),
+            ...advertisers.map(user => ({ username: user.username, type: 'Advertiser' })),
+        ];
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching users" });
     }
 };

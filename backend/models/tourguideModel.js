@@ -32,6 +32,9 @@ const tourGuideSchema = new mongoose.Schema({
       return /[a-zA-Z]/.test(value) && /\d/.test(value);
     }
   },
+
+  role: { type: String, default: 'TourGuide' },
+
   mobileNumber: {
     type: Number,
   },

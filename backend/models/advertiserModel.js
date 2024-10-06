@@ -39,6 +39,7 @@ const advertiserSchema = new mongoose.Schema({
       return /[a-zA-Z]/.test(value) && /\d/.test(value);
     }
   },
+  role: { type: String, default: 'Advertiser' },
   website: {
     type: String,
   },

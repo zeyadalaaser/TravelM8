@@ -24,9 +24,9 @@ const getAllPreferenceTags = async (req, res) => {
 
 
 const updatePreferenceTag = async (req, res) => {
-  const { name, newname } = req.body; 
+  const { name, newName } = req.body; 
   try {
-    const updatedTag = await PreferenceTag.findOneAndUpdate({ name },{ name: newname },{ new: true } );
+    const updatedTag = await PreferenceTag.findOneAndUpdate({ name },{ name: newName },{ new: true } );
 
     if (!updatedTag) {
       return res.status(404).json({ message: "Tag not found" });
