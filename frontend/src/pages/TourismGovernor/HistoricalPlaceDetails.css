@@ -1,0 +1,57 @@
+.historical-place-details {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .historical-place-details h2 {
+    color: #333;
+    margin-top: 0;
+  }
+  
+  .place-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .price-list {
+    margin-top: 20px;
+  }
+  
+  .price-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .price-list li {
+    margin-bottom: 5px;
+  }
+  
+  .action-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .edit-button, .back-button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    color: white;
+  }
+  
+  .edit-button {
+    background-color: #007bff;
+  }
+  
+  .back-button {
+    background-color: #6c757d;
+  }
