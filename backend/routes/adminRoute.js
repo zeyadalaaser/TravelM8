@@ -1,5 +1,5 @@
 import expresss from 'express';
-import {registerAdmin, deleteAccount} from '../controllers/adminController.js';
+import {registerAdmin, deleteAccount, getUsers} from '../controllers/adminController.js';
 
 const router =expresss.Router();
 
@@ -7,6 +7,7 @@ const router =expresss.Router();
 
 router.post("/admins/register", registerAdmin);
 router.delete("/users", deleteAccount);
+router.get("/getallusers", getUsers);
 
 
 export default router;

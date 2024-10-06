@@ -93,3 +93,27 @@ export const deleteAccount = async (req, res) => {
         res.status(500).send('Server error');
     }
 };
+
+export const getUsers = async (req, res) => {
+    try {
+        
+        const admins = await Admin.find({}, 'username');
+        const tourists = await Tourist.find({}, 'username');
+        const tourGuides = await TourGuide.find({}, 'username');
+        const sellers = await Seller.find({}, 'username');
+        const advertisers = await Advertiser.find({}, 'username');
+
+        const users = [
+            ...admins.map(user => ({ username: user.username, type: 'Admin' })),
+            ...tourists.map(user => ({ username: user.username, type: 'Tourist' })),
+            ...tourGuides.map(user => ({ username: user.username, type: 'TourGuide' })),
+            ...sellers.map(user => ({ username: user.username, type: 'Seller' })),
+            ...advertisers.map(user => ({ username: user.username, type: 'Advertiser' })),
+        ];
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching users" });
+    }
+};
