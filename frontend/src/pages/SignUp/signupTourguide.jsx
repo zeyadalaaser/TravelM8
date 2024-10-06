@@ -38,7 +38,7 @@ const FormPage = () => {
         <>
          <div
           className="background-image"
-          style={{ backgroundImage: `url(${backgroundImage})` }} // Set the background image source here
+          style={{ backgroundImage: `url(${backgroundImage})` }  }  // Set the background image source here
         ></div>
             <nav className="navbar">
                 <div className="navbar-left">

@@ -14,7 +14,8 @@ import { createItinerary,
  router.get("/itineraries", readItineraries); // Retrieve all itineraries
  router.put("/itineraries/:id", updateItinerary); // Update an itinerary by ID
  router.delete("/itineraries/:id", deleteItinerary); // Delete an itinerary by ID
- router.get("/itineraries/myItineraries", getMyItineraries); // Retrieve my itineraries
+ router.get("/myItineraries", getMyItineraries); // Retrieve my itineraries
+ router.get("/Filteritineraries",filterItineraries);
  //router.filter("/itineraries/:id",filterItineraries);
 
  export default router;

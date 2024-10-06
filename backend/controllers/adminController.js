@@ -10,6 +10,7 @@ import Product from '../models/productModel.js';
 import Activity from '../models/activityModel.js';
 import TourismGovernor from '../models/tourismGovernorModel.js';
 import HistoricalPlaces from '../models/historicalPlacesModel.js';
+import Rating from '../models/ratingModel.js';
 
 
 export const registerAdmin = async (req, res) => {
@@ -31,7 +32,7 @@ export const registerAdmin = async (req, res) => {
 };
 
 export const deleteAccount = async (req, res) => {
-    const { username, type } = req.query; // Get username and user type from query params
+    const { username, type } = req.body; // Get username and user type from request body
 
     if (!username || !type) {
         return res.status(400).send('Username and user type are required');
@@ -92,4 +93,37 @@ export const deleteAccount = async (req, res) => {
         console.error(error);
         res.status(500).send('Server error');
     }
+};
+
+
+export const getUsers = async (req, res) => {
+    try {
+        
+        const admins = await Admin.find({}, 'username');
+        const tourists = await Tourist.find({}, 'username');
+        const tourGuides = await TourGuide.find({}, 'username');
+        const sellers = await Seller.find({}, 'username');
+        const advertisers = await Advertiser.find({}, 'username');
+
+        const users = [
+            ...admins.map(user => ({ username: user.username, type: 'Admin' })),
+            ...tourists.map(user => ({ username: user.username, type: 'Tourist' })),
+            ...tourGuides.map(user => ({ username: user.username, type: 'TourGuide' })),
+            ...sellers.map(user => ({ username: user.username, type: 'Seller' })),
+            ...advertisers.map(user => ({ username: user.username, type: 'Advertiser' })),
+        ];
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching users" });
+    }
+
+export const getAllAdmins => = async (req, res) => {
+  try{
+    const allAdmins = await Admin.find({});
+    res.status(200).json(allAdmins);
+  }catch(error){
+    res.status(500).send("Server error");
+  
 };

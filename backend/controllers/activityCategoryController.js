@@ -47,7 +47,7 @@ export const updateActivityCategory = async (req, res) => {
 
 
 export const deleteActivityCategory = async (req, res) => {
-  const { name } = req.params; // Get the name of the category to delete from the request body
+  const { name } = req.body; // Get the name of the category to delete from the request body
   try {
     const deletedCategory = await ActivityCategory.findOneAndDelete({ name }); // Find and delete by name
     if (!deletedCategory) {
