@@ -4,18 +4,21 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ClearFilters } from './components/filters/clear-filters';
-import { DateFilter } from "./components/filters/date-filter";
-import { RatingFilter } from "./components/filters/rating-filter";
-import { PriceFilter } from "./components/filters/price-filter";
-import { SortSelection } from "./components/sort-selection";
-import { Attractions } from "./components/attractions";
-import { SearchBar } from "./components/search";
-import { getActivities } from "./api/apiService"
+import { ClearFilters } from '@/pages/tourist/components/filters/clear-filters';
+import { DateFilter } from "@/pages/tourist/components/filters/date-filter";
+import { RatingFilter } from "@/pages/tourist/components/filters/rating-filter";
+import { PriceFilter } from "@/pages/tourist/components/filters/price-filter";
+import { CategoryFilter } from "@/pages/tourist/components/filters/category-filter";
+import { SortSelection } from "@/pages/tourist/components/filters/sort-selection";
+import { Attractions } from "@/pages/tourist/components/activities";
+import { SearchBar } from "@/pages/tourist/components/filters/search";
+import { getActivities } from "@/pages/tourist/api/apiService";
 
 
 
 export default function TouristPage() {
+
+    const { location, navigate } = useRouter();
 
 useEffect(() => {
     // Check if the user has a token
@@ -40,7 +43,7 @@ useEffect(() => {
   }
 
 
-    const { location } = useRouter();
+   
     const [activities, setActivities] = useState([]);
 
     useEffect(() => {

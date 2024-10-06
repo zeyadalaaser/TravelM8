@@ -3,8 +3,6 @@ import cors from 'cors';
 import path from "path";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
-import cors from "cors";///////////////////////////////
-
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import preferenceTagRoute from "./routes/preferenceTagRoute.js";
