@@ -9,3 +9,7 @@ const apiClient = axios.create({
 export async function getActivities(query) {
     return (await apiClient.get('activities' + query)).data;
 }
+
+export async function getCategories() {
+    return (await apiClient.get('activity-categories')).data;
+}

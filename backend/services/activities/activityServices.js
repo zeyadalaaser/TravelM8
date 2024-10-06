@@ -1,6 +1,6 @@
 import Activity from "../../models/activityModel.js";
 
-function createFilterStage(budget, startDate, endDate, upcoming, categoryName) {
+function createFilterStage(price, startDate, endDate, upcoming, categoryName) {
     const filters = {};
 
     const now = new Date();
@@ -15,8 +15,8 @@ function createFilterStage(budget, startDate, endDate, upcoming, categoryName) {
 
     if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
-    if (budget) {
-        const [minBudget, maxBudget] = budget.split('-').map(Number);
+    if (price) {
+        const [minBudget, maxBudget] = price.split('-').map(Number);
 
         filters.$or = [
             {
@@ -119,9 +119,9 @@ function createRatingStage(entityType, includeRatings, minRating) {
     ];
 }
 
-export async function getActivities({ includeRatings, budget, startDate, endDate, upcoming, categoryName, minRating, sortBy, order }) {
+export async function getActivities({ includeRatings, price, startDate, endDate, upcoming, categoryName, minRating, sortBy, order }) {
     const categoryStage = createCategoryStage();
-    const filters = createFilterStage(budget, startDate, endDate, upcoming, categoryName);
+    const filters = createFilterStage(price, startDate, endDate, upcoming, categoryName);
     const sortStage = createSortStage(sortBy, order);
     const addRatingStage = createRatingStage('Activity', includeRatings, minRating);
     const advertiserStage = createAdvertiserStage();
