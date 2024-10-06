@@ -31,7 +31,8 @@
     "scrollreveal": "^4.0.9",
     "styled-components": "^6.1.13",
     "tailwind-merge": "^2.5.3",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "use-debounce": "^10.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
