@@ -4,9 +4,10 @@ import App from './App.jsx'
 //import TouristPage from '@/pages/tourist/tourist-page.jsx';
 //import SignUpForm from './signupTourist.jsx'
 //import ProfileTemplate from './profileTemplate.jsx'
-import AdminPage from '@/pages/admin/admin-page.jsx'
+// import AdminPage from '@/pages/admin/admin-page.jsx'
 import ProfileTemplate from '@/pages/TourGuide/profileTemplate.jsx'
 import ItineraryManager from '/Users/arwataha/Documents/GitHub/TravelM8/frontend/src/pages/TourGuide/itinerary.jsx';
+//import AdminPage from '@/pages/admin/admin-page.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 
