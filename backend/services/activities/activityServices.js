@@ -1,6 +1,6 @@
 import Activity from "../../models/activityModel.js";
 
-function createFilterStage(budget, startDate, endDate, upcoming, category) {
+function createFilterStage(budget, startDate, endDate, upcoming, categoryName) {
     const filters = {};
 
     const now = new Date();
@@ -11,9 +11,9 @@ function createFilterStage(budget, startDate, endDate, upcoming, category) {
     const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
         startDate ? new Date(startDate) : null;
 
-    if (start) filters.date = { $gte: start }; // Filter by startDate or current date for upcoming
+    if (start) filters.date = { $gte: start.toISOString() }; // Filter by startDate or current date for upcoming
 
-    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
+    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate).toISOString() };
 
     if (budget) {
         const [minBudget, maxBudget] = budget.split('-').map(Number);
@@ -41,8 +41,8 @@ function createFilterStage(budget, startDate, endDate, upcoming, category) {
         ];
     }
 
-    if (category) {
-        filters.category = category;
+    if (categoryName) {
+        filters.categoryName = categoryName;
     }
 
     return filters;
@@ -50,7 +50,47 @@ function createFilterStage(budget, startDate, endDate, upcoming, category) {
 
 function createSortStage(sortBy, order) {
     const orderValue = order === "desc" ? -1 : 1; // Determine sort order
-    return sortBy ? { [sortBy]: orderValue } : {}; // Return sort stage as an object
+    return sortBy ? [{ $sort: { [sortBy]: orderValue } }] : []; // Return sort stage as an object
+}
+
+function createCategoryStage() {
+    return [
+        {
+            $lookup: {
+                from: "activitycategories",  // Collection to join (e.g., categories)
+                localField: "category",  // Field in activities (category ID)
+                foreignField: "_id",  // Field in categories collection (ID of category)
+                as: "categoryDetails"  // Field to store the populated category details
+            }
+        },
+        {
+            $addFields: {
+                categoryName: { $arrayElemAt: ["$categoryDetails.name", 0] },  // Directly add category name from categoryDetails
+            }
+        },
+        {
+            $unset: "categoryDetails"  // Remove the categoryDetails object if it's no longer needed
+        }
+    ];
+}
+
+function createAdvertiserStage() {
+    return [
+        {
+            $lookup: {
+                from: "advertisers",       // The collection to join with
+                localField: "advertiserId", // Field in the activity collection
+                foreignField: "_id",        // Field in the advertiser collection
+                as: "advertiser"            // Name of the field to store the result
+            }
+        },
+        {
+            $unwind: {
+                path: "$advertiser",
+                preserveNullAndEmptyArrays: true
+            }
+        },
+    ];
 }
 
 // only entityType is a required parameter
@@ -59,13 +99,14 @@ function createRatingStage(entityType, includeRatings, minRating) {
         {
             $lookup: {
                 from: "ratings",
-                localField: "_id",  // (in entity) Entity's ID
-                foreignField: "entityId",  // (in rating) Rating's entityId
-                as: "ratings"  // Add the ratings to each activity as an array
+                let: { currentEntityId: "$_id" },  // Pass the entity's _id as currentEntityId
+                pipeline: [
+                    { $match: { $expr: { $eq: ["$entityId", "$$currentEntityId"] } } },  // Match only ratings for the current entity
+                    { $match: { entityType: entityType } },  // Match the entityType inside the lookup
+                    { $unset: ["entityId", "entityType"] }  // Remove entityId and entityType from each rating
+                ],
+                as: "ratings"
             }
-        },
-        {
-            $match: { "ratings.entityType": entityType } // Only keep ratings for activities
         },
         {
             $addFields: {
@@ -74,21 +115,26 @@ function createRatingStage(entityType, includeRatings, minRating) {
             }
         },
         ...(minRating ? [{ $match: { averageRating: { $gte: Number(minRating) } } }] : []),
-        ...(!includeRatings ? [{ $unset: "ratings" }] : [])
+        ...(includeRatings === "false" ? [{ $unset: "ratings" }] : [])
     ];
 }
 
-export async function getActivities({ includeRatings, budget, date, upcoming, category, minRating, sortBy, order }) {
-    const filters = createFilterStage(budget, date, upcoming, category);
+export async function getActivities({ includeRatings, budget, startDate, endDate, upcoming, categoryName, minRating, sortBy, order }) {
+    const categoryStage = createCategoryStage();
+    const filters = createFilterStage(budget, startDate, endDate, upcoming, categoryName);
     const sortStage = createSortStage(sortBy, order);
     const addRatingStage = createRatingStage('Activity', includeRatings, minRating);
+    const advertiserStage = createAdvertiserStage();
 
     const aggregationPipeline = [
+        ...categoryStage,
         { $match: filters },
         ...addRatingStage,
-        { $sort: sortStage }
+        ...sortStage,
+        ...advertiserStage
     ];
 
+    console.log(aggregationPipeline);
     // Execute the aggregation pipeline
     const activities = await Activity.aggregate(aggregationPipeline);
     return activities;

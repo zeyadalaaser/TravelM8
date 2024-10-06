@@ -6,8 +6,9 @@ import validator from "validator";
 
 const touristSchema = new Schema({
   name: {
+
     type: String
-   
+
   },
   
   username: {

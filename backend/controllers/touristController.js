@@ -7,7 +7,7 @@ import bcrypt from 'bcryptjs';
 
 export const createTourist = async(req,res) => {
    //add a new Tourist to the database with 
-   const {username, email, password, mobileNumber, nationality, dob, occupation} = req.body;
+   const {username, name, email, password, mobileNumber, nationality, dob, occupation} = req.body;
    const isNotUnique = await checkUniqueUsernameEmail(username, email);
 
         if (isNotUnique) {

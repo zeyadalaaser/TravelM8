@@ -9,7 +9,7 @@ import preferenceTagRoute from "./routes/preferenceTagRoute.js";
 import tourismGovernorRoute from "./routes/tourismGovernorRoute.js";
 import advertiserRoute from './routes/advertiserRoute.js';
 import sellerRoute from './routes/sellerRoute.js';
-import tourGuideRoute from "./routes/tourGuideRoute.js";
+import tourGuideRoute from './routes/tourguideRoute.js';
 import touristRoute from "./routes/touristRoute.js";
 import productRoute from './routes/productRoute.js'; 
 import activityRoute from "./routes/activityRoute.js"
