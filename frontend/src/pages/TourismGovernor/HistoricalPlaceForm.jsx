@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '@/pages/TourismGovernor/HistoricalPlaceForm.css';
 
-export default function HistoricalPlaceForm() {
+export default function HistoricalPlaceForm({ places, onSubmit }) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
