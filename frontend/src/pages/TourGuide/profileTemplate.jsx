@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './profileTemplate.css';
 import { Search, Menu, User, Heart, ShoppingCart } from 'lucide-react';
-import ItineraryManager from './itinerary';
+import ItineraryManager from '../../itinerary';
 import Mytourguide from './tourguide';
 const ProfileTemplate = () => {
 
