@@ -14,8 +14,6 @@ export const createProduct = async (req, res) => {
         price,
         quantity,
         description,
-        // rating, 
-        // reviews, 
         sellerId: req.user.userId
       }
     );
@@ -52,7 +50,23 @@ export const deleteProduct = async (req, res) => {
 const createPopulateStage = (minRating) => {
   const ratingStage = createRatingStage("Product", false, minRating)
   return [
-    ...ratingStage
+    ...ratingStage,
+    {
+      $lookup: {
+        from: "sellers",
+        localField: "sellerId",
+        foreignField: "_id",
+        as: "seller"
+      }
+    },
+    {
+      $unset: "sellerId"
+    },
+    {
+      $addFields: {
+        seller: { $ifNull: [{ $arrayElemAt: ["$seller", 0] }, null] } // Set seller to null if no match
+      }
+    }
   ];
 }
 
@@ -64,14 +78,14 @@ export const getAllProducts = async (req, res) => {
     //My Filter Logic
     let filter = {};   //this is empty filter object and if user did not provide min and max, will retrieve all products
     if (minPrice || maxPrice) {
-      filter.Price = {}; //ba-initialize empty price filter object
-      if (minPrice) filter.Price.$gte = parseFloat(minPrice);  // Price >= minPrice
-      if (maxPrice) filter.Price.$lte = parseFloat(maxPrice);  // Price <= maxPrice
+      filter.price = {}; //ba-initialize empty price filter object
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);  // Price >= minPrice
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);  // Price <= maxPrice
     }
 
     //Search Logic 
     if (search) {
-      filter.Name = { $regex: search, $options: 'i' }; // 'i' makes it case-insensitive; ya3ny masln product and PRODUCT ; bei-treat the uppercase and lowercase the same 
+      filter.name = { $regex: search, $options: 'i' }; // 'i' makes it case-insensitive; ya3ny masln product and PRODUCT ; bei-treat the uppercase and lowercase the same 
     }
 
     //Sorting Logic
@@ -83,8 +97,7 @@ export const getAllProducts = async (req, res) => {
     }
 
     if (sortBy) {
-      const mappedSortBy = sortBy === "price" ? "Price" : "averageRating";
-      sortCondition[mappedSortBy] = order === "desc" ? -1 : 1;
+      sortCondition[sortBy] = order === "desc" ? -1 : 1;
     }
 
     const aggregationPipeline = [
