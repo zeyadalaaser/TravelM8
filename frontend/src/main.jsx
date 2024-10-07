@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 
 import TouristPage from '@/pages/tourist/tourist-page.jsx';
-import Login from '@/pages/SignIn/Login.jsx'; 
+import Login from '@/pages/SignIn/Login.jsx';
 import SignupGeneral from '@/pages/SignUp/SignupGeneral.jsx';
 import TouristRegistration from '@/pages/SignUp/signupTourist.jsx'
 import FormPage from '@/pages/SignUp/signupTourguide.jsx';
@@ -16,7 +16,7 @@ import ActivityCategories from "./services/ActivityCategories"; // Ensure this p
 import Admin from "./services/Admin"; // Import the Admin component
 import DeleteUser from './pages/admin/deleteUser-page.jsx'
 import PreferenceTag from './pages/admin/preferenceTag-page.jsx';
-import Dashboard from './pages/admin/dashboard.jsx'; 
+import Dashboard from './pages/admin/dashboard.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -24,11 +24,10 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         {/* <Route path="/" element={<App />} /> */}
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
-        <Route path="/tourist" element={<TouristPage/>} />
-        <Route path="/tourist" element={<TouristPage/>} />
-        <Route path="/deleteUser" element={<DeleteUser/>} />
-        <Route path="/preferenceTag" element={<PreferenceTag/>} />
-        <Route path="/dashboard" element={<Dashboard/>} />
+        <Route path="/tourist" element={<TouristPage />} />
+        <Route path="/deleteUser" element={<DeleteUser />} />
+        <Route path="/preferenceTag" element={<PreferenceTag />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
         <Route path="/admin/addTourismGovernor" element={<TourismGovernor />} />
@@ -40,8 +39,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/tourist-page" element={<TouristPage />} />
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
         <Route path="/advertiserPage" element={<AdvertiserHomePage />} />
-         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
-         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
+        <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
+        <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
