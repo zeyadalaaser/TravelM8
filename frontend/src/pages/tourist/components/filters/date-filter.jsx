@@ -16,22 +16,13 @@ const formatDateToISOString = (date) => {
 };
 
 export function DateFilter() {
+    const createDate = (date) => {
+        return date ? new Date(date) : null;
+    };
+
     const { searchParams, navigate, location } = useRouter();
 
-    const [date, setDate] = useState();
-
-    useEffect(() => {
-        const from = searchParams.get('startDate');
-        const to = searchParams.get('endDate')
-        setDate({
-            from: from ? new Date(from) : null,
-            to: to ? new Date(to) : null,
-        });
-    }, [searchParams]);
-
     const handleSelectDate = (date) => {
-        setDate(date);
-
         searchParams.set('startDate', formatDateToISOString(date?.from));
         searchParams.set('endDate', formatDateToISOString(date?.to));
 
@@ -48,7 +39,12 @@ export function DateFilter() {
             <CardTitle>When?</CardTitle>
         </CardHeader>
         <CardContent>
-            <DatePickerWithRange date={date} onSelect={handleSelectDate} />
+            <DatePickerWithRange
+                date={{
+                    from: createDate(searchParams.get('startDate')),
+                    to: createDate(searchParams.get('endDate'))
+                }}
+                onSelect={handleSelectDate} />
         </CardContent>
     </Card>
 }

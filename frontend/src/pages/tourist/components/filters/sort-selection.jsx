@@ -1,23 +1,11 @@
-import useRouter from '@/hooks/useRouter'; 
-import { useState, useEffect } from 'react';
+import useRouter from '@/hooks/useRouter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export function SortSelection() {
 
     const { searchParams, navigate, location } = useRouter();
-    const [selected, setSelected] = useState('featured-?');
-
-    useEffect(() => {
-        const sortBy = searchParams.get('sortBy');
-        const order = searchParams.get('order');
-
-        if (sortBy)
-            setSelected(`${sortBy}-${order}`);
-
-    }, [searchParams]);
 
     const handleSort = (value) => {
-        setSelected(value);
         const [sortBy, order] = value.split('-');
 
         if (sortBy === 'featured') {
@@ -32,15 +20,23 @@ export function SortSelection() {
         navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
     };
 
-    return <Select value={selected} onValueChange={handleSort}>
-        <SelectTrigger className="w-[180px] !ring-0">
-            <SelectValue placeholder="Sort by" />
-        </SelectTrigger>
-        <SelectContent>
-            <SelectItem value="featured-?">Featured</SelectItem>
-            <SelectItem value="price-asc">Price: Low to High</SelectItem>
-            <SelectItem value="price-desc">Price: High to Low</SelectItem>
-            <SelectItem value="averageRating-desc">Rating</SelectItem>
-        </SelectContent>
-    </Select>
+    const getSortBy = () => {
+        const sortBy = searchParams.get('sortBy');
+        const order = searchParams.get('order');
+        return sortBy ? `${sortBy}-${order}` : "featured-?";
+    }
+
+    return (
+        <Select value={getSortBy()} onValueChange={handleSort}>
+            <SelectTrigger className="w-[180px] !ring-0">
+                <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="featured-?">Featured</SelectItem>
+                <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                <SelectItem value="averageRating-desc">Rating</SelectItem>
+            </SelectContent>
+        </Select>
+    )
 }

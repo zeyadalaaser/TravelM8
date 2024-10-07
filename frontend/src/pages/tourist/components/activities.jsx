@@ -1,5 +1,6 @@
-import { Clock } from "lucide-react";
+import { Clock, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Stars } from "./stars";
 
 export function Attractions({ attractions }) {
@@ -20,6 +21,16 @@ export function Attractions({ attractions }) {
                         <div className="flex items-center text-sm text-gray-600 mb-2">
                             <Clock className="w-4 h-4 mr-1" />
                             {attraction.date.slice(0, 10)}
+                        </div>
+                        <div className="flex items-center flex-wrap gap-2 mb-2">
+                            <Tag className="w-4 h-4 mr-1" />
+                            {attraction.tags.map((tag, tagIndex) => (
+                                <Badge key={tagIndex} variant="secondary">{tag?.name ?? tag}</Badge>
+                            ))}
+                        </div>
+                        <div className="flex items-center mb-2">
+                            <span className="text-sm font-semibold mr-2">Category:</span>
+                            <Badge variant="outline">{attraction.categoryName ?? attraction.category}</Badge>
                         </div>
                         <div className="text-xl font-bold">
                             {Array.isArray(attraction.price) && attraction.price.length === 2
