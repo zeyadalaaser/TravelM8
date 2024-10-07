@@ -7,10 +7,13 @@ import mongoose from "mongoose";
 //create new itinerary 
 export const createItinerary = async (req, res) => {
     try {
-        const newItinerary = new Itinerary(req.body);  
-        await newItinerary.save(); 
+      const newItineraryData = {
+        ...req.body, 
+        tourGuideId: req.user.userId 
+      };
+        await newItineraryData.save(); 
         res.status(201).json({
-             message: 'Itinerary added successfully', itinerary: newItinerary });  
+             message: 'Itinerary added successfully',newItineraryData });  
     } catch (error) {
         res.status(500).json({ 
             message: 'Error adding itinerary', error: error.message });    
@@ -38,7 +41,7 @@ export const readItineraries = async (req, res) => {
    //TourGuide only
    export const getMyItineraries = async(req, res) => {    
     try{
-    const {tourGuideId}=req.body;
+    const tourGuideId =req.user.userId;
     if(!mongoose.Types.ObjectId.isValid(tourGuideId)){
       return res.status(404).json({ message:"Enter a valid id"});
     }

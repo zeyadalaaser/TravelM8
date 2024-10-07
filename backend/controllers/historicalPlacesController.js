@@ -4,14 +4,14 @@ import HistoricalPlace from "../models/historicalPlacesModel.js";
 
 export const createHistoricalPlace= async (req, res) => {
   try {
-    const { name, description, location, image, openingHours, price,tags,tourismGovernorId } = req.body;
+    const { name, description, location, image, openingHours, price,tags} = req.body;
 
     if (!name || !description  || !location || !image || !openingHours || !price) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
     const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags,
-      tourismGovernorId
+      tourismGovernorId: req.user.userId
     });
 
       await newPlace.save();
@@ -25,18 +25,19 @@ export const createHistoricalPlace= async (req, res) => {
 
 //TourismGovernor only
 export const getMyPlaces = async (req, res) => {
-  const userId = req.user.userId;
-  const userRole = req.user.role;
-  let Places;
-  if (userRole === "TourismGovernor") {
-    Places = await HistoricalPlace.find({ tourismGovernorId: userId });
-    if (Places.length == 0)
-      res.status(204);
-    else
-      res.status(200).json({ Places });
-  } else {
-    res.status(400).json({ message: "enter a valid id" });
-  }
+  const userId = req.user?.userId;
+
+ 
+  try {
+    let Places;
+      Places = await HistoricalPlace.find({ tourismGovernorId: userId });
+      if (Places.length == 0)
+        res.status(204);
+      else
+        res.status(200).json({ Places });
+    } catch (error) {
+      res.status(400).json({ message: "enter a valid id" });
+    }
 };
 
   

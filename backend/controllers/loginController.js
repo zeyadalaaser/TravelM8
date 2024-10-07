@@ -42,6 +42,7 @@ import Seller from '../models/sellerModel.js';
 
 
 // controllers/authController.js
+const secret = "a$T8#fGz!x7%kH4q";
 
 
 export const login = async (req, res) => {
@@ -88,7 +89,7 @@ export const login = async (req, res) => {
         role // Use the determined role
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, secret, { expiresIn: '1h' });
 
     res.json({ token, role });
 };

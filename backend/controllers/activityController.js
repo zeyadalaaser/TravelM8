@@ -1,6 +1,7 @@
 import activityModel from "../models/activityModel.js";
 import mongoose from "mongoose";
 import { getActivities } from "../services/activities/activityServices.js";
+import { runInNewContext } from "vm";
 
 const createNewActivity = async (req, res) => {
 
@@ -15,7 +16,6 @@ const createNewActivity = async (req, res) => {
         discount,
         isBookingOpen,
         image,
-        advertiserId, //=> add its logic from idk the session or sum
     } = req.body;
 
     if (
@@ -34,7 +34,7 @@ const createNewActivity = async (req, res) => {
             discount,
             isBookingOpen,
             image,
-            advertiserId
+            advertiserId: req.user.userId
         };
 
 
@@ -76,32 +76,6 @@ const getActivityById = async(req,res) => {
     }
 
 }
-
-// const updateActivity = async (req, res) => {
-//     const activityId = req.params.id;
-
-//     if (mongoose.Types.ObjectId.isValid(activityId)) {
-//         const updateFields = Object.fromEntries(
-//             Object.entries(req.body).filter(([key, value]) => value != null));
-//         try {
-//             const newActivity = await activityModel.findByIdAndUpdate(
-//                 activityId,
-//                 { $set: updateFields },
-//                 { new: true, runValidators: true } // Return updated user and apply validation
-//             ).populate('advertiserId','username')
-//             .populate('category','name')
-//             .populate('tags','name');
-
-//         if (activity.length == 0)
-//             res.status(200).json({ message: "successfully updated the activity", newActivity });
-
-//         } catch (error) {
-//             res.status(400).json({ message: "enter a valid data" });
-//         }
-//     } else {
-//         res.status(400).json({ message: "enter a valid id" });
-//     }
-// }
 
 const updateActivity = async (req, res) => {
     const activityId = req.params.id;
@@ -157,7 +131,7 @@ const updateActivity = async (req, res) => {
 
 //advertiser only
 const getMyActivities = async (req, res) => {
-    const { advertiserId } = req.body; // logic of "my"
+    const advertiserId = req.user.userId; // logic of "my"
     console.log(advertiserId);
     if (mongoose.Types.ObjectId.isValid(advertiserId)) {
         try{

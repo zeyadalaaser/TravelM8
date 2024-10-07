@@ -9,12 +9,6 @@ import useRouter from "@/hooks/useRouter"
 export default function TourismGovernorDashboard() {
   const [historicalPlaces, setHistoricalPlaces] = useState([]);
   const token = localStorage.getItem('token');
-
-  useEffect(() => {
-    // Fetch historical places from API
-    fetchHistoricalPlaces();
-  }, []);
-
   const { navigate } = useRouter();
 
 useEffect(() => {
@@ -24,7 +18,7 @@ useEffect(() => {
       navigate("/login"); // Redirect to login page if no token
       return;
     }
-
+    fetchHistoricalPlaces();
 
   }, [navigate]);
 
@@ -37,9 +31,8 @@ useEffect(() => {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         },
       });
-       console.log(await response.text());
       const data = await response.json();
-      setHistoricalPlaces(data);
+      setHistoricalPlaces(data["Places"]);
     } catch (error) {
       console.error('Error fetching historical places:', error);
     }
