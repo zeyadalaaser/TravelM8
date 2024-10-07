@@ -115,7 +115,7 @@ export const deleteItinerary = async (req, res) => {
 
 export const filterItineraries = async (req, res) => {
   try {
-    const { price, tags, language, startDate, endDate, searchBy, search } = req.query;   
+    const { price, tags, language, startDate, endDate, searchBy, search, sortBy, order } = req.query;   
 
     const query = {};
 
@@ -157,6 +157,10 @@ export const filterItineraries = async (req, res) => {
     {
       query.name = { $regex: search, $options: 'i' };
     }
+    
+    let sortCondition = {};
+    if (sortBy === 'price')
+        sortCondition[sortBy] = order === "desc" ? -1 : 1;
 
     if (startDate) query['availableSlots.date'] = { $gte: new Date(startDate) }; // Filter by startDate or current date for upcoming
 
@@ -165,7 +169,7 @@ export const filterItineraries = async (req, res) => {
     const itineraries = await Itinerary.find(query)
       .populate('activities')  
       .populate('historicalSites')  
-      .populate('tags').populate("tourGuideId");   
+      .populate('tags').populate("tourGuideId").sort(sortCondition);   
      
 
     res.status(200).json(itineraries);
