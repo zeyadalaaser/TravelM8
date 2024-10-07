@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
-
 import TouristPage from '@/pages/tourist/tourist-page.jsx';
 import Login from '@/pages/SignIn/Login.jsx';
 import SignupGeneral from '@/pages/SignUp/SignupGeneral.jsx';
@@ -11,7 +10,6 @@ import FormPageSeller from '@/pages/SignUp/signupSeller.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx"
-//import "./styles/main.css";
 import ActivityCategories from "./services/ActivityCategories"; // Ensure this path is correct
 import Admin from "./services/Admin"; // Import the Admin component
 //import TourismGovernor from "./services/TourismGovernor";  
@@ -21,6 +19,9 @@ import Dashboard from './pages/admin/dashboard.jsx';
 import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
+import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
+import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
+import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
 
 
 createRoot(document.getElementById('root')).render(
@@ -46,6 +47,9 @@ createRoot(document.getElementById('root')).render(
         <Route path="/advertiserPage" element={<AdvertiserHomePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
+        <Route path="/add" element={<HistoricalPlaceForm/>} />
+        <Route path="/edit/:id" element={<HistoricalPlaceForm  />} />
+        <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

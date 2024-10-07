@@ -56,24 +56,24 @@ const FormPage = () => {
             <div className="form-container">
                 <h1 className="form-title">Get started advertising of TravelM8</h1>
                 <form onSubmit={handleSubmit} className="contact-form">
-                    <label htmlFor="username">Username</label>
-                    <input
+                    <label className = "form-label" htmlFor="username">Username</label>
+                    <input className="form-input"
                         type="text"
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
                         required
                         placeholder="Enter your username" />
-                    <label htmlFor="email">Email</label>
-                    <input
+                    <label className = "form-label" htmlFor="email">Email</label>
+                    <input className="form-input"
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
                         required
                         placeholder="Enter your email" />
-                    <label htmlFor="password">Password</label>
-                    <input
+                    <label  className = "form-label" htmlFor="password">Password</label>
+                    <input className="form-input"
                         type="password"
                         name="password"
                         value={formData.password}

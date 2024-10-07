@@ -104,17 +104,17 @@ body {
   flex-direction: column; /* Stack items vertically */
 }
 
-label {
+.form-label {
   margin-bottom: 5px;
-    color: #555;
-    font-weight: bold; /* Make labels bold */
+  color: #555;
+  font-weight: bold; /* Make labels bold */
 }
 
-input, select, textarea {
-    padding: 12px; /* Increased padding */
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;  /* Font size for input fields */
+.form-input {
+  padding: 12px; /* Increased padding */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px; /* Font size for input fields */
 }
 
 textarea {
