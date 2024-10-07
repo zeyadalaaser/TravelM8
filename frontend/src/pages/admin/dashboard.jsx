@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -142,7 +142,7 @@ function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">+12 new products this week</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => navigate('/admin/products')}>
+                <Button className="w-full" onClick={() => navigate('/product')}>
                   Manage Products
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
