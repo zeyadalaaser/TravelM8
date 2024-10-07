@@ -11,7 +11,7 @@ const TourGuideHomePage = () => {
       <Button onClick={() => navigate("/profileTemplate")} className="w-48">
         Go to Profile
       </Button>
-      <Button onClick={() => navigate("/Advertiser")} className="w-48">
+      <Button onClick={() => navigate("/itinerary")} className="w-48">
         Go to Itinerary
       </Button>
     </div>

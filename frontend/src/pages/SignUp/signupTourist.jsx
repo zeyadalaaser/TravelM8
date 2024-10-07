@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './signupTourist.css';
 import backgroundImage from '@/assets/backgroundtourist.jpg';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; // Import Axios
 
 export default function TouristRegistration() {
@@ -28,6 +29,8 @@ export default function TouristRegistration() {
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const navigate = useNavigate(); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,6 +80,7 @@ export default function TouristRegistration() {
         console.log('Form submitted successfully:', response.data);
         setMessage('Registration Successful! Thank you for registering, ' + formData.username);
         setIsSubmitted(true);
+        navigate('/tourist-page');
       } catch (error) {
         if (error.response) {
             // The request was made and the server responded with a status code
@@ -251,5 +255,3 @@ export default function TouristRegistration() {
   );
 
 }
-
-
