@@ -32,7 +32,7 @@ import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx"
 import TouristProfile from './pages/tourist/components/tourist-profile.jsx';
 import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
-import sellerProfile from "@/pages/seller/SellerProfile.jsx";
+import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 
 createRoot(document.getElementById('root')).render(
@@ -41,8 +41,8 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
-        <Route path="/SellerProducts" element={<SellerProducts />} />
-        <Route path="/SellerProfile" element={<sellerProfile />} />
+        <Route path="/SellerProduct" element={<SellerProducts />} />
+        <Route path="/SellerProfile" element={<SellerProfile />} />
         <Route path="/tourist" element={<TouristPage />} />
         <Route path="/myItineraries" element={<Itineraries />} />
         <Route path="/deleteUser" element={<DeleteUser />} />
