@@ -3,24 +3,25 @@ import HistoricalPlace from "../models/historicalPlacesModel.js";
 
 
 export const createHistoricalPlace= async (req, res) => {
-    try {
-      const { name, description, location, image, openingHours, price,tags } = req.body;
-  
-      if (!name || !description || !location || !image || !openingHours || !price) {
-        return res.status(400).json({ message: "All fields are required." });
-      }
-      
-      const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags         
-      });
-  
-        await newPlace.save();
+  try {
+    const { name, description, location, image, openingHours, price,tags,tourismGovernorId } = req.body;
 
-      res.status(201).json({message:" Historical place created successfully",newPlace});
-    } catch (error) {
-      console.error("Error creating new historical place:", error);
-      res.status(500).json({ message: "Server error. Could not create the historical place." });
+    if (!name || !description  || !location || !image || !openingHours || !price) {
+      return res.status(400).json({ message: "All fields are required." });
     }
-}; 
+
+    const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags,
+      tourismGovernorId
+    });
+
+      await newPlace.save();
+
+    res.status(201).json({message:" Historical place created successfully",newPlace});
+  } catch (error) {
+    console.error("Error creating new historical place:", error);
+    res.status(500).json({ message: "Server error. Could not create the historical place." });
+  }
+};
 
 //TourismGovernor only
 export const getMyPlaces = async (req, res) => {
@@ -28,7 +29,7 @@ export const getMyPlaces = async (req, res) => {
   const userRole = req.user.role;
   let Places;
   if (userRole === "TourismGovernor") {
-    Places = await HistoricalPlace.find({ TourismGovernorId: userId });
+    Places = await HistoricalPlace.find({ tourismGovernorId: userId });
     if (Places.length == 0)
       res.status(204);
     else
