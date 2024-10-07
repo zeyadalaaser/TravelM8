@@ -6,16 +6,23 @@ import SignUpForm from '@/pages/SignUp/signupTourist.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
 import TouristPage from './pages/tourist/tourist-page.jsx'
+import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
+import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 //import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
+        {/* <Route path="/" element={<App />} /> */}
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
-        <Route path="/sign-up-tourist" element={<SignUpForm/>} />
-        <Route path="/tourist" element={<TouristPage/>} />
+        {/* <Route path="/sign-up-tourist" element={<SignUpForm/>} />
+        <Route path="/tourist" element={<TouristPage/>} /> */}
+          <Route path="/" element={<AdvertiserHomePage />} />
+         <Route path="/" element={<AdvertiserProfile />} />
+         <Route path="/" element={<AdvertiserActivities />} />
+
+
       </Routes>
     </BrowserRouter>
   </StrictMode>,
