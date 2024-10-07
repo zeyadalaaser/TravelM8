@@ -19,6 +19,7 @@ export default function SignupGeneral() {
     { name: 'Tourist', icon: <FaUser />, path: 'signupTourist' },
     { name: 'Tour Guide', icon: <FaCompass />, path: 'signupTourguide' },
     { name: 'Seller', icon: <FaStore />, path: 'signupSeller' },
+    { name: 'Adveriser', icon: <FaStore />, path: 'signupAdvertiser' },
   ]
 
   return (

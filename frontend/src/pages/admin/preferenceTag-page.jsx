@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
@@ -115,6 +116,17 @@ const Preferencetag = () => {
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">Vacation Preference Tags</h1>
+
+          {/* Dashboard Button */}
+          <div className="flex justify-end mb-4">
+            <Button
+              onClick={() => (window.location.href = "/dashboard")} // Change '/dashboard' to your actual dashboard route
+              variant="outline"
+            >
+              Go to Dashboard
+            </Button>
+          </div>
+
           <div className="flex justify-between items-center mb-4">
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>

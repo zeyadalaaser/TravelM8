@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRouter, useState, useEffect } from 'react';
 import axios from 'axios';
 import './itinerary2.css'; // Import the CSS file
+// import jwt  from  'jsonwebtoken';
 
 const ItineraryForm = () => {
   const [name, setName] = useState('');
@@ -22,7 +23,6 @@ const ItineraryForm = () => {
 
 
   const token = localStorage.getItem('token');
-  const navigate = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +34,7 @@ const ItineraryForm = () => {
         ]);
 
         setActivities(activitiesRes.data);
+        console.log(activitiesRes.data);
         setTags(tagsRes.data);
         setHistoricalSites(historicalSitesRes.data);
         setTourGuides(tourGuidesRes.data);
@@ -65,11 +66,19 @@ const ItineraryForm = () => {
       pickUpLocation: pickupLocation,
       dropOffLocation: dropoffLocation,
       tags: selectedTags,
-      tourGuideId: token,
+      tourGuideId: "",
     };
 
     try {
-      await axios.post('http://localhost:5001/api/itineraries', itineraryData);
+      const response = await fetch('http://localhost:5001/api/itineraries', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(itineraryData), // Correctly send the changed fields
+      });
+      console.log(await response.text());
       alert('Itinerary created successfully');
     } catch (error) {
       console.error('Error creating itinerary:', error);
@@ -108,7 +117,7 @@ const ItineraryForm = () => {
           <option value="">Select an activity</option>
           {activities.map((activity) => (
             <option key={activity._id} value={activity._id}>
-              {activity.name}
+              {activity.title}
             </option>
           ))}
         </select>
@@ -157,7 +166,7 @@ const ItineraryForm = () => {
 
         <label className="label">Start Time:</label>
         <input
-          type="time"
+          type="String"
           className="input-time"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
@@ -166,7 +175,7 @@ const ItineraryForm = () => {
 
         <label className="label">End Time:</label>
         <input
-          type="time"
+          type="String"
           className="input-time"
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
@@ -215,20 +224,6 @@ const ItineraryForm = () => {
           ))}
         </select>
 
-        <label className="label">Tour Guide:</label>
-        <select
-          className="select"
-          value={selectedTourGuide}
-          onChange={(e) => setSelectedTourGuide(e.target.value)}
-          required
-        >
-          <option value="">Select a tour guide</option>
-          {tourGuides.map((guide) => (
-            <option key={guide._id} value={guide._id}>
-              {guide.name}
-            </option>
-          ))}
-        </select>
 
         <button type="submit" className="button">Create Itinerary</button>
       </form>

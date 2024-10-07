@@ -19,7 +19,7 @@ import Dashboard from './pages/admin/dashboard.jsx';
 import AdvertiserProfile from './pages/Advertiser/advertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
-import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
+//import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
 //import ProductApp from './pages/admin/ProductApp.jsx'
@@ -30,6 +30,8 @@ import ProfileTemplate from './pages/TourGuide/profileTemplate.jsx';
 import Itinerary from './pages/TourGuide/itinerary2.jsx';
 import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx"
 import TouristProfile from './pages/tourist/components/tourist-profile.jsx';
+import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
+import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -38,16 +40,18 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
         <Route path="/tourist" element={<TouristPage />} />
+        <Route path="/myItineraries" element={<Itineraries />} />
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route path="/product" element={<ProductPage />} /> */}
+        <Route path="/product" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
         <Route path="/admin/addTourismGovernor" element={<TourismGovernor1 />} />
         <Route path="login" element={<Login />} />
         <Route path="/signup" element={<SignupGeneral />} />
         <Route path="/signup/signupTourist" element={<TouristRegistration />} />
+        <Route path="/signup/signupAdvertiser" element={<AdvertiserRegistration />} />
         <Route path="/signup/signupTourguide" element={<FormPage />} />
         <Route path="/signup/signupSeller" element={<FormPageSeller />} />
         <Route path="/tourist-page" element={<TouristPage />} />

@@ -32,7 +32,7 @@ export default function Navbar() {
 
         <ul>
           <li>
-            <Link to="/dashboard">Home</Link>
+            <Link to="/">Home</Link>
           </li>
           <li>
             <Link to="#services">About</Link>
