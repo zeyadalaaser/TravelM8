@@ -1,5 +1,6 @@
 import express from 'express';
 import { createTourist, updateTourist, getTourists } from '../controllers/touristController.js';
+import verifyToken from '../services/tokenDecodingService.js';
 
 
 const touristRoute = express.Router();

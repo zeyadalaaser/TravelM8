@@ -1,5 +1,6 @@
 import express from 'express';
 import { createAdvertiser, updateAdvertiser, getAdvertisers, getMyProfile } from '../controllers/advertiserController.js'; // Add .js extension
+import verifyToken from '../services/tokenDecodingService.js';
 
 const router = express.Router();
 
