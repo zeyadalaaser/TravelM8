@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTourist, updateTourist, getTourists } from '../controllers/touristController.js';
+import { createTourist, updateTourist, getTourists, getMyProfile } from '../controllers/touristController.js';
 import verifyToken from '../services/tokenDecodingService.js';
 
 
