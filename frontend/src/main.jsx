@@ -21,6 +21,8 @@ import Dashboard from './pages/admin/dashboard.jsx';
 import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
+import SellerProfile from './pages/seller/SellerProfile.jsx';
+
 
 
 createRoot(document.getElementById('root')).render(
@@ -45,6 +47,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
         <Route path="/advertiserPage" element={<AdvertiserHomePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
+        <Route path="/sellerProfile" element={<SellerProfile />} />
+        
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
       </Routes>
     </BrowserRouter>
