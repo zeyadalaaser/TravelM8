@@ -105,14 +105,20 @@ export default function HistoricalPlaceForm({ tourismGovernorId, onSubmit }) {
           <label>Opening Hours - Close:</label>
           <input type="text" name="close" value={formData.openingHours.close} onChange={e => setFormData({ ...formData, openingHours: { ...formData.openingHours, close: e.target.value } })} required />
         </div>
-        {formData.price.map((price, index) => (
-          <div className="form-group" key={index}>
-            <label>Price Type:</label>
-            <input type="text" name="type" value={price.type} onChange={e => handlePriceChange(index, e)} required />
+          <div className="form-group" >
+            <label>Price For Natives:</label>
+            <input type="text" name="type" value={formData.price.type} onChange={e => setFormData({ ...formData, price: { ...formData.price, type: e.target.value } })} required />
             <label>Price:</label>
-            <input type="number" name="price" value={price.price} onChange={e => handlePriceChange(index, e)} required />
+            <input type="number" name="price" value={formData.price.price} onChange={e => setFormData({ ...formData, price: { ...formData.price, price: e.target.value } })} required />
           </div>
-        ))}
+          <div className="form-group" >
+            <label>Price For Students:</label>
+            <input type="text" name="type" value={formData.price.type} onChange={e => setFormData({ ...formData, price: { ...formData.price, type: e.target.value } })} required />
+          </div>
+          <div className="form-group" >
+            <label>Price For Foreigners:</label>
+            <input type="number" name="price" value={formData.price.price} onChange={e => setFormData({ ...formData, price: { ...formData.price, price: e.target.value } })} required />
+          </div>
         <div className="form-group">
           <label>Tags Type:</label>
           <select

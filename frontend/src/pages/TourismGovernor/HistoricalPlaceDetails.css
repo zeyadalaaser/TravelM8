@@ -34,11 +34,6 @@
   margin-bottom: 20px; /* Space between sections */
 }
 
-h3 {
-  color: #007bff; /* Primary color for headings */
-  margin-bottom: 5px; /* Space below the heading */
-}
-
 .loading {
   font-size: 1.5rem; /* Font size for loading text */
   text-align: center; /* Center the loading text */

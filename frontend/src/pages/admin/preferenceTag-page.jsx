@@ -1,3 +1,6 @@
+"use client";
+
+
 import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
@@ -66,7 +69,10 @@ const Preferencetag = () => {
 
   const handleUpdate = async () => {
     if (currentTag && newTagName.trim() !== "") {
-      const updatedTag = await updatePreferenceTag(currentTag.name, newTagName.trim());
+      const updatedTag = await updatePreferenceTag(
+        currentTag.name,
+        newTagName.trim()
+      );
       setTags((prevTags) =>
         prevTags.map((tag) => (tag.name === currentTag.name ? updatedTag : tag))
       );

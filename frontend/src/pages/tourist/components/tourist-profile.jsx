@@ -1,26 +1,26 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { BarChart, DollarSign, Users, TrendingUp, Bell, Settings, LogOut } from "lucide-react";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
-import { Label } from "../../components/ui/label";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
-import useRouter from "../../hooks/useRouter"
+
+import React, { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart, DollarSign, Users, TrendingUp, Bell, Settings, LogOut, Home } from "lucide-react";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useEffect } from "react";
+import useRouter from "@/hooks/useRouter"
 
 import axios from "axios";
+import { useToast } from "../../Advertiser/components/useToast";
 
-const token = localStorage.getItem('token');
+export default function TouristProfile() {
+  const token = localStorage.getItem('token');
 
-
-export default function tourguideProfile() {
-  const navigate = useRouter();
+  const { navigate } = useRouter();
 
   useEffect(() => {
-    console.log("Token from localStorage:", token);
-
     // Redirect if no token is found
     if (!token)
       navigate("/login");
@@ -28,14 +28,15 @@ export default function tourguideProfile() {
 
 
 
-  const [tourguide, setTourguide] = useState(null); // Initialize state as null
+  const [tourist, setTourist] = useState(null); // Initialize state as null
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
 
   const fetchProfileInfo = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/tourguides/myProfile', {
+      const response = await fetch('http://localhost:5001/api/tourists/myProfile', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +49,7 @@ export default function tourguideProfile() {
       }
 
       const data = await response.json(); // Parse JSON data
-      setTourguide(data); // Update state with the fetched profile data
+      setTourist(data); // Update state with the fetched profile data
 
     } catch (error) {
       console.error('Error fetching profile info:', error);
@@ -67,8 +68,11 @@ export default function tourguideProfile() {
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         <header className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Your Profile</h1>
+          <div className="w-[207px]" />
           <div className="flex items-center space-x-4">
+            <Button onClick={() => navigate('/tourist-page')} variant="ghost" size="icon">
+              <Home className="h-5 w-5" />
+            </Button>
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
             </Button>
@@ -81,23 +85,20 @@ export default function tourguideProfile() {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Card className="col-span-1">
+        <div className="flex flex-col w-full h-full items-center">
+          <Card className="w-[500px]">
             <CardHeader className="flex flex-col items-center">
+            <h1 className="text-3xl font-bold">Your Profile</h1>
               <Avatar className="h-24 w-24">
-                <AvatarImage src="/placeholder.svg?height=96&width=96" alt="tourguide" />
+                <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Tourist" />
                 <AvatarFallback></AvatarFallback>
               </Avatar>
-              <p className="text-muted-foreground">username: {tourguide ? tourguide.username : 'null'}</p>
-              <p className="text-muted-foreground">name: {tourguide ? tourguide.name : '-'}</p>
+              <p className="text-muted-foreground">username: {tourist ? tourist.username : 'null'}</p>
+              <p className="text-muted-foreground">name: {tourist ? tourist.name : '-'}</p>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-muted-foreground">email: {tourguide ? tourguide.email : 'null'}</p>
-              <p className="text-muted-foreground">mobileNumber: {tourguide ? tourguide.description : '-'}</p>
-              <p className="text-muted-foreground">yearsOfExperience: {tourguide ? tourguide.mobileNumber : '-'}</p>
-              <p className="text-muted-foreground">Previous Work: {tourguide ? tourguide.previousWork : '-'}</p>
-              <p className="text-muted-foreground">Languages: {tourguide ? tourguide.languages : '-'}</p>
-
+              <p className="text-muted-foreground">email: {tourist ? tourist.email : 'null'}</p>
+              <p className="text-muted-foreground">wallet: ${tourist ? tourist.wallet : '0'}</p>
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                 <DialogTrigger asChild>
                   <Button className="mt-4">Edit Profile</Button>
@@ -106,7 +107,7 @@ export default function tourguideProfile() {
                   <DialogHeader>
                     <DialogTitle>Edit Profile</DialogTitle>
                   </DialogHeader>
-                  <EditProfileForm tourguide={tourguide} handleSubmit={handleSubmit} loading={loading} />
+                  <EditProfileForm advertiser={tourist} handleSubmit={handleSubmit} loading={loading} />
                 </DialogContent>
               </Dialog>
             </CardContent>
@@ -124,7 +125,7 @@ export default function tourguideProfile() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/tourguides/updateMyProfile', {
+      const response = await fetch('http://localhost:5001/api/tourists/updateMyProfile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -153,14 +154,15 @@ export default function tourguideProfile() {
 
 }
 
-function EditProfileForm({ tourguide, handleSubmit, loading }) {
+function EditProfileForm({ advertiser, handleSubmit, loading }) {
 
-  const [formData, setFormData] = useState(tourguide || { name: '', description: '', email: '', website: '', hotline: '' });
+  const [formData, setFormData] = useState(advertiser ||
+    { name: '', email: '' });
   const [changedFields, setChangedFields] = useState({}); // To track the changed fields
 
   useEffect(() => {
-    setFormData(tourguide);
-  }, [tourguide]);
+    setFormData(advertiser);
+  }, [advertiser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -169,7 +171,7 @@ function EditProfileForm({ tourguide, handleSubmit, loading }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Track which fields were changed
-    if (tourguide[name] !== value) {
+    if (advertiser[name] !== value) {
       setChangedFields((prev) => ({ ...prev, [name]: value }));
     } else {
       // If the value is reset to the original, remove it from the changedFields
@@ -191,18 +193,7 @@ function EditProfileForm({ tourguide, handleSubmit, loading }) {
         <Input
           id="name"
           name="name"
-          value={formData.name || ''}
-          onChange={handleChange}
-          required
-          disabled={loading}
-        />
-      </div>
-      <div>
-        <Label htmlFor="mobileNumber">Mobile Number</Label>
-        <Textarea
-          id="mobileNumber"
-          name="mobileNumber"
-          value={formData.mobileNumber || ''}
+          value={formData.name}
           onChange={handleChange}
           required
           disabled={loading}
@@ -214,30 +205,9 @@ function EditProfileForm({ tourguide, handleSubmit, loading }) {
           id="email"
           name="email"
           type="email"
-          value={formData.email || ''}
+          value={formData.email}
           onChange={handleChange}
           required
-          disabled={loading}
-        />
-      </div>
-      <div>
-        <Label htmlFor="yearsOfExperience">Years of Experience</Label>
-        <Input
-          id="yearsOfExperience"
-          name="yearsOfExperience"
-          value={formData.yearsOfExperience || ''}
-          onChange={handleChange}
-          disabled={loading}
-        />
-      </div>
-      <div>
-        <Label htmlFor="previousWork">Previous Work</Label>
-        <Input
-          id="previousWork"
-          name="previousWork"
-          type="text"
-          value={formData.previousWork || ''}
-          onChange={handleChange}
           disabled={loading}
         />
       </div>

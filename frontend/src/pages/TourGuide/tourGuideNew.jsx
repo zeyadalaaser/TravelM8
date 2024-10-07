@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
@@ -8,19 +9,18 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from 
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
-import useRouter from "../../hooks/useRouter"
+import { useToast } from "./components/useToast";
+import { useEffect } from "react";
+import useRouter from "@/hooks/useRouter"
 
 import axios from "axios";
 
-const token = localStorage.getItem('token');
-
-
 export default function tourguideProfile() {
+  const token = localStorage.getItem('token');
+
   const navigate = useRouter();
 
   useEffect(() => {
-    console.log("Token from localStorage:", token);
-
     // Redirect if no token is found
     if (!token)
       navigate("/login");
@@ -30,6 +30,7 @@ export default function tourguideProfile() {
 
   const [tourguide, setTourguide] = useState(null); // Initialize state as null
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
 
@@ -48,7 +49,7 @@ export default function tourguideProfile() {
       }
 
       const data = await response.json(); // Parse JSON data
-      setTourguide(data); // Update state with the fetched profile data
+      settourguide(data); // Update state with the fetched profile data
 
     } catch (error) {
       console.error('Error fetching profile info:', error);
@@ -62,6 +63,9 @@ export default function tourguideProfile() {
       fetchProfileInfo(); // Fetch profile info whenever the token is available
     }
   }, [token]);
+
+  // Custom Progress Bar Component
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -191,7 +195,7 @@ function EditProfileForm({ tourguide, handleSubmit, loading }) {
         <Input
           id="name"
           name="name"
-          value={formData.name || ''}
+          value={formData.name}
           onChange={handleChange}
           required
           disabled={loading}
@@ -202,7 +206,7 @@ function EditProfileForm({ tourguide, handleSubmit, loading }) {
         <Textarea
           id="mobileNumber"
           name="mobileNumber"
-          value={formData.mobileNumber || ''}
+          value={formData.mobileNumber}
           onChange={handleChange}
           required
           disabled={loading}
@@ -214,7 +218,7 @@ function EditProfileForm({ tourguide, handleSubmit, loading }) {
           id="email"
           name="email"
           type="email"
-          value={formData.email || ''}
+          value={formData.email}
           onChange={handleChange}
           required
           disabled={loading}
@@ -225,7 +229,7 @@ function EditProfileForm({ tourguide, handleSubmit, loading }) {
         <Input
           id="yearsOfExperience"
           name="yearsOfExperience"
-          value={formData.yearsOfExperience || ''}
+          value={formData.yearsOfExperience}
           onChange={handleChange}
           disabled={loading}
         />
@@ -236,7 +240,7 @@ function EditProfileForm({ tourguide, handleSubmit, loading }) {
           id="previousWork"
           name="previousWork"
           type="text"
-          value={formData.previousWork || ''}
+          value={formData.hotline}
           onChange={handleChange}
           disabled={loading}
         />
