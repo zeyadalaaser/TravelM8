@@ -29,7 +29,7 @@ export const getMyPlaces = async (req, res) => {
   const userRole = req.user.role;
   let Places;
   if (userRole === "TourismGovernor") {
-    Places = await HistoricalPlace.find({ TourismGovernorId: userId });
+    Places = await HistoricalPlace.find({ tourismGovernorId: userId });
     if (Places.length == 0)
       res.status(204);
     else
