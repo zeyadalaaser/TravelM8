@@ -19,11 +19,15 @@ import Dashboard from './pages/admin/dashboard.jsx';
 import AdvertiserProfile from './pages/Advertiser/advertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
-
 import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
-import Product from './pages/admin/product.jsx'
+//import ProductApp from './pages/admin/ProductApp.jsx'
+//import ProductForm from './pages/admin/ProductForm.jsx'
+//import ProductList from './pages/admin/ProductList.jsx'
+import ProductPage from './pages/admin/product.jsx'
+import ProfileTemplate from './pages/TourGuide/profileTemplate.jsx';
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -35,7 +39,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/products" element={<Product />} />
+        <Route path="/product" element={<ProductPage />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
         <Route path="/admin/addTourismGovernor" element={<TourismGovernor1 />} />
@@ -52,6 +56,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/add" element={<HistoricalPlaceForm/>} />
         <Route path="/edit/:id" element={<HistoricalPlaceForm  />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
+        <Route path="/profileTemplate" element={<ProfileTemplate />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

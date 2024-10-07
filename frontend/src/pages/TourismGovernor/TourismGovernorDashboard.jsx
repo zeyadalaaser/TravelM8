@@ -1,68 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Routes, Link } from 'react-router-dom';
+import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
 import '@/pages/TourismGovernor/TourismGovernorDashboard.css';
-import useRouter from "@/hooks/useRouter"
+import Navbar from '@/pages/TourismGovernor/components/Navbar.jsx';
 
 export default function TourismGovernorDashboard() {
   const [historicalPlaces, setHistoricalPlaces] = useState([]);
+  const [tourismGovernorId, setTourismGovernorId] = useState(null);
   const token = localStorage.getItem('token');
-  const { navigate } = useRouter();
+  const navigate = useNavigate();
 
-useEffect(() => {
-    // Check if the user has a token
-    const token = localStorage.getItem("token");
+  useEffect(() => {
     if (!token) {
-      navigate("/login"); // Redirect to login page if no token
+      navigate("/login");
       return;
     }
+    fetchTourismGovernorId();
     fetchHistoricalPlaces();
+  }, [navigate, token]);
 
-  }, [navigate]);
+  const fetchTourismGovernorId = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/api/getMyGovernor', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setTourismGovernorId(data.id);
+    } catch (error) {
+      console.error('Error fetching tourism governor ID:', error);
+    }
+  };
 
   const fetchHistoricalPlaces = async () => {
     try {
       const response = await fetch('http://localhost:5001/api/myPlaces', {
-        method: 'GET', // Specify the HTTP method
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json', // Set content type if needed
-          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();
-      setHistoricalPlaces(data["Places"]);
+      setHistoricalPlaces(data.Places);
     } catch (error) {
       console.error('Error fetching historical places:', error);
-    }
-  };
-
-  const addHistoricalPlace = async (place) => {
-    try {
-      const response = await fetch('http://localhost:5001/api/addPlace', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(place),
-      });
-      const newPlace = await response.json();
-      setHistoricalPlaces([...historicalPlaces, newPlace]);
-    } catch (error) {
-      console.error('Error adding historical place:', error);
-    }
-  };
-
-  const updateHistoricalPlace = async (id, updatedPlace) => {
-    try {
-      const response = await fetch(`http://localhost:5001/api/updatePlace/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedPlace),
-      });
-      const updated = await response.json();
-      setHistoricalPlaces(historicalPlaces.map(place => place._id === id ? updated : place));
-    } catch (error) {
-      console.error('Error updating historical place:', error);
     }
   };
 
@@ -76,18 +62,20 @@ useEffect(() => {
   };
 
   return (
+    
     <div className="tourism-governor-dashboard">
-      <nav>
+        <Navbar />
+      {/* <nav>
         <ul className="nav-list">
           <li><Link to="/" className="nav-link">Dashboard</Link></li>
           <li><Link to="/add" className="nav-link">Add New Historical Place</Link></li>
         </ul>
-      </nav>
+      </nav> */}
 
       <Routes>
         <Route path="/" element={<HistoricalPlacesList places={historicalPlaces} onDelete={deleteHistoricalPlace} />} />
-        <Route path="/add" element={<HistoricalPlaceForm />} />
-        <Route path="/edit/:id" element={<HistoricalPlaceForm places={historicalPlaces} onSubmit={updateHistoricalPlace} />} />
+        <Route path="/add" element={<HistoricalPlaceForm tourismGovernorId={tourismGovernorId} />} />
+        <Route path="/edit/:id" element={<HistoricalPlaceForm places={historicalPlaces}  tourismGovernorId={tourismGovernorId} />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails places={historicalPlaces} />} />
       </Routes>
     </div>
