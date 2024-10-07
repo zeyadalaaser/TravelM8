@@ -1,22 +1,12 @@
-"use client"
 import useRouter from "@/hooks/useRouter"
-import { useState, useEffect } from "react";
-import { useDebouncedCallback } from 'use-debounce';
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { ClearFilters } from '@/pages/tourist/components/filters/clear-filters';
-import { DateFilter } from "@/pages/tourist/components/filters/date-filter";
-import { RatingFilter } from "@/pages/tourist/components/filters/rating-filter";
-import { PriceFilter } from "@/pages/tourist/components/filters/price-filter";
-import { CategoryFilter } from "@/pages/tourist/components/filters/category-filter";
-import { SortSelection } from "@/pages/tourist/components/filters/sort-selection";
-import { Attractions } from "@/pages/tourist/components/activities";
-import { SearchBar } from "@/pages/tourist/components/filters/search";
-import { getActivities } from "@/pages/tourist/api/apiService";
+import { useEffect } from "react";
+
+import { ActivitiesPage } from "./components/activities/activities-page";
+import { NavBar } from "./components/nav-bar";
 
 export default function TouristPage() {
 
-  const { location, navigate } = useRouter();
+  const { location, navigate, searchParams } = useRouter();
 
   // Function to decode JWT and get user role
   function getRoleFromToken(token) {
@@ -40,48 +30,19 @@ export default function TouristPage() {
     }
   }, [navigate]);
 
-  const [activities, setActivities] = useState([]);
-
-  const fetchActivities = useDebouncedCallback(async () => {
-    const fetchedActivities = await getActivities(location.search);
-    setActivities(fetchedActivities);
-  }, 200);
-
   useEffect(() => {
-    fetchActivities();
-  }, [location.search]); // Only run when location.search changes
+    if (!searchParams.has("type"))
+      searchParams.set("type", "activities");
+    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+  }, []);
+
+  const page = searchParams.get("type");
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
-      <div className="flex flex-wrap gap-2 mb-4">
-        <Button variant="outline" className="rounded-full">Activities</Button>
-        <Button variant="ghost" className="rounded-full">Itineraries</Button>
-        <Button variant="ghost" className="rounded-full">Museums & Historical Places</Button>
-        <Button variant="ghost" className="rounded-full">Products</Button>
-      </div>
-      <SearchBar />
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4">
-          <DateFilter />
-          <Separator className="mt-7" />
-          <PriceFilter />
-          <Separator className="mt-5" />
-          <RatingFilter />
-          <Separator className="mt-7" />
-          <CategoryFilter />
-        </div>
-        <div className="w-full md:w-3/4">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex h-5 items-center space-x-4 text-sm">
-              <div>{activities.length} results</div>
-              <ClearFilters />
-            </div>
-            <SortSelection />
-          </div>
-          <Attractions attractions={activities} />
-        </div>
-      </div>
+      <NavBar />
+      {page === "activities" && <ActivitiesPage />}
     </div>
   )
 }

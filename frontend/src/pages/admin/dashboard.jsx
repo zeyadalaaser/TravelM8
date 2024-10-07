@@ -57,6 +57,7 @@ function AdminDashboard() {
               </CardFooter>
             </Card>
 
+
               {/* Admins Card */}
               <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -74,6 +75,7 @@ function AdminDashboard() {
                 </Button>
               </CardFooter>
             </Card>
+
             
             {/* Tourism Governors Card */}
             <Card>
@@ -86,7 +88,9 @@ function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">+1 new governor this month</p>
               </CardContent>
               <CardFooter>
+
                 <Button className="w-full" onClick={() => navigate('/admin/addTourismGovernor')}>
+
                   Manage Governors
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -153,3 +157,4 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
+
