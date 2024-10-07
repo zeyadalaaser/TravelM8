@@ -42,9 +42,7 @@ export default function TouristPage() {
     <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
       <NavBar />
-      <div classNam="">
-        {page === "activities" && <ActivitiesPage />}
-      </div>
+      {page === "activities" && <ActivitiesPage />}
     </div>
   )
 }
