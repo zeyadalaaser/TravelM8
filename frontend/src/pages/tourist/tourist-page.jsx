@@ -6,6 +6,7 @@ import { ProductsPage } from "./components/products/products-page";
 import { NavBar } from "./components/nav-bar";
 import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound } from "lucide-react";
+import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 
 export default function TouristPage() {
 
@@ -53,6 +54,7 @@ export default function TouristPage() {
         />
       </div>
       {page === "activities" && <ActivitiesPage />}
+      {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
       {page === "products" && <ProductsPage />}
     </div>

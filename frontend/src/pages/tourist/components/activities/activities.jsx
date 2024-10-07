@@ -19,7 +19,7 @@ export function Activities({ activities }) {
                             <span className="ml-2 text-sm text-gray-600">{activity.totalRatings} reviews</span>
                         </div>
                         <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
-                        <div className="flex items-center text-sm text-gray-600 mb-2">
+                        <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                             <Clock className="w-4 h-4 mr-1" />
                             {activity.date.slice(0, 10)}
                         </div>

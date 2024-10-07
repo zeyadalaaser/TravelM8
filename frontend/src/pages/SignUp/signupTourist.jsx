@@ -93,6 +93,10 @@ export default function TouristRegistration() {
         }
       }
     }
+    else
+    {
+      console.log("failed to validate");
+    }
   };
 
   if (isSubmitted) {
