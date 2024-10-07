@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { ActivitiesPage } from "./components/activities/activities-page";
 import { ProductsPage } from "./components/products/products-page";
 import { NavBar } from "./components/nav-bar";
+import { MuseumsPage } from "./components/museums/museums-page";
 
 export default function TouristPage() {
 
@@ -44,6 +45,7 @@ export default function TouristPage() {
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
       <NavBar />
       {page === "activities" && <ActivitiesPage />}
+      {page === "museums" && <MuseumsPage />}
       {page === "products" && <ProductsPage />}
     </div>
   )

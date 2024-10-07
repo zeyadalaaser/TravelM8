@@ -5,7 +5,6 @@ import useRouter from "@/hooks/useRouter";
 import { Separator } from "@/components/ui/separator";
 
 import { ClearFilters } from "../filters/clear-filters";
-import { DateFilter } from "../filters/date-filter";
 import { RatingFilter } from "../filters/rating-filter";
 import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
@@ -18,8 +17,7 @@ export function ProductsPage() {
     const [products, setProducts] = useState([]);
 
     const fetchProducts = useDebouncedCallback(async () => {
-        const fetchedProducts = await getProducts(location.search);
-        setProducts(fetchedProducts);
+        getProducts(location.search).then(setProducts);
     }, 200);
 
     useEffect(() => {

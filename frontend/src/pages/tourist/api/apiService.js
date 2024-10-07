@@ -12,10 +12,6 @@ export async function getActivities(query) {
     return (await apiClient.get('activities?' + searchParams.toString())).data;
 }
 
-export async function getCategories() {
-    return (await apiClient.get('activity-categories')).data;
-}
-
 export async function getProducts(query) {
     const searchParams = new URLSearchParams(query);
     searchParams.delete('type');
@@ -27,6 +23,21 @@ export async function getProducts(query) {
         searchParams.set('maxPrice', price[1]);
         searchParams.delete('price');
     }
-    
+
     return (await apiClient.get('products?' + searchParams.toString())).data.data;
+}
+
+export async function getMuseums(query) {
+    const searchParams = new URLSearchParams(query);
+    searchParams.delete('type');
+    
+    return (await apiClient.get('filterbyTags?' + searchParams.toString())).data;
+}
+
+export async function getCategories() {
+    return (await apiClient.get('activity-categories')).data;
+}
+
+export async function getTags() {
+    return (await apiClient.get('preference-tags')).data;
 }
