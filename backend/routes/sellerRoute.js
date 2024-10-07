@@ -1,11 +1,12 @@
 import express from 'express';
-import { createSeller, updateSeller, getSellers } from '../controllers/sellerController.js';
-
+import { createSeller, updateSeller, getSellers, getMyProfile } from '../controllers/sellerController.js';
+import verifyToken from '../services/tokenDecodingService.js';
 const router = express.Router();
 
 // Define the routes
-router.post('/sellers', createSeller);              // Create a new user with website, hotline, etc.
-router.put('/sellers/:username', updateSeller);        // Update user information by email
-router.get('/sellers', getSellers);                 // Read user by email
+router.post('/sellers', createSeller);
+router.put('/sellers/:id', updateSeller);       
+router.get('/sellers', getSellers);
+router.get('/sellers/myProfile', verifyToken , getMyProfile);
 
 export default router; 

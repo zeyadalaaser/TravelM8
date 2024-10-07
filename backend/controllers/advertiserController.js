@@ -17,10 +17,10 @@ export const createAdvertiser = async (req, res) => {
 };
 
 export const updateAdvertiser = async (req, res) => {
-   const {username} = req.params;
+   const {id} = req.params;
    try{
-      const updatedAdvertiser = await Advertiser.findOneAndUpdate(
-         { username },        
+      const updatedAdvertiser = await Advertiser.findByIdAndUpdate(
+         id,        
          req.body,         
          { new: true, runValidators: true }          
        );
@@ -39,5 +39,15 @@ export const getAdvertisers = async (req, res) => {
       res.status(200).json(advertisers);
    } catch (error) {
       res.status(400).json({ error: error.message });
+   }
+};
+
+export const getMyProfile = async (req, res) => {
+   const userId = req.user.userId;
+   try {
+      const advertiserInfo = await Advertiser.findById(userId);
+      res.status(200).json(advertiserInfo);
+   } catch (error) {
+      res.status(400).json({ message: "could not fetch account information" });
    }
 };

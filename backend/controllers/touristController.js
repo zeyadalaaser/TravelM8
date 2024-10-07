@@ -55,3 +55,14 @@ export const updateTourist = async (req, res) => {
        res.status(400).json({error:error.message});
     }
  }
+
+ export const getMyProfile = async (req, res) => {
+   const userId = req.user.userId;
+   try {
+      const touristInfo = await Tourist.findById(userId);
+      res.status(200).json(touristInfo);
+   } catch (error) {
+      res.status(400).json({ message: "could not fetch account information" });
+   }
+}
+

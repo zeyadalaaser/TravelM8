@@ -115,7 +115,6 @@ export const updateProduct = async (req, res) => {
 
 export const getMyProducts = async (req, res) => {
   const userId = req.user?.userId;
-
   try {
     let Places;
       Places = await Product.find({ sellerId: userId });
