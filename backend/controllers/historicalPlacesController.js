@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import HistoricalPlace from "../models/historicalPlacesModel.js";
 import TourismGovernor from '../models/tourismGovernorModel.js'
 //const  mongoose = require('mongoose');
+import jwt  from  'jsonwebtoken'; // Add this line
+
 
 
 
@@ -188,11 +190,11 @@ export const getMyGovernor = async (req, res) => {
     }
 
     // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use your JWT secret
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Make sure this is the same secret used when signing the token
     const governorId = decoded.id; // Extract the governorId from the token
 
     // Fetch the governor's information from the database
-    const governor = await Governor.findById(governorId).select('-password'); // Exclude password from the response
+    const governor = await TourismGovernor.findById(governorId).select('-password'); // Exclude password from the response
 
     if (!governor) {
       return res.status(404).json({ message: 'Governor not found' });
