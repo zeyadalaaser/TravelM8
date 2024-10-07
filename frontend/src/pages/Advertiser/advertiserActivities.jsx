@@ -1,71 +1,150 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table"
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Label } from "../../components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog"
-import { Activity, Calendar, DollarSign, Plus, Pencil, Trash2, Loader2 } from "lucide-react"
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Activity, Calendar, DollarSign, Plus, Pencil, Trash2, Loader2 } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 import { useToast } from "./components/useToast";
+import { useNavigate } from 'react-router-dom';
+import useRouter from "@/hooks/useRouter";
 
-const tagOptions = ["historic areas", "beaches", "family-friendly", "shopping", "budget-friendly"]
+export default function AdvertiserActivities() {
+  const token = localStorage.getItem('token');
+  const navigate2 = useRouter();
 
-const mockActivities = [
-  { _id: '1', title: 'City Tour', description: 'Explore the city', date: '2023-07-15', price: 50, category: 'Tour', isBookingOpen: true, location: 'Downtown', tags: ['historic areas', 'family-friendly'], discount: 10 },
-  { _id: '2', title: 'Beach Day', description: 'Relax by the ocean', date: '2023-07-20', price: 75, category: 'Outdoor', isBookingOpen: true, location: 'Sunny Beach', tags: ['beaches', 'family-friendly'], discount: 0 },
-  { _id: '3', title: 'Shopping Spree', description: 'Explore local markets', date: '2023-07-25', price: 30, category: 'Shopping', isBookingOpen: false, location: 'City Center', tags: ['shopping', 'budget-friendly'], discount: 15 },
-]
-
-const AdvertiserActivities = () => {
-  const [activities, setActivities] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [currentActivity, setCurrentActivity] = useState(null)
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [currentActivity, setCurrentActivity] = useState(null);
 
   useEffect(() => {
-    // Simulating API call
-    setTimeout(() => {
-      setActivities(mockActivities)
-      setLoading(false)
-    }, 1000)
-  }, [])
+    // Redirect if no token is found
+    if (!token) navigate2("/login");
+  }, [token]);
 
-  const handleCreateActivity = (newActivity) => {
-    const activity = { ...newActivity, _id: Date.now().toString() }
-    setActivities([...activities, activity])
-    setIsCreateModalOpen(false)
-    toast({
-      title: "Activity Created",
-      description: "Your new activity has been successfully created.",
-    })
-  }
+  const fetchActivities = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/api/activities', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  const handleUpdateActivity = (updatedActivity) => {
-    setActivities(activities.map(a => a._id === updatedActivity._id ? updatedActivity : a))
-    setIsEditModalOpen(false)
-    toast({
-      title: "Activity Updated",
-      description: "Your activity has been successfully updated.",
-    })
-  }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-  const handleDeleteActivity = (id) => {
-    setActivities(activities.filter(a => a._id !== id))
-    toast({
-      title: "Activity Deleted",
-      description: "Your activity has been successfully deleted.",
-    })
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        setActivities(data);
+      } else {
+        throw new Error("Received data is not an array");
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+      toast({ title: "Error", description: "Failed to fetch activities." });
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchActivities();
+  }, [token]);
+
+  const handleCreateActivity = async (activityData) => {
+    try {
+        const response = await fetch(`http://localhost:5001/api/activities/myActivities`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(activityData),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to create activity');
+        }
+
+        // Handle success (e.g., refresh activity list)
+        await fetchActivities();
+    } catch (error) {
+        console.error("Error creating activity:", error); // Improved logging
+        toast({ title: "Error", description: error.message });
+    }
+};
+
+
+const handleUpdateActivity = async (updatedData) => {
+  setLoading(true);
+  try {
+    const response = await fetch(`http://localhost:5001/api/activities/${updatedData._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Ensure to include the token here
+      },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (!response.ok) {
+      const data = await response.json(); // Parse response to get error message
+      throw new Error(data.message || 'Failed to update activity');
+    }
+
+    // Fetch activities again after updating
+    await fetchActivities();
+    setIsEditModalOpen(false);
+    toast({ title: "Activity Updated", description: "Your activity has been successfully updated." });
+  } catch (error) {
+    console.error("Error updating activity:", error);
+    toast({ title: "Error", description: "Failed to update activity. Please try again." });
+  } finally {
+    setLoading(false);
   }
+};
+
+
+  const handleDeleteActivity = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:5001/api/activities/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json(); // Get the error message from the response
+        throw new Error(data.message || 'Failed to delete activity');
+      }
+
+      // Fetch activities again after deletion
+      await fetchActivities();
+      toast({ title: "Activity Deleted", description: "Your activity has been successfully deleted." });
+    } catch (error) {
+      console.error("Error deleting activity:", error);
+      toast({ title: "Error", description: "Failed to delete activity." });
+    }
+  };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    )
+    );
   }
 
   return (
@@ -75,40 +154,6 @@ const AdvertiserActivities = () => {
         <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Create Activity
         </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Activities</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{activities.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upcoming Activity</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {activities.length > 0 ? new Date(activities[0].date).toLocaleDateString() : 'N/A'}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ${activities.reduce((sum, activity) => sum + activity.price, 0)}
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       <Card>
@@ -137,7 +182,12 @@ const AdvertiserActivities = () => {
                   <TableCell className="font-medium">{activity.title}</TableCell>
                   <TableCell>{new Date(activity.date).toLocaleDateString()}</TableCell>
                   <TableCell>${activity.price}</TableCell>
-                  <TableCell>{activity.location}</TableCell>
+                  <TableCell>{activity.location && (
+                    <>
+                      <p>Latitude: {activity.location.lat}</p>
+                      <p>Longitude: {activity.location.lng}</p>
+                    </>
+                  )}</TableCell>
                   <TableCell>{activity.category}</TableCell>
                   <TableCell>{activity.tags.join(', ')}</TableCell>
                   <TableCell>{activity.discount}%</TableCell>
@@ -149,8 +199,8 @@ const AdvertiserActivities = () => {
                   <TableCell>
                     <div className="flex space-x-2">
                       <Button variant="outline" size="sm" onClick={() => {
-                        setCurrentActivity(activity)
-                        setIsEditModalOpen(true)
+                        setCurrentActivity(activity);
+                        setIsEditModalOpen(true);
                       }}>
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -178,36 +228,54 @@ const AdvertiserActivities = () => {
       </Dialog>
 
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="max-w-md w-full">
-          <DialogHeader>
-            <DialogTitle>Edit Activity</DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-6">
-            {currentActivity && (
-              <ActivityForm 
-                initialData={currentActivity} 
-                onSubmit={(data) => handleUpdateActivity({ ...data, _id: currentActivity._id })} 
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+  <DialogContent className="max-w-md w-full">
+    <DialogHeader>
+      <DialogTitle>Edit Activity</DialogTitle>
+    </DialogHeader>
+    <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-6">
+      {currentActivity && <ActivityForm initialData={currentActivity} onSubmit={handleUpdateActivity} />}
     </div>
-  )
+  </DialogContent>
+</Dialog>
+    </div>
+  );
 }
 
+// Add your ActivityForm component here
 const ActivityForm = ({ initialData, onSubmit }) => {
-  const [formData, setFormData] = useState(initialData || {
-    title: '',
-    description: '',
-    date: '',
-    price: 0,
-    category: '',
-    isBookingOpen: false,
-    location: '',
-    tags: [],
-    discount: 0,
-  })
+  const [formData, setFormData] = useState({
+    id: initialData ? initialData._id : '', // Initialize id correctly
+    title: initialData ? initialData.title : '',
+    description: initialData ? initialData.description : '',
+    date: initialData ? initialData.date : '',
+    price: initialData ? initialData.price : 0,
+    category: initialData ? initialData.category : '',
+    isBookingOpen: initialData ? initialData.isBookingOpen : false,
+    location: {
+      lat: initialData ? initialData.location.lat : 0,
+      lng: initialData ? initialData.location.lng : 0,
+    },
+    tags: initialData ? initialData.tags : [],
+    discount: initialData ? initialData.discount : 0,
+  });
+
+  // Update formData when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        id: initialData._id, // Correctly set the ID
+        title: initialData.title,
+        description: initialData.description,
+        date: initialData.date,
+        price: initialData.price,
+        category: initialData.category,
+        isBookingOpen: initialData.isBookingOpen,
+        location: { lat: initialData.location.lat, lng: initialData.location.lng },
+        tags: initialData.tags,
+        discount: initialData.discount,
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -232,32 +300,36 @@ const ActivityForm = ({ initialData, onSubmit }) => {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <Label htmlFor="title">Title</Label>
-        <Input id="title" name="title" value={formData.title} onChange={handleChange} required />
+        <Input id="title" name="title" value={formData.title} onChange={handleChange}  />
       </div>
       <div>
         <Label htmlFor="description">Description</Label>
-        <Input id="description" name="description" value={formData.description} onChange={handleChange} required />
+        <Input id="description" name="description" value={formData.description} onChange={handleChange}  />
       </div>
       <div>
         <Label htmlFor="date">Date</Label>
-        <Input id="date" name="date" type="date" value={formData.date} onChange={handleChange} required />
+        <Input id="date" name="date" type="date" value={formData.date} onChange={handleChange}  />
       </div>
       <div>
         <Label htmlFor="price">Price</Label>
-        <Input id="price" name="price" type="number" value={formData.price} onChange={handleChange} required />
+        <Input id="price" name="price" type="number" value={formData.price} onChange={handleChange}  />
       </div>
       <div>
-        <Label htmlFor="location">Location</Label>
-        <Input id="location" name="location" value={formData.location} onChange={handleChange} required />
+        <Label htmlFor="location">Location lat</Label>
+        <Input id="location" name="location" value={formData.location.lat} onChange={handleChange}  />
+      </div>
+      <div>
+        <Label htmlFor="location">Location lng</Label>
+        <Input id="location" name="location" value={formData.location.lng} onChange={handleChange}  />
       </div>
       <div>
         <Label htmlFor="category">Category</Label>
-        <Input id="category" name="category" value={formData.category} onChange={handleChange} required />
+        <Input id="category" name="category" value={formData.category} onChange={handleChange}  />
       </div>
       <div>
         <Label>Tags</Label>
         <div className="flex flex-wrap gap-2">
-          {tagOptions.map(tag => (
+          {formData.tags.map(tag => (
             <label key={tag} className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -271,7 +343,7 @@ const ActivityForm = ({ initialData, onSubmit }) => {
       </div>
       <div>
         <Label htmlFor="discount">Discount (%)</Label>
-        <Input id="discount" name="discount" type="number" value={formData.discount} onChange={handleChange} required />
+        <Input id="discount" name="discount" type="number" value={formData.discount} onChange={handleChange}  />
       </div>
       <div className="flex items-center space-x-2">
         <input
@@ -287,6 +359,3 @@ const ActivityForm = ({ initialData, onSubmit }) => {
     </form>
   )
 }
-
-export default AdvertiserActivities;
-

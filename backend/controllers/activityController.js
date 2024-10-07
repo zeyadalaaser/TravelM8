@@ -4,7 +4,6 @@ import { getActivities } from "../services/activities/activityServices.js";
 import { runInNewContext } from "vm";
 
 const createNewActivity = async (req, res) => {
-
     const {
         title,
         description,
@@ -18,10 +17,18 @@ const createNewActivity = async (req, res) => {
         image,
     } = req.body;
 
+    // Validate the location field
+    const isLocationValid = 
+        typeof location === 'object' &&
+        location !== null &&
+        typeof location.lat === 'number' &&
+        typeof location.lng === 'number';
+
     if (
         mongoose.Types.ObjectId.isValid(category) &&
         Array.isArray(tags) && tags.every(tag => mongoose.Types.ObjectId.isValid(tag)) && // Check each tag in the array
-        mongoose.Types.ObjectId.isValid(advertiserId)
+        isLocationValid && // Ensure location is valid
+        mongoose.Types.ObjectId.isValid(req.user.userId) // Ensure advertiserId is valid
     ) {
         const newActivity = {
             title,
@@ -37,20 +44,73 @@ const createNewActivity = async (req, res) => {
             advertiserId: req.user.userId
         };
 
-
         try {
-            const createdActivity = await activityModel.create(newActivity).populate('advertiserId','username');
+            const createdActivity = await activityModel.create(newActivity).populate('advertiserId', 'username');
             res.status(201).json({ message: "successfully created new activity", createdActivity });
         } catch (error) {
             res.status(400).json({ message: "unsuccessful creation of activity" });
         }
 
-    }else {
+    } else {
         res.status(400).json({ message: "bad parameters" });
-
     }
+};
 
-}
+
+export const createManualActivity = async (req, res) => {
+    const {
+        title,
+        description,
+        date,
+        location,
+        price,
+        category,
+        tags,
+        discount,
+        isBookingOpen,
+        image,
+        advertiserId
+    } = req.body;
+
+    // Validate the location field
+    const isLocationValid = 
+        typeof location === 'object' &&
+        location !== null &&
+        typeof location.lat === 'number' &&
+        typeof location.lng === 'number';
+
+    if (
+        mongoose.Types.ObjectId.isValid(category) &&
+        Array.isArray(tags) && tags.every(tag => mongoose.Types.ObjectId.isValid(tag)) && // Check each tag in the array
+        mongoose.Types.ObjectId.isValid(advertiserId) &&
+        isLocationValid // Ensure location is valid
+    ) {
+        const newActivity = {
+            title,
+            description,
+            date,
+            location, // Keep the location object as it is validated above
+            price,
+            category,
+            tags,
+            discount,
+            isBookingOpen,
+            image,
+            advertiserId
+        };
+
+        try {
+            const createdActivity = await activityModel.create(newActivity).populate('advertiserId', 'username');
+            res.status(201).json({ message: "Successfully created new activity", createdActivity });
+        } catch (error) {
+            res.status(400).json({ message: "Unsuccessful creation of activity" });
+        }
+
+    } else {
+        res.status(400).json({ message: "Bad parameters" });
+    }
+};
+
 
 const getAllActivities = async (req, res) => {
     res.status(200).json(await getActivities(req.query, {}));
@@ -147,7 +207,7 @@ const getMyActivities = async (req, res) => {
     } else {
         res.status(408).json({ message: "enter a valid id" });
     }
-}
+};
 
 const deleteActivity = async (req, res) => {
     const activityId = req.params.id;
@@ -166,6 +226,6 @@ const deleteActivity = async (req, res) => {
     } else {
         res.status(400).json({ message: "enter a valid id" });
     }
-}
+};
 
 export { createNewActivity, getAllActivities, getActivityById, updateActivity, getMyActivities, deleteActivity };
