@@ -24,6 +24,7 @@ import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.j
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
 import Product from './pages/admin/product.jsx'
+import Itinerary from './pages/Touguide/itineraryz.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -52,6 +53,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/add" element={<HistoricalPlaceForm/>} />
         <Route path="/edit/:id" element={<HistoricalPlaceForm  />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
+        <Route path="/itinerary" element={<Itinerary />} />
+        
       </Routes>
     </BrowserRouter>
   </StrictMode>,
