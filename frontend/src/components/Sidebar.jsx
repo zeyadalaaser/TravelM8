@@ -7,7 +7,7 @@ const Sidebar = ({ state, toggleSidebar }) => {
       <CloseButton onClick={toggleSidebar}>&times;</CloseButton>
       <ul>
         <li>
-          <a href="#home" onClick={toggleSidebar}>Home</a>
+          <a href="/" onClick={toggleSidebar}>Home</a>
         </li>
         <li>
           <a href="#services" onClick={toggleSidebar}>About</a>

@@ -1,34 +1,62 @@
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import '@/pages/TourismGovernor/HistoricalPlaceDetails.css';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+import './HistoricalPlaceDetails.css'; // Import the CSS file
+import Navbar from '@/pages/TourismGovernor/components/Navbar.jsx';
 
-export default function HistoricalPlaceDetails({ places }) {
+const HistoricalPlaceDetails = () => {
   const { id } = useParams();
-  const place = places.find(p => p._id === id);
+  const [place, setPlace] = useState(null);
+  const [error, setError] = useState('');
 
-  if (!place) return <div>Loading...</div>;
+  useEffect(() => {
+    const fetchPlace = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5001/api/getPlace/${id}`);
+        setPlace(response.data);
+      } catch (error) {
+        setError('Error fetching place details.');
+        console.error(error);
+      }
+    };
+
+    fetchPlace();
+  }, [id]);
+
+  if (!place) {
+    return <div className="loading">Loading...</div>;
+  }
 
   return (
-    <div className="historical-place-details">
-      <h2>{place.name}</h2>
+    <div className="place-details-container">
+      <Navbar />
+      <h1 className="place-title">{place.name}</h1>
+      <p className="place-description">{place.description}</p>
       <img src={place.image} alt={place.name} className="place-image" />
-      <p><strong>Description:</strong> {place.description}</p>
-      <p><strong>Location:</strong> {place.location}</p>
-      <p><strong>Opening Hours:</strong> {place.openingHours.open} - {place.openingHours.close}</p>
-      <div className="price-list">
-        <h3>Ticket Prices:</h3>
+      <div className="place-location">
+        <h3>Location</h3>
+        <p>Latitude: {place.location.lat}</p>
+        <p>Longitude: {place.location.lng}</p>
+      </div>
+      <div className="place-opening-hours">
+        <h3>Opening Hours</h3>
+        <p>{place.openingHours.open} - {place.openingHours.close}</p>
+      </div>
+      <div className="place-prices">
+        <h3>Prices</h3>
         <ul>
-          {place.price.map(price => (
-            <li key={price.type}>{price.type}: ${price.price}</li>
+          {place.price.map((price, index) => (
+            <li key={index}>{price.type}: ${price.price}</li>
           ))}
         </ul>
       </div>
-      <p><strong>Type:</strong> {place.tags.type}</p>
-      <p><strong>Historical Period:</strong> {place.tags.historicalPeriod}</p>
-      <div className="action-buttons">
-        <Link to={`/edit/${place._id}`} className="edit-button">Edit</Link>
-        <Link to="/" className="back-button">Back to List</Link>
+      <div className="place-tags">
+        <h3>Tags</h3>
+        <p>Type: {place.tags.type}</p>
+        <p>Historical Period: {place.tags.historicalPeriod}</p>
       </div>
     </div>
   );
-}
+};
+
+export default HistoricalPlaceDetails;

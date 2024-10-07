@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
 import {
   Table,
@@ -17,7 +17,7 @@ import {
   getAllProducts,
   deleteProduct,
   updateProduct,
-  createProduct, // Import the create product function
+  createProduct,
 } from "@/services/productService"; // Import the product service
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,10 +34,10 @@ const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
-  const [isCreateOpen, setIsCreateOpen] = useState(false); // State for the create product modal
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
   const [updatedProductData, setUpdatedProductData] = useState({});
-  const [newProductData, setNewProductData] = useState({}); // State for new product data
+  const [newProductData, setNewProductData] = useState({});
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -73,7 +73,6 @@ const ProductPage = () => {
         duration: 3000,
       });
 
-      // Update the products state to remove the deleted product
       setProducts(products.filter((product) => product._id !== productId));
     } catch (error) {
       toast({
@@ -87,9 +86,11 @@ const ProductPage = () => {
   const openEditModal = (product) => {
     setCurrentProduct(product);
     setUpdatedProductData({
-      Name: product.Name,
-      Price: product.Price,
-      Quantity: product.Quantity,
+      name: product.name,
+      image: product.image,
+      price: product.price,
+      quantity: product.quantity,
+      description: product.description,
     });
     setIsOpen(true);
   };
@@ -116,18 +117,17 @@ const ProductPage = () => {
     }
   };
 
-  // Function to handle creating a new product
   const handleCreateProduct = async () => {
     try {
-      const response = await createProduct(newProductData); // Send the new product data to the backend
+      const response = await createProduct(newProductData);
       toast({
         title: "Success",
         description: "Product created successfully!",
         duration: 3000,
       });
-      setProducts([...products, response]); // Add the new product to the product list
-      setIsCreateOpen(false); // Close the create modal
-      setNewProductData({}); // Reset new product data
+      setProducts([...products, response]);
+      setIsCreateOpen(false);
+      setNewProductData({});
     } catch (error) {
       toast({
         title: "Error",
@@ -151,7 +151,6 @@ const ProductPage = () => {
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">Product Management</h1>
 
-          {/* Button to open create product modal */}
           <Button onClick={() => setIsCreateOpen(true)} className="mb-4">
             Create Product
           </Button>
@@ -167,18 +166,29 @@ const ProductPage = () => {
                   <Label htmlFor="newProductName" className="text-right">Product Name</Label>
                   <Input
                     id="newProductName"
-                    value={newProductData.Name || ''}
-                    onChange={(e) => setNewProductData({ ...newProductData, Name: e.target.value })}
+                    value={newProductData.name || ''}
+                    onChange={(e) => setNewProductData({ ...newProductData, name: e.target.value })}
                     className="col-span-3"
                   />
                 </div>
+
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="newProductImage" className="text-right">Image</Label>
+                  <Input
+                    id="newProductImage"
+                    value={newProductData.image || ''}
+                    onChange={(e) => setNewProductData({ ...newProductData, image: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="newProductPrice" className="text-right">Price</Label>
                   <Input
                     id="newProductPrice"
                     type="number"
-                    value={newProductData.Price || ''}
-                    onChange={(e) => setNewProductData({ ...newProductData, Price: e.target.value })}
+                    value={newProductData.price || ''}
+                    onChange={(e) => setNewProductData({ ...newProductData, price: e.target.value })}
                     className="col-span-3"
                   />
                 </div>
@@ -187,8 +197,18 @@ const ProductPage = () => {
                   <Input
                     id="newProductQuantity"
                     type="number"
-                    value={newProductData.Quantity || ''}
-                    onChange={(e) => setNewProductData({ ...newProductData, Quantity: e.target.value })}
+                    value={newProductData.quantity || ''}
+                    onChange={(e) => setNewProductData({ ...newProductData, quantity: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="newProductDescription" className="text-right">Description</Label>
+                  <Input
+                    id="newProductDescription"
+                    type="number"
+                    value={newProductData.description || ''}
+                    onChange={(e) => setNewProductData({ ...newProductData, quantity: e.target.value })}
                     className="col-span-3"
                   />
                 </div>
@@ -210,8 +230,8 @@ const ProductPage = () => {
                   <Label htmlFor="productName" className="text-right">Product Name</Label>
                   <Input
                     id="productName"
-                    value={updatedProductData.Name || ''}
-                    onChange={(e) => setUpdatedProductData({ ...updatedProductData, Name: e.target.value })}
+                    value={updatedProductData.name || ''}
+                    onChange={(e) => setUpdatedProductData({ ...updatedProductData, name: e.target.value })}
                     className="col-span-3"
                   />
                 </div>
@@ -220,8 +240,8 @@ const ProductPage = () => {
                   <Input
                     id="productPrice"
                     type="number"
-                    value={updatedProductData.Price || ''}
-                    onChange={(e) => setUpdatedProductData({ ...updatedProductData, Price: e.target.value })}
+                    value={updatedProductData.price || ''}
+                    onChange={(e) => setUpdatedProductData({ ...updatedProductData, price: e.target.value })}
                     className="col-span-3"
                   />
                 </div>
@@ -230,8 +250,18 @@ const ProductPage = () => {
                   <Input
                     id="productQuantity"
                     type="number"
-                    value={updatedProductData.Quantity || ''}
-                    onChange={(e) => setUpdatedProductData({ ...updatedProductData, Quantity: e.target.value })}
+                    value={updatedProductData.quantity || ''}
+                    onChange={(e) => setUpdatedProductData({ ...updatedProductData, quantity: e.target.value })}
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="productDescription" className="text-right">Description</Label>
+                  <Input
+                    id="productDescription"
+                    type="number"
+                    value={updatedProductData.description || ''}
+                    onChange={(e) => setUpdatedProductData({ ...updatedProductData, description: e.target.value })}
                     className="col-span-3"
                   />
                 </div>
@@ -248,22 +278,20 @@ const ProductPage = () => {
                 <TableHead>Product Name</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Quantity</TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.map((product) => (
                 <TableRow key={product._id}>
-                  <TableCell>{product.Name}</TableCell>
-                  <TableCell>{product.Price}</TableCell>
-                  <TableCell>{product.Quantity}</TableCell>
+                  <TableCell>{product.name}</TableCell>
+                  <TableCell>{product.price}</TableCell>
+                  <TableCell>{product.quantity}</TableCell>
+                  <TableCell>{product.description}</TableCell>
                   <TableCell>
-                    <button onClick={() => openEditModal(product)} className="mr-2 text-blue-600">
-                      Edit
-                    </button>
-                    <button onClick={() => handleDeleteProduct(product._id)} className="text-red-600">
-                      Delete
-                    </button>
+                    <Button onClick={() => openEditModal(product)} className="mr-2">Edit</Button>
+                    <Button onClick={() => handleDeleteProduct(product._id)} className="bg-red-500 text-white">Delete</Button>
                   </TableCell>
                 </TableRow>
               ))}

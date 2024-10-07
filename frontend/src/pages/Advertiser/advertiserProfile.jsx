@@ -10,55 +10,59 @@ import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { useToast } from "./components/useToast";
+import { useEffect } from "react";
+import useRouter from "@/hooks/useRouter"
+
+import axios from "axios";
 
 export default function AdvertiserProfile() {
-  const [advertiser, setAdvertiser] = useState({
-    name: "John Doe",
-    description: "Experienced advertiser with a passion for creative activities",
-    username: "johndoe",
-    email: "john.doe@example.com",
-    website: "www.johndoe-advertising.com",
-    hotline: 19633,
-  });
+  const token = localStorage.getItem('token');
+
+  const navigate = useRouter();
+
+  useEffect(() => {
+    // Redirect if no token is found
+    if (!token)
+      navigate("/login");
+  }, [token]); // Include token in dependency array
+
+
+
+  const [advertiser, setAdvertiser] = useState(null); // Initialize state as null
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(false);
 
-  const handleUpdateAdvertiser = async (updatedData) => {
-    setLoading(true); // Set loading state
-    console.log("Attempting to update with data:", updatedData);
+
+  const fetchProfileInfo = async () => {
     try {
-      const response = await fetch(`/api/advertiser/${advertiser.username}`, {
-        method: "PUT",
+      const response = await fetch('http://localhost:5001/api/advertisers/myProfile', {
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(updatedData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update profile");
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const updatedAdvertiser = await response.json();
-      console.log("Received updated advertiser:", updatedAdvertiser);
-      setAdvertiser(updatedAdvertiser);
-      setIsEditModalOpen(false);
-      toast({
-        title: "Profile Updated",
-        description: "Your profile has been successfully updated.",
-      });
+      const data = await response.json(); // Parse JSON data
+      setAdvertiser(data); // Update state with the fetched profile data
+
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false); // Reset loading state
+      console.error('Error fetching profile info:', error);
+
     }
   };
+
+
+  useEffect(() => {
+    if (token) {
+      fetchProfileInfo(); // Fetch profile info whenever the token is available
+    }
+  }, [token]);
 
   // Custom Progress Bar Component
   const CustomProgressBar = ({ value }) => {
@@ -106,28 +110,28 @@ export default function AdvertiserProfile() {
             <CardHeader className="flex flex-col items-center">
               <Avatar className="h-24 w-24">
                 <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Advertiser" />
-                <AvatarFallback>{advertiser.name.split(" ").map((n) => n[0]).join("")}</AvatarFallback>
+                <AvatarFallback></AvatarFallback>
               </Avatar>
-              <CardTitle className="mt-4 text-2xl">{advertiser.name}</CardTitle>
-              <p className="text-muted-foreground">Company Details</p>
+              <p className="text-muted-foreground">username: {advertiser ? advertiser.username : 'null'}</p>
+              <p className="text-muted-foreground">name: {advertiser ? advertiser.name : '-'}</p>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-muted-foreground">{advertiser.email}</p>
-              <p className="text-muted-foreground">Member since: Jan 2023</p>
-              <p className="text-muted-foreground">{advertiser.website}</p>
-              <p className="text-muted-foreground">{advertiser.hotline}</p>
+              <p className="text-muted-foreground">email: {advertiser ? advertiser.email : 'null'}</p>
+              <p className="text-muted-foreground">description: {advertiser ? advertiser.description : '-'}</p>
+              <p className="text-muted-foreground">website: {advertiser ? advertiser.website : '-'}</p>
+              <p className="text-muted-foreground">hotline: {advertiser ? advertiser.hotline : '-'}</p>
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-            <DialogTrigger asChild>
-              <Button className="mt-4">Edit Profile</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Profile</DialogTitle>
-              </DialogHeader>
-              <EditProfileForm advertiser={advertiser} onSubmit={handleUpdateAdvertiser} />
-            </DialogContent>
-          </Dialog>
-        </CardContent>
+                <DialogTrigger asChild>
+                  <Button className="mt-4">Edit Profile</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Profile</DialogTitle>
+                  </DialogHeader>
+                  <EditProfileForm advertiser={advertiser} handleSubmit={handleSubmit} loading={loading} />
+                </DialogContent>
+              </Dialog>
+            </CardContent>
           </Card>
           <div className="col-span-1 md:col-span-2 space-y-8">
             <Card>
@@ -190,69 +194,138 @@ export default function AdvertiserProfile() {
             </Card>
           </div>
         </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activities</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4">
-              {[
-                "Created a new campaign 'Back to School'",
-                "Updated budget for 'Summer Sale' campaign",
-                "Achieved 1000 conversions milestone",
-                "Added new targeting options to 'Brand Awareness' campaign",
-              ].map((activity, index) => (
-                <li key={index} className="flex items-center space-x-4">
-                  <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                  <p>{activity}</p>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
+  async function handleSubmit(changedFields) {
+    if (Object.keys(changedFields).length === 0) {
+      console.log("No fields were changed");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5001/api/advertisers/updateMyProfile', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(changedFields), // Correctly send the changed fields
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Profile updated successfully', result);
+      fetchProfileInfo();
+
+    } catch (error) {
+
+      console.error('Error updating profile', error);
+      toast({ title: "Error updating profile", description: error.message });
+
+    } finally {
+      setLoading(false);
+    }
+  }
+
 }
 
-function EditProfileForm({ advertiser, onSubmit, loading }) {
-  const [formData, setFormData] = useState(advertiser);
+function EditProfileForm({ advertiser, handleSubmit, loading }) {
+
+  const [formData, setFormData] = useState(advertiser || { name: '', description: '', email: '', website: '', hotline: '' });
+  const [changedFields, setChangedFields] = useState({}); // To track the changed fields
+
+  useEffect(() => {
+    setFormData(advertiser);
+  }, [advertiser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Update form data
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Track which fields were changed
+    if (advertiser[name] !== value) {
+      setChangedFields((prev) => ({ ...prev, [name]: value }));
+    } else {
+      // If the value is reset to the original, remove it from the changedFields
+      const { [name]: removed, ...rest } = changedFields;
+      setChangedFields(rest);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmitForm = (e) => {
     e.preventDefault();
-    console.log("Form Submitted", formData);
-    onSubmit(formData);
+    handleSubmit(changedFields);
   };
+
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmitForm} className="space-y-4">
       <div>
         <Label htmlFor="name">Name</Label>
-        <Input id="name" name="name" value={formData.name} onChange={handleChange} required disabled={loading} />
+        <Input
+          id="name"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          disabled={loading}
+        />
       </div>
       <div>
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" name="description" value={formData.description} onChange={handleChange} required disabled={loading} />
+        <Textarea
+          id="description"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          required
+          disabled={loading}
+        />
       </div>
       <div>
         <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required disabled={loading} />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          disabled={loading}
+        />
       </div>
       <div>
         <Label htmlFor="website">Website</Label>
-        <Input id="website" name="website" value={formData.website} onChange={handleChange} disabled={loading} />
+        <Input
+          id="website"
+          name="website"
+          value={formData.website}
+          onChange={handleChange}
+          disabled={loading}
+        />
       </div>
       <div>
         <Label htmlFor="hotline">Hotline</Label>
-        <Input id="hotline" name="hotline" type="number" value={formData.hotline} onChange={handleChange} disabled={loading} />
+        <Input
+          id="hotline"
+          name="hotline"
+          type="text"
+          value={formData.hotline}
+          onChange={handleChange}
+          disabled={loading}
+        />
       </div>
-      <Button type="submit" disabled={loading}>{loading ? "Updating..." : "Update Profile"}</Button>
+      <Button type="submit" disabled={loading}>
+        {loading ? "Updating..." : "Update Profile"}
+      </Button>
     </form>
   );
 }

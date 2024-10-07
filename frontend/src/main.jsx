@@ -25,7 +25,7 @@ import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetai
 //import ProductApp from './pages/admin/ProductApp.jsx'
 //import ProductForm from './pages/admin/ProductForm.jsx'
 //import ProductList from './pages/admin/ProductList.jsx'
-// import Product from './pages/admin/product.jsx'
+import Product from './pages/admin/product.jsx'
 import ProfileTemplate from './pages/TourGuide/profileTemplate.jsx';
 
 createRoot(document.getElementById('root')).render(
@@ -38,7 +38,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        {/* <Route path="/product" element={<ProductPage />} /> */}
+        <Route path="/product" element={<ProductPage />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
         <Route path="/admin/addTourismGovernor" element={<TourismGovernor1 />} />
@@ -55,7 +55,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/add" element={<HistoricalPlaceForm/>} />
         <Route path="/edit/:id" element={<HistoricalPlaceForm  />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
-        <Route path="/ProfileTemplate" element={<ProfileTemplate />} />
+        <Route path="/profileTemplate" element={<ProfileTemplate />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

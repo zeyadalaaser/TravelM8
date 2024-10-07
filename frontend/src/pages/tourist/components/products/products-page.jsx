@@ -34,9 +34,9 @@ export function ProductsPage() {
         <SearchBar categories={searchCategories} />
         <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
-                <RatingFilter />
-                <Separator className="mt-5" />
                 <PriceFilter />
+                <Separator className="mt-5" />
+                <RatingFilter />
             </div>
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">
