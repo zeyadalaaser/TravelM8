@@ -3,8 +3,16 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
+import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { Trash2 } from "lucide-react";
 import { getAllUsers, deleteUser } from "@/services/adminDeleteServices"; // Import the service
@@ -57,6 +65,7 @@ const DeleteUser = () => {
     }
   };
 
+  
   return (
     <div style={{ display: "flex" }}>
       <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
@@ -70,6 +79,14 @@ const DeleteUser = () => {
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">User Management</h1>
+          <div className="flex justify-end mb-4">
+            <Button
+              onClick={() => (window.location.href = "/dashboard")} // Change '/dashboard' to your actual dashboard route
+              variant="outline"
+            >
+              Go to Dashboard
+            </Button>
+          </div>
 
           <Table>
             <TableHeader>
@@ -99,7 +116,9 @@ const DeleteUser = () => {
           </Table>
 
           {users.length === 0 && (
-            <p className="text-center text-muted-foreground mt-4">No users found.</p>
+            <p className="text-center text-muted-foreground mt-4">
+              No users found.
+            </p>
           )}
         </div>
         <Footer />

@@ -19,7 +19,7 @@ import Dashboard from './pages/admin/dashboard.jsx';
 import AdvertiserProfile from './pages/Advertiser/advertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
-import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
+//import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
 //import ProductApp from './pages/admin/ProductApp.jsx'
@@ -38,7 +38,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/product" element={<ProductPage />} />
+        <Route path="/product" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
         <Route path="/admin/addTourismGovernor" element={<TourismGovernor1 />} />
