@@ -271,17 +271,21 @@ export const filterItineraries = async (req, res) => {
   
       // Filter by tags (if present)
       if (tags) {
-        const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
-       
-       
-  
+        const tagsArray = tags.split(',').map(tag => tag.trim());
+        console.log(tagsArray);
         const tagIds = await PreferenceTag.find({
           name: { $in: tagsArray }
         }).select('_id');
-  
+        console.log(tagIds);
+        historicalPlacesFilter.$or = [
+          { 'tags.type': { $in: tagsArray } },
+          { 'tags.historicalPeriod': { $in: tagsArray } },
+        ];
+        console.log(historicalPlacesFilter);
         if (tagIds.length > 0) {
           activityFilter.tags = { $in: tagIds.map(tag => tag._id) };
-          historicalPlacesFilter.tags = { $in: tagsArray }; // Assuming tag names for historical places
+          //historicalPlacesFilter.tags = { $in: tagsArray }; // Assuming tag names for historical places
+          
          itineraryFilter.tags = { $in: tagIds.map(tag => tag._id) };
          
         }
@@ -301,8 +305,6 @@ export const filterItineraries = async (req, res) => {
         : [];
   
       const results = { activities, historicalPlaces, itineraries };
-  
-      // If all arrays are empty, return a 404
       if (activities.length === 0 && historicalPlaces.length === 0 && itineraries.length === 0) {
         return res.status(404).json({
           success: false,

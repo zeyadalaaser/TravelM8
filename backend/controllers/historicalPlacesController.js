@@ -1,18 +1,20 @@
 import mongoose from "mongoose";
 import HistoricalPlace from "../models/historicalPlacesModel.js";
+import TourismGovernor from '../models/tourismGovernorModel.js'
 //const  mongoose = require('mongoose');
 
 
 
 export const createHistoricalPlace= async (req, res) => {
     try {
-      const { name, description, location, image, openingHours, price,tags } = req.body;
+      const { name, description, location, image, openingHours, price,tags,tourismGovernorId } = req.body;
   
       if (!name || !description || !location || !image || !openingHours || !price) {
         return res.status(400).json({ message: "All fields are required." });
       }
       
-      const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags         
+      const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags,
+        tourismGovernorId         
       });
   
         await newPlace.save();
@@ -26,16 +28,19 @@ export const createHistoricalPlace= async (req, res) => {
 
    //TourismGovernor only
 export const getMyPlaces = async(req, res) => {    
-  let Places;
-  if(user.type === "TourismGovernor"){
-      Places = await HistoricalPlace.find({TourismGovernorId: user.id});
-      if(Places.length == 0)
-          res.status(204);
-      else
-          res.status(200).json({Places});
-  }else{
-      res.status(400).json({message:"enter a valid id"});
-  }
+  try{
+    const {tourismGovernorId}=req.body;
+    if(!mongoose.Types.ObjectId.isValid(tourismGovernorId)){
+      return res.status(404).json({ message:"Enter a valid id"});
+    }
+       const places = await HistoricalPlace.find({tourismGovernorId}).populate("tags"); 
+        if(places.length==0)
+          return  res.status(404).json({message:"no places found"});
+        else
+          return  res.status(200).json({places});
+}catch(error){
+       return res.status(400).json({ message: 'Error', error: error.message});
+    }
 };
 
   
