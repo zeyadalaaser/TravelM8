@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/TourismGovernor.css"; // Import the CSS file for styling
-
+import Navbar from "../components/NavbarAdmin"; // Import the Navbar component
 
 const TourismGovernor1 = () => {
   const [username, setUsername] = useState("");
@@ -49,6 +49,9 @@ const TourismGovernor1 = () => {
 
   return (
     <div className="tourism-governor-container">
+      {/* Add Navbar at the top */}
+      <Navbar />
+
       <h1 className="tourism-governor-header">Add Tourism Governor </h1>
       <form onSubmit={registerGovernor}>
         <div className="tourism-governor-form-group">
@@ -76,9 +79,6 @@ const TourismGovernor1 = () => {
           <button type="submit" className="tourism-governor-register-button">
             Add
           </button>
-          <a href="/user.html" className="tourism-governor-back-button">
-            Back to Landing Page
-          </a>
         </div>
       </form>
 
