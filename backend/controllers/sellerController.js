@@ -18,11 +18,11 @@ export const createSeller = async (req, res) => {
 }
 
 
-export const updateSeller = async (req, res) => {
-   const { id } = req.params;
+export const updateSellerProfile = async (req, res) => {
+   const userId = req.user.userId;
    try {
       const updatedSeller = await Seller.findByIdAndUpdate(
-         id,
+         userId,
          req.body,
          { new: true, runValidators: true }
       );
