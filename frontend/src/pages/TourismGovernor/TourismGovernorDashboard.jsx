@@ -78,15 +78,15 @@ useEffect(() => {
   return (
     <div className="tourism-governor-dashboard">
       <nav>
-        <ul>
-          <li><Link to="/">Dashboard</Link></li>
-          <li><Link to="/add">Add New Historical Place</Link></li>
+        <ul className="nav-list">
+          <li><Link to="/" className="nav-link">Dashboard</Link></li>
+          <li><Link to="/add" className="nav-link">Add New Historical Place</Link></li>
         </ul>
       </nav>
 
       <Routes>
         <Route path="/" element={<HistoricalPlacesList places={historicalPlaces} onDelete={deleteHistoricalPlace} />} />
-        <Route path="/add" element={<HistoricalPlaceForm onSubmit={addHistoricalPlace} />} />
+        <Route path="/add" element={<HistoricalPlaceForm />} />
         <Route path="/edit/:id" element={<HistoricalPlaceForm places={historicalPlaces} onSubmit={updateHistoricalPlace} />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails places={historicalPlaces} />} />
       </Routes>
