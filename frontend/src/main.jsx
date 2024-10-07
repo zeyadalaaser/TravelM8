@@ -10,7 +10,6 @@ import FormPage from '@/pages/SignUp/signupTourguide.jsx';
 import FormPageSeller from '@/pages/SignUp/signupSeller.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
-import TouristPage from './pages/tourist/tourist-page.jsx'
 import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import ActivityCategories from "./services/ActivityCategories"; // Ensure this path is correct
