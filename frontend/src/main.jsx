@@ -14,7 +14,7 @@ import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.js
 //import "./styles/main.css";
 import ActivityCategories from "./services/ActivityCategories"; // Ensure this path is correct
 import Admin from "./services/Admin"; // Import the Admin component
-//import TourismGovernor from "./services/TourismGovernor";  
+import TourismGovernor1 from "@/services/TourismGovernor.jsx";  
 import DeleteUser from './pages/admin/deleteUser-page.jsx'
 import PreferenceTag from './pages/admin/preferenceTag-page.jsx';
 import Dashboard from './pages/admin/dashboard.jsx';
@@ -35,7 +35,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
-        <Route path="/admin/addTourismGovernor" element={<TourismGovernor />} />
+        <Route path="/admin/addTourismGovernor" element={<TourismGovernor1 />} />
         <Route path="login" element={<Login />} />
         <Route path="/signup" element={<SignupGeneral />} />
         <Route path="/signup/signupTourist" element={<TouristRegistration />} />
