@@ -127,3 +127,27 @@ export const getMyProducts = async (req, res) => {
     }
 };
 
+export const createProductManually = async(req,res) => {
+  try {
+    const { name, image, price, quantity, description, sellerId  } = req.body;
+
+    const newProduct = new Product(
+      {
+        name, 
+        image, 
+        price, 
+        quantity, 
+        description, 
+        sellerId
+      }
+  );
+
+
+    const savedProduct = await newProduct.save();
+
+
+    res.status(201).json(savedProduct);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}

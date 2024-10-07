@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Button } from "../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
@@ -10,6 +11,7 @@ import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Textarea } from "../../components/ui/textarea";
 import { useToast } from "./components/useToast";
+
 
 export default function SellerProfile() {
   const [seller, setSeller] = useState({
@@ -22,6 +24,7 @@ export default function SellerProfile() {
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false)
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleUpdateSeller = async (updatedData) => {
     setLoading(true);
@@ -117,7 +120,7 @@ export default function SellerProfile() {
               </Dialog>
             </CardContent>
           </Card>
-          <Button className="mt-4 flex items-center"> <PackageSearch className="mr-2" />View Products</Button>
+          <Button className="mt-4 flex items-center" onClick={() => navigate('/sellerProduct')} > <PackageSearch className="mr-2" />View Products</Button>
         </div>
       </div>
     </div>

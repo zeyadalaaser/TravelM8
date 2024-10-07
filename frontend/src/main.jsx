@@ -20,6 +20,7 @@ import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
 import SellerProfile from './pages/seller/SellerProfile.jsx';
+import SellerProducts from './pages/seller/SellerProducts.jsx';
 
 import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
@@ -49,7 +50,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/advertiserPage" element={<AdvertiserHomePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
         <Route path="/sellerProfile" element={<SellerProfile />} />
-        
+        <Route path="/sellerProduct" element={<SellerProducts />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
         <Route path="/add" element={<HistoricalPlaceForm/>} />
         <Route path="/edit/:id" element={<HistoricalPlaceForm  />} />
