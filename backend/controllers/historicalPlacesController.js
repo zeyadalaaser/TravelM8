@@ -19,12 +19,12 @@ export const createHistoricalPlace= async (req, res) => {
   
         await newPlace.save();
 
-      res.status(201).json({message:" Historical place created successfully",newPlace});
-    } catch (error) {
-      console.error("Error creating new historical place:", error);
-      res.status(500).json({ message: "Server error. Could not create the historical place." });
-    }
-  }; 
+    res.status(201).json({message:" Historical place created successfully",newPlace});
+  } catch (error) {
+    console.error("Error creating new historical place:", error);
+    res.status(500).json({ message: "Server error. Could not create the historical place." });
+  }
+};
 
    //TourismGovernor only
 export const getMyPlaces = async(req, res) => {    

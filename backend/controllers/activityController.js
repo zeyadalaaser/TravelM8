@@ -110,8 +110,14 @@ const updateActivity = async (req, res) => {
         const updateFields = Object.fromEntries(
             Object.entries(req.body).filter(([key, value]) => value != null)
         );
-
+        
         try {
+            // Ensure category is a valid ObjectId (if you're updating it)
+            if (updateFields.category && !mongoose.Types.ObjectId.isValid(updateFields.category)) {
+                return res.status(400).json({ message: "Invalid category ID" });
+            }
+
+            // Update the activity
             // Ensure category is a valid ObjectId (if you're updating it)
             if (updateFields.category && !mongoose.Types.ObjectId.isValid(updateFields.category)) {
                 return res.status(400).json({ message: "Invalid category ID" });
@@ -128,6 +134,8 @@ const updateActivity = async (req, res) => {
             .populate('tags', 'name');
 
             // Check if the activity was updated
+
+            // Check if the activity was updated
             if (!newActivity) {
                 return res.status(404).json({ message: "Activity not found" });
             }
@@ -137,11 +145,15 @@ const updateActivity = async (req, res) => {
         } catch (error) {
             console.error(error);
             res.status(400).json({ message: "Failed to update activity", error });
+            console.error(error);
+            res.status(400).json({ message: "Failed to update activity", error });
         }
     } else {
         res.status(400).json({ message: "Invalid activity ID" });
+        res.status(400).json({ message: "Invalid activity ID" });
     }
 };
+
 
 //advertiser only
 const getMyActivities = async (req, res) => {

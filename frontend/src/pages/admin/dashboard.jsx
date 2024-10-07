@@ -4,7 +4,6 @@ import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, Tag, Package, Activity, ArrowRight } from "lucide-react";
@@ -46,12 +45,12 @@ function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">+2.5% from last month</p>
               </CardContent>
               <CardFooter>
-                <Link href="/admin/users" className="w-full">
+                <a href="http://localhost:5173/deleteUser" className="w-full">
                   <Button className="w-full">
                     Go to Users
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
+                </a>
               </CardFooter>
             </Card>
             <Card>
@@ -64,12 +63,12 @@ function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">+1 new category this week</p>
               </CardContent>
               <CardFooter>
-                <Link href="/admin/categories" className="w-full">
+                <a href="/admin/categories" className="w-full">
                   <Button className="w-full">
                     Manage Categories
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
+                </a>
               </CardFooter>
             </Card>
             <Card>
@@ -82,12 +81,12 @@ function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">+3 new tags this month</p>
               </CardContent>
               <CardFooter>
-                <Link href="/admin/tags" className="w-full">
+                <a href="http://localhost:5173/preferenceTag" className="w-full">
                   <Button className="w-full">
                     Manage Tags
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
+                </a>
               </CardFooter>
             </Card>
             <Card>
@@ -100,12 +99,12 @@ function AdminDashboard() {
                 <p className="text-xs text-muted-foreground">+12 new products this week</p>
               </CardContent>
               <CardFooter>
-                <Link href="/admin/products" className="w-full">
+                <a href="/admin/products" className="w-full">
                   <Button className="w-full">
                     Manage Products
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </Link>
+                </a>
               </CardFooter>
             </Card>
           </div>
