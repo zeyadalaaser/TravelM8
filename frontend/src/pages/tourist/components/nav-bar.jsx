@@ -23,10 +23,7 @@ export function NavBar() {
                         "rounded-full py-2 px-4 border-[1px]", // Always apply these classes
                         { 'border-transparent bg-transparent': currentPage !== page.value }
                     )}
-                    onClick={() => {
-                        searchParams.set("type", page.value);
-                        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
-                    }}
+                    onClick={() => navigate(`${location.pathname}?type=${page.value}`)}
                 >
                     {page.label}
                 </Button>

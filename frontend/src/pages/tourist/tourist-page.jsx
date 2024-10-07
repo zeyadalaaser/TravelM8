@@ -1,7 +1,7 @@
-"use client"
 import useRouter from "@/hooks/useRouter"
 import { useEffect } from "react";
-import { ActivitiesPage } from "./components/activities-page";
+
+import { ActivitiesPage } from "./components/activities/activities-page";
 import { NavBar } from "./components/nav-bar";
 
 export default function TouristPage() {

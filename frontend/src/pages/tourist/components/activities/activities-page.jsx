@@ -3,15 +3,16 @@ import { useState, useEffect } from "react";
 import useRouter from "@/hooks/useRouter";
 
 import { Separator } from "@/components/ui/separator";
-import { ClearFilters } from '@/pages/tourist/components/filters/clear-filters';
-import { DateFilter } from "@/pages/tourist/components/filters/date-filter";
-import { RatingFilter } from "@/pages/tourist/components/filters/rating-filter";
-import { PriceFilter } from "@/pages/tourist/components/filters/price-filter";
-import { CategoryFilter } from "@/pages/tourist/components/filters/category-filter";
-import { SortSelection } from "@/pages/tourist/components/filters/sort-selection";
-import { Activities } from "@/pages/tourist/components/activities";
-import { SearchBar } from "@/pages/tourist/components/filters/search";
-import { getActivities } from "@/pages/tourist/api/apiService";
+
+import { ClearFilters } from "../filters/clear-filters";
+import { DateFilter } from "../filters/date-filter";
+import { RatingFilter } from "../filters/rating-filter";
+import { PriceFilter } from "../filters/price-filter";
+import { CategoryFilter } from "../filters/category-filter";
+import { SortSelection } from "../filters/sort-selection";
+import { Activities } from "./activities";
+import { SearchBar } from "../filters/search";
+import { getActivities } from "../../api/apiService";
 
 export function ActivitiesPage() {
     const { location } = useRouter();
