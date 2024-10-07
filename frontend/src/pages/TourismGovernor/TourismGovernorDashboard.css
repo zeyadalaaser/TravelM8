@@ -1,24 +1,10 @@
 .tourism-governor-dashboard {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .nav-list {
-    list-style-type: none;
-    padding: 0;
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .nav-list li a {
-    text-decoration: none;
-    color: #007bff;
-    font-weight: bold;
-  }
-  
-  .nav-list li a:hover {
-    text-decoration: underline;
-  }
+  padding-top: 20px; /* Ensures space between navbar and content */
+  margin-top: 70px; /* Adjusts based on your navbar height */
+}
+
+.historical-places-list {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto; /* Centers the content horizontally */
+}
