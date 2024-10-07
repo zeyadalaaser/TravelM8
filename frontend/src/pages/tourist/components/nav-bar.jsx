@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import useRouter from "@/hooks/useRouter";
+import { cn } from "@/lib/utils.ts"
 
 const pages = [
     { label: "Activities", value: "activities" },
@@ -18,7 +19,10 @@ export function NavBar() {
                 <Button
                     key={page.value}
                     variant={currentPage === page.value ? "outline" : "ghost"}
-                    className="rounded-full"
+                    className={cn(
+                        "rounded-full py-2 px-4 border-[1px]", // Always apply these classes
+                        { 'border-transparent bg-transparent': currentPage !== page.value }
+                    )}
                     onClick={() => {
                         searchParams.set("type", page.value);
                         navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
