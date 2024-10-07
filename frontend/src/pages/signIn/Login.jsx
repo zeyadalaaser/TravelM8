@@ -38,8 +38,12 @@ export default function Login() {
         navigate('/seller-page'); // Seller role
       } else if (role === 'TourGuide') {
         navigate('/tourguide'); // Admin role
-    } else if (role === 'TourismGovernor') {
+      } else if (role === 'TourismGovernor') {
         navigate('/TourismGovernorDashboard');
+      } else if (role === 'Admin') {
+        navigate('/dashboard');
+      } else if (role === 'Advertiser') {
+        navigate('/advertiserHomePage');
       } else {
         navigate('/default-page'); // Default page if role doesn't match
       }
