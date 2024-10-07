@@ -10,19 +10,24 @@ import FormPage from '@/pages/SignUp/signupTourguide.jsx';
 import FormPageSeller from '@/pages/SignUp/signupSeller.jsx';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css'
-import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
-import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
+import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx"
+//import "./styles/main.css";
 import ActivityCategories from "./services/ActivityCategories"; // Ensure this path is correct
 import Admin from "./services/Admin"; // Import the Admin component
+//import TourismGovernor from "./services/TourismGovernor";  
 import DeleteUser from './pages/admin/deleteUser-page.jsx'
 import PreferenceTag from './pages/admin/preferenceTag-page.jsx';
 import Dashboard from './pages/admin/dashboard.jsx';
+import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
+import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
+import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* <Route path="/" element={<App />} /> */}
+        <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
         <Route path="/tourist" element={<TouristPage />} />
         <Route path="/deleteUser" element={<DeleteUser />} />
