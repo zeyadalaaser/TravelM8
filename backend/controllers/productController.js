@@ -4,18 +4,20 @@ import Product from '../models/productModel.js';
 
 export const createProduct = async (req, res) => {
   try {
-    const { Name, Image, Price, Quantity, Description, Seller, Rating, Reviews } = req.body;
+    const { name, image, price, quantity, description,  } = req.body;
 
-    const newProduct = new Product({
-      Name,
-      Image,
-      Price,
-      Quantity,
-      Description,
-      Seller,
-      Rating,
-      Reviews
-    });
+    const newProduct = new Product(
+      {
+        name, 
+        image, 
+        price, 
+        quantity, 
+        description, 
+        // rating, 
+        // reviews, 
+        sellerId: req.user.userId
+      }
+  );
 
     
     const savedProduct = await newProduct.save();
@@ -109,5 +111,20 @@ export const updateProduct = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+export const getMyProducts = async (req, res) => {
+  const userId = req.user?.userId;
+
+  try {
+    let Places;
+      Places = await Product.find({ sellerId: userId });
+      if (Places.length == 0)
+        res.status(204);
+      else
+        res.status(200).json({ Places });
+    } catch (error) {
+      res.status(400).json({ message: "enter a valid id" });
+    }
 };
 

@@ -13,7 +13,7 @@ import {
 
 const router = express.Router();
 
-router.post("/addPlace", createHistoricalPlace);  
+router.post("/addPlace",verifyToken , createHistoricalPlace);  
 router.get("/getAllPlaces", getAllHistoricalPlaces);    
 router.put("/updatePlace/:id", updateHistoricalPLace); 
 router.delete("/deletePlace/:id", deleteHistoricalPLace); 

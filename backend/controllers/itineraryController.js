@@ -7,10 +7,13 @@ import mongoose from "mongoose";
 //create new itinerary 
 export const createItinerary = async (req, res) => {
     try {
-        const newItinerary = new Itinerary(req.body);  
-        await newItinerary.save(); 
+      const newItineraryData = {
+        ...req.body, 
+        tourGuideId: req.user.userId 
+      };
+        await newItineraryData.save(); 
         res.status(201).json({
-             message: 'Itinerary added successfully', itinerary: newItinerary });  
+             message: 'Itinerary added successfully',newItineraryData });  
     } catch (error) {
         res.status(500).json({ 
             message: 'Error adding itinerary', error: error.message });    
@@ -38,7 +41,7 @@ export const readItineraries = async (req, res) => {
    //TourGuide only
    export const getMyItineraries = async(req, res) => {    
     try{
-    const {tourGuideId}=req.body;
+    const tourGuideId =req.user.userId;
     if(!mongoose.Types.ObjectId.isValid(tourGuideId)){
       return res.status(404).json({ message:"Enter a valid id"});
     }
@@ -271,17 +274,21 @@ export const filterItineraries = async (req, res) => {
   
       // Filter by tags (if present)
       if (tags) {
-        const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
-       
-       
-  
+        const tagsArray = tags.split(',').map(tag => tag.trim());
+        console.log(tagsArray);
         const tagIds = await PreferenceTag.find({
           name: { $in: tagsArray }
         }).select('_id');
-  
+        console.log(tagIds);
+        historicalPlacesFilter.$or = [
+          { 'tags.type': { $in: tagsArray } },
+          { 'tags.historicalPeriod': { $in: tagsArray } },
+        ];
+        console.log(historicalPlacesFilter);
         if (tagIds.length > 0) {
           activityFilter.tags = { $in: tagIds.map(tag => tag._id) };
-          historicalPlacesFilter.tags = { $in: tagsArray }; // Assuming tag names for historical places
+          //historicalPlacesFilter.tags = { $in: tagsArray }; // Assuming tag names for historical places
+          
          itineraryFilter.tags = { $in: tagIds.map(tag => tag._id) };
          
         }
@@ -301,8 +308,6 @@ export const filterItineraries = async (req, res) => {
         : [];
   
       const results = { activities, historicalPlaces, itineraries };
-  
-      // If all arrays are empty, return a 404
       if (activities.length === 0 && historicalPlaces.length === 0 && itineraries.length === 0) {
         return res.status(404).json({
           success: false,

@@ -1,41 +1,46 @@
 import mongoose from "mongoose";
 import HistoricalPlace from "../models/historicalPlacesModel.js";
+import TourismGovernor from '../models/tourismGovernorModel.js'
+//const  mongoose = require('mongoose');
+
 
 
 export const createHistoricalPlace= async (req, res) => {
-    try {
-      const { name, description, location, image, openingHours, price,tags } = req.body;
-  
-      if (!name || !description || !location || !image || !openingHours || !price) {
-        return res.status(400).json({ message: "All fields are required." });
-      }
-      
-      const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags         
-      });
-  
-        await newPlace.save();
+  try {
+    const { name, description, location, image, openingHours, price,tags} = req.body;
 
-      res.status(201).json({message:" Historical place created successfully",newPlace});
-    } catch (error) {
-      console.error("Error creating new historical place:", error);
-      res.status(500).json({ message: "Server error. Could not create the historical place." });
+    if (!name || !description  || !location || !image || !openingHours || !price) {
+      return res.status(400).json({ message: "All fields are required." });
     }
-}; 
+
+    const newPlace = new HistoricalPlace({name,description,location,image,openingHours,price,tags,
+      tourismGovernorId: req.user.userId
+    });
+
+      await newPlace.save();
+
+    res.status(201).json({message:" Historical place created successfully",newPlace});
+  } catch (error) {
+    console.error("Error creating new historical place:", error);
+    res.status(500).json({ message: "Server error. Could not create the historical place." });
+  }
+};
 
 //TourismGovernor only
 export const getMyPlaces = async (req, res) => {
-  const userId = req.user.userId;
-  const userRole = req.user.role;
-  let Places;
-  if (userRole === "TourismGovernor") {
-    Places = await HistoricalPlace.find({ TourismGovernorId: userId });
-    if (Places.length == 0)
-      res.status(204);
-    else
-      res.status(200).json({ Places });
-  } else {
-    res.status(400).json({ message: "enter a valid id" });
-  }
+  const userId = req.user?.userId;
+
+ 
+  try {
+    let Places;
+      Places = await HistoricalPlace.find({ tourismGovernorId: userId });
+      if (Places.length == 0)
+        res.status(204);
+      else
+        res.status(200).json({ Places });
+    } catch (error) {
+      res.status(400).json({ message: "enter a valid id" });
+    }
 };
 
   

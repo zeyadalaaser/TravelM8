@@ -4,15 +4,23 @@ import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.j
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
 import '@/pages/TourismGovernor/TourismGovernorDashboard.css';
+import useRouter from "@/hooks/useRouter"
 
 export default function TourismGovernorDashboard() {
   const [historicalPlaces, setHistoricalPlaces] = useState([]);
   const token = localStorage.getItem('token');
+  const { navigate } = useRouter();
 
-  useEffect(() => {
-    // Fetch historical places from API
+useEffect(() => {
+    // Check if the user has a token
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login"); // Redirect to login page if no token
+      return;
+    }
     fetchHistoricalPlaces();
-  }, []);
+
+  }, [navigate]);
 
   const fetchHistoricalPlaces = async () => {
     try {
@@ -24,7 +32,7 @@ export default function TourismGovernorDashboard() {
         },
       });
       const data = await response.json();
-      setHistoricalPlaces(data);
+      setHistoricalPlaces(data["Places"]);
     } catch (error) {
       console.error('Error fetching historical places:', error);
     }

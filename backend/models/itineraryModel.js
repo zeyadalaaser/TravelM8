@@ -20,7 +20,7 @@ const itineraySchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Activity',
-            required: true // Makes the field required
+            required: true 
         }
     ],
 
