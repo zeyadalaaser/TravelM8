@@ -16,7 +16,7 @@ import TourismGovernor1 from "@/services/TourismGovernor.jsx";
 import DeleteUser from './pages/admin/deleteUser-page.jsx'
 import PreferenceTag from './pages/admin/preferenceTag-page.jsx';
 import Dashboard from './pages/admin/dashboard.jsx';
-import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
+import AdvertiserProfile from './pages/Advertiser/advertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
 
@@ -46,7 +46,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup/signupSeller" element={<FormPageSeller />} />
         <Route path="/tourist-page" element={<TouristPage />} />
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
-        <Route path="/advertiserPage" element={<AdvertiserHomePage />} />
+        <Route path="/advertiserHomePage" element={<AdvertiserHomePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
         <Route path="/add" element={<HistoricalPlaceForm/>} />
