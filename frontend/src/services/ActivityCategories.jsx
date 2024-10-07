@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import CategoryList from "./CategoryList";
 import CategoryForm from "./CategoryForm";
 import "../styles/main.css"; // Import your main CSS file
+import Navbar from "../components/NavbarAdmin"; // Import the Navbar component
 
 const ActivityCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -104,24 +105,27 @@ const ActivityCategories = () => {
   };
 
   return (
-    <div className="container">
-      <h1>Manage Activity Categories</h1>
-      {message && <p className="message">{message}</p>}{" "}
-      {/* Message for feedback */}
-      {loading ? (
-        <p>Loading...</p> /* Show loading state */
-      ) : (
-        <>
-          <CategoryForm createCategory={createCategory} />
-          <h2>All Activity Categories</h2>
-          <CategoryList
-            categories={categories}
-            updateCategory={updateCategory}
-            deleteCategory={deleteCategory}
-          />
-        </>
-      )}
-    </div>
+    <>
+      <Navbar /> {/* Include the Navbar component at the top */}
+      <div className="container">
+        <h1>Manage Activity Categories</h1>
+        {message && <p className="message">{message}</p>}{" "}
+        {/* Message for feedback */}
+        {loading ? (
+          <p>Loading...</p> /* Show loading state */
+        ) : (
+          <>
+            <CategoryForm createCategory={createCategory} />
+            <h2>All Activity Categories</h2>
+            <CategoryList
+              categories={categories}
+              updateCategory={updateCategory}
+              deleteCategory={deleteCategory}
+            />
+          </>
+        )}
+      </div>
+    </>
   );
 };
 
