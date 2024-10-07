@@ -4,9 +4,6 @@ import TourismGovernor from '../models/tourismGovernorModel.js'
 //const  mongoose = require('mongoose');
 import jwt  from  'jsonwebtoken'; // Add this line
 
-
-
-
 export const createHistoricalPlace= async (req, res) => {
   try {
     const { name, description, location, image, openingHours, price,tags} = req.body;
