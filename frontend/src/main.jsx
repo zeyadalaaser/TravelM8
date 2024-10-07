@@ -22,6 +22,8 @@ import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
 import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
+import ProfileTemplate from '@/pages/TourGuide/profileTemplate.jsx';
+import ItineraryManagement from './pages/TourGuide/itineraryManagment.jsx';
 
 
 createRoot(document.getElementById('root')).render(
