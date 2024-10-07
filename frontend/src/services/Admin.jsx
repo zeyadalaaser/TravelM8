@@ -7,30 +7,46 @@ const Admin = () => {
   const [password, setPassword] = useState("");
   const [admins, setAdmins] = useState([]);
 
+  // Function to register a new user
   const registerUser = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("/api/admins/register", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:5001/api/admins/register",
+        {
+          username,
+          password,
+        }
+      );
       alert(response.data.message); // Show success message
       fetchAdmins(); // Refresh the admin list after registration
+      setUsername(""); // Clear username field after registration
+      setPassword(""); // Clear password field after registration
     } catch (error) {
-      alert(error.response.data.message || "Registration failed"); // Show error message
+      alert(error.response?.data?.message || "Registration failed"); // Show error message
     }
   };
 
+  // Function to fetch the list of admins
   const fetchAdmins = async () => {
     try {
-      const response = await axios.get("/api/admins");
-      console.log(response);
-      setAdmins(response.data);
+      const response = await axios.get("http://localhost:5001/api/admins");
+      console.log("API Response:", response.data); // Log the response data
+      if (Array.isArray(response.data)) {
+        setAdmins(response.data); // Set admins only if it's an array
+      } else {
+        console.error("Expected an array of admins, received:", response.data);
+        setAdmins([]); // Reset to an empty array if the response is not as expected
+      }
     } catch (error) {
-      console.error("Error fetching admins:", error);
+      console.error(
+        "Error fetching admins:",
+        error.response?.data || error.message
+      );
     }
   };
 
+  // Function to toggle password visibility
   const togglePasswordVisibility = () => {
     const passwordInput = document.getElementById("password");
     const eyeIconOpen = document.getElementById("eyeOpen");
@@ -47,15 +63,16 @@ const Admin = () => {
     }
   };
 
+  // Fetch admins when the component mounts
   useEffect(() => {
     fetchAdmins(); // Fetch and display the list of admins on component mount
   }, []);
 
   return (
-    <div className="container">
-      <h1>Add Admin </h1>
+    <div className="admin-container">
+      <h1 className="admin-header">Add Admin</h1>
       <form id="registerForm" onSubmit={registerUser}>
-        <div className="form-group">
+        <div className="admin-form-group">
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -66,7 +83,7 @@ const Admin = () => {
             required
           />
         </div>
-        <div className="form-group">
+        <div className="admin-form-group">
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -77,39 +94,24 @@ const Admin = () => {
             required
             minLength="7"
           />
-          <img
-            id="eyeClose"
-            src="./eye-close.png"
-            alt="Eye Closed"
-            aria-label="Show password"
-            className="eye-icon"
-            onClick={togglePasswordVisibility}
-          />
-          <img
-            id="eyeOpen"
-            src="./eye-open.png"
-            alt="Eye Open"
-            aria-label="Hide password"
-            className="eye-icon"
-            onClick={togglePasswordVisibility}
-            style={{ display: "none" }}
-          />
         </div>
-        <div className="buttons">
-          <button type="submit" className="register-button">
+        <div className="admin-buttons">
+          <button type="submit" className="admin-register-button">
             Add
           </button>
-          <a href="/user.html" className="back-button">
+          <a href="/user.html" className="admin-back-button">
             Back to Landing Page
           </a>
         </div>
       </form>
 
-      <h1> Admins</h1>
+      <h1 className="admin-header">Admins</h1>
       <ul id="adminList">
-        {admins.map((admin, index) => (
-          <li key={index}>{admin.username}</li>
-        ))}
+        {Array.isArray(admins) && admins.length > 0 ? (
+          admins.map((admin, index) => <li key={index}>{admin.username}</li>)
+        ) : (
+          <li>No admins found.</li> // Display a message if there are no admins
+        )}
       </ul>
     </div>
   );

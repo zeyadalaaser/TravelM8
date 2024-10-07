@@ -3,6 +3,7 @@ import Advertiser from "../models/advertiserModel.js";
 import Seller from "../models/sellerModel.js";
 import TourGuide from "../models/tourguideModel.js";
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
+import bcrypt from "bcryptjs";
 
 // Function to hash password
 const hashPassword = async (password) => {

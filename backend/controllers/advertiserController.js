@@ -16,11 +16,11 @@ export const createAdvertiser = async (req, res) => {
    }
 };
 
-export const updateAdvertiser = async (req, res) => {
-   const {id} = req.params;
+export const updateAdvertiserProfile = async (req, res) => {
+   const userId = req.user.userId;
    try{
       const updatedAdvertiser = await Advertiser.findByIdAndUpdate(
-         id,        
+         userId,        
          req.body,         
          { new: true, runValidators: true }          
        );
