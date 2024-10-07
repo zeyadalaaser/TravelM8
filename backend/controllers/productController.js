@@ -64,15 +64,17 @@ export const getAllProducts = async (req, res) => {
     //My Filter Logic
     let filter = {};   //this is empty filter object and if user did not provide min and max, will retrieve all products
     if (minPrice || maxPrice) {
-      filter.Price = {}; //ba-initialize empty price filter object
-      if (minPrice) filter.Price.$gte = parseFloat(minPrice);  // Price >= minPrice
-      if (maxPrice) filter.Price.$lte = parseFloat(maxPrice);  // Price <= maxPrice
+      filter.price = {}; //ba-initialize empty price filter object
+      if (minPrice) filter.price.$gte = parseFloat(minPrice);  // Price >= minPrice
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);  // Price <= maxPrice
     }
 
     //Search Logic 
-    if (search) {
-      filter.Name = { $regex: search, $options: 'i' }; // 'i' makes it case-insensitive; ya3ny masln product and PRODUCT ; bei-treat the uppercase and lowercase the same 
-    }
+
+      if (search) {
+        filter.name = { $regex: search, $options: 'i' }; // 'i' makes it case-insensitive; ya3ny masln product and PRODUCT ; bei-treat the uppercase and lowercase the same 
+      }
+
 
     //Sorting Logic
     let sortCondition = {};
