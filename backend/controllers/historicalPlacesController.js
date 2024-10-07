@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 import HistoricalPlace from "../models/historicalPlacesModel.js";
+import TourismGovernor from '../models/tourismGovernorModel.js'
+//const  mongoose = require('mongoose');
+
 
 
 export const createHistoricalPlace= async (req, res) => {
