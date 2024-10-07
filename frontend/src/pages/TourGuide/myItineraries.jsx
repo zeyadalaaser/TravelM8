@@ -28,11 +28,6 @@ const ItineraryPage = () => {
   const [sidebarState, setSidebarState] = useState(false);
   const [itineraries, setItineraries] = useState([]);
   const { toast } = useToast();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [currentItinerary, setCurrentItinerary] = useState(null);
-  const [updatedItineraryData, setUpdatedItineraryData] = useState({});
-  const [newItineraryData, setNewItineraryData] = useState({});
 
   useEffect(() => {
     const fetchItineraries = async () => {
@@ -40,6 +35,7 @@ const ItineraryPage = () => {
         const response = await getMyItineraries();
         if (response && response.success && Array.isArray(response.itineraries)) {
           setItineraries(response.itineraries);
+          console.log();
         } else {
           throw new Error("Fetched data is not valid.");
         }
