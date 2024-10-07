@@ -9,6 +9,6 @@ const touristRoute = express.Router();
 touristRoute.post('/tourists', createTourist);              // Create a new user with website, hotline, etc.
 touristRoute.put('/tourists/:username', updateTourist);        // Update user information by email
 touristRoute.get('/tourists', getTourists);                 // Read user by email
-router.get('/tourists/myProfile', verifyToken , getMyProfile);
+touristRoute.get('/tourists/myProfile', verifyToken , getMyProfile);
 
 export default touristRoute; 
