@@ -5,6 +5,8 @@ import {
     deleteHistoricalPLace,
     updateHistoricalPLace,
     createTags,
+    getTourById,
+    getMyGovernor,
     filterbyTags,
     getMyPlaces}
  from "../controllers/historicalPlacesController.js"; 
@@ -13,6 +15,9 @@ import {
 
 const router = express.Router();
 
+
+router.get("/getPlace/:id",getTourById)
+router.get('/getMyGovernor', verifyToken, getMyGovernor);
 router.post("/addPlace",verifyToken , createHistoricalPlace);  
 router.get("/getAllPlaces", getAllHistoricalPlaces);    
 router.put("/updatePlace/:id", updateHistoricalPLace); 
