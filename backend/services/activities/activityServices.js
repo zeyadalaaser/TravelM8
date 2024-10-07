@@ -1,7 +1,17 @@
 import Activity from "../../models/activityModel.js";
 
-function createFilterStage(price, startDate, endDate, upcoming, categoryName) {
+function createFilterStage(price, startDate, endDate, upcoming = true, categoryName, searchBy, search) {
     const filters = {};
+
+    if (search) {
+        if (searchBy === 'categoryName') {
+            filters['categoryName'] = { $regex: search, $options: 'i' };
+        } else if (searchBy === 'tag') {
+            filters['tags.name'] = { $regex: search, $options: 'i' }; // Match tag name case-insensitively
+        } else if (searchBy === 'name') {
+            filters['title'] = { $regex: search, $options: 'i' }; // Match activity name case-insensitively
+        }
+    }
 
     const now = new Date();
 
@@ -51,6 +61,34 @@ function createFilterStage(price, startDate, endDate, upcoming, categoryName) {
 function createSortStage(sortBy, order) {
     const orderValue = order === "desc" ? -1 : 1; // Determine sort order
     return sortBy ? [{ $sort: { [sortBy]: orderValue } }] : []; // Return sort stage as an object
+}
+
+function createTagsStage() {
+    return [
+        {
+            $lookup: {
+                from: "preferencetags",
+                let: { "tagIds": "$tags" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: { $in: ["$_id", "$$tagIds"] }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            sort: {
+                                $indexOfArray: ["$$tagIds", "$_id"]
+                            }
+                        }
+                    },
+                    { $sort: { sort: 1 } },
+                    { $addFields: { sort: "$$REMOVE" } }
+                ],
+                as: "tags"
+            }
+        }
+    ];
 }
 
 function createCategoryStage() {
@@ -119,14 +157,16 @@ function createRatingStage(entityType, includeRatings, minRating) {
     ];
 }
 
-export async function getActivities({ includeRatings, price, startDate, endDate, upcoming, categoryName, minRating, sortBy, order }) {
+export async function getActivities({ includeRatings, price, startDate, endDate, upcoming, categoryName, searchBy, search, minRating, sortBy, order }) {
     const categoryStage = createCategoryStage();
-    const filters = createFilterStage(price, startDate, endDate, upcoming, categoryName);
+    const filters = createFilterStage(price, startDate, endDate, upcoming, categoryName, searchBy, search);
     const sortStage = createSortStage(sortBy, order);
     const addRatingStage = createRatingStage('Activity', includeRatings, minRating);
     const advertiserStage = createAdvertiserStage();
+    const tagsStage = createTagsStage();
 
     const aggregationPipeline = [
+        ...tagsStage,
         ...categoryStage,
         { $match: filters },
         ...addRatingStage,

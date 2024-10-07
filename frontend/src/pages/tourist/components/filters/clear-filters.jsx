@@ -14,12 +14,15 @@ export function ClearFilters() {
         if (searchParams.has('order')) {
             newParams.set('order', searchParams.get('order'));
         }
+        if (searchParams.has('searchBy')) {
+            newParams.set('searchBy', searchParams.get('searchBy'));
+        }
         
         navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
     };
 
     const hasOtherFilters = [...searchParams.keys()].filter(
-        (key) => key !== 'sortBy' && key !== 'order'
+        (key) => key !== 'sortBy' && key !== 'order' && key !== 'searchBy'
       ).length > 0;
 
     return (
