@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
-
 import TouristPage from '@/pages/tourist/tourist-page.jsx';
 import Login from '@/pages/SignIn/Login.jsx';
 import SignupGeneral from '@/pages/SignUp/SignupGeneral.jsx';
@@ -21,7 +20,7 @@ import Dashboard from './pages/admin/dashboard.jsx';
 import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
-
+import Product from './pages/admin/product.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -33,6 +32,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/products" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
         <Route path="/admin/addTourismGovernor" element={<TourismGovernor />} />
