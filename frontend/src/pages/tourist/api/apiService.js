@@ -34,6 +34,14 @@ export async function getMuseums(query) {
     return (await apiClient.get('filterbyTags?' + searchParams.toString())).data;
 }
 
+export async function getItineraries(query) {
+    const searchParams = new URLSearchParams(query);
+    searchParams.delete('type');
+    
+    
+    return (await apiClient.get('FilterItineraries?' + searchParams.toString())).data;
+}
+
 export async function getCategories() {
     return (await apiClient.get('activity-categories')).data;
 }

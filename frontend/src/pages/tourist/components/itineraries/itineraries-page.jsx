@@ -5,48 +5,51 @@ import useRouter from "@/hooks/useRouter";
 import { Separator } from "@/components/ui/separator";
 
 import { ClearFilters } from "../filters/clear-filters";
+import { DateFilter } from "../filters/date-filter";
 import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
+import { Itineraries } from "./itineraries";
 import { SearchBar } from "../filters/search";
-import { getMuseums } from "../../api/apiService";
-import { TagFilter } from '../filters/tag-filter';
-import { Museums } from './museums';
+import { getItineraries } from "../../api/apiService";
+import { LanguageFilter } from './language-filter';
 
-export function MuseumsPage() {
+export function ItinerariesPage() {
     const { location } = useRouter();
-    const [museums, setMuseums] = useState([]);
+    const [itineraries, setItineraries] = useState([]);
 
-    const fetchMuseums = useDebouncedCallback(async () => {
-        const fetchedMuseums = await getMuseums(location.search);
-        setMuseums(fetchedMuseums);
+    const fetchItineraries = useDebouncedCallback(async () => {
+        getItineraries(location.search).then(setItineraries);
     }, 200);
 
     useEffect(() => {
-        fetchMuseums();
-    }, [location.search]);
+        fetchItineraries();
+    }, [location.search]); // Only run when location.search changes
+
 
     const searchCategories = [
         { name: 'Name', value: 'name' },
-        { name: 'Tag', value: 'tag' }
+        { name: 'Tag', value: 'tag' },
     ];
 
     return <>
         <SearchBar categories={searchCategories} />
         <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
+                <DateFilter />
+                <Separator className="mt-7" />
                 <PriceFilter />
-                <Separator className="mt-5" />
-                <TagFilter />
+                <Separator className="mt-7" />
+                <LanguageFilter />
             </div>
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex h-5 items-center space-x-4 text-sm">
-                        <div>{museums.length} results</div>
+                        <div>{itineraries.length} results</div>
                         <ClearFilters />
                     </div>
-                    {/* <SortSelection /> */}
+                    <SortSelection />
                 </div>
-                <Museums museums={museums} />
+                <Itineraries itineraries={itineraries} />
             </div>
         </div>
     </>
