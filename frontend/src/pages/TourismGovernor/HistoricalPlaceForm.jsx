@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import '@/pages/TourismGovernor/HistoricalPlaceForm.css';
+import axios from 'axios';
+import Navbar from '@/pages/TourismGovernor/components/Navbar.jsx'; // Import the Navbar component
+import './HistoricalPlaceForm.css'; // Import your CSS file
 
-export default function HistoricalPlaceForm({ places, onSubmit }) {
+export default function HistoricalPlaceForm({ tourismGovernorId, onSubmit }) {
   const { id } = useParams();
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    location: '',
+    location: { lat: '', lng: '' },
     image: '',
     openingHours: { open: '', close: '' },
     price: [
@@ -19,123 +22,118 @@ export default function HistoricalPlaceForm({ places, onSubmit }) {
     tags: { type: '', historicalPeriod: '' },
   });
 
+  const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   useEffect(() => {
-    if (id && places) {
-      const place = places.find(p => p._id === id);
-      if (place) setFormData(place);
+    if (id) {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(`http://localhost:5001/api/getPlace/${id}`);
+          setFormData(response.data);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          setErrorMessage('Error fetching place data.');
+        }
+      };
+      fetchData();
     }
-  }, [id, places]);
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleOpeningHoursChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      openingHours: {
-        ...prevData.openingHours,
-        [name]: value
-      }
-    }));
-  };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const newPlace = { ...formData, tourismGovernorId };
 
-  const handlePriceChange = (index, e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => {
-      const newPrices = [...prevData.price];
-      newPrices[index] = { ...newPrices[index], [name]: value };
-      return { ...prevData, price: newPrices };
-    });
-  };
-
-  const handleTagsChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      tags: {
-        ...prevData.tags,
-        [name]: value
-      }
-    }));
-  };
-
-  const handleSubmit = async (place) => {
     try {
-      const response = await fetch('http://localhost:5001/api/addPlace', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(place),
-      });
-      const newPlace = await response.json();
-      setHistoricalPlaces([...historicalPlaces, newPlace]);
+      if (id) {
+        await axios.put(`http://localhost:5001/api/updatePlace/${id}`, newPlace, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setMessage('Place updated successfully!');
+      } else {
+        await axios.post('http://localhost:5001/api/addPlace', newPlace, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setMessage('Place added successfully!');
+      }
+      setErrorMessage('');
+      navigate('/TourismGovernorDashboard');
     } catch (error) {
-      console.error('Error adding historical place:', error);
+      console.error('Error submitting form:', error);
+      setErrorMessage('Failed to submit form. Please try again.');
+      setMessage('');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="historical-place-form">
-      <h2>{id ? 'Edit Historical Place' : 'Add New Historical Place'}</h2>
-      <div className="form-group">
-        <label htmlFor="name">Name:</label>
-        <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="description">Description:</label>
-        <textarea id="description" name="description" value={formData.description} onChange={handleChange} required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="location">Location:</label>
-        <input type="text" id="location" name="location" value={formData.location} onChange={handleChange} required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="image">Image URL:</label>
-        <input type="url" id="image" name="image" value={formData.image} onChange={handleChange} required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="open">Opening Time:</label>
-        <input type="time" id="open" name="open" value={formData.openingHours.open} onChange={handleOpeningHoursChange} required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="close">Closing Time:</label>
-        <input type="time" id="close" name="close" value={formData.openingHours.close} onChange={handleOpeningHoursChange} required />
-      </div>
-      {formData.price.map((price, index) => (
-        <div key={price.type} className="form-group">
-          <label htmlFor={`price-${price.type}`}>{price.type} Price:</label>
-          <input
-            type="number"
-            id={`price-${price.type}`}
-            name="price"
-            value={price.price}
-            onChange={(e) => handlePriceChange(index, e)}
-            min="0"
-            step="0.01"
-            required
-          />
+    <>
+      <Navbar /> {/* Render the Navbar */}
+      <form className="historical-place-form" onSubmit={handleSubmit}>
+        <h2>{id ? "Edit Place" : "Add New Place"}</h2>
+        {message && <div className="success-message">{message}</div>}
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        <div className="form-group">
+          <label>Name:</label>
+          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
         </div>
-      ))}
-      <div className="form-group">
-        <label htmlFor="type">Type:</label>
-        <select id="type" name="type" value={formData.tags.type} onChange={handleTagsChange} required>
-          <option value="">Select a type</option>
-          <option value="Monuments">Monuments</option>
-          <option value="Museums">Museums</option>
-          <option value="Religious Sites">Religious Sites</option>
-          <option value="Palaces/Castles">Palaces/Castles</option>
-        </select>
-      </div>
-      <div className="form-group">
-        <label htmlFor="historicalPeriod">Historical Period:</label>
-        <input type="text" id="historicalPeriod" name="historicalPeriod" value={formData.tags.historicalPeriod} onChange={handleTagsChange} />
-      </div>
-      <button type="submit" className="submit-button">{id ? 'Update' : 'Add'} Historical Place</button>
-    </form>
+        <div className="form-group">
+          <label>Description:</label>
+          <textarea name="description" value={formData.description} onChange={handleChange} required />
+        </div>
+        <div className="form-group">
+          <label>Location Latitude:</label>
+          <input type="number" name="lat" value={formData.location.lat} onChange={e => setFormData({ ...formData, location: { ...formData.location, lat: e.target.value } })} required />
+        </div>
+        <div className="form-group">
+          <label>Location Longitude:</label>
+          <input type="number" name="lng" value={formData.location.lng} onChange={e => setFormData({ ...formData, location: { ...formData.location, lng: e.target.value } })} required />
+        </div>
+        <div className="form-group">
+          <label>Image URL:</label>
+          <input type="text" name="image" value={formData.image} onChange={handleChange} required />
+        </div>
+        <div className="form-group">
+          <label>Opening Hours - Open:</label>
+          <input type="text" name="open" value={formData.openingHours.open} onChange={e => setFormData({ ...formData, openingHours: { ...formData.openingHours, open: e.target.value } })} required />
+        </div>
+        <div className="form-group">
+          <label>Opening Hours - Close:</label>
+          <input type="text" name="close" value={formData.openingHours.close} onChange={e => setFormData({ ...formData, openingHours: { ...formData.openingHours, close: e.target.value } })} required />
+        </div>
+        {formData.price.map((price, index) => (
+          <div className="form-group" key={index}>
+            <label>Price Type:</label>
+            <input type="text" name="type" value={price.type} onChange={e => handlePriceChange(index, e)} required />
+            <label>Price:</label>
+            <input type="number" name="price" value={price.price} onChange={e => handlePriceChange(index, e)} required />
+          </div>
+        ))}
+        <div className="form-group">
+          <label>Tags Type:</label>
+          <select
+            name="type"
+            value={formData.tags.type}
+            onChange={e => setFormData({ ...formData, tags: { ...formData.tags, type: e.target.value } })}
+          >
+            <option value="">Select a type</option>
+            <option value="museum">Museum</option>
+            <option value="Palaces/castles">Palaces/Castles</option>
+            <option value="monument">Monument</option>
+            <option value="religious site">Religious Site</option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Historical Period:</label>
+          <input type="text" name="historicalPeriod" value={formData.tags.historicalPeriod} onChange={e => setFormData({ ...formData, tags: { ...formData.tags, historicalPeriod: e.target.value } })} />
+        </div>
+
+        <button type="submit" className="submit-button">Submit</button>
+      </form>
+    </>
   );
 }

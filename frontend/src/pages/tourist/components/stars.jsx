@@ -1,8 +1,9 @@
-function FractionalStar(rating) {
+function FractionalStar(rating, key) {
     const percentage = rating * 100;
 
     return (
         <svg
+            key={key}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -31,11 +32,11 @@ export function Stars({ rating }) {
     const stars = [];
     for (let i = 0; i < 5; i++, rating--) {
         if (rating > 1)
-            stars.push(FractionalStar(1));
+            stars.push(FractionalStar(1, i));
         else if (rating > 0 && rating < 1)
-            stars.push(FractionalStar(rating));
+            stars.push(FractionalStar(rating, i));
         else
-            stars.push(FractionalStar(0));
+            stars.push(FractionalStar(0, i));
     }
     return stars;
 }

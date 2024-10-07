@@ -5,7 +5,6 @@ import '@/pages/TourismGovernor/HistoricalPlacesList.css';
 export default function HistoricalPlacesList({ places, onDelete }) {
   return (
     <div className="historical-places-list">
-      <h2>Historical Places</h2>
       {places.length > 0 ? (
         places.map((place) => (
           <div key={place._id} className="historical-place-item">

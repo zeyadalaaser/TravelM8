@@ -1,28 +1,29 @@
 import mongoose from 'mongoose';  //to communicate with the db
 import Product from '../models/productModel.js';
+import { createRatingStage } from '../helpers/aggregationHelper.js';
 
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, image, price, quantity, description,  } = req.body;
+    const { name, image, price, quantity, description } = req.body;
 
     const newProduct = new Product(
       {
-        name, 
-        image, 
-        price, 
-        quantity, 
-        description, 
+        name,
+        image,
+        price,
+        quantity,
+        description,
         // rating, 
         // reviews, 
         sellerId: req.user.userId
       }
-  );
+    );
 
-    
+
     const savedProduct = await newProduct.save();
 
-  
+
     res.status(201).json(savedProduct);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -48,10 +49,18 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
+const createPopulateStage = (minRating) => {
+  const ratingStage = createRatingStage("Product", false, minRating)
+  return [
+    ...ratingStage
+  ];
+}
+
 export const getAllProducts = async (req, res) => {
   try {
-    const { minPrice, maxPrice, sortByRating, search } = req.query;  //here ba-retrieve el query parameter (min,max) and sorting that the user will put in the request
-    
+    const { minPrice, maxPrice, sortByRating, search, minRating, sortBy, order } = req.query;  //here ba-retrieve el query parameter (min,max) and sorting that the user will put in the request
+    const populateStage = createPopulateStage(minRating);
+
     //My Filter Logic
     let filter = {};   //this is empty filter object and if user did not provide min and max, will retrieve all products
     if (minPrice || maxPrice) {
@@ -61,39 +70,47 @@ export const getAllProducts = async (req, res) => {
     }
 
     //Search Logic 
+
       if (search) {
         filter.name = { $regex: search, $options: 'i' }; // 'i' makes it case-insensitive; ya3ny masln product and PRODUCT ; bei-treat the uppercase and lowercase the same 
       }
 
+
     //Sorting Logic
     let sortCondition = {};
     if (sortByRating === 'asc') {
-      sortCondition.Rating = 1;  // Ascending order; 1 means in mongodb ascending 
-    } else if (sortByRating === 'desc') { 
-      sortCondition.Rating = -1; // Descending order; -1 means in mongodb descending 
+      sortCondition.averageRating = 1;  // Ascending order; 1 means in mongodb ascending 
+    } else if (sortByRating === 'desc') {
+      sortCondition.averageRating = -1; // Descending order; -1 means in mongodb descending 
     }
 
-
-    const products = await Product.find(filter).sort(sortCondition);  //hena will find the products with the given price filter or sorting
-    
-    if (products.length === 0) {  //el condition da 3alashan law 3amal serach 3ala product msh mawgood in the db
-      return res.status(404).json({ success: false, message: 'No products found matching the search criteria' });
+    if (sortBy) {
+      const mappedSortBy = sortBy === "price" ? "Price" : "averageRating";
+      sortCondition[mappedSortBy] = order === "desc" ? -1 : 1;
     }
 
-    res.status(200).json({success : true , data: products}); 
+    const aggregationPipeline = [
+      { $match: filter },
+      ...populateStage,
+      ...(sortBy ? [{ $sort: sortCondition }] : []),
+    ];
+
+    // Execute the aggregation pipeline
+    const products = await Product.aggregate(aggregationPipeline);
+    res.status(200).json({ success: true, data: products });
   } catch (error) {
     console.log("error in ftching products:", error.message);
-    res.status(500).json({ message: error.message }); 
+    res.status(500).json({ message: error.message });
   }
 };
 
 export const updateProduct = async (req, res) => {
   try {
-    const { id } = req.params; 
-    const updateData = req.body; 
+    const { id } = req.params;
+    const updateData = req.body;
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-      return res.status(404).json({success: false , message:"Product not found; invalid"});
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ success: false, message: "Product not found; invalid" });
     }
 
 
@@ -104,7 +121,7 @@ export const updateProduct = async (req, res) => {
 
     //law mafeesh product
     //if (!updatedProduct) {
-      //return res.status(404).json({ message: 'Product not found' });
+    //return res.status(404).json({ message: 'Product not found' });
     //}
 
     res.status(200).json(updatedProduct);
@@ -117,13 +134,13 @@ export const getMyProducts = async (req, res) => {
   const userId = req.user?.userId;
   try {
     let Places;
-      Places = await Product.find({ sellerId: userId });
-      if (Places.length == 0)
-        res.status(204);
-      else
-        res.status(200).json({ Places });
-    } catch (error) {
-      res.status(400).json({ message: "enter a valid id" });
-    }
+    Places = await Product.find({ sellerId: userId });
+    if (Places.length == 0)
+      res.status(204);
+    else
+      res.status(200).json({ Places });
+  } catch (error) {
+    res.status(400).json({ message: "enter a valid id" });
+  }
 };
 
