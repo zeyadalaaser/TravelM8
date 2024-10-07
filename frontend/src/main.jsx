@@ -30,6 +30,8 @@ import ProfileTemplate from './pages/TourGuide/profileTemplate.jsx';
 import Itinerary from './pages/TourGuide/itinerary2.jsx';
 import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx"
 import TouristProfile from './pages/tourist/components/tourist-profile.jsx';
+import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
+import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -38,6 +40,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
         <Route path="/tourist" element={<TouristPage />} />
+        <Route path="/myItineraries" element={<Itineraries />} />
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -48,6 +51,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="login" element={<Login />} />
         <Route path="/signup" element={<SignupGeneral />} />
         <Route path="/signup/signupTourist" element={<TouristRegistration />} />
+        <Route path="/signup/signupAdvertiser" element={<AdvertiserRegistration />} />
         <Route path="/signup/signupTourguide" element={<FormPage />} />
         <Route path="/signup/signupSeller" element={<FormPageSeller />} />
         <Route path="/tourist-page" element={<TouristPage />} />

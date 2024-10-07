@@ -14,6 +14,9 @@ const TourGuideHomePage = () => {
       <Button onClick={() => navigate("/itinerary")} className="w-48">
         Go to Itinerary
       </Button>
+      <Button onClick={() => navigate("/myItineraries")} className="w-48">
+        View Itineraries
+      </Button>
     </div>
   );
 };
