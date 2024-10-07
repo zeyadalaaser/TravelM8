@@ -32,45 +32,24 @@ export default function ItineraryManagement() {
 
   useEffect(() => {
     // Fetch itineraries from API
-    // For now, we'll use mock data
-    setItineraries([
-      {
-        _id: '1',
-        name: 'City Explorer',
-        description: 'Explore the city\'s best attractions',
-        activities: ['1'],
-        historicalSites: ['2'],
-        tourLanguage: 'English',
-        price: 50,
-        availableSlots: [
-          {
-            date: '2023-07-01',
-            startTime: '09:00',
-            endTime: '17:00',
-            timeline: [
-              {
-                referenceModel: 'Activity',
-                event: '1',
-                startTime: '2023-07-01T09:00:00',
-                endTime: '2023-07-01T12:00:00',
-              },
-              {
-                referenceModel: 'HistoricalPlaces',
-                event: '2',
-                startTime: '2023-07-01T13:00:00',
-                endTime: '2023-07-01T16:00:00',
-              },
-            ],
-            numberOfBookings: 0,
-          },
-        ],
-        accessibility: 'Wheelchair accessible',
-        pickUpLocation: 'City Center',
-        dropOffLocation: 'City Center',
-        tags: ['1', '2'],
-        tourGuideId: 'guide1',
-      },
-    ])
+    const fetchItineraries = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/itineraries'); // Replace with your API endpoint
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setItineraries(data); // Update state with fetched itineraries
+      } catch (error) {
+        setError(error.message); // Handle errors if any
+      } finally {
+        setLoading(false); // Set loading to false after fetch
+      }
+
+    };
+
+  
+
   }, [])
 
   const handleCreate = () => {

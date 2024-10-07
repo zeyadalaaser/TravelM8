@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import HistoricalPlace from "../models/historicalPlacesModel.js";
 import TourismGovernor from '../models/tourismGovernorModel.js'
 //const  mongoose = require('mongoose');
+import jwt  from  'jsonwebtoken'; // Add this line
+
 
 
 
@@ -76,6 +78,21 @@ export const deleteHistoricalPLace=async(req,res)=>{
   console.error("Error deleting Historical Place:", error);
   res.status(500).json({ message: "Internal server error" });
 }
+};
+
+
+export const getTourById = async (req, res) => {
+  try {
+      const { id } = req.params;
+      const tour = await HistoricalPlace.findById(id);
+
+      if (!tour) {
+          return res.status(404).json({ message: 'Place not found' });
+      }
+      res.json(tour);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching the tour', error });
+  }
 };
 
 
@@ -163,6 +180,33 @@ export const filterbyTags =async(req,res)=>{
   
 }
 
+export const getMyGovernor = async (req, res) => {
+  try {
+    // Get the token from the request header
+    const token = req.headers.authorization?.split(' ')[1]; // Bearer <token>
+    
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Make sure this is the same secret used when signing the token
+    const governorId = decoded.id; // Extract the governorId from the token
+
+    // Fetch the governor's information from the database
+    const governor = await TourismGovernor.findById(governorId).select('-password'); // Exclude password from the response
+
+    if (!governor) {
+      return res.status(404).json({ message: 'Governor not found' });
+    }
+
+    // Send the governor's information as a response
+    res.status(200).json(governor);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
   
 

@@ -16,7 +16,7 @@ import TourismGovernor1 from "@/services/TourismGovernor.jsx";
 import DeleteUser from './pages/admin/deleteUser-page.jsx'
 import PreferenceTag from './pages/admin/preferenceTag-page.jsx';
 import Dashboard from './pages/admin/dashboard.jsx';
-import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
+import AdvertiserProfile from './pages/Advertiser/advertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
 import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
@@ -25,9 +25,10 @@ import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetai
 //import ProductApp from './pages/admin/ProductApp.jsx'
 //import ProductForm from './pages/admin/ProductForm.jsx'
 //import ProductList from './pages/admin/ProductList.jsx'
-import ProductPage from './pages/admin/product.jsx'
+import Product from './pages/admin/product.jsx'
 import ProfileTemplate from './pages/TourGuide/profileTemplate.jsx';
-
+import Itinerary from './pages/TourGuide/itinerary2.jsx';
+import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -39,7 +40,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/product" element={<ProductPage />} />
+        {/* <Route path="/product" element={<ProductPage />} /> */}
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
         <Route path="/admin/addTourismGovernor" element={<TourismGovernor1 />} />
@@ -50,13 +51,15 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup/signupSeller" element={<FormPageSeller />} />
         <Route path="/tourist-page" element={<TouristPage />} />
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
-        <Route path="/advertiserPage" element={<AdvertiserHomePage />} />
+        <Route path="/advertiserHomePage" element={<AdvertiserHomePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
         <Route path="/add" element={<HistoricalPlaceForm/>} />
         <Route path="/edit/:id" element={<HistoricalPlaceForm  />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
         <Route path="/profileTemplate" element={<ProfileTemplate />} />
+        <Route path="/tourguideHomePage" element={<TourGuideHomePage />} />
+        <Route path="/itinerary" element={<Itinerary />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react"
 
-export function SearchBar() {
+export function SearchBar({ categories }) {
   const { searchParams, navigate, location } = useRouter();
 
   const handleSearchParam = (search) => {
@@ -40,9 +40,9 @@ export function SearchBar() {
           <SelectValue placeholder="Search by" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="name">Name</SelectItem>
-          <SelectItem value="categoryName">Category</SelectItem>
-          <SelectItem value="tag">Tag</SelectItem>
+          {categories.map((category, index) =>
+            (<SelectItem key={index} value={category.value}>{category.name}</SelectItem>))
+          }
         </SelectContent>
       </Select>
     </div>

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import './signupTourist.css';
-import backgroundImage from '../../assets/backgroundtourist.jpg';
+import backgroundImage from '@/assets/backgroundtourist.jpg';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axios from 'axios'; // Import Axios
+
 
 export default function TouristRegistration() {
   const [formData, setFormData] = useState({
@@ -31,7 +32,7 @@ export default function TouristRegistration() {
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -228,4 +229,7 @@ export default function TouristRegistration() {
       <Footer />
     </>
   );
+
+
 }
+

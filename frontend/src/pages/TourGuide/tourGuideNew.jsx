@@ -15,7 +15,7 @@ import useRouter from "@/hooks/useRouter"
 
 import axios from "axios";
 
-export default function AdvertiserProfile() {
+export default function tourguideProfile() {
   const token = localStorage.getItem('token');
 
   const navigate = useRouter();
@@ -28,7 +28,7 @@ export default function AdvertiserProfile() {
 
 
 
-  const [advertiser, setAdvertiser] = useState(null); // Initialize state as null
+  const [tourguide, setTourguide] = useState(null); // Initialize state as null
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function AdvertiserProfile() {
 
   const fetchProfileInfo = async () => {
     try {
-      const response = await fetch('http://localhost:5001/api/advertisers/myProfile', {
+      const response = await fetch('http://localhost:5001/api/tourguides/myProfile', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +49,7 @@ export default function AdvertiserProfile() {
       }
 
       const data = await response.json(); // Parse JSON data
-      setAdvertiser(data); // Update state with the fetched profile data
+      settourguide(data); // Update state with the fetched profile data
 
     } catch (error) {
       console.error('Error fetching profile info:', error);
@@ -65,27 +65,7 @@ export default function AdvertiserProfile() {
   }, [token]);
 
   // Custom Progress Bar Component
-  const CustomProgressBar = ({ value }) => {
-    const progressBarStyle = {
-      width: '100%',
-      backgroundColor: '#e0e0e0',
-      borderRadius: '4px',
-      height: '8px',
-    };
 
-    const progressFillStyle = {
-      width: `${value}%`,
-      backgroundColor: '#3b82f6',
-      height: '100%',
-      borderRadius: '4px',
-    };
-
-    return (
-      <div style={progressBarStyle}>
-        <div style={progressFillStyle} />
-      </div>
-    );
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -109,17 +89,19 @@ export default function AdvertiserProfile() {
           <Card className="col-span-1">
             <CardHeader className="flex flex-col items-center">
               <Avatar className="h-24 w-24">
-                <AvatarImage src="/placeholder.svg?height=96&width=96" alt="Advertiser" />
+                <AvatarImage src="/placeholder.svg?height=96&width=96" alt="tourguide" />
                 <AvatarFallback></AvatarFallback>
               </Avatar>
-              <p className="text-muted-foreground">username: {advertiser ? advertiser.username : 'null'}</p>
-              <p className="text-muted-foreground">name: {advertiser ? advertiser.name : '-'}</p>
+              <p className="text-muted-foreground">username: {tourguide ? tourguide.username : 'null'}</p>
+              <p className="text-muted-foreground">name: {tourguide ? tourguide.name : '-'}</p>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-muted-foreground">email: {advertiser ? advertiser.email : 'null'}</p>
-              <p className="text-muted-foreground">description: {advertiser ? advertiser.description : '-'}</p>
-              <p className="text-muted-foreground">website: {advertiser ? advertiser.website : '-'}</p>
-              <p className="text-muted-foreground">hotline: {advertiser ? advertiser.hotline : '-'}</p>
+              <p className="text-muted-foreground">email: {tourguide ? tourguide.email : 'null'}</p>
+              <p className="text-muted-foreground">mobileNumber: {tourguide ? tourguide.description : '-'}</p>
+              <p className="text-muted-foreground">yearsOfExperience: {tourguide ? tourguide.mobileNumber : '-'}</p>
+              <p className="text-muted-foreground">Previous Work: {tourguide ? tourguide.previousWork : '-'}</p>
+              <p className="text-muted-foreground">Languages: {tourguide ? tourguide.languages : '-'}</p>
+
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                 <DialogTrigger asChild>
                   <Button className="mt-4">Edit Profile</Button>
@@ -128,71 +110,11 @@ export default function AdvertiserProfile() {
                   <DialogHeader>
                     <DialogTitle>Edit Profile</DialogTitle>
                   </DialogHeader>
-                  <EditProfileForm advertiser={advertiser} handleSubmit={handleSubmit} loading={loading} />
+                  <EditProfileForm tourguide={tourguide} handleSubmit={handleSubmit} loading={loading} />
                 </DialogContent>
               </Dialog>
             </CardContent>
           </Card>
-          <div className="col-span-1 md:col-span-2 space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Activity Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="flex items-center space-x-4">
-                  <DollarSign className="h-10 w-10 text-green-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Spend</p>
-                    <p className="text-2xl font-bold">$12,345</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Users className="h-10 w-10 text-blue-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Impressions</p>
-                    <p className="text-2xl font-bold">1.2K</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <TrendingUp className="h-10 w-10 text-purple-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Recognition</p>
-                    <p className="text-2xl font-bold">15,678</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <BarChart className="h-10 w-10 text-yellow-500" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Activity</p>
-                    <p className="text-2xl font-bold">87%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Active Activities</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { name: "Summer Sale", progress: 75 },
-                    { name: "New Product Launch", progress: 40 },
-                    { name: "Brand Awareness", progress: 60 },
-                  ].map((activity) => (
-                    <div key={activity.name} className="space-y-2">
-                      <div className="flex justify-between">
-                        <p>{activity.name}</p>
-                        <p>{activity.progress}%</p>
-                      </div>
-                      <CustomProgressBar value={activity.progress} />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
     </div>
@@ -206,7 +128,7 @@ export default function AdvertiserProfile() {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/advertisers/updateMyProfile', {
+      const response = await fetch('http://localhost:5001/api/tourguides/updateMyProfile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -235,14 +157,14 @@ export default function AdvertiserProfile() {
 
 }
 
-function EditProfileForm({ advertiser, handleSubmit, loading }) {
+function EditProfileForm({ tourguide, handleSubmit, loading }) {
 
-  const [formData, setFormData] = useState(advertiser || { name: '', description: '', email: '', website: '', hotline: '' });
+  const [formData, setFormData] = useState(tourguide || { name: '', description: '', email: '', website: '', hotline: '' });
   const [changedFields, setChangedFields] = useState({}); // To track the changed fields
 
   useEffect(() => {
-    setFormData(advertiser);
-  }, [advertiser]);
+    setFormData(tourguide);
+  }, [tourguide]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -251,7 +173,7 @@ function EditProfileForm({ advertiser, handleSubmit, loading }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Track which fields were changed
-    if (advertiser[name] !== value) {
+    if (tourguide[name] !== value) {
       setChangedFields((prev) => ({ ...prev, [name]: value }));
     } else {
       // If the value is reset to the original, remove it from the changedFields
@@ -280,11 +202,11 @@ function EditProfileForm({ advertiser, handleSubmit, loading }) {
         />
       </div>
       <div>
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="mobileNumber">Mobile Number</Label>
         <Textarea
-          id="description"
-          name="description"
-          value={formData.description}
+          id="mobileNumber"
+          name="mobileNumber"
+          value={formData.mobileNumber}
           onChange={handleChange}
           required
           disabled={loading}
@@ -303,20 +225,20 @@ function EditProfileForm({ advertiser, handleSubmit, loading }) {
         />
       </div>
       <div>
-        <Label htmlFor="website">Website</Label>
+        <Label htmlFor="yearsOfExperience">Years of Experience</Label>
         <Input
-          id="website"
-          name="website"
-          value={formData.website}
+          id="yearsOfExperience"
+          name="yearsOfExperience"
+          value={formData.yearsOfExperience}
           onChange={handleChange}
           disabled={loading}
         />
       </div>
       <div>
-        <Label htmlFor="hotline">Hotline</Label>
+        <Label htmlFor="previousWork">Previous Work</Label>
         <Input
-          id="hotline"
-          name="hotline"
+          id="previousWork"
+          name="previousWork"
           type="text"
           value={formData.hotline}
           onChange={handleChange}
