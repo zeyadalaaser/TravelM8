@@ -20,7 +20,7 @@ const itineraySchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Activity',
-            required: true // Makes the field required
+            required: true 
         }
     ],
 
@@ -91,12 +91,32 @@ const itineraySchema = new mongoose.Schema({
     },
 
     pickUpLocation: {
+        // location: {
+        //     lat: {
+        //         type: Number,
+        //         required: true,
+        //     },
+        //     lng: {
+        //         type: Number,
+        //         required: true,
+        //     }
+        // },
         //google maps
         type: String,
         required: true, 
     },
 
     dropOffLocation: {
+        // location: {
+        //     lat: {
+        //         type: Number,
+        //         required: true,
+        //     },
+        //     lng: {
+        //         type: Number,
+        //         required: true,
+        //     }
+        // },
         //google maps
         type: String,
         required: true, 

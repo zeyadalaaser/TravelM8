@@ -2,6 +2,7 @@ import TourismGovernor from "../models/tourismGovernorModel.js"; // Ensure the p
 import bcrypt from "bcrypt";
 import { checkUniqueUsername } from "../helpers/signupHelper.js"; 
 
+
 const registerGovernor = async (req, res) => {
   const { username, password } = req.body;
   const isNotUnique = await checkUniqueUsername(username);
@@ -27,6 +28,7 @@ const registerGovernor = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 const fetchTourismGovernors = async (req, res) => {

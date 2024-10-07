@@ -49,12 +49,12 @@ export const login = async (req, res) => {
 
     // Create an array of user queries with roles
     const userQueries = [
-        { model: Admin, role: 'admin' },
-        { model: Tourist, role: 'tourist' },
-        { model: TourGuide, role: 'tourGuide' },
-        { model: Advertiser, role: 'advertiser' },
-        { model: TourismGovernor, role: 'tourismGovernor' },
-        { model: Seller, role: 'seller' }
+        { model: Admin, role: 'Admin' },
+        { model: Tourist, role: 'Tourist' },
+        { model: TourGuide, role: 'TourGuide' },
+        { model: Advertiser, role: 'Advertiser' },
+        { model: TourismGovernor, role: 'TourismGovernor' },
+        { model: Seller, role: 'Seller' }
     ];
 
     // Execute all queries concurrently

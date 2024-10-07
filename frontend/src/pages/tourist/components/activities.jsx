@@ -23,7 +23,7 @@ export function Attractions({ attractions }) {
                         </div>
                         <div className="text-xl font-bold">
                             {Array.isArray(attraction.price) && attraction.price.length === 2
-                                ? `from $${attraction.price[0]}`
+                                ? `$${attraction.price[0]}-$${attraction.price[1]}`
                                 : `$${attraction.price}`}
                         </div>
                     </div>

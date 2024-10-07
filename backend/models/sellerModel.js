@@ -36,10 +36,6 @@ const sellerSchema = new mongoose.Schema({
       return /[a-zA-Z]/.test(value) && /\d/.test(value);
     }
   },
-
-  // role: { type: String, default: 'Seller' }
-
-  
 }, 
     { 
     timestamps: true 
