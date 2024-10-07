@@ -30,6 +30,7 @@ export default function Login() {
       localStorage.setItem('token', token); // Store JWT token in localStorage
 
       console.log("Login successful. Role:", role);
+      console.log("token:", token);
 
       // Redirect to different pages based on role
       if (role === 'Tourist') {
