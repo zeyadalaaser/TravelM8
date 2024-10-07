@@ -1,7 +1,7 @@
 import useRouter from '@/hooks/useRouter';
 import { DualSlider } from "@/components/ui/dual-slider";
 
-const defaultRange = [0, 50000];
+const defaultRange = [0, 4000];
 
 export function PriceFilter() {
     const { searchParams, navigate, location } = useRouter();
