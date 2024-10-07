@@ -95,7 +95,7 @@ import "@reach/combobox/styles.css";
 
 export default function Places({ onLocationChange }) {
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "YOUR_GOOGLE_MAPS_API_KEY",
+    googleMapsApiKey: "AIzaSyCnZF6unPqQ0Nydbjo-eVu1mCin59zSmZU",
     libraries: ["places"],
   });
 
