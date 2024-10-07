@@ -69,7 +69,10 @@ const Preferencetag = () => {
 
   const handleUpdate = async () => {
     if (currentTag && newTagName.trim() !== "") {
-      const updatedTag = await updatePreferenceTag(currentTag.name, newTagName.trim());
+      const updatedTag = await updatePreferenceTag(
+        currentTag.name,
+        newTagName.trim()
+      );
       setTags((prevTags) =>
         prevTags.map((tag) => (tag.name === currentTag.name ? updatedTag : tag))
       );
@@ -113,6 +116,17 @@ const Preferencetag = () => {
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">Vacation Preference Tags</h1>
+
+          {/* Dashboard Button */}
+          <div className="flex justify-end mb-4">
+            <Button
+              onClick={() => (window.location.href = "/dashboard")} // Change '/dashboard' to your actual dashboard route
+              variant="outline"
+            >
+              Go to Dashboard
+            </Button>
+          </div>
+
           <div className="flex justify-between items-center mb-4">
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
@@ -186,7 +200,9 @@ const Preferencetag = () => {
             </TableBody>
           </Table>
           {tags.length === 0 && (
-            <p className="text-center text-muted-foreground mt-4">No tags found.</p>
+            <p className="text-center text-muted-foreground mt-4">
+              No tags found.
+            </p>
           )}
         </div>
         <Footer />

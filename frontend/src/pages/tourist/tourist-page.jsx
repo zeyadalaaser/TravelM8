@@ -2,7 +2,11 @@ import useRouter from "@/hooks/useRouter"
 import { useEffect } from "react";
 
 import { ActivitiesPage } from "./components/activities/activities-page";
+import { ProductsPage } from "./components/products/products-page";
 import { NavBar } from "./components/nav-bar";
+import { MuseumsPage } from "./components/museums/museums-page";
+import { CircleUserRound } from "lucide-react";
+import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 
 export default function TouristPage() {
 
@@ -17,6 +21,7 @@ export default function TouristPage() {
   useEffect(() => {
     // Check if the user has a token
     const token = localStorage.getItem("token");
+    console.log(token);
     if (!token) {
       navigate("/login"); // Redirect to login page if no token
       return;
@@ -41,8 +46,17 @@ export default function TouristPage() {
   return (
     <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
-      <NavBar />
+      <div className="flex justify-between">
+        <NavBar />
+        <CircleUserRound 
+            className="cursor-pointer h-10 w-10" 
+            onClick={() => navigate('/tourist-profile')}
+        />
+      </div>
       {page === "activities" && <ActivitiesPage />}
+      {page === "itineraries" && <ItinerariesPage />}
+      {page === "museums" && <MuseumsPage />}
+      {page === "products" && <ProductsPage />}
     </div>
   )
 }

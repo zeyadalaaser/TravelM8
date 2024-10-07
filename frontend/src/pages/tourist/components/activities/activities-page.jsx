@@ -19,16 +19,22 @@ export function ActivitiesPage() {
     const [activities, setActivities] = useState([]);
 
     const fetchActivities = useDebouncedCallback(async () => {
-        const fetchedActivities = await getActivities(location.search);
-        setActivities(fetchedActivities);
+        getActivities(location.search).then(setActivities);
     }, 200);
 
     useEffect(() => {
         fetchActivities();
     }, [location.search]); // Only run when location.search changes
 
+
+    const searchCategories = [
+        { name: 'Name', value: 'name' },
+        { name: 'Category', value: 'categoryName' },
+        { name: 'Tag', value: 'tag' },
+    ];
+
     return <>
-        <SearchBar />
+        <SearchBar categories={searchCategories} />
         <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
                 <DateFilter />

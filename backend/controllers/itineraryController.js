@@ -7,10 +7,10 @@ import mongoose from "mongoose";
 //create new itinerary 
 export const createItinerary = async (req, res) => {
     try {
-      const newItineraryData = {
+      const newItineraryData = new Itinerary ( {
         ...req.body, 
         tourGuideId: req.user.userId 
-      };
+      });
         await newItineraryData.save(); 
         res.status(201).json({
              message: 'Itinerary added successfully',newItineraryData });  
@@ -115,12 +115,12 @@ export const deleteItinerary = async (req, res) => {
 
 export const filterItineraries = async (req, res) => {
   try {
-    const { budget, tags, language, date } = req.query;   
+    const { price, tags, language, startDate, endDate, searchBy, search } = req.query;   
 
     const query = {};
 
-    if (budget) {
-      const budgetArray = budget.split('-').map(Number);  
+    if (price) {
+      const budgetArray = price.split('-').map(Number);  
       if (budgetArray.length === 2) {  
        
           const [min, max] = budgetArray;  
@@ -134,7 +134,6 @@ export const filterItineraries = async (req, res) => {
     }
       
     }
-
     
     if (tags) {
       const tagsArray = tags.split(',').map(tag => tag.trim()); // Trim any whitespace
@@ -154,17 +153,15 @@ export const filterItineraries = async (req, res) => {
       query.tourLanguage = language;
     }
 
-     
-    if (date) {
-      const startDate = new Date(date);
-      const endDate = new Date(date);
-      endDate.setHours(23, 59, 59, 999); // Set to end of the day
-
-      query['availableSlots.date'] = {
-        $gte: startDate,  
-        $lte: endDate,    
-      };
+    if (search)
+    {
+      query.name = { $regex: search, $options: 'i' };
     }
+
+    if (startDate) query['availableSlots.date'] = { $gte: new Date(startDate) }; // Filter by startDate or current date for upcoming
+
+    if (endDate) query['availableSlots.date'] = { ...filters.date, $lte: new Date(endDate) };
+
     const itineraries = await Itinerary.find(query)
       .populate('activities')  
       .populate('historicalSites')  

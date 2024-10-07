@@ -6,6 +6,7 @@ import {
     getMyActivities,
     updateActivity,
     deleteActivity,
+    createManualActivity
     //readActivities,
 } from "../controllers/activityController.js"; 
 import verifyToken from "../services/tokenDecodingService.js";
@@ -18,6 +19,7 @@ router.get("/activities/myActivities", verifyToken, getMyActivities); // Retriev
 router.post("/activities", verifyToken ,createNewActivity); // Create a new activity
 router.put("/activities/:id", updateActivity); // Update an activity by ID
 router.delete("/activities/:id", deleteActivity); // Delete an activity by ID
+router.post("/activities/manualActivity" ,createManualActivity); // Create a new activity
 
 //router.get("/AllActivities",readActivities);
 

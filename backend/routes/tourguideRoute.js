@@ -1,13 +1,15 @@
 import express from 'express';
-import { createTourGuide, updateTourGuide, getTourGuides } from '../controllers/tourguideController.js';
+import { createTourGuide, updateTourGuideProfile, getTourGuides, getMyProfile } from '../controllers/tourguideController.js';
+import verifyToken from '../services/tokenDecodingService.js';
 
 
 const router = express.Router();
 
 // Define the routes
 router.post('/tourguides', createTourGuide);              // Create a new user with website, hotline, etc.
-router.put('/tourguides/:username', updateTourGuide);        // Update user information by email
+router.put('/tourguides/updateMyProfile',verifyToken, updateTourGuideProfile);        // Update user information by email
 router.get('/tourguides', getTourGuides);                 // Read user by email
+router.get('/tourguides/myProfile', verifyToken , getMyProfile);
 
 
 export default router; 

@@ -1,109 +1,150 @@
 /* Base Styles */
 body {
-  font-family: "Arial", sans-serif; /* Change to a more modern font */
-  background-color: #f8f9fa; /* Light background for better contrast */
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Modern and professional font */
+  background-color: #f4f6f8; /* Slightly darker background for better contrast */
+  color: #333; /* Darker text for improved readability */
   margin: 0;
   padding: 0;
+  line-height: 1.6; /* Improved readability with better line spacing */
 }
 
 /* Main Container */
 .Main {
   padding: 20px;
-  max-width: 800px; /* Constrain width for better readability */
-  margin: 0 auto; /* Center the container */
+  max-width: 900px; /* Slightly wider container */
+  margin: 0 auto;
+  background-color: #ffffff; /* White container for better contrast */
+  border-radius: 12px; /* Softer rounded corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Enhanced shadow for depth */
 }
 
 /* Categories List */
 .categories-list {
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Adds space between items */
+  gap: 12px; /* Increased gap for better spacing */
+  margin-top: 20px;
 }
 
 /* Individual Category Item */
 .category-item {
-  background-color: white; /* White background for contrast */
-  border: 1px solid #dee2e6; /* Light border for definition */
-  padding: 15px;
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  background-color: #ffffff; /* White background for contrast */
+  border: 1px solid #e0e0e0; /* Light grey border for a refined look */
+  padding: 20px;
+  border-radius: 10px; /* Slightly more rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* More prominent shadow */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: transform 0.2s; /* Smooth hover effect */
+  transition: transform 0.3s, box-shadow 0.3s; /* Smoother transition effect */
 }
 
 .category-item:hover {
-  transform: scale(1.02); /* Slight zoom on hover */
+  transform: translateY(-5px); /* More noticeable hover lift */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
 }
 
 /* Button Styles */
 .update-button,
 .delete-button {
-  padding: 10px 15px; /* Increased padding for a larger button */
+  padding: 12px 18px; /* Larger buttons for better touch targets */
   border: none;
-  border-radius: 25px; /* More rounded corners for a nicer shape */
+  border-radius: 30px; /* Rounded pill-shaped buttons */
   cursor: pointer;
-  font-weight: bold; /* Makes the button text stand out */
-  text-transform: uppercase; /* Uppercase text for a more uniform look */
-  transition: background-color 0.3s, transform 0.2s; /* Smooth transition for background color and transform */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  font-weight: 600; /* Bolder text */
+  text-transform: uppercase;
+  transition: background-color 0.3s, transform 0.2s; /* Smooth hover transition */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  font-size: 14px; /* Slightly larger font size for better readability */
 }
 
 .update-button {
-  background-color: #28a745; /* Green color */
+  background-color: #28a745;
   color: white;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .update-button:hover {
-  background-color: #218838; /* Darker green on hover */
-  transform: translateY(-2px); /* Slight lift effect on hover */
+  background-color: #218838;
+  transform: translateY(-3px); /* Increased lift on hover */
 }
 
 .delete-button {
-  background-color: #dc3545; /* Red color */
+  background-color: #dc3545;
   color: white;
 }
 
 .delete-button:hover {
-  background-color: #c82333; /* Darker red on hover */
-  transform: translateY(-2px); /* Slight lift effect on hover */
+  background-color: #c82333;
+  transform: translateY(-3px);
 }
 
 /* Message Styles */
 .message {
-  color: #155724; /* Success message color */
-  background-color: #d4edda; /* Light green background for visibility */
-  border: 1px solid #c3e6cb; /* Matching border */
-  border-radius: 5px;
-  padding: 10px;
-  margin: 10px 0;
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px; /* Slightly more rounded corners */
+  padding: 12px 16px;
+  margin: 15px 0;
+  font-size: 16px; /* Increased font size for better readability */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
 }
 
 /* Form Styles */
 .category-form {
   display: flex;
-  margin-bottom: 20px; /* Adds space below the form */
+  margin-bottom: 25px;
+  gap: 10px; /* Added gap for spacing between input and button */
 }
 
 .category-form input {
-  flex: 1; /* Makes input fill the available space */
-  padding: 10px;
+  flex: 1;
+  padding: 12px 15px;
   border: 1px solid #ced4da;
-  border-radius: 5px;
-  margin-right: 10px; /* Space between input and button */
+  border-radius: 8px; /* Softer corners */
+  transition: border-color 0.3s; /* Smooth focus transition */
+  font-size: 16px;
+}
+
+.category-form input:focus {
+  border-color: #007bff; /* Blue border on focus for better user experience */
+  outline: none;
 }
 
 .category-form button {
-  padding: 10px 15px;
-  background-color: #007bff; /* Primary color */
+  padding: 12px 18px;
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s; /* Smooth transition */
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .category-form button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+  background-color: #0056b3;
+  transform: translateY(-3px);
+}
+
+/* Media Query for Responsive Design */
+@media (max-width: 768px) {
+  .Main {
+    padding: 15px;
+    max-width: 100%; /* Ensure container is responsive */
+  }
+
+  .category-item {
+    flex-direction: column; /* Stack items on smaller screens */
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .update-button,
+  .delete-button {
+    padding: 10px 12px; /* Slightly smaller buttons for mobile */
+    font-size: 13px;
+  }
 }

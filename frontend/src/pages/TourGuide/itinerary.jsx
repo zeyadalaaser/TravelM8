@@ -5,6 +5,7 @@ import './profileTemplate.css';
 
 const ItineraryManager = () => {
     const [itineraryId, setItineraryId] = useState('');
+    const [name, setname] = useState('');
     const [activity, setActivity] = useState('');
     const [location, setLocation] = useState('');
     const [startDate, setStartDate] = useState('');

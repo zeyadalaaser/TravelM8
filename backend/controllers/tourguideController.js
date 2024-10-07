@@ -18,18 +18,18 @@ export const createTourGuide = async(req,res) => {
 }
 
 
-export const updateTourGuide = async (req, res) => {
-   const {username} = req.params;
+export const updateTourGuideProfile = async (req, res) => {
+   const userId = req.user.userId;
    try{
-      const updatedTourGuide = await TourGuide.findOneAndUpdate(
-         { username },        
-         req.body,         
-         { new: true, runValidators: true }          
+      const updatedAdvertiser = await TourGuide.findByIdAndUpdate(
+         userId,
+         req.body,
+         { new: true, runValidators: true }
        );
-       if (!updatedTourGuide){
+       if (!updatedAdvertiser){
          res.status(400).json({error:error.message});
        }
-      res.status(200).json(updatedTourGuide);
+      res.status(200).json(updatedAdvertiser);
    }catch(error){
       res.status(400).json({error:error.message});
    }
@@ -44,6 +44,15 @@ export const updateTourGuide = async (req, res) => {
     }catch(error){
        res.status(400).json({error:error.message});
     }
- }
+ };
  
+ export const getMyProfile = async (req, res) => {
+   const userId = req.user.userId;
+   try {
+      const touristInfo = await TourGuide.findById(userId);
+      res.status(200).json(touristInfo);
+   } catch (error) {
+      res.status(400).json({ message: "could not fetch account information" });
+   }
+}
 

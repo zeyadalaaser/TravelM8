@@ -3,7 +3,7 @@ import './signup.css';
 import { Menu } from 'lucide-react';
 import axios from 'axios';
 import backgroundImage from '@/assets/background.jpeg';
-
+import { useNavigate } from 'react-router-dom';
 
 const FormPage = () => {
     const [formData, setFormData] = useState({
@@ -15,6 +15,7 @@ const FormPage = () => {
 
     const [message, setMessage] = useState(''); 
     const [messageType, setMessageType] = useState('');  
+    const navigate = useNavigate(); 
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -27,8 +28,9 @@ const FormPage = () => {
 
         try {
             const response = await axios.post('http://localhost:5001/api/pending-users', formData);
-            setMessage('User created successfully!');
+            alert('Your Request Is Pending');
             setMessageType('success');  
+            navigate('/');
         } catch (error) {
             setMessage('Error during signup. Please try again.');
             setMessageType('error');  
