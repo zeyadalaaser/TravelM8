@@ -1,7 +1,8 @@
 import { Clock, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Stars } from "./stars";
+
+import { Stars } from "../stars";
 
 export function Activities({ activities }) {
     return <div className="space-y-4">

@@ -40,6 +40,10 @@ export default function Login() {
         navigate('/ProfileTemplate'); // Admin role
     } else if (role === 'TourismGovernor') {
         navigate('/TourismGovernorDashboard');
+      } else if (role === 'Admin') {
+        navigate('/dashboard');
+      } else if (role === 'Advertiser') {
+        navigate('/advertiserHomePage');
       } else {
         navigate('/default-page'); // Default page if role doesn't match
       }

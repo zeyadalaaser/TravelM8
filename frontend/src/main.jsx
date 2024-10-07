@@ -12,19 +12,18 @@ import './index.css'
 import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx"
 import ActivityCategories from "./services/ActivityCategories"; // Ensure this path is correct
 import Admin from "./services/Admin"; // Import the Admin component
-//import TourismGovernor from "./services/TourismGovernor";  
+import TourismGovernor1 from "@/services/TourismGovernor.jsx";  
 import DeleteUser from './pages/admin/deleteUser-page.jsx'
 import PreferenceTag from './pages/admin/preferenceTag-page.jsx';
 import Dashboard from './pages/admin/dashboard.jsx';
 import AdvertiserProfile from './pages/Advertiser/AdvertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
+
 import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
-import ProfileTemplate from '@/pages/TourGuide/profileTemplate.jsx';
-import ItineraryManagement from './pages/TourGuide/itineraryManagment.jsx';
-
+import Product from './pages/admin/product.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -36,9 +35,10 @@ createRoot(document.getElementById('root')).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/products" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/admin/EditActivityCategories" element={<ActivityCategories />} />
-        <Route path="/admin/addTourismGovernor" element={<TourismGovernor />} />
+        <Route path="/admin/addTourismGovernor" element={<TourismGovernor1 />} />
         <Route path="login" element={<Login />} />
         <Route path="/signup" element={<SignupGeneral />} />
         <Route path="/signup/signupTourist" element={<TouristRegistration />} />
