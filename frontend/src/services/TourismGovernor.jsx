@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/TourismGovernor.css"; // Import the CSS file for styling
 
-const TourismGovernor = () => {
+const TourismGovernor1 = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [governors, setGovernors] = useState([]);
@@ -95,4 +95,4 @@ const TourismGovernor = () => {
   );
 };
 
-export default TourismGovernor;
+export default TourismGovernor1;
