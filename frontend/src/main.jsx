@@ -20,8 +20,6 @@ import AdvertiserProfile from './pages/Advertiser/advertiserProfile'
 import AdvertiserActivities from './pages/Advertiser/advertiserActivities'
 import AdvertiserHomePage from './pages/Advertiser/advertiserHomePage'
 //import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
-import SellerProfile from './pages/seller/SellerProfile.jsx';
-import SellerProducts from './pages/seller/SellerProducts.jsx';
 import HistoricalPlaceForm from '@/pages/TourismGovernor/HistoricalPlaceForm.jsx';
 import HistoricalPlaceDetails from '@/pages/TourismGovernor/HistoricalPlaceDetails.jsx';
 //import ProductApp from './pages/admin/ProductApp.jsx'
@@ -34,7 +32,8 @@ import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx"
 import TouristProfile from './pages/tourist/components/tourist-profile.jsx';
 import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
-import SellerProfile from "@/pages/seller/SellerProfile.jsx";
+import sellerProfile from "@/pages/seller/SellerProfile.jsx";
+import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -42,7 +41,8 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
-        <Route path="/SellerProfile" element={<SellerProfile />} />
+        <Route path="/SellerProducts" element={<SellerProducts />} />
+        <Route path="/SellerProfile" element={<sellerProfile />} />
         <Route path="/tourist" element={<TouristPage />} />
         <Route path="/myItineraries" element={<Itineraries />} />
         <Route path="/deleteUser" element={<DeleteUser />} />
@@ -63,8 +63,6 @@ createRoot(document.getElementById('root')).render(
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
         <Route path="/advertiserHomePage" element={<AdvertiserHomePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
-        <Route path="/sellerProfile" element={<SellerProfile />} />
-        <Route path="/sellerProduct" element={<SellerProducts />} />
         <Route path="/advertiserActivities" element={<AdvertiserActivities />} />
         <Route path="/add" element={<HistoricalPlaceForm/>} />
         <Route path="/edit/:id" element={<HistoricalPlaceForm  />} />
