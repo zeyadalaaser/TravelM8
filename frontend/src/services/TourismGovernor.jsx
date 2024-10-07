@@ -7,38 +7,50 @@ const TourismGovernor = () => {
   const [password, setPassword] = useState("");
   const [governors, setGovernors] = useState([]);
 
+  // Function to register a new tourism governor
   const registerGovernor = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post("/api/tourism-governors/register", {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:5001/api/tourism-governors", // Updated to the correct endpoint
+        {
+          username,
+          password,
+        }
+      );
       alert(response.data.message);
-      fetchGovernors();
+      fetchGovernors(); // Refresh the governor list after registration
+      setUsername(""); // Clear username field after registration
+      setPassword(""); // Clear password field after registration
     } catch (error) {
-      alert(error.response.data.message || "Registration failed");
+      console.error("Registration error:", error); // Log the error
+      alert(error.response?.data?.message || "Registration failed");
     }
   };
 
+  // Function to fetch the list of tourism governors
   const fetchGovernors = async () => {
     try {
-      const response = await axios.get("/api/tourism-governors");
+      const response = await axios.get(
+        "http://localhost:5001/api/tourism-governors"
+      );
+      console.log("Governors fetched:", response.data); // Log the fetched data
       setGovernors(response.data);
     } catch (error) {
       console.error("Error fetching tourism governors:", error);
     }
   };
 
+  // Fetch governors when the component mounts
   useEffect(() => {
     fetchGovernors();
   }, []);
 
   return (
-    <div className="container">
-      <h1>Tourism Governor Registration</h1>
+    <div className="tourism-governor-container">
+      <h1 className="tourism-governor-header">Add Tourism Governor </h1>
       <form onSubmit={registerGovernor}>
-        <div className="form-group">
+        <div className="tourism-governor-form-group">
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -48,7 +60,7 @@ const TourismGovernor = () => {
             required
           />
         </div>
-        <div className="form-group">
+        <div className="tourism-governor-form-group">
           <label htmlFor="password">Password</label>
           <input
             type="password"
@@ -59,21 +71,25 @@ const TourismGovernor = () => {
             minLength="7"
           />
         </div>
-        <div className="buttons">
-          <button type="submit" className="register-button">
+        <div className="tourism-governor-buttons">
+          <button type="submit" className="tourism-governor-register-button">
             Add
           </button>
-          <a href="/user.html" className="back-button">
+          <a href="/user.html" className="tourism-governor-back-button">
             Back to Landing Page
           </a>
         </div>
       </form>
 
-      <h2>Add Tourism Governors</h2>
+      <h2>Added Tourism Governors</h2>
       <ul>
-        {governors.map((governor, index) => (
-          <li key={index}>{governor.username}</li>
-        ))}
+        {Array.isArray(governors) && governors.length > 0 ? (
+          governors.map((governor, index) => (
+            <li key={index}>{governor.username}</li>
+          ))
+        ) : (
+          <li>No governors found.</li>
+        )}
       </ul>
     </div>
   );
