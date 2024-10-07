@@ -9,11 +9,7 @@ export function CategoryFilter() {
   const { searchParams, navigate, location } = useRouter();
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      setCategories((await getCategories()).map((c) => c.name));
-    }
-    
-    fetchCategories();
+    getCategories().then(categories => categories.map((c) => c.name)).then(setCategories);
   }, []);
 
   const handleChange = (value) => {

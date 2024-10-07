@@ -29,6 +29,7 @@ import Product from './pages/admin/product.jsx'
 import ProfileTemplate from './pages/TourGuide/profileTemplate.jsx';
 import Itinerary from './pages/TourGuide/itinerary2.jsx';
 import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx"
+import TouristProfile from './pages/tourist/components/tourist-profile.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -50,6 +51,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup/signupTourguide" element={<FormPage />} />
         <Route path="/signup/signupSeller" element={<FormPageSeller />} />
         <Route path="/tourist-page" element={<TouristPage />} />
+        <Route path="/tourist-profile" element={<TouristProfile />} />
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
         <Route path="/advertiserHomePage" element={<AdvertiserHomePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />

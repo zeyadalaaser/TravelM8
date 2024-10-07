@@ -5,55 +5,48 @@ import useRouter from "@/hooks/useRouter";
 import { Separator } from "@/components/ui/separator";
 
 import { ClearFilters } from "../filters/clear-filters";
-import { DateFilter } from "../filters/date-filter";
-import { RatingFilter } from "../filters/rating-filter";
 import { PriceFilter } from "../filters/price-filter";
-import { CategoryFilter } from "../filters/category-filter";
 import { SortSelection } from "../filters/sort-selection";
-import { Activities } from "./activities";
 import { SearchBar } from "../filters/search";
-import { getActivities } from "../../api/apiService";
+import { getMuseums } from "../../api/apiService";
+import { TagFilter } from '../filters/tag-filter';
+import { Museums } from './museums';
 
-export function ActivitiesPage() {
+export function MuseumsPage() {
     const { location } = useRouter();
-    const [activities, setActivities] = useState([]);
+    const [museums, setMuseums] = useState([]);
 
-    const fetchActivities = useDebouncedCallback(async () => {
-        getActivities(location.search).then(setActivities);
+    const fetchMuseums = useDebouncedCallback(async () => {
+        const fetchedMuseums = await getMuseums(location.search);
+        setMuseums(fetchedMuseums);
     }, 200);
 
     useEffect(() => {
-        fetchActivities();
-    }, [location.search]); // Only run when location.search changes
-
+        fetchMuseums();
+    }, [location.search]);
 
     const searchCategories = [
         { name: 'Name', value: 'name' },
-        { name: 'Category', value: 'categoryName' },
-        { name: 'Tag', value: 'tag' },
+        { name: 'Tag', value: 'tag' }
     ];
 
     return <>
         <SearchBar categories={searchCategories} />
         <div className="flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
-                <DateFilter />
-                <Separator className="mt-7" />
                 <PriceFilter />
                 <Separator className="mt-5" />
-                <RatingFilter />
-                <Separator className="mt-7" />
-                <CategoryFilter />
+                <TagFilter />
             </div>
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex h-5 items-center space-x-4 text-sm">
-                        <div>{activities.length} results</div>
+                        <div>{museums.length} results</div>
                         <ClearFilters />
                     </div>
                     <SortSelection />
                 </div>
-                <Activities activities={activities} />
+                <Museums museums={museums} />
             </div>
         </div>
     </>
