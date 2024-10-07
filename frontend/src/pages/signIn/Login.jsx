@@ -30,6 +30,7 @@ export default function Login() {
       localStorage.setItem('token', token); // Store JWT token in localStorage
 
       console.log("Login successful. Role:", role);
+      console.log("token:", token);
 
       // Redirect to different pages based on role
       if (role === 'Tourist') {
@@ -37,8 +38,8 @@ export default function Login() {
       } else if (role === 'Seller') {
         navigate('/seller-page'); // Seller role
       } else if (role === 'TourGuide') {
-        navigate('/tourguide'); // Admin role
-      } else if (role === 'TourismGovernor') {
+        navigate('/ProfileTemplate'); // Admin role
+    } else if (role === 'TourismGovernor') {
         navigate('/TourismGovernorDashboard');
       } else if (role === 'Admin') {
         navigate('/dashboard');
