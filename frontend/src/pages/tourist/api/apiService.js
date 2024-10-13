@@ -49,3 +49,15 @@ export async function getCategories() {
 export async function getTags() {
     return (await apiClient.get('preference-tags')).data;
 }
+
+export async function submitComplaint(complaintData) {
+    return (await apiClient.post('complaints', complaintData)).data
+}
+// export async function submitComplaint(complaintData) {
+//     const token = localStorage.getItem('token');
+//     return (await apiClient.post('complaints', complaintData, {
+//         headers: {
+//             'Authorization': `Bearer ${token}`
+//         }
+//     })).data;
+// }
