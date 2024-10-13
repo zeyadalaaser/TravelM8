@@ -179,11 +179,8 @@ const updateActivity = async (req, res) => {
         } catch (error) {
             console.error(error);
             res.status(400).json({ message: "Failed to update activity", error });
-            console.error(error);
-            res.status(400).json({ message: "Failed to update activity", error });
         }
     } else {
-        res.status(400).json({ message: "Invalid activity ID" });
         res.status(400).json({ message: "Invalid activity ID" });
     }
 };

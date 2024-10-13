@@ -164,7 +164,7 @@ export const filterItineraries = async (req, res) => {
 
     if (startDate) query['availableSlots.date'] = { $gte: new Date(startDate) }; // Filter by startDate or current date for upcoming
 
-    if (endDate) query['availableSlots.date'] = { ...filters.date, $lte: new Date(endDate) };
+    if (endDate) query['availableSlots.date'] = { ...query['availableSlots.date'], $lte: new Date(endDate) };
 
     const itineraries = await Itinerary.find(query)
       .populate('activities')  
