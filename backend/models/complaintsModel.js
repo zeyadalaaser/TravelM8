@@ -16,7 +16,12 @@ const complaintsSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now,
-    }
+    },
+    touristId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tourist",
+        required: true,
+      },
    
 }, { timestamps: true });
 

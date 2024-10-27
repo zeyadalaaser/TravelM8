@@ -3,19 +3,31 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { X } from "lucide-react"
-import { submitComplaint } from "../api/apiService"
+import { submitComplaint } from "@/pages/tourist/api/apiService.js"
 
 
 export function ComplaintForm({ onClose }) {
-  const [title, setTitle] = useState("")
-  const [body, setBody] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const token = localStorage.getItem('token');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    body: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      await submitComplaint({ title, body, date: new Date() })
+      await submitComplaint(formData,token)
       alert("Complaint submitted successfully")
       onClose()
     } catch (error) {
@@ -52,8 +64,9 @@ export function ComplaintForm({ onClose }) {
             </label>
             <Input
               id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
               required
               className="w-full"
             />
@@ -64,8 +77,9 @@ export function ComplaintForm({ onClose }) {
             </label>
             <Textarea
               id="body"
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
+              name="body"
+              value={formData.body}
+              onChange={handleChange}
               required
               className="w-full"
               rows={4}

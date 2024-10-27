@@ -27,7 +27,4 @@ router.get("/filterbyTags",filterbyTags);
 router.get("/myPlaces",verifyToken, getMyPlaces); // Retrieve my places
 
 
-
-
-
 export default router;

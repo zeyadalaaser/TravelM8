@@ -1,5 +1,5 @@
 import Complaints from '../models/complaintsModel.js';
-
+import mongoose from "mongoose";
 
 
 export const createComplaint = async (req, res) => {
@@ -9,7 +9,8 @@ export const createComplaint = async (req, res) => {
         const newComplaint = new Complaints({
             title,
             body,
-            date: date || new Date() 
+            date,
+            touristId: req.user.userId
         });
 
         const savedComplaint = await newComplaint.save();
