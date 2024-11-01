@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import useRouter from "@/hooks/useRouter"
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/NavbarAdmin";
@@ -11,19 +12,22 @@ import { Users, Tag, Package, Activity, MapPin, ArrowRight } from "lucide-react"
 
 function AdminDashboard() {
   const [sidebarState, setSidebarState] = useState(false);
+  const { location, navigate, searchParams } = useRouter();
+  const page = searchParams.get("type");
   const [stats] = useState({
     totalUsers: 1250,
     totalCategories: 15,
     totalTags: 48,
     totalProducts: 324,
     totalGovernors: 12, // Example statistic for Tourism Governors
+    totalComplaints: 12,
   });
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
   };
 
-  const navigate = useNavigate(); // Initialize navigate
+
 
   return (
     <div style={{ display: "flex" }}>
@@ -148,6 +152,24 @@ function AdminDashboard() {
                 </Button>
               </CardFooter>
             </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Complaints</CardTitle>
+                <Package className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.totalComplaints}</div>
+                <p className="text-xs text-muted-foreground">+16 new complaints this week</p>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full" onClick={() => navigate('/viewComplaints')}>
+                  Manage Complaints
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+
           </div>
         </div>
         <Footer />

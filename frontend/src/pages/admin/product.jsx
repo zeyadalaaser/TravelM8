@@ -18,7 +18,7 @@ import {
   deleteProduct,
   updateProduct,
   createProduct,
-} from "@/services/productService"; // Import the product service
+} from "@/pages/admin/services/productService.js"; // Import the product service
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

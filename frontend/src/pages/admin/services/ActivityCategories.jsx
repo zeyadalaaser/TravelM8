@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import CategoryList from "./CategoryList";
 import CategoryForm from "./CategoryForm";
-import "../styles/main.css"; // Import your main CSS file
-import Navbar from "../components/NavbarAdmin"; // Import the Navbar component
+import "@/styles/main.css"; // Import your main CSS file
+import Navbar from "@/components/Navbar.jsx"; // Import the Navbar component
 
 const ActivityCategories = () => {
   const [categories, setCategories] = useState([]);
