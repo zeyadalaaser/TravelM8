@@ -51,10 +51,18 @@ export async function getTags() {
     return (await apiClient.get('preference-tags')).data;
 }
 
+export async function getMyComplaints(token) {
+    return (await apiClient.get('complaints/myComplaints', {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        }
+    })).data;
+}
+
 
 
 export async function submitComplaint(complaintData,token) {
-
     return (await apiClient.post('complaints', complaintData, {
         headers: {
             'Content-Type': 'application/json',
@@ -62,11 +70,3 @@ export async function submitComplaint(complaintData,token) {
         }
     })).data;
 }
-// export async function submitComplaint(complaintData) {
-//     const token = localStorage.getItem('token');
-//     return (await apiClient.post('complaints', complaintData, {
-//         headers: {
-//             'Authorization': `Bearer ${token}`
-//         }
-//     })).data;
-// }

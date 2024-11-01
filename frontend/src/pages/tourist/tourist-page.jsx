@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 
 import { ActivitiesPage } from "./components/activities/activities-page";
 import { ProductsPage } from "./components/products/products-page";
+import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myComplaints.jsx";
 import { NavBar } from "./components/nav-bar";
 import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound } from "lucide-react";
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
-import { ComplaintForm } from "./components/complaint-form"
+import { ComplaintForm } from "./components/complaints/complaint-form"
 
 export default function TouristPage() {
 
@@ -59,6 +60,7 @@ export default function TouristPage() {
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
       {page === "products" && <ProductsPage />}
+      {page === "complaints" && <MyComplaintsPage />}
       {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />
       )}
