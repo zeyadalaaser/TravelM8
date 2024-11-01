@@ -38,7 +38,7 @@ export const getMyComplaints = async (req, res) => {
   export const getComplaints = async (req, res) => {
    
     try{
-       const complaints = await Complaints.find({});
+       const complaints = await Complaints.find({}).populate("touristId", "username");;
        res.status(200).json(complaints);
     }catch(error){
        res.status(400).json({error:error.message});
