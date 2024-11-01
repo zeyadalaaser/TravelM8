@@ -28,6 +28,11 @@ const productSchema = new mongoose.Schema({
         default: null
     },
 
+    archived:{
+        type: Boolean,
+        default: false
+    },
+
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Seller',

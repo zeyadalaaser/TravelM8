@@ -28,6 +28,38 @@ export const createProduct = async (req, res) => {
   }
 };
 
+
+export const archiveProduct = async (req, res) => {
+  try {
+    const{id}= req.params;
+    console.log(`Archiving product with ID: ${productId}`);
+
+    const ArchivedProduct = await Product.findByIdAndUpdate(id, {archived: true}, {new: true});
+
+    if(!ArchivedProduct){
+      return res.status(404).json({ message: 'Product not found'});
+    }
+    res.status(200).json({ message: 'Product archived successfully', ArchivedProduct});
+  } catch(error){
+    res.status(500).json({message: 'error occured'});
+  }
+  }
+
+export const unarchiveProduct = async (req, res) =>{
+  try{
+    const {id} = req.params;
+    const unArchivedProduct = await Product.findByIdAndUpdate(id, {archived: false}, {new: true});
+
+    if(!unArchivedProduct){
+      return res.status(404).json({messege: "Product not found"});
+    }
+    res.status(200).json({messege: 'Product unarchived successfully'});
+  } catch (error){
+    res.status(500).json({messege: 'Error occured'});
+  }
+}
+
+
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params; // Get the product ID from the request parameters
@@ -74,9 +106,13 @@ export const getAllProducts = async (req, res) => {
   try {
     const { minPrice, maxPrice, sortByRating, search, minRating, sortBy, order } = req.query;  //here ba-retrieve el query parameter (min,max) and sorting that the user will put in the request
     const populateStage = createPopulateStage(minRating);
+    const userRole = req.user?.role; //user role available on req.user ? 
 
     //My Filter Logic
     let filter = {};   //this is empty filter object and if user did not provide min and max, will retrieve all products
+    if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
+      filter.archived = false; // toursits only see unarchived products
+    }
     if (minPrice || maxPrice) {
       filter.price = {}; //ba-initialize empty price filter object
       if (minPrice) filter.price.$gte = parseFloat(minPrice);  // Price >= minPrice
