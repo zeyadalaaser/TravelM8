@@ -1,4 +1,4 @@
-import { getAllComplaints } from "@/pages/admin/services/complaintService.js";
+import { getAllComplaints, updateComplaintStatus } from "@/pages/admin/services/complaintService.js";
 import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
@@ -8,13 +8,19 @@ import { useToast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -25,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox"
 
 export default function ComplaintsPage() {
   const token = localStorage.getItem("token");
@@ -32,7 +39,7 @@ export default function ComplaintsPage() {
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const { toast } = useToast();
-  const [status, setStatus] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState(""); 
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
@@ -56,16 +63,36 @@ export default function ComplaintsPage() {
 
   const closeDialog = () => {
     setSelectedComplaint(null);
+    setSelectedStatus("");
   };
 
-  const handleStatusChange = (event) => {
-    setStatus(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    // Logic to submit or update the complaint status if needed
-    console.log("Updated Status:", status);
-    // Close the dialog if needed or perform other actions
+  const handleSubmit = async () => {
+    if (selectedComplaint && selectedStatus) {
+      try {
+        await updateComplaintStatus(selectedComplaint._id, selectedStatus); // Update status in backend
+        // Update local state to reflect changes
+        setComplaints(prevComplaints =>
+          prevComplaints.map(complaint =>
+            complaint._id === selectedComplaint._id
+              ? { ...complaint, status: selectedStatus }
+              : complaint
+          )
+        );
+        toast({
+          title: "Success",
+          description: `Complaint status updated to ${selectedStatus}.`,
+          duration: 3000,
+        });
+        closeDialog(); // Close the dialog after submission
+      } catch (error) {
+        console.error("Error updating status:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update complaint status.",
+          duration: 3000,
+        });
+      }
+    }
   };
 
   return (
@@ -113,39 +140,41 @@ export default function ComplaintsPage() {
                   <TableCell>
                   <Dialog>
       <DialogTrigger asChild>
-        <Button onClick={() => setSelectedComplaint(complaint)} variant="outline">
+      <Button onClick={() => { setSelectedComplaint(complaint);setSelectedStatus(complaint.status); }} variant="outline">
           View Details
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+          <DialogTitle style={{ fontSize: "1.5rem", fontWeight: "bold", textAlign: "center" }}>
             Complaint : {selectedComplaint?.title}
           </DialogTitle>
           <p></p>
-          <p><strong>Details : </strong>{selectedComplaint?.body}</p>
+          <Separator/>
+          <p></p>
+          <p><strong>Description : </strong></p>{selectedComplaint?.body}
           <p></p>
           <p><strong>Date Issued :</strong> {selectedComplaint ? new Date(selectedComplaint.date).toLocaleDateString() : ''}</p>
           <p></p>
           <p><strong>Reply to Complaint : </strong></p>
           <Textarea />
           <p></p>
-          <p><strong>Status :</strong></p>
-          <RadioGroup defaultValue="option-one">
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-one" id="option-one" />
-                    <Label htmlFor="option-one">Resolved</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-two" id="option-two" />
-                    <Label htmlFor="option-two">Pending</Label>
-                </div>
-            </RadioGroup>
+          <p></p>
+          <Select value={selectedStatus} onValueChange={(value) => setSelectedStatus(value)}>
+            <SelectTrigger>
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Resolved">Resolved</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                </SelectContent>
+            </Select>
         </DialogHeader>
-        
-        <Button onClick={handleSubmit} className="mt-4">
-          Submit
+      <DialogClose asChild>
+        <Button onClick={handleSubmit} className="mt-4" >
+          Submit       
         </Button>
+        </DialogClose>
       </DialogContent>
     </Dialog>
                   </TableCell>

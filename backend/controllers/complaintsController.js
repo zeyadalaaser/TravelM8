@@ -44,3 +44,24 @@ export const getMyComplaints = async (req, res) => {
        res.status(400).json({error:error.message});
     }
  };
+ export const updateComplaintStatus = async (req, res) => {
+  const { id } = req.params; // Assuming the complaint ID is passed in the URL
+  const { status } = req.body; // Expecting { status: "Pending" | "Resolved" }
+
+  try {
+      // Update the complaint status
+      const updatedComplaint = await Complaints.findByIdAndUpdate(
+          id,
+          { status },
+          { new: true } // Return the updated document
+      );
+
+      if (!updatedComplaint) {
+          return res.status(404).json({ message: "Complaint not found" });
+      }
+
+      res.status(200).json(updatedComplaint);
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};

@@ -12,4 +12,24 @@ export async function getAllComplaints() {
     })).data;
 }
 
+export async function updateComplaintStatus(complaintId, status, token) {
+    try {
+      const response = await apiClient.put(
+        `complaints/${complaintId}/status`,
+        { status },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error updating complaint status:", error);
+      throw error;
+    }
+  }
+
+
 
