@@ -6,6 +6,7 @@ const apiClient = axios.create({
     baseURL: API_BASE_URL
 });
 
+
 export async function getActivities(query) {
     const searchParams = new URLSearchParams(query);
     searchParams.delete("type");
@@ -48,4 +49,24 @@ export async function getCategories() {
 
 export async function getTags() {
     return (await apiClient.get('preference-tags')).data;
+}
+
+export async function getMyComplaints(token) {
+    return (await apiClient.get('complaints/myComplaints', {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        }
+    })).data;
+}
+
+
+
+export async function submitComplaint(complaintData,token) {
+    return (await apiClient.post('complaints', complaintData, {
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        }
+    })).data;
 }

@@ -18,6 +18,7 @@ import itineraryRoute from "./routes/itineraryRoute.js";
 import pendingUserRoute from "./routes/pendingUserRoute.js";
 import ratingRoute from './routes/ratingRoute.js';
 import loginRoute from "./routes/loginRoute.js";
+import complaintRoute from "./routes/complaintsRoute.js";
 
 
 
@@ -51,6 +52,7 @@ app.use("/api", advertiserRoute);
 app.use("/api", sellerRoute);
 app.use("/api", tourGuideRoute);
 app.use("/api", touristRoute);
+app.use("/api", complaintRoute);
 app.use('/api/products',productRoute);
 app.use("/api", historicalPlacesRoute);
 app.use("/api", itineraryRoute);
