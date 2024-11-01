@@ -8,10 +8,12 @@ import { useToast } from "./components/useToast";
 import { SearchBar } from './components/filters/search';
 import { PriceFilter } from "./components/filters/price-filter";
 import { getProducts } from './api/apiService'; // Import the getProducts function
+import useRouter from '../../hooks/useRouter';
 
 const token = localStorage.getItem('token');
 
 export default function SellerProducts() {
+  const { location } = useRouter();
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +49,7 @@ export default function SellerProducts() {
     const fetchProducts = async () => {
       setLoading(true); // Set loading state
       try {
-        const response = await getProducts(); // Fetch products from the API
+        const response = await getProducts(location.search); // Fetch products from the API
         setProducts(response.data); // Update products state
       } catch (error) {
         console.error('Error fetching products:', error);
