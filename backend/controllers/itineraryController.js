@@ -5,13 +5,7 @@ import HistoricalPlaces from "../models/historicalPlacesModel.js";
 import PreferenceTag from "../models/preferenceTagModel.js";
 import ActivityCategory from "../models/activityCategoryModel.js";
 import mongoose from "mongoose";
-//create new itinerary
-async function getExchangeRates(base = "USD") {
-  const response = await axios.get(
-    `https://api.exchangerate-api.com/v4/latest/${base}`
-  );
-  return response.data.rates;
-}
+
 export const createItinerary = async (req, res) => {
   try {
     const newItineraryData = new Itinerary({
@@ -143,6 +137,19 @@ export const deleteItinerary = async (req, res) => {
     });
   }
 };
+async function getExchangeRates(base = "USD") {
+  try {
+    const response = await axios.get(
+      `https://api.exchangerate-api.com/v4/latest/${base}`
+    );
+    return response.data.rates;
+  } catch (error) {
+    console.error("Error fetching exchange rates:", error.message);
+    throw new Error("Could not fetch exchange rates");
+  }
+}
+
+// Read all itineraries with filtering and currency conversion
 export const filterItineraries = async (req, res) => {
   try {
     const {
@@ -155,11 +162,12 @@ export const filterItineraries = async (req, res) => {
       search,
       sortBy,
       order,
-      currency = "USD",
+      currency = "USD", // Default to USD if currency is not provided
     } = req.query;
 
     // Fetch exchange rates for price conversion
-    const rates = await getExchangeRates();
+    const rates = await getExchangeRates(currency); // Pass the currency directly
+
     const exchangeRate = rates[currency] || 1;
 
     // Build filters based on query params
@@ -169,19 +177,17 @@ export const filterItineraries = async (req, res) => {
 
     if (startDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };
-    if (endDate)
+    if (endDate) {
       filters["availableSlots.date"] = {
         ...filters["availableSlots.date"],
         $lte: new Date(endDate),
       };
+    }
 
     // Convert prices based on selected currency
     const minConvertedPrice = parseFloat(minPrice) / exchangeRate;
     const maxConvertedPrice = parseFloat(maxPrice) / exchangeRate;
-    filters["price.value"] = {
-      $gte: minConvertedPrice,
-      $lte: maxConvertedPrice,
-    };
+    filters.price = { $gte: minConvertedPrice, $lte: maxConvertedPrice };
 
     if (tags) {
       const tagsArray = tags.split(",").map((tag) => tag.trim());
@@ -197,8 +203,6 @@ export const filterItineraries = async (req, res) => {
 
     // Fetch itineraries with filters and sort
     let itineraries = await Itinerary.find(filters)
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId")
       .sort(sortCondition);
@@ -206,10 +210,7 @@ export const filterItineraries = async (req, res) => {
     // Convert itinerary prices to the selected currency
     itineraries = itineraries.map((itinerary) => ({
       ...itinerary.toObject(),
-      price: itinerary.price.map(({ type, value }) => ({
-        type,
-        value: (value * exchangeRate).toFixed(2),
-      })),
+      price: (itinerary.price * exchangeRate).toFixed(2),
     }));
 
     res.status(200).json(itineraries);

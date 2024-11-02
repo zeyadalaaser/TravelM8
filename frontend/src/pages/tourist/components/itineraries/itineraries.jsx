@@ -1,3 +1,8 @@
+import { Clock, Globe, Tag } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Stars } from "../stars";
+
 export function Itineraries({ itineraries, currency, exchangeRate }) {
   return (
     <div className="space-y-4">
@@ -45,8 +50,11 @@ export function Itineraries({ itineraries, currency, exchangeRate }) {
                 <div className="text-xl font-bold">
                   {Array.isArray(itinerary.price) && itinerary.price.length > 0
                     ? itinerary.price
-                        .map(({ value }) => (value * exchangeRate).toFixed(2))
-                        .join(" - ") + ` ${currency}`
+                        .map(
+                          ({ value }) =>
+                            `${(value * exchangeRate).toFixed(2)} ${currency}`
+                        )
+                        .join(" - ")
                     : `${(itinerary.price * exchangeRate).toFixed(
                         2
                       )} ${currency}`}

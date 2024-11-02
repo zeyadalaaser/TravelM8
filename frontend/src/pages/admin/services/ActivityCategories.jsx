@@ -1,131 +1,253 @@
 import React, { useState, useEffect } from "react";
-import CategoryList from "./CategoryList";
-import CategoryForm from "./CategoryForm";
-import "@/styles/main.css"; // Import your main CSS file
-import Navbar from "@/components/Navbar.jsx"; // Import the Navbar component
+import Sidebar from "@/components/Sidebar";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const ActivityCategories = () => {
+  const [sidebarState, setSidebarState] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false); // For loading feedback
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  // Fetch all categories when the component mounts
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     try {
       const response = await fetch(
         "http://localhost:5001/api/activity-categories"
-      ); // Ensure this URL is correct
-
-      if (!response.ok) {
-        console.error("Response not OK:", response);
+      );
+      if (!response.ok)
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       const data = await response.json();
-      console.log("Fetched categories:", data); // For debugging
-      setCategories(data); // Update state with fetched data
-      setMessage(""); // Clear any previous error message
+      setCategories(data);
     } catch (error) {
-      console.error("Failed to fetch activity categories:", error);
-      setMessage("Failed to load categories. Please try again later.");
+      toast({
+        title: "Error",
+        description: "Failed to load categories.",
+        duration: 3000,
+      });
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
-  const createCategory = async (name) => {
+  const handleCreate = async () => {
     try {
       const response = await fetch(
         "http://localhost:5001/api/activity-categories",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name }),
+          body: JSON.stringify({ name: newCategoryName }),
         }
       );
       if (response.ok) {
-        fetchCategories(); // Refresh the list after creating a new category
-        setMessage("Category created successfully!");
-      } else {
-        setMessage("Error creating category. Please try again.");
+        fetchCategories();
+        setIsOpen(false);
+        setNewCategoryName("");
+        toast({
+          title: "Success",
+          description: "Category created successfully!",
+          duration: 3000,
+        });
       }
     } catch (error) {
-      console.error("Error creating category:", error);
-      setMessage("Error creating category.");
+      toast({
+        title: "Error",
+        description: "Error creating category.",
+        duration: 3000,
+      });
     }
   };
 
-  const updateCategory = async (currentName, newName) => {
+  const handleUpdate = async () => {
+    if (!currentCategory || !newCategoryName.trim()) return;
     try {
       const response = await fetch(
         "http://localhost:5001/api/activity-categories",
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: currentName, newName }),
+          body: JSON.stringify({
+            name: currentCategory,
+            newName: newCategoryName,
+          }),
         }
       );
       if (response.ok) {
-        fetchCategories(); // Refresh the list after updating a category
-        setMessage("Category updated successfully!");
-      } else {
-        setMessage("Error updating category. Please try again.");
+        fetchCategories();
+        setIsOpen(false);
+        setCurrentCategory(null);
+        setNewCategoryName("");
+        toast({
+          title: "Success",
+          description: "Category updated successfully!",
+          duration: 3000,
+        });
       }
     } catch (error) {
-      console.error("Error updating category:", error);
-      setMessage("Error updating category.");
+      toast({
+        title: "Error",
+        description: "Error updating category.",
+        duration: 3000,
+      });
     }
   };
 
-  const deleteCategory = async (name) => {
+  const handleDelete = async (categoryName) => {
     try {
       const response = await fetch(
         "http://localhost:5001/api/activity-categories",
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name }),
+          body: JSON.stringify({ name: categoryName }),
         }
       );
       if (response.ok) {
-        fetchCategories(); // Refresh the list after deleting a category
-        setMessage("Category deleted successfully!");
-      } else {
-        setMessage("Error deleting category. Please try again.");
+        fetchCategories();
+        toast({
+          title: "Success",
+          description: "Category deleted successfully!",
+          duration: 3000,
+        });
       }
     } catch (error) {
-      console.error("Error deleting category:", error);
-      setMessage("Error deleting category.");
+      toast({
+        title: "Error",
+        description: "Error deleting category.",
+        duration: 3000,
+      });
     }
   };
 
   return (
-    <>
-      <Navbar /> {/* Include the Navbar component at the top */}
-      <div className="container">
-        <h1>Manage Activity Categories</h1>
-        {message && <p className="message">{message}</p>}{" "}
-        {/* Message for feedback */}
-        {loading ? (
-          <p>Loading...</p> /* Show loading state */
-        ) : (
-          <>
-            <CategoryForm createCategory={createCategory} />
-            <h2>All Activity Categories</h2>
-            <CategoryList
-              categories={categories}
-              updateCategory={updateCategory}
-              deleteCategory={deleteCategory}
-            />
-          </>
-        )}
+    <div style={{ display: "flex" }}>
+      <Sidebar
+        state={sidebarState}
+        toggleSidebar={() => setSidebarState(!sidebarState)}
+      />
+      <div
+        style={{
+          transition: "margin-left 0.3s ease",
+          marginLeft: sidebarState ? "250px" : "0",
+          width: "100%",
+        }}
+      >
+        <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
+        <div className="container mx-auto p-4">
+          <h1 className="text-2xl font-bold mb-4">
+            Activity Categories Management
+          </h1>
+
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setCurrentCategory(null)}>
+                <Plus className="mr-2 h-4 w-4" /> Add New Category
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {currentCategory ? "Edit Category" : "Create New Category"}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="categoryName" className="text-right">
+                    Category Name
+                  </Label>
+                  <Input
+                    id="categoryName"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={currentCategory ? handleUpdate : handleCreate}>
+                  {currentCategory ? "Update" : "Create"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Category Name</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {categories.map((category) => (
+                  <TableRow key={category.name}>
+                    <TableCell>{category.name}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mr-2"
+                        onClick={() => {
+                          setCurrentCategory(category.name);
+                          setNewCategoryName(category.name);
+                          setIsOpen(true);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleDelete(category.name)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+          {categories.length === 0 && !loading && (
+            <p className="text-center text-muted-foreground mt-4">
+              No categories found.
+            </p>
+          )}
+        </div>
+        <Footer />
       </div>
-    </>
+    </div>
   );
 };
 

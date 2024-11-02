@@ -1,6 +1,6 @@
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Updated import
+import { useLocation } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { DateFilter } from "../filters/date-filter";
@@ -22,7 +22,7 @@ const exchangeRates = {
 };
 
 export function ItinerariesPage() {
-  const location = useLocation(); // Updated hook
+  const location = useLocation();
   const [itineraries, setItineraries] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });

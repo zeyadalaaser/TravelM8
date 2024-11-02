@@ -1,97 +1,182 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "@/styles/TourismGovernor.css"; // Import the CSS file for styling
-import Navbar from "@/components/NavbarAdmin.jsx"; // Import the Navbar component
+import Sidebar from "@/components/Sidebar";
+import Navbar from "@/components/NavbarAdmin";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Plus } from "lucide-react"; // Removed Trash2 as per previous instructions
+import { useToast } from "@/components/ui/use-toast";
 
 const TourismGovernor1 = () => {
+  const [sidebarState, setSidebarState] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [governors, setGovernors] = useState([]);
-
-  // Function to register a new tourism governor
-  const registerGovernor = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post(
-        "http://localhost:5001/api/tourism-governors", // Updated to the correct endpoint
-        {
-          username,
-          password,
-        }
-      );
-      alert(response.data.message);
-      fetchGovernors(); // Refresh the governor list after registration
-      setUsername(""); // Clear username field after registration
-      setPassword(""); // Clear password field after registration
-    } catch (error) {
-      console.error("Registration error:", error); // Log the error
-      alert(error.response?.data?.message || "Registration failed");
-    }
-  };
-
-  // Function to fetch the list of tourism governors
-  const fetchGovernors = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5001/api/tourism-governors"
-      );
-      console.log("Governors fetched:", response.data); // Log the fetched data
-      setGovernors(response.data);
-    } catch (error) {
-      console.error("Error fetching tourism governors:", error);
-    }
-  };
+  const [isOpen, setIsOpen] = useState(false);
+  const { toast } = useToast();
+  const [error, setError] = useState(null);
 
   // Fetch governors when the component mounts
   useEffect(() => {
     fetchGovernors();
   }, []);
 
+  const fetchGovernors = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5001/api/tourism-governors"
+      );
+      setGovernors(Array.isArray(response.data) ? response.data : []);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching tourism governors:", error);
+      setError("Failed to fetch tourism governors.");
+    }
+  };
+
+  const registerGovernor = async () => {
+    if (password.length < 7) {
+      setError("Password must be at least 7 characters long.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/api/tourism-governors",
+        {
+          username,
+          password,
+        }
+      );
+      toast({ title: response.data.message, duration: 3000 });
+      fetchGovernors(); // Refresh the governor list after registration
+      setUsername("");
+      setPassword("");
+      setIsOpen(false);
+      setError(null);
+    } catch (error) {
+      setError(error.response?.data?.message || "Registration failed.");
+      toast({ title: "Failed to add governor", duration: 3000 });
+    }
+  };
+
   return (
-    <div className="tourism-governor-container">
-      {/* Add Navbar at the top */}
-      <Navbar />
+    <div style={{ display: "flex" }}>
+      <Sidebar
+        state={sidebarState}
+        toggleSidebar={() => setSidebarState(!sidebarState)}
+      />
+      <div
+        style={{
+          transition: "margin-left 0.3s ease",
+          marginLeft: sidebarState ? "250px" : "0",
+          width: "100%",
+        }}
+      >
+        <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
+        <div className="container mx-auto p-4">
+          <h1 className="text-2xl font-bold mb-4">
+            Tourism Governors Management
+          </h1>
 
-      <h1 className="tourism-governor-header">Add Tourism Governor </h1>
-      <form onSubmit={registerGovernor}>
-        <div className="tourism-governor-form-group">
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="tourism-governor-form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength="7"
-          />
-        </div>
-        <div className="tourism-governor-buttons">
-          <button type="submit" className="tourism-governor-register-button">
-            Add
-          </button>
-        </div>
-      </form>
+          <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+              setIsOpen(open);
+              if (open) {
+                setError(null); // Clear any previous error message
+                setUsername(""); // Clear previous username
+                setPassword(""); // Clear previous password
+              }
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Plus className="mr-2 h-4 w-4" /> Add Governor
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Tourism Governor</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="username" className="text-right">
+                    Username
+                  </Label>
+                  <Input
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="col-span-3"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="password" className="text-right">
+                    Password
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="col-span-3"
+                    required
+                    minLength={7}
+                  />
+                </div>
+                {error && (
+                  <p className="mt-4 text-sm text-red-600 font-medium">
+                    {error}
+                  </p>
+                )}
+              </div>
+              <div className="flex justify-end">
+                <Button onClick={registerGovernor}>Add Governor</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
-      <h2>Added Tourism Governors</h2>
-      <ul>
-        {Array.isArray(governors) && governors.length > 0 ? (
-          governors.map((governor, index) => (
-            <li key={index}>{governor.username}</li>
-          ))
-        ) : (
-          <li>No governors found.</li>
-        )}
-      </ul>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Username</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {governors.map((governor, index) => (
+                <TableRow key={index}>
+                  <TableCell>{governor.username}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {governors.length === 0 && (
+            <p className="text-center text-muted-foreground mt-4">
+              No governors found.
+            </p>
+          )}
+        </div>
+        <Footer />
+      </div>
     </div>
   );
 };
