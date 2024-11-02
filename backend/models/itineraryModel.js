@@ -1,11 +1,10 @@
-import mongoose from 'mongoose';
-import Activity from './activityModel.js';
-import HistoricalPlaces from './historicalPlacesModel.js';
+import mongoose from "mongoose";
+import Activity from "./activityModel.js";
+import HistoricalPlaces from "./historicalPlacesModel.js";
 import TourGuide from './tourguideModel.js'
 import PreferenceTag from './preferenceTagModel.js'
 
 const itineraySchema = new mongoose.Schema({
-    
     name: {
         type: String,
         required: true,
@@ -13,34 +12,50 @@ const itineraySchema = new mongoose.Schema({
 
     description: {
         type: String,
-        required: true
+        required: true,
     },
 
     activities: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Activity',
-            required: true 
-        }
+            type: String,
+            required: true,
+        },
     ],
 
     historicalSites: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'HistoricalPlaces',
-            required: true
-        }
-    ],    
+            type: String,
+            required: true,
+        },
+    ],
 
-    tourLanguage:{
+    tourLanguage: {
         type: String,
         required: true,
     },
+
     price: {
         type: Number,
         required: true,
-        min: 0, 
+        min: 0,
     },
+
+    timeline: [
+        {
+            event: {
+                type: String,
+                required: true,
+            },
+            startTime: {
+                type: Date,
+                required: true,
+            },
+            endTime: {
+                type: Date,
+                required: true,
+            },
+        },
+    ],
 
     availableSlots: [
         {
@@ -48,41 +63,16 @@ const itineraySchema = new mongoose.Schema({
                 type: Date,
                 required: true,
             },
-            startTime: {
-                type: String,
-                required: true,
+            numberOfBookings: {
+                type: Number,
+                default: 0,
             },
-            endTime: {
-                type: String,
-                required: true,
+            maxNumberOfBookings: {
+                type: Number,
+                default: 0,
             },
-            timeline: [
-                {
-                    referenceModel: {
-                        type: String,
-                        required: true,
-                        enum: ['Activity', 'HistoricalPlaces'], // Specify the models that can be referenced
-                    },
-                    event: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        refPath: 'referenceModel',
-                        required: true 
-                    },
-                    startTime: {
-                        type: Date,
-                        required: true,
-                    },
-                    endTime: {
-                        type: Date,
-                        required: true,
-                    },
-                }
-            ],
-            numberOfBookings :{
-                 type: Number,
-                 min: 0
-            }
-        }
+            //have remaining spots
+        },
     ],
 
     accessibility: {
@@ -91,49 +81,28 @@ const itineraySchema = new mongoose.Schema({
     },
 
     pickUpLocation: {
-        // location: {
-        //     lat: {
-        //         type: Number,
-        //         required: true,
-        //     },
-        //     lng: {
-        //         type: Number,
-        //         required: true,
-        //     }
-        // },
-        //google maps
         type: String,
-        required: true, 
+        required: true,
     },
 
     dropOffLocation: {
-        // location: {
-        //     lat: {
-        //         type: Number,
-        //         required: true,
-        //     },
-        //     lng: {
-        //         type: Number,
-        //         required: true,
-        //     }
-        // },
-        //google maps
         type: String,
-        required: true, 
+        required: true,
     },
 
-    tags: [{
-        type: mongoose.Schema.Types.ObjectId, // Fixed preferences as an array of strings
-        ref:'PreferenceTag',   // SHould refrence tagsModel
-        required: true,
-    }],
+    tags: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "PreferenceTag",
+            required: true,
+        },
+    ],
 
-    tourGuideId :{
+    tourGuideId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'TourGuide',
+        ref: "TourGuide",
         required: true,
     },
-
 });
 
 const Itinerary = mongoose.model("Itinerary", itineraySchema);

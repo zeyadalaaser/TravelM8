@@ -7,7 +7,6 @@ const complaintRoute = express.Router();
 complaintRoute.post('/complaints',verifyToken, createComplaint);              
 complaintRoute.get('/complaints',verifyToken, getComplaints);  
 complaintRoute.get('/complaints/myComplaints',verifyToken, getMyComplaints);
-// complaintRoute.put('/complaints/:id/status',verifyToken, updateComplaintStatus);
 complaintRoute.put('/complaints/reply/:id', verifyToken, updateComplaintReply);
 
 export default complaintRoute;
