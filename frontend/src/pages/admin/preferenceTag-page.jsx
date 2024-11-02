@@ -30,7 +30,7 @@ import {
   getAllPreferenceTags,
   updatePreferenceTag,
   deletePreferenceTag,
-} from "@/services/preferenceTagService"; // Import the service
+} from "@/pages/admin/services/preferenceTagService.js"; // Import the service
 
 const Preferencetag = () => {
   const [sidebarState, setSidebarState] = useState(false);

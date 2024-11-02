@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/TourismGovernor.css"; // Import the CSS file for styling
-import Navbar from "../components/NavbarAdmin"; // Import the Navbar component
+import "@/styles/TourismGovernor.css"; // Import the CSS file for styling
+import Navbar from "@/components/NavbarAdmin.jsx"; // Import the Navbar component
 
 const TourismGovernor1 = () => {
   const [username, setUsername] = useState("");

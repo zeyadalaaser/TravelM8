@@ -10,9 +10,9 @@ import FormPageSeller from "@/pages/SignUp/signupSeller.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx";
-import ActivityCategories from "./services/ActivityCategories"; // Ensure this path is correct
-import Admin from "./services/Admin"; // Import the Admin component
-import TourismGovernor1 from "@/services/TourismGovernor.jsx";
+import ActivityCategories from "@/pages/admin/services/ActivityCategories.jsx"; // Ensure this path is correct
+import Admin from "@/pages/admin/services/Admin"; // Import the Admin component
+import TourismGovernor1 from "@/pages/admin/services/TourismGovernor.jsx";
 import DeleteUser from "./pages/admin/deleteUser-page.jsx";
 import PreferenceTag from "./pages/admin/preferenceTag-page.jsx";
 import Dashboard from "./pages/admin/dashboard.jsx";
@@ -34,6 +34,7 @@ import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
+import ComplaintsPage from "@/pages/admin/complaints.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -46,6 +47,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/tourist" element={<TouristPage />} />
         <Route path="/myItineraries" element={<Itineraries />} />
         <Route path="/deleteUser" element={<DeleteUser />} />
+        <Route path="/viewComplaints" element={<ComplaintsPage />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/product" element={<Product />} />
