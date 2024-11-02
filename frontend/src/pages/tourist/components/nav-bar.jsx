@@ -10,7 +10,7 @@ const pages = [
     { label: "View My Complaints", value: "complaints" },
 ];
 
-export function NavBar({ onComplaintClick }) { // Accept onComplaintClick as a prop
+export function NavBar({ onComplaintClick,onRedeemClick }) { // Accept onComplaintClick as a prop
     const { location, searchParams, navigate } = useRouter();
     const currentPage = searchParams.get("type");
 
@@ -34,6 +34,14 @@ export function NavBar({ onComplaintClick }) { // Accept onComplaintClick as a p
                 variant="ghost" // You can change this variant if needed
                 className="rounded-full py-2 px-4 border-[1px] border-transparent"
                 onClick={onComplaintClick} // Trigger the complaint form
+            >
+                File a Complaint
+            </Button>
+
+            <Button
+                variant="ghost"  
+                className="rounded-full py-2 px-4 border-[1px] border-transparent"
+                onClick={onRedeemClick}  
             >
                 File a Complaint
             </Button>
