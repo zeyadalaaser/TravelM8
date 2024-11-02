@@ -27,6 +27,29 @@ function AdminDashboard() {
     setSidebarState(!sidebarState);
   };
 
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.log('No token found in local storage');
+    return null;
+  }
+
+  try {
+    // Split the token to get the payload
+    const payload = token.split('.')[1]; // Get the second part of the token (the payload)
+    
+    // Decode the Base64 payload
+    const decodedPayload = JSON.parse(atob(payload));
+    
+    // Access the role
+    const role = decodedPayload.role;
+    if (role) {
+        console.log('User Role:', role);
+      }
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+
 
 
   return (

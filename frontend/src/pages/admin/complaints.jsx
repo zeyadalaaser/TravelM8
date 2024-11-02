@@ -1,5 +1,6 @@
-import { getAllComplaints, updateComplaintStatus } from "@/pages/admin/services/complaintService.js";
+import { getAllComplaints, updateComplaintStatusAndReply } from "@/pages/admin/services/complaintService.js";
 import { useState, useEffect } from "react";
+import useRouter from "@/hooks/useRouter"
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -29,52 +30,114 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox"
 
 export default function ComplaintsPage() {
   const token = localStorage.getItem("token");
+  if (!token) {
+    console.log('No token found in local storage');
+    return null;
+  }
+
+  try {
+    // Split the token to get the payload
+    const payload = token.split('.')[1]; // Get the second part of the token (the payload)
+    
+    // Decode the Base64 payload
+    const decodedPayload = JSON.parse(atob(payload));
+    
+    // Access the role
+    const role = decodedPayload.role;
+    if (role) {
+        console.log('User Role:', role);
+      }
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
   const [sidebarState, setSidebarState] = useState(false);
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const { toast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState(""); 
+  const [reply, setReply] = useState("");
+  const { searchParams, navigate, location } = useRouter();
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
   };
 
   useEffect(() => {
-    const fetchComplaints = async () => {
-      try {
-        const data = await getAllComplaints();
-        setComplaints(data);
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load complaints.",
-          duration: 3000,
-        });
-      }
-    };
     fetchComplaints();
-  }, [token, toast]);
+  }, [token, toast,searchParams]);
 
-  const closeDialog = () => {
-    setSelectedComplaint(null);
-    setSelectedStatus("");
-  };
+
+
+  const fetchComplaints = async () => {
+    try {
+        const data = await getAllComplaints(token);
+        let filteredAndSortedComplaints = [...data];
+
+        // Apply filtering
+        const status = searchParams.get('status');
+        if (status && status !== 'All') {
+            filteredAndSortedComplaints = filteredAndSortedComplaints.filter(
+                complaint => complaint.status === status
+            );
+        }
+        // Apply sorting
+        const sortBy = searchParams.get('sortBy') || 'date';
+        const order = searchParams.get('order') || 'desc';
+        filteredAndSortedComplaints.sort((a, b) => {
+            if (order === 'asc') {
+                return new Date(a[sortBy]) - new Date(b[sortBy]);
+            } else {
+                return new Date(b[sortBy]) - new Date(a[sortBy]);
+            }
+        });
+
+        setComplaints(filteredAndSortedComplaints);
+    } catch (error) {
+        console.error("Error fetching complaints:", error);
+        toast({
+            title: "Error",
+            description: "Failed to load complaints.",
+            duration: 3000,
+        });
+    }
+};
+
+
+    const handleFilter = (status) => {
+        searchParams.set('status', status);
+        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    };
+
+    const handleSort = (value) => {
+        const [sortBy, order] = value.split('-');
+        searchParams.set('sortBy', sortBy);
+        searchParams.set('order', order);
+        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    };
+
+    const getSortBy = () => {
+        const sortBy = searchParams.get('sortBy') || 'date';
+        const order = searchParams.get('order') || 'desc';
+        return `${sortBy}-${order}`;
+    };
+
+    const getActiveFilter = () => searchParams.get('status') || 'All';
+
 
   const handleSubmit = async () => {
     if (selectedComplaint && selectedStatus) {
       try {
-        await updateComplaintStatus(selectedComplaint._id, selectedStatus); // Update status in backend
+        updateComplaintStatusAndReply(token, selectedComplaint._id, reply, selectedStatus); // Update status in backend
         // Update local state to reflect changes
         setComplaints(prevComplaints =>
           prevComplaints.map(complaint =>
             complaint._id === selectedComplaint._id
-              ? { ...complaint, status: selectedStatus }
+              ? { ...complaint, status: selectedStatus, reply: reply }
               : complaint
           )
         );
@@ -83,7 +146,6 @@ export default function ComplaintsPage() {
           description: `Complaint status updated to ${selectedStatus}.`,
           duration: 3000,
         });
-        closeDialog(); // Close the dialog after submission
       } catch (error) {
         console.error("Error updating status:", error);
         toast({
@@ -108,10 +170,36 @@ export default function ComplaintsPage() {
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">Complaints Management</h1>
-          <div className="flex justify-end mb-4">
-            <Button onClick={() => (window.location.href = "/dashboard")} variant="outline">
-              Go to Dashboard
-            </Button>
+          <div className="flex justify-start mb-4">
+          <div className="flex items-center space-x-4">
+                            <Select value={getActiveFilter()} onValueChange={handleFilter}>
+                                <SelectTrigger className="w-[200px] !ring-0">
+                                    <SelectValue placeholder="Filter by status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="All">Show All</SelectItem>
+                                    <SelectItem value="Pending">Pending</SelectItem>
+                                    <SelectItem value="Resolved">Resolved</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="flex items-center space-x-4 ml-4">
+                            <Select value={getSortBy()} onValueChange={handleSort}>
+                                <SelectTrigger className="w-[200px] !ring-0">
+                                    <SelectValue placeholder="Sort by" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="date-desc">Date: Newest First</SelectItem>
+                                    <SelectItem value="date-asc">Date: Oldest First</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Button
+                                onClick={() => (window.location.href = "/dashboard")}
+                                variant="outline"
+                            >
+                                Go to Dashboard
+                            </Button>
+                        </div>
           </div>
 
           <Table className="w-full">
@@ -157,7 +245,10 @@ export default function ComplaintsPage() {
           <p><strong>Date Issued :</strong> {selectedComplaint ? new Date(selectedComplaint.date).toLocaleDateString() : ''}</p>
           <p></p>
           <p><strong>Reply to Complaint : </strong></p>
-          <Textarea />
+          <Textarea 
+          value={reply} // Bind the Textarea value to reply state
+          onChange={(e) => setReply(e.target.value)} // Update reply state on change
+        />
           <p></p>
           <p></p>
           <Select value={selectedStatus} onValueChange={(value) => setSelectedStatus(value)}>
