@@ -9,6 +9,10 @@ const complaintsSchema = new mongoose.Schema({
         index: true,
     },
 
+    reply: {
+        type: String,
+    },
+
     status: {
         type: String,
         required: true,

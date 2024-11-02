@@ -26,9 +26,7 @@ function AdminDashboard() {
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
   };
-
-
-
+ 
   return (
     <div style={{ display: "flex" }}>
       <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
