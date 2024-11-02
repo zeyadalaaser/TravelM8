@@ -1,26 +1,21 @@
-import mongoose from 'mongoose';  //to communicate with the db
-import Product from '../models/productModel.js';
-import { createRatingStage } from '../helpers/aggregationHelper.js';
-
-
+import mongoose from "mongoose"; //to communicate with the db
+import Product from "../models/productModel.js";
+import { createRatingStage } from "../helpers/aggregationHelper.js";
+import axios from "axios";
 export const createProduct = async (req, res) => {
   try {
     const { name, image, price, quantity, description } = req.body;
 
-    const newProduct = new Product(
-      {
-        name,
-        image,
-        price,
-        quantity,
-        description,
-        sellerId: req.user.userId
-      }
-    );
-
+    const newProduct = new Product({
+      name,
+      image,
+      price,
+      quantity,
+      description,
+      sellerId: req.user.userId,
+    });
 
     const savedProduct = await newProduct.save();
-
 
     res.status(201).json(savedProduct);
   } catch (error) {
@@ -37,18 +32,18 @@ export const deleteProduct = async (req, res) => {
 
     // If no product found, return a 404 error
     if (!deletedProduct) {
-      return res.status(404).json({ message: 'Product not found' });
+      return res.status(404).json({ message: "Product not found" });
     }
 
     // Return a success message
-    res.status(200).json({ message: 'Product deleted successfully' });
+    res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 const createPopulateStage = (minRating) => {
-  const ratingStage = createRatingStage("Product", false, minRating)
+  const ratingStage = createRatingStage("Product", false, minRating);
   return [
     ...ratingStage,
     {
@@ -56,46 +51,66 @@ const createPopulateStage = (minRating) => {
         from: "sellers",
         localField: "sellerId",
         foreignField: "_id",
-        as: "seller"
-      }
+        as: "seller",
+      },
     },
     {
-      $unset: "sellerId"
+      $unset: "sellerId",
     },
     {
       $addFields: {
-        seller: { $ifNull: [{ $arrayElemAt: ["$seller", 0] }, null] } // Set seller to null if no match
-      }
-    }
+        seller: { $ifNull: [{ $arrayElemAt: ["$seller", 0] }, null] }, // Set seller to null if no match
+      },
+    },
   ];
+};
+
+async function getExchangeRates(base = "USD") {
+  const response = await axios.get(
+    `https://api.exchangerate-api.com/v4/latest/${base}`
+  );
+  return response.data.rates;
 }
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { minPrice, maxPrice, sortByRating, search, minRating, sortBy, order } = req.query;  //here ba-retrieve el query parameter (min,max) and sorting that the user will put in the request
+    const {
+      minPrice,
+      maxPrice,
+      sortByRating,
+      search,
+      minRating,
+      sortBy,
+      order,
+      currency = "USD",
+    } = req.query;
+
     const populateStage = createPopulateStage(minRating);
 
-    //My Filter Logic
-    let filter = {};   //this is empty filter object and if user did not provide min and max, will retrieve all products
+    // Fetch exchange rates
+    const rates = await getExchangeRates();
+    const exchangeRate = rates[currency] || 1;
+
+    // Prepare filter for price range based on converted values
+    let filter = {};
     if (minPrice || maxPrice) {
-      filter.price = {}; //ba-initialize empty price filter object
-      if (minPrice) filter.price.$gte = parseFloat(minPrice);  // Price >= minPrice
-      if (maxPrice) filter.price.$lte = parseFloat(maxPrice);  // Price <= maxPrice
+      const minUSD = minPrice ? parseFloat(minPrice) / exchangeRate : null;
+      const maxUSD = maxPrice ? parseFloat(maxPrice) / exchangeRate : null;
+      filter.price = {};
+      if (minUSD !== null) filter.price.$gte = minUSD;
+      if (maxUSD !== null) filter.price.$lte = maxUSD;
     }
 
-    //Search Logic 
+    // Search logic
     if (search) {
-      filter.name = { $regex: search, $options: 'i' }; // 'i' makes it case-insensitive; ya3ny masln product and PRODUCT ; bei-treat the uppercase and lowercase the same 
+      filter.name = { $regex: search, $options: "i" };
     }
 
-    //Sorting Logic
+    // Sorting logic
     let sortCondition = {};
-    if (sortByRating === 'asc') {
-      sortCondition.averageRating = 1;  // Ascending order; 1 means in mongodb ascending 
-    } else if (sortByRating === 'desc') {
-      sortCondition.averageRating = -1; // Descending order; -1 means in mongodb descending 
+    if (sortByRating) {
+      sortCondition.averageRating = sortByRating === "desc" ? -1 : 1;
     }
-
     if (sortBy) {
       sortCondition[sortBy] = order === "desc" ? -1 : 1;
     }
@@ -107,10 +122,19 @@ export const getAllProducts = async (req, res) => {
     ];
 
     // Execute the aggregation pipeline
-    const products = await Product.aggregate(aggregationPipeline);
+    let products = await Product.aggregate(aggregationPipeline);
+
+    // Convert prices to the selected currency for response
+    if (currency !== "USD") {
+      products = products.map((product) => ({
+        ...product,
+        price: (product.price * exchangeRate).toFixed(2),
+      }));
+    }
+
     res.status(200).json({ success: true, data: products });
   } catch (error) {
-    console.log("error in ftching products:", error.message);
+    console.log("Error fetching products:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -121,13 +145,14 @@ export const updateProduct = async (req, res) => {
     const updateData = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({ success: false, message: "Product not found; invalid" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found; invalid" });
     }
 
-
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
-      new: true, // Return the updated document with updated data 
-      runValidators: true // Validate the data against the schema
+      new: true, // Return the updated document with updated data
+      runValidators: true, // Validate the data against the schema
     });
 
     //law mafeesh product
@@ -146,12 +171,9 @@ export const getMyProducts = async (req, res) => {
   try {
     let Places;
     Places = await Product.find({ sellerId: userId });
-    if (Places.length == 0)
-      res.status(204);
-    else
-      res.status(200).json({ Places });
+    if (Places.length == 0) res.status(204);
+    else res.status(200).json({ Places });
   } catch (error) {
     res.status(400).json({ message: "enter a valid id" });
   }
 };
-

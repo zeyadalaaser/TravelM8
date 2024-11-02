@@ -1,37 +1,60 @@
-import useRouter from '@/hooks/useRouter';
+"use client";
+
+import { useEffect, useState } from "react";
+import useRouter from "@/hooks/useRouter";
 import { DualSlider } from "@/components/ui/dual-slider";
 
-const defaultRange = [0, 4000];
+const defaultRangeUSD = [0, 4000]; // Default price range in USD
 
-export function PriceFilter() {
-    const { searchParams, navigate, location } = useRouter();
+export function PriceFilter({ currency, exchangeRate }) {
+  const { searchParams, navigate, location } = useRouter();
+  const [range, setRange] = useState(defaultRangeUSD);
 
-    const handleSearchParams = (priceRange) => {
-        searchParams.set('price', `${priceRange[0]}-${priceRange[1]}`);
-        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
-    };
-
-    const handleSetPrice = (priceRange) => {
-        handleSearchParams(priceRange);
-    };
-
-    const getPrice = (index) => {
-        const price = searchParams.get('price');
-        return price ? price.split('-').map(Number)[index] : defaultRange[index];
+  useEffect(() => {
+    const price = searchParams.get("price");
+    if (price) {
+      const [min, max] = price.split("-").map(Number);
+      setRange([min, max]);
+    } else {
+      setRange(defaultRangeUSD);
     }
+  }, [searchParams]);
 
-    return <div className="mt-4">
-        <h3 className="font-semibold mb-2">Price</h3>
-        <DualSlider
-            value={searchParams.get('price')?.split('-')?.map(Number) ?? defaultRange}
-            min={defaultRange[0]}
-            max={defaultRange[1]}
-            step={1}
-            onValueChange={handleSetPrice}
-        />
-        <div className="flex justify-between mt-2">
-            <span>${getPrice(0)}</span>
-            <span>${getPrice(1)}</span>
-        </div>
+  const handleSearchParams = (priceRange) => {
+    const usdRange = priceRange.map((value) =>
+      Math.round(value / exchangeRate)
+    );
+    searchParams.set("price", `${usdRange[0]}-${usdRange[1]}`);
+    navigate(`${location.pathname}?${searchParams.toString()}`, {
+      replace: true,
+    });
+  };
+
+  const handleSetPrice = (priceRange) => {
+    setRange(priceRange.map((value) => Math.round(value / exchangeRate)));
+    handleSearchParams(priceRange);
+  };
+
+  const displayRange = range.map((value) => Math.round(value * exchangeRate));
+
+  return (
+    <div className="mt-4">
+      <h3 className="font-semibold mb-2">Price ({currency})</h3>
+      <DualSlider
+        value={displayRange}
+        min={Math.round(defaultRangeUSD[0] * exchangeRate)}
+        max={Math.round(defaultRangeUSD[1] * exchangeRate)}
+        step={1}
+        onValueChange={handleSetPrice}
+      />
+      <div className="flex justify-between mt-2">
+        <span>
+          {currency} {displayRange[0]}
+        </span>
+        <span>
+          {currency} {displayRange[1]}
+        </span>
+      </div>
     </div>
+  );
 }
