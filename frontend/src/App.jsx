@@ -11,7 +11,6 @@ import Testimonials from "./components/Testimonials";
 import scrollreveal from "scrollreveal";
 import Login from "./pages/signIn/login";
 import TouristRegistration from './pages/SignUp/signupTourist';
-import Places from "./components/Map"; 
 
 
 export default function App() {

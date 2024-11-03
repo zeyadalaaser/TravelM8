@@ -38,7 +38,7 @@ export default function Login() {
       } else if (role === 'Seller') {
         navigate('/SellerProfile'); // Seller role
       } else if (role === 'TourGuide') {
-        navigate('/tourguideHomePage'); // Admin role
+        navigate('/TourGuideDashboard'); // Admin role
     } else if (role === 'TourismGovernor') {
         navigate('/TourismGovernorDashboard');
       } else if (role === 'Admin') {
