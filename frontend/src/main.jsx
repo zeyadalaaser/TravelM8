@@ -35,6 +35,9 @@ import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
+import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
+
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -82,7 +85,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/edit/:id" element={<HistoricalPlaceForm />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
         <Route path="/profileTemplate" element={<ProfileTemplate />} />
-        {/* <Route path="/tourguideHomePage" element={<TourGuideHomePage />} /> */}
+        <Route path="/tourGuideDashboard" element={<TourGuideDashboard />} />
         <Route path="/itinerary" element={<Itinerary />} />
       </Routes>
     </BrowserRouter>

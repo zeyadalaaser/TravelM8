@@ -24,7 +24,7 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
 
     return (
         <>
-            <div className="w-4/5 mx-auto m-3 space-y-2">
+            <div className="w-full mx-auto m-3 space-y-2">
                 {itineraries?.map((itinerary) => (
                     <Card key={itinerary._id}>
                         <div className="flex flex-row">
@@ -90,8 +90,8 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
                                     {isTourist && <Button>Book Tour!</Button>}
                                     {isTourGuide && (
                                         <div className="flex items-center gap-2">
-                                            <Button>Update</Button>
                                             <Button variant="destructive">Delete</Button>
+                                            <Button>Update</Button>
                                         </div>
                                     )}
                                 </div>
