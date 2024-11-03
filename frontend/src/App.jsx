@@ -14,6 +14,7 @@ import TouristRegistration from './pages/SignUp/signupTourist';
 import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard";
 
 
+
 export default function App() {
   // State to manage sidebar visibility
   const [sidebarState, setSidebarState] = useState(false);

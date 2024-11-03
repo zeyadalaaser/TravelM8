@@ -28,7 +28,6 @@ import HistoricalPlaceDetails from "@/pages/TourismGovernor/HistoricalPlaceDetai
 import Product from "./pages/admin/product.jsx";
 import ProfileTemplate from "./pages/TourGuide/profileTemplate.jsx";
 import Itinerary from "./pages/TourGuide/itinerary2.jsx";
-// import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx";
 import TouristProfile from "./pages/tourist/components/tourist-profile.jsx";
 import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
