@@ -149,7 +149,6 @@ async function getExchangeRates(base = "USD") {
   }
 }
 
-// Read all itineraries with filtering and currency conversion
 export const filterItineraries = async (req, res) => {
   try {
     const {
@@ -162,29 +161,25 @@ export const filterItineraries = async (req, res) => {
       search,
       sortBy,
       order,
-      currency = "USD", // Default to USD if currency is not provided
+      currency = "USD",
     } = req.query;
 
     // Fetch exchange rates for price conversion
-    const rates = await getExchangeRates(currency); // Pass the currency directly
-
+    const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
 
-    // Build filters based on query params
     const filters = {};
 
+    // Additional filters based on request params
     if (search) filters.name = { $regex: search, $options: "i" };
-
     if (startDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };
-    if (endDate) {
+    if (endDate)
       filters["availableSlots.date"] = {
         ...filters["availableSlots.date"],
         $lte: new Date(endDate),
       };
-    }
 
-    // Convert prices based on selected currency
     const minConvertedPrice = parseFloat(minPrice) / exchangeRate;
     const maxConvertedPrice = parseFloat(maxPrice) / exchangeRate;
     filters.price = { $gte: minConvertedPrice, $lte: maxConvertedPrice };
@@ -196,18 +191,15 @@ export const filterItineraries = async (req, res) => {
       }).select("_id");
       filters.tags = { $in: tagIds.map((tag) => tag._id) };
     }
-
     if (language) filters.tourLanguage = language;
 
     const sortCondition = sortBy ? { [sortBy]: order === "desc" ? -1 : 1 } : {};
 
-    // Fetch itineraries with filters and sort
     let itineraries = await Itinerary.find(filters)
       .populate("tags")
       .populate("tourGuideId")
       .sort(sortCondition);
 
-    // Convert itinerary prices to the selected currency
     itineraries = itineraries.map((itinerary) => ({
       ...itinerary.toObject(),
       price: (itinerary.price * exchangeRate).toFixed(2),
@@ -221,67 +213,6 @@ export const filterItineraries = async (req, res) => {
       .json({ message: "Server error. Could not filter itineraries." });
   }
 };
-
-// export const searchItems = async (req, res) => {
-//   try {
-
-//       const { name, category, tags } = req.query;
-
-//       const activityFilter = {};
-//       const historicalPlacesFilter = {};
-//       const itineraryFilter = {};
-
-//       if (name) {
-//         const regexName = { $regex: name, $options: 'i' };
-//         activityFilter.title = regexName;
-//         historicalPlacesFilter.name = regexName;
-//         itineraryFilter.name = regexName;
-//       }
-
-//       if (category) {
-//         //activityFilter.category = category.toLowerCase()
-//        // const categoryResult = await ActivityCategory.findOne({ name: category.toLowerCase() });
-//        const tagsArray = category.split(',').map(category => category.trim());
-//         activityFilter.category = { $in: await ActivityCategory.find({ name: { $in: tagsArray } }).select('_id') };
-//         // const activities = await Activity.find(activityFilter);
-//         // return  res.status(200).json(activities);
-//       }
-
-//       if (tags) {
-//         const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
-//          activityFilter['tags'] = { $in: await PreferenceTag.find({ name: { $in: tagsArray } }).select('_id') };
-//        historicalPlacesFilter.tags = { $in: tagsArray };
-//         itineraryFilter['tags']={ $in: await PreferenceTag.find({ name: { $in: tagsArray } }).select('_id') };
-
-//       }
-
-//       const activities =  await Activity.find(activityFilter) ;
-//       const historicalPlace = await HistoricalPlaces.find(historicalPlacesFilter);
-//       const itineraries = await Itinerary.find(itineraryFilter).populate('activities').populate(
-//           'historicalSites');
-
-//       const results = { activities, historicalPlace, itineraries };
-
-//       if (activities.length === 0 && historicalPlace.length === 0 && itineraries.length==0) {
-//         return res.status(404).json({
-//           success: false,
-//           message: 'No matching results found for the given criteria',
-//         });
-//       }
-
-//       res.status(200).json({
-//         success: true,
-//         message: 'Results fetched successfully',
-//         results,
-//       });
-//     } catch (error) {
-//       res.status(500).json({
-//         success: false,
-//         message: 'Error occurred while searching',
-//         error: error.message,
-//       });
-//     }
-//   };
 export const searchItems2 = async (req, res) => {
   try {
     const { name, category, tags } = req.query;

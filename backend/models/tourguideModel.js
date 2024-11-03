@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import validator from "validator";
+import {
+  validateUsername,
+  validatePassword,
+} from "../services/validators/validators.js";
+
 
 const tourGuideSchema = new mongoose.Schema({
   name:{
@@ -12,7 +17,10 @@ const tourGuideSchema = new mongoose.Schema({
     required: true,
     unique: true,
     immutable: true,
-    match: /^[a-zA-Z0-9]{3,16}$/,
+    validate: {
+      validator: validateUsername,
+      message: "Username must contain numbers, letters and length 3-16",
+    },
   },
   email: {
     type: String,
@@ -27,13 +35,11 @@ const tourGuideSchema = new mongoose.Schema({
     type: String,
     minlength: 6,
     required: true,
-    validate: function(value) {
-      // Regular expression to check if the password has at least one letter and one number
-      return /[a-zA-Z]/.test(value) && /\d/.test(value);
+    validate: {
+      validator: validatePassword,
+      message: "Password must contain numbers, letters and min length is 4",
     }
   },
-
-  // role: { type: String, default: 'TourGuide' },
 
   mobileNumber: {
     type: String,
@@ -49,18 +55,19 @@ const tourGuideSchema = new mongoose.Schema({
   }],
   
 }, 
-    { 
-    timestamps: true 
-    });
+{ 
+  timestamps: true 
+});
 
-    tourGuideSchema.pre('save', async function (next) {
-        if (!this.isModified('password')) {
-            next();
-        }
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-      });
+// tourGuideSchema.pre('save', async function (next) {
+//   if (!this.isModified('password')) {
+//       next();
+//   }
+//   const salt = await bcrypt.genSalt(10);
+//   this.password = bcrypt.hash(this.password, salt);
+//   next();
+//   }
+// );  
 
 const TourGuide= mongoose.model("TourGuide", tourGuideSchema);
 export default TourGuide;
