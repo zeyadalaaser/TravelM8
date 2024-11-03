@@ -149,7 +149,6 @@ async function getExchangeRates(base = "USD") {
   }
 }
 
-// Read all itineraries with filtering and currency conversion
 export const filterItineraries = async (req, res) => {
   try {
     const {
@@ -162,29 +161,25 @@ export const filterItineraries = async (req, res) => {
       search,
       sortBy,
       order,
-      currency = "USD", // Default to USD if currency is not provided
+      currency = "USD",
     } = req.query;
 
     // Fetch exchange rates for price conversion
-    const rates = await getExchangeRates(currency); // Pass the currency directly
-
+    const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
 
-    // Build filters based on query params
     const filters = {};
 
+    // Additional filters based on request params
     if (search) filters.name = { $regex: search, $options: "i" };
-
     if (startDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };
-    if (endDate) {
+    if (endDate)
       filters["availableSlots.date"] = {
         ...filters["availableSlots.date"],
         $lte: new Date(endDate),
       };
-    }
 
-    // Convert prices based on selected currency
     const minConvertedPrice = parseFloat(minPrice) / exchangeRate;
     const maxConvertedPrice = parseFloat(maxPrice) / exchangeRate;
     filters.price = { $gte: minConvertedPrice, $lte: maxConvertedPrice };
@@ -196,18 +191,15 @@ export const filterItineraries = async (req, res) => {
       }).select("_id");
       filters.tags = { $in: tagIds.map((tag) => tag._id) };
     }
-
     if (language) filters.tourLanguage = language;
 
     const sortCondition = sortBy ? { [sortBy]: order === "desc" ? -1 : 1 } : {};
 
-    // Fetch itineraries with filters and sort
     let itineraries = await Itinerary.find(filters)
       .populate("tags")
       .populate("tourGuideId")
       .sort(sortCondition);
 
-    // Convert itinerary prices to the selected currency
     itineraries = itineraries.map((itinerary) => ({
       ...itinerary.toObject(),
       price: (itinerary.price * exchangeRate).toFixed(2),
@@ -221,7 +213,6 @@ export const filterItineraries = async (req, res) => {
       .json({ message: "Server error. Could not filter itineraries." });
   }
 };
-
 export const searchItems2 = async (req, res) => {
   try {
     const { name, category, tags } = req.query;

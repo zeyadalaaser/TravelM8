@@ -1,37 +1,55 @@
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { DateFilter } from "../filters/date-filter";
-import { PriceFilter } from "../filters/price-filter";
+import { PriceFilterTwo } from "../filters/PriceFilterTwo"; // Updated import for PriceFilterTwo
 import { SortSelection } from "../filters/sort-selection";
 import { Itineraries } from "./itineraries";
 import { SearchBar } from "../filters/search";
 import { getItineraries } from "../../api/apiService";
 import { LanguageFilter } from "./language-filter";
-
-const exchangeRates = {
-  USD: 1,
-  EGP: 30.24,
-  EUR: 0.9,
-  GBP: 0.8,
-  CAD: 1.25,
-  AUD: 1.35,
-  JPY: 110,
-};
+import axios from "axios";
 
 export function ItinerariesPage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
   const [currency, setCurrency] = useState("USD");
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+
+  // Fetch exchange rates on mount
+  useEffect(() => {
+    async function fetchExchangeRates() {
+      try {
+        const response = await axios.get(
+          "https://api.exchangerate-api.com/v4/latest/USD"
+        );
+        setExchangeRates(response.data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    }
+    fetchExchangeRates();
+  }, []);
 
   const fetchItineraries = useDebouncedCallback(async () => {
     const queryParams = new URLSearchParams(location.search);
+
+    // Convert prices to USD using exchange rate for server-side filtering
+    const minPriceUSD = priceRange.min
+      ? priceRange.min / (exchangeRates[currency] || 1)
+      : "";
+    const maxPriceUSD = priceRange.max
+      ? priceRange.max / (exchangeRates[currency] || 1)
+      : "";
+
+    // Update queryParams with converted minPrice and maxPrice
+    if (minPriceUSD) queryParams.set("minPrice", minPriceUSD);
+    if (maxPriceUSD) queryParams.set("maxPrice", maxPriceUSD);
     queryParams.set("currency", currency);
-    queryParams.set("minPrice", priceRange.min || 0);
-    queryParams.set("maxPrice", priceRange.max || Infinity);
 
     try {
       const fetchedItineraries = await getItineraries(
@@ -48,7 +66,18 @@ export function ItinerariesPage() {
   }, [location.search, currency, priceRange]);
 
   const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
+    const selectedCurrency = e.target.value;
+    setCurrency(selectedCurrency);
+
+    // Reset query params with new currency
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("currency", selectedCurrency);
+    navigate(`${location.pathname}?${queryParams.toString()}`, {
+      replace: true,
+    });
+
+    // Trigger a new fetch with the updated currency
+    fetchItineraries();
   };
 
   const handlePriceChange = (min, max) => {
@@ -56,9 +85,15 @@ export function ItinerariesPage() {
   };
 
   const resetFilters = () => {
-    setPriceRange({ min: 0, max: 1000 });
+    // Reset price range, currency, and itineraries
+    setPriceRange({ min: "", max: "" });
     setCurrency("USD");
     setItineraries([]);
+
+    // Remove all query parameters
+    navigate(location.pathname, { replace: true });
+
+    // Trigger a new fetch with default filters
     fetchItineraries();
   };
 
@@ -69,13 +104,11 @@ export function ItinerariesPage() {
         <label>
           Currency:
           <select value={currency} onChange={handleCurrencyChange}>
-            <option value="USD">USD - US Dollar</option>
-            <option value="EGP">EGP - Egyptian Pound</option>
-            <option value="EUR">EUR - Euro</option>
-            <option value="GBP">GBP - British Pound</option>
-            <option value="CAD">CAD - Canadian Dollar</option>
-            <option value="AUD">AUD - Australian Dollar</option>
-            <option value="JPY">JPY - Japanese Yen</option>
+            {Object.keys(exchangeRates).map((cur) => (
+              <option key={cur} value={cur}>
+                {`${cur} - ${cur}`}
+              </option>
+            ))}
           </select>
         </label>
       </div>
@@ -83,9 +116,9 @@ export function ItinerariesPage() {
         <div className="w-full md:w-1/4">
           <DateFilter />
           <Separator className="mt-7" />
-          <PriceFilter
+          <PriceFilterTwo
             currency={currency}
-            exchangeRate={exchangeRates[currency]}
+            exchangeRate={exchangeRates[currency] || 1}
             onPriceChange={handlePriceChange}
           />
           <Separator className="mt-7" />
@@ -103,7 +136,7 @@ export function ItinerariesPage() {
             <Itineraries
               itineraries={itineraries}
               currency={currency}
-              exchangeRate={exchangeRates[currency]}
+              exchangeRate={exchangeRates[currency] || 1}
             />
           ) : (
             <p>No itineraries found. Try adjusting your filters.</p>

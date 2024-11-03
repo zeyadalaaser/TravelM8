@@ -31,7 +31,7 @@ export default function Products({ products, currency, exchangeRate }) {
                 <Badge variant="outline">{product.seller?.name}</Badge>
               </div>
               <div className="text-xl font-bold">
-                {(product.price * exchangeRate).toFixed(2)} {currency}
+                {(product.price * 1).toFixed(2)} {currency}
               </div>
             </div>
           </div>

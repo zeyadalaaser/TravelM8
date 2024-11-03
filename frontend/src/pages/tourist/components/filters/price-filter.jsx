@@ -6,7 +6,7 @@ import { DualSlider } from "@/components/ui/dual-slider";
 
 const defaultRangeUSD = [0, 4000]; // Default price range in USD
 
-export function PriceFilter({ currency, exchangeRate }) {
+export function PriceFilter({ currency, exchangeRate, onPriceChange }) {
   const { searchParams, navigate, location } = useRouter();
   const [range, setRange] = useState(defaultRangeUSD);
 
@@ -21,6 +21,7 @@ export function PriceFilter({ currency, exchangeRate }) {
   }, [searchParams]);
 
   const handleSearchParams = (priceRange) => {
+    // Convert price range to USD for API query
     const usdRange = priceRange.map((value) =>
       Math.round(value / exchangeRate)
     );
@@ -33,8 +34,10 @@ export function PriceFilter({ currency, exchangeRate }) {
   const handleSetPrice = (priceRange) => {
     setRange(priceRange.map((value) => Math.round(value / exchangeRate)));
     handleSearchParams(priceRange);
+    onPriceChange(priceRange[0], priceRange[1]); // Notify parent of price change
   };
 
+  // Display range in selected currency
   const displayRange = range.map((value) => Math.round(value * exchangeRate));
 
   return (

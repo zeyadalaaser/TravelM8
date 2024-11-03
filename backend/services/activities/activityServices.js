@@ -2,15 +2,16 @@ import axios from "axios";
 import { createRatingStage } from "../../helpers/aggregationHelper.js";
 import Activity from "../../models/activityModel.js";
 
-async function getExchangeRates(base) {
+async function getExchangeRates(base = "USD") {
   const response = await axios.get(
     `https://api.exchangerate-api.com/v4/latest/${base}`
   );
   return response.data.rates;
 }
 
-function createFilterStage(
-  price,
+function createFilterStage({
+  minPrice,
+  maxPrice,
   startDate,
   endDate,
   upcoming = true,
@@ -18,11 +19,10 @@ function createFilterStage(
   searchBy,
   search,
   currency,
-  rates
-) {
+  rates,
+}) {
   const filters = {};
 
-  // Apply search filters if provided
   if (search) {
     if (searchBy === "categoryName") {
       filters["categoryName"] = { $regex: search, $options: "i" };
@@ -39,45 +39,19 @@ function createFilterStage(
     : startDate
     ? new Date(startDate)
     : null;
-
   if (start) filters.date = { $gte: start };
   if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
-  // Directly apply price filtering in selected currency
-  if (price) {
-    const [minBudget, maxBudget] = price.split("-").map(Number);
-    const conversionRate = rates[currency];
+  const conversionRate = rates[currency] || 1;
+  if ((minPrice !== undefined || maxPrice !== undefined) && conversionRate) {
+    const minConvertedPrice =
+      minPrice !== undefined ? parseFloat(minPrice) / conversionRate : null;
+    const maxConvertedPrice =
+      maxPrice !== undefined ? parseFloat(maxPrice) / conversionRate : null;
 
-    if (conversionRate) {
-      const minConvertedPrice = minBudget / conversionRate;
-      const maxConvertedPrice = maxBudget / conversionRate;
-
-      filters.$or = [
-        {
-          $and: [
-            { price: { $type: "number" } },
-            { price: { $gte: minConvertedPrice, $lte: maxConvertedPrice } },
-          ],
-        },
-        {
-          $and: [
-            { price: { $type: "array" } },
-            {
-              $expr: {
-                $and: [
-                  {
-                    $gte: [{ $arrayElemAt: ["$price", 0] }, minConvertedPrice],
-                  },
-                  {
-                    $lte: [{ $arrayElemAt: ["$price", 0] }, maxConvertedPrice],
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      ];
-    }
+    filters.price = {};
+    if (minConvertedPrice !== null) filters.price.$gte = minConvertedPrice;
+    if (maxConvertedPrice !== null) filters.price.$lte = maxConvertedPrice;
   }
 
   if (categoryName) {
@@ -87,82 +61,10 @@ function createFilterStage(
   return filters;
 }
 
-function createSortStage(sortBy, order) {
-  const orderValue = order === "desc" ? -1 : 1;
-  return sortBy ? [{ $sort: { [sortBy]: orderValue } }] : [];
-}
-
-function createTagsStage() {
-  return [
-    {
-      $lookup: {
-        from: "preferencetags",
-        let: { tagIds: "$tags" },
-        pipeline: [
-          {
-            $match: {
-              $expr: { $in: ["$_id", "$$tagIds"] },
-            },
-          },
-          {
-            $addFields: {
-              sort: {
-                $indexOfArray: ["$$tagIds", "$_id"],
-              },
-            },
-          },
-          { $sort: { sort: 1 } },
-          { $addFields: { sort: "$$REMOVE" } },
-        ],
-        as: "tags",
-      },
-    },
-  ];
-}
-
-function createCategoryStage() {
-  return [
-    {
-      $lookup: {
-        from: "activitycategories",
-        localField: "category",
-        foreignField: "_id",
-        as: "categoryDetails",
-      },
-    },
-    {
-      $addFields: {
-        categoryName: { $arrayElemAt: ["$categoryDetails.name", 0] },
-      },
-    },
-    {
-      $unset: "categoryDetails",
-    },
-  ];
-}
-
-function createAdvertiserStage() {
-  return [
-    {
-      $lookup: {
-        from: "advertisers",
-        localField: "advertiserId",
-        foreignField: "_id",
-        as: "advertiser",
-      },
-    },
-    {
-      $unwind: {
-        path: "$advertiser",
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-  ];
-}
-
 export async function getActivities({
   includeRatings,
-  price,
+  minPrice,
+  maxPrice,
   startDate,
   endDate,
   upcoming,
@@ -174,10 +76,10 @@ export async function getActivities({
   order,
   currency,
 }) {
-  const rates = await getExchangeRates(currency);
-  const categoryStage = createCategoryStage();
-  const filters = createFilterStage(
-    price,
+  const rates = await getExchangeRates("USD");
+  const filters = createFilterStage({
+    minPrice,
+    maxPrice,
     startDate,
     endDate,
     upcoming,
@@ -185,8 +87,9 @@ export async function getActivities({
     searchBy,
     search,
     currency,
-    rates
-  );
+    rates,
+  });
+
   const sortStage = createSortStage(sortBy, order);
   const addRatingStage = createRatingStage(
     "Activity",
@@ -198,16 +101,12 @@ export async function getActivities({
 
   const aggregationPipeline = [
     ...tagsStage,
-    ...categoryStage,
     { $match: filters },
     ...addRatingStage,
     ...sortStage,
     ...advertiserStage,
   ];
 
-  let activities = await Activity.aggregate(aggregationPipeline);
-
-  // Since prices are already in target currency, no conversion is needed here
-
+  const activities = await Activity.aggregate(aggregationPipeline);
   return activities;
 }
