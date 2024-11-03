@@ -1,6 +1,7 @@
-import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect } from "react";
+import axios from "axios";
 import useRouter from "@/hooks/useRouter";
+import { useDebouncedCallback } from "use-debounce";
 import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { DateFilter } from "../filters/date-filter";
@@ -12,35 +13,50 @@ import Activities from "./activities";
 import { SearchBar } from "../filters/search";
 import { getActivities } from "../../api/apiService";
 
-const exchangeRates = {
-  USD: 1,
-  EGP: 30.24,
-  EUR: 0.9,
-  GBP: 0.8,
-  CAD: 1.25,
-  AUD: 1.35,
-  JPY: 110,
-};
-
 export function ActivitiesPage() {
   const { location } = useRouter();
   const [activities, setActivities] = useState([]);
   const [currency, setCurrency] = useState("USD");
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+
+  // Fetch the latest exchange rates from the API
+  useEffect(() => {
+    async function fetchExchangeRates() {
+      try {
+        const response = await axios.get(
+          "https://api.exchangerate-api.com/v4/latest/USD"
+        );
+        setExchangeRates(response.data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    }
+    fetchExchangeRates();
+  }, []);
 
   const fetchActivities = useDebouncedCallback(async () => {
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
-    queryParams.set("exchangeRate", exchangeRates[currency]);
-    const activities = await getActivities(`?${queryParams.toString()}`);
-    setActivities(activities);
+    queryParams.set("exchangeRate", exchangeRates[currency] || 1);
+
+    if (priceRange.min) queryParams.set("minPrice", priceRange.min);
+    if (priceRange.max) queryParams.set("maxPrice", priceRange.max);
+
+    const fetchedActivities = await getActivities(`?${queryParams.toString()}`);
+    setActivities(fetchedActivities);
   }, 200);
 
   useEffect(() => {
     fetchActivities();
-  }, [location.search, currency]);
+  }, [location.search, currency, priceRange]);
 
   const handleCurrencyChange = (e) => {
     setCurrency(e.target.value);
+  };
+
+  const handlePriceChange = (min, max) => {
+    setPriceRange({ min, max });
   };
 
   const searchCategories = [
@@ -54,15 +70,11 @@ export function ActivitiesPage() {
       <SearchBar categories={searchCategories} />
       <div className="flex flex-row justify-between mb-4">
         <label>
-          Currency:{" "}
+          Currency:
           <select value={currency} onChange={handleCurrencyChange}>
-            <option value="USD">USD - US Dollar</option>
-            <option value="EGP">EGP - Egyptian Pound</option>
-            <option value="EUR">EUR - Euro</option>
-            <option value="GBP">GBP - British Pound</option>
-            <option value="CAD">CAD - Canadian Dollar</option>
-            <option value="AUD">AUD - Australian Dollar</option>
-            <option value="JPY">JPY - Japanese Yen</option>
+            {Object.keys(exchangeRates).map((cur) => (
+              <option key={cur} value={cur}>{`${cur}`}</option>
+            ))}
           </select>
         </label>
       </div>
@@ -72,7 +84,8 @@ export function ActivitiesPage() {
           <Separator className="mt-7" />
           <PriceFilter
             currency={currency}
-            exchangeRate={exchangeRates[currency]}
+            exchangeRate={exchangeRates[currency] || 1}
+            onPriceChange={handlePriceChange}
           />
           <Separator className="mt-5" />
           <RatingFilter />
@@ -83,17 +96,21 @@ export function ActivitiesPage() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
               <div>{activities.length} results</div>
-              <ClearFilters />
+              <ClearFilters
+                onClick={() => setPriceRange({ min: "", max: "" })}
+              />
             </div>
             <SortSelection />
           </div>
           <Activities
             activities={activities}
             currency={currency}
-            exchangeRate={exchangeRates[currency]}
+            exchangeRate={exchangeRates[currency] || 1}
           />
         </div>
       </div>
     </>
   );
 }
+
+export default ActivitiesPage;

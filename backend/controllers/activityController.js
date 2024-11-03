@@ -49,12 +49,10 @@ const createNewActivity = async (req, res) => {
       const createdActivity = await activityModel
         .create(newActivity)
         .populate("advertiserId", "username");
-      res
-        .status(201)
-        .json({
-          message: "successfully created new activity",
-          createdActivity,
-        });
+      res.status(201).json({
+        message: "successfully created new activity",
+        createdActivity,
+      });
     } catch (error) {
       res.status(400).json({ message: "unsuccessful creation of activity" });
     }
@@ -110,12 +108,10 @@ export const createManualActivity = async (req, res) => {
       const createdActivity = await activityModel
         .create(newActivity)
         .populate("advertiserId", "username");
-      res
-        .status(201)
-        .json({
-          message: "Successfully created new activity",
-          createdActivity,
-        });
+      res.status(201).json({
+        message: "Successfully created new activity",
+        createdActivity,
+      });
     } catch (error) {
       res.status(400).json({ message: "Unsuccessful creation of activity" });
     }

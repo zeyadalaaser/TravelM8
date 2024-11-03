@@ -85,20 +85,16 @@ export const getAllProducts = async (req, res) => {
       currency = "USD",
     } = req.query;
 
-    const populateStage = createPopulateStage(minRating);
-
     // Fetch exchange rates
-    const rates = await getExchangeRates();
+    const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
 
-    // Prepare filter for price range based on converted values
+    // Prepare filter for price range, converting values from the selected currency to USD
     let filter = {};
     if (minPrice || maxPrice) {
-      const minUSD = minPrice ? parseFloat(minPrice) / exchangeRate : null;
-      const maxUSD = maxPrice ? parseFloat(maxPrice) / exchangeRate : null;
       filter.price = {};
-      if (minUSD !== null) filter.price.$gte = minUSD;
-      if (maxUSD !== null) filter.price.$lte = maxUSD;
+      if (minPrice) filter.price.$gte = parseFloat(minPrice) / exchangeRate;
+      if (maxPrice) filter.price.$lte = parseFloat(maxPrice) / exchangeRate;
     }
 
     // Search logic
@@ -124,13 +120,11 @@ export const getAllProducts = async (req, res) => {
     // Execute the aggregation pipeline
     let products = await Product.aggregate(aggregationPipeline);
 
-    // Convert prices to the selected currency for response
-    if (currency !== "USD") {
-      products = products.map((product) => ({
-        ...product,
-        price: (product.price * exchangeRate).toFixed(2),
-      }));
-    }
+    // Convert prices back to the selected currency for display
+    products = products.map((product) => ({
+      ...product,
+      price: (product.price * exchangeRate).toFixed(2),
+    }));
 
     res.status(200).json({ success: true, data: products });
   } catch (error) {

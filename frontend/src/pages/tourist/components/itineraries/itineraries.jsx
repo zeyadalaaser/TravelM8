@@ -19,7 +19,6 @@ export function Itineraries({ itineraries, currency, exchangeRate }) {
                   className="w-full h-full object-cover"
                 />
               </div>
-
               <div className="w-full md:w-2/3 p-4">
                 <h3 className="text-xl font-semibold mb-2">{itinerary.name}</h3>
                 <div className="flex items-center mb-2">
