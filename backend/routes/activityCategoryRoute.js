@@ -8,7 +8,6 @@ import {
 
 const router = express.Router();
 
-// Activity Category CRUD Routes
 router.post("/activity-categories", createActivityCategory);
 router.get("/activity-categories", getAllActivityCategories);
 router.put("/activity-categories", updateActivityCategory); // if we're updating by name

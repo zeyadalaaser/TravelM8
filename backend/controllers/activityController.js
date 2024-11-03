@@ -1,7 +1,6 @@
 import activityModel from "../models/activityModel.js";
 import mongoose from "mongoose";
 import { getActivities } from "../services/activities/activityServices.js";
-import { runInNewContext } from "vm";
 
 const createNewActivity = async (req, res) => {
   const {
