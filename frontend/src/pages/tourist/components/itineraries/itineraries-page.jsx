@@ -6,7 +6,7 @@ import { ClearFilters } from "../filters/clear-filters";
 import { DateFilter } from "../filters/date-filter";
 import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
-import { Itineraries } from "./itineraries";
+import ItineraryCard from "@/components/ItineraryCard/ItineraryCard"; 
 import { SearchBar } from "../filters/search";
 import { getItineraries } from "../../api/apiService";
 import { LanguageFilter } from "./language-filter";
@@ -34,9 +34,7 @@ export function ItinerariesPage() {
     queryParams.set("maxPrice", priceRange.max || Infinity);
 
     try {
-      const fetchedItineraries = await getItineraries(
-        `?${queryParams.toString()}`
-      );
+      const fetchedItineraries = await getItineraries(`?${queryParams.toString()}`);
       setItineraries(fetchedItineraries);
     } catch (error) {
       console.error("Error fetching itineraries:", error);
@@ -100,10 +98,10 @@ export function ItinerariesPage() {
             <SortSelection />
           </div>
           {itineraries.length > 0 ? (
-            <Itineraries
+            <ItineraryCard
               itineraries={itineraries}
-              currency={currency}
-              exchangeRate={exchangeRates[currency]}
+              isTourist={true} 
+  
             />
           ) : (
             <p>No itineraries found. Try adjusting your filters.</p>

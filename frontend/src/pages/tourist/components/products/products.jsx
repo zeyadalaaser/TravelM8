@@ -33,6 +33,14 @@ export default function Products({ products, currency, exchangeRate }) {
               <div className="text-xl font-bold">
                 {(product.price * exchangeRate).toFixed(2)} {currency}
               </div>
+              <div className="flex justify-end">
+                <button
+                  className="bg-black text-white font-semibold py-2 px-4 rounded hover:bg-gray-800"
+                  onClick={() => handlePurchase(product)}
+                >
+                  Purchase
+                </button>
+              </div>
             </div>
           </div>
         </Card>
@@ -40,3 +48,8 @@ export default function Products({ products, currency, exchangeRate }) {
     </div>
   );
 }
+// Function to handle purchase logic
+const handlePurchase = (product) => {
+  console.log(`Purchasing: ${product.name}`);
+  
+};
