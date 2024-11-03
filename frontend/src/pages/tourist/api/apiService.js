@@ -70,3 +70,12 @@ export async function submitComplaint(complaintData,token) {
         }
     })).data;
 }
+
+export const getCompletedToursByTourist = async (touristId) => {
+    const response = await fetch(`${API_BASE_URL}bookings/completed/${touristId}`); // Correctly formatted URL
+    if (!response.ok) {
+        throw new Error("Failed to fetch completed tours");
+    }
+    return await response.json();
+};
+

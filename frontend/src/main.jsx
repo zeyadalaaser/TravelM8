@@ -36,6 +36,7 @@ import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
 
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
