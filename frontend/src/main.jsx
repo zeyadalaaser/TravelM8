@@ -28,7 +28,7 @@ import HistoricalPlaceDetails from "@/pages/TourismGovernor/HistoricalPlaceDetai
 import Product from "./pages/admin/product.jsx";
 import ProfileTemplate from "./pages/TourGuide/profileTemplate.jsx";
 import Itinerary from "./pages/TourGuide/itinerary2.jsx";
-import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx";
+// import TourGuideHomePage from "@/pages/TourGuide/tourguideHomePage.jsx";
 import TouristProfile from "./pages/tourist/components/tourist-profile.jsx";
 import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
@@ -82,8 +82,8 @@ createRoot(document.getElementById("root")).render(
         <Route path="/edit/:id" element={<HistoricalPlaceForm />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
         <Route path="/profileTemplate" element={<ProfileTemplate />} />
-        <Route path="/tourguideHomePage" element={<TourGuideHomePage />} />
-        <Route path="/itinerary" element={<Itinerary />} />
+{/*         <Route path="/tourguideHomePage" element={<TourGuideHomePage />} />
+        <Route path="/itinerary" element={<Itinerary />} /> */}
       </Routes>
     </BrowserRouter>
   </StrictMode>
