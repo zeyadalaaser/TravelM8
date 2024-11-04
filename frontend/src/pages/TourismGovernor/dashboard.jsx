@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes, useNavigate,useParams } from 'react-router-dom';
-import { Bell, ChevronDown, Layout, List, Map, Plus, Settings, Tag, User, Edit, Trash2, Eye } from 'lucide-react';
+import { Bell, ChevronDown, Layout, List, Map, Plus, Settings, Tag, User, Edit, Trash2, Eye, LogOut  } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";  
 import * as services from "@/pages/TourismGovernor/services.js";
-import { Copy } from "lucide-react"
+import { Copy } from "lucide-react";
+import Logout from "@/hooks/logOut.jsx";
 
 
 const TourismGovernorDashboard = () => {
@@ -212,33 +213,40 @@ const TourismGovernorDashboard = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-white drop-shadow-xl">
-        <div className="p-4">
-          <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
-        </div>
-        <nav className="mt-6">
-          <a href="#" className="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
-            <Layout className="mr-3" />
-            Dashboard
-          </a>
-          <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-            <Map className="mr-3" />
-            Locations
-          </a>
-          <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-            <Tag className="mr-3" />
-            Tags
-          </a>
-          <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-            <List className="mr-3" />
-            Itineraries
-          </a>
-          <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-            <Settings className="mr-3" />
-            Settings
-          </a>
-        </nav>
-      </aside>
+      <aside className="w-64 h-full bg-white drop-shadow-xl flex flex-col justify-between">
+  <div>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
+    </div>
+    <nav className="mt-6">
+      <a href="#" className="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
+        <Layout className="mr-3" />
+        Dashboard
+      </a>
+      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+        <Map className="mr-3" />
+        Locations
+      </a>
+      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+        <Tag className="mr-3" />
+        Tags
+      </a>
+      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+        <List className="mr-3" />
+        Itineraries
+      </a>
+      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+        <Settings className="mr-3" />
+        Settings
+      </a>
+    </nav>
+  </div>
+
+  {/* Logout Link */}
+    <div className="p-4">
+      <Logout />
+    </div>
+    </aside>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
