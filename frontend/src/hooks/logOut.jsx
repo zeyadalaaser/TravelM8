@@ -30,7 +30,7 @@ const Logout = () => {
     </AlertDialogTrigger>
     <AlertDialogContent>
         <AlertDialogHeader>
-            <AlertDialogTitle>You're about to sign out</AlertDialogTitle>
+            <AlertDialogTitle style={{ fontSize: '1.7rem', fontWeight: 'bold' }}>You're about to sign out</AlertDialogTitle>
             <AlertDialogDescription>
                 Are you sure?
             </AlertDialogDescription>
