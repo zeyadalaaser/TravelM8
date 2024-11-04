@@ -9,6 +9,7 @@ async function getExchangeRates(base = "USD") {
   return response.data.rates;
 }
 
+// Function to handle filtering stages
 function createFilterStage({
   minPrice,
   maxPrice,
@@ -61,6 +62,45 @@ function createFilterStage({
   return filters;
 }
 
+// Function to handle sorting stages
+function createSortStage(sortBy, order) {
+  if (!sortBy || !order) return [];
+  const sortOrder = order.toLowerCase() === "desc" ? -1 : 1;
+  return [{ $sort: { [sortBy]: sortOrder } }];
+}
+
+// Function to add advertiser details
+function createAdvertiserStage() {
+  return [
+    {
+      $lookup: {
+        from: "advertisers",
+        localField: "advertiserId",
+        foreignField: "_id",
+        as: "advertiser",
+      },
+    },
+    {
+      $unwind: { path: "$advertiser", preserveNullAndEmptyArrays: true },
+    },
+  ];
+}
+
+// Function to add tag details
+function createTagsStage() {
+  return [
+    {
+      $lookup: {
+        from: "tags",
+        localField: "tags",
+        foreignField: "_id",
+        as: "tags",
+      },
+    },
+  ];
+}
+
+// Main function to get activities with all stages
 export async function getActivities({
   includeRatings,
   minPrice,
