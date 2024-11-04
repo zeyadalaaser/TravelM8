@@ -97,6 +97,11 @@ export default function ComplaintsPage() {
         });
 
         setComplaints(filteredAndSortedComplaints);
+        toast({
+          title: "Success",
+          description: "Success to load complaints.",
+          duration: 3000,
+      });
     } catch (error) {
         console.error("Error fetching complaints:", error);
         toast({
@@ -132,8 +137,7 @@ export default function ComplaintsPage() {
   const handleSubmit = async () => {
     if (selectedComplaint && selectedStatus) {
       try {
-        updateComplaintStatusAndReply(token, selectedComplaint._id, reply, selectedStatus); // Update status in backend
-        // Update local state to reflect changes
+        updateComplaintStatusAndReply(token, selectedComplaint._id, reply, selectedStatus); 
         setComplaints(prevComplaints =>
           prevComplaints.map(complaint =>
             complaint._id === selectedComplaint._id
@@ -144,7 +148,7 @@ export default function ComplaintsPage() {
         toast({
           title: "Success",
           description: `Complaint status updated to ${selectedStatus}.`,
-          duration: 3000,
+          duration: 10000,
         });
       } catch (error) {
         console.error("Error updating status:", error);

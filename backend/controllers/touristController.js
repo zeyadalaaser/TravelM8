@@ -1,6 +1,6 @@
 import Tourist from '../models/touristModel.js'; 
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
-import bcrypt from 'bcryptjs';
+
 
 
 
