@@ -4,7 +4,8 @@ import { createItinerary,
     updateItinerary,
     deleteItinerary,
     filterItineraries ,
-    getMyItineraries,searchItems2
+    getMyItineraries,searchItems2,
+    rateItinerary
 }
  from "../controllers/itineraryController.js"; 
 import verifyToken from "../services/tokenDecodingService.js";
@@ -18,6 +19,7 @@ import verifyToken from "../services/tokenDecodingService.js";
  router.get("/myItineraries", verifyToken, getMyItineraries); // Retrieve my itineraries
  router.get("/FilterItineraries",filterItineraries);
  router.get("/searchItineraries",searchItems2);
+ router.post("/itineraries/rate", rateItinerary);
  //router.filter("/itineraries/:id",filterItineraries);
 
  export default router;

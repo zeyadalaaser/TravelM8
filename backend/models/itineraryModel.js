@@ -3,6 +3,7 @@ import Activity from "./activityModel.js";
 import HistoricalPlaces from "./historicalPlacesModel.js";
 import TourGuide from './tourguideModel.js'
 import PreferenceTag from './preferenceTagModel.js'
+import Tourist from "./touristModel.js";
 
 const itineraySchema = new mongoose.Schema({
     name: {
@@ -103,6 +104,15 @@ const itineraySchema = new mongoose.Schema({
         ref: "TourGuide",
         required: true,
     },
+
+    ratings: [
+        {
+          touristId: { type: mongoose.Schema.Types.ObjectId, ref: "Tourist", required: true },
+          rating: { type: Number, required: true, min: 1, max: 5 },
+          comment: { type: String }
+        }
+      ],
+
 });
 
 const Itinerary = mongoose.model("Itinerary", itineraySchema);

@@ -4,13 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import  {
+import {
     Dialog,
     DialogOverlay,
     DialogClose,
     DialogContent,
     DialogTitle,
-  }  from "@/components/ui/dialog";
+} from "@/components/ui/dialog";
 import { Stars } from "../Stars";
 
 export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
@@ -24,9 +24,9 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
 
     return (
         <>
-            <div className="w-4/5 mx-auto m-3 space-y-2">
+            <div className="mx-4 mt-3 space-y-4"> {/* Adjusted left alignment and margin */}
                 {itineraries?.map((itinerary) => (
-                    <Card key={itinerary._id}>
+                    <Card key={itinerary._id} className="ml-4 p-4"> {/* Left-aligned with margin */}
                         <div className="flex flex-row">
                             <div className="flex-1 w-full md:w-2/3 p-4">
                                 <div className="flex justify-between">
@@ -40,25 +40,25 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
                                     <span className="ml-2 text-sm text-gray-600">{itinerary.totalRatings} reviews</span>
                                 </div>
                                 <p className="text-sm text-gray-600 mb-2">{itinerary.description}</p>
-                                {itinerary.activities.length>0 &&
+                                {itinerary.activities.length > 0 &&
                                     <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                                         <Label className="text-m font-semibold text-black">Activities:</Label>
                                         <div className="flex items-center gap-1">
                                             {itinerary.activities.map((activity, index) => (
                                                 <div key={index} className="flex items-center text-sm text-gray-600">
-                                                {activity} - 
+                                                    {activity} -
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
                                 }
-                                {itinerary.historicalSites.length>0 && 
+                                {itinerary.historicalSites.length > 0 &&
                                     <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                                         <Label className="text-m font-semibold text-black">Sites:</Label>
                                         <div className="flex items-center gap-1">
                                             {itinerary.historicalSites.map((site, index) => (
                                                 <div key={index} className="flex items-center text-sm text-gray-600">
-                                                {site} - 
+                                                    {site} -
                                                 </div>
                                             ))}
                                         </div>
@@ -107,9 +107,9 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
                     <div className="flex flex-col mt-4">
                         {selectedItinerary?.timeline.map((event, index) => (
                             <div key={index} className="flex items-center mb-2">
-                                <div className="w-4 h-4 bg-black rounded-full mr-2"></div> {/* Dot */}
+                                <div className="w-4 h-4 bg-black rounded-full mr-2"></div>
                                 <div className="flex-1">
-                                    <h4 className="font-semibold">{event.event}</h4> {/* Adjust based on your data structure */}
+                                    <h4 className="font-semibold">{event.event}</h4>
                                     <p>Start: {new Date(event.startTime).toLocaleString()}</p>
                                     <p>End: {new Date(event.endTime).toLocaleString()}</p>
                                 </div>
