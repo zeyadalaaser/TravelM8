@@ -9,12 +9,12 @@ import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound } from "lucide-react";
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 import { ComplaintForm } from "./components/complaints/complaint-form"
-
+import {RedeemPoints}  from "./components/Points/redeemPoints"
 export default function TouristPage() {
 
   const { location, navigate, searchParams } = useRouter();
   const [showComplaintForm, setShowComplaintForm] = useState(false)
-
+  const [showRedeemPoints, setShowRedeemPoints] = useState(false)
   // Function to decode JWT and get user role
   function getRoleFromToken(token) {
     const decoded = JSON.parse(atob(token.split(".")[1])); // Decode the token
@@ -50,7 +50,9 @@ export default function TouristPage() {
     <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
       <div className="flex justify-between">
-      <NavBar onComplaintClick={() => setShowComplaintForm(true)} />
+      <NavBar onComplaintClick={() => setShowComplaintForm(true)} 
+         onRedeemClick={() => setShowRedeemPoints(true)}/>
+      
       <CircleUserRound
             className="cursor-pointer h-10 w-10" 
             onClick={() => navigate('/tourist-profile')}
@@ -60,10 +62,14 @@ export default function TouristPage() {
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
       {page === "products" && <ProductsPage />}
-      {page === "complaints" && <MyComplaintsPage />}
+      {page === "complaints" && <MyComplaintsPage />}   
       {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />
       )}
+      {showRedeemPoints&& (
+        <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
+      )}
+
     </div>
   )
 }

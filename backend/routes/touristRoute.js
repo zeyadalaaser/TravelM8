@@ -11,8 +11,9 @@ touristRoute.post('/tourists', createTourist);              // Create a new user
 touristRoute.put('/tourists/updateMyProfile', verifyToken , updateTouristProfile);        // Update user information by email
 touristRoute.get('/tourists', getTourists);                 // Read user by email
 touristRoute.get('/tourists/myProfile', verifyToken , getMyProfile);
-touristRoute.put('/updatePoints', verifyToken , updatePoints);
-touristRoute.put('/redeemPoints', verifyToken , redeemPoints);
-//touristRoute.put('/updatePoints',updatePoints);
+// touristRoute.put('/updatePoints', verifyToken , updatePoints);
+touristRoute.put('/redeemPoints',verifyToken,redeemPoints);
+ //touristRoute.put('/redeemPoints/:id',redeemPoints);
+ touristRoute.put('/updatePoints/:id',updatePoints);
 
 export default touristRoute; 

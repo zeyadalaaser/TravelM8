@@ -69,11 +69,11 @@ export const updateTouristProfile = async (req, res) => {
 
 export const updatePoints = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user.userId;
+   // const userId = req.user.userId;
   const { amountPaid } = req.body;
 
   try {
-    const tourist = await Tourist.findById(userId);
+    const tourist = await Tourist.findById(id);
     if (!tourist) {
       return res.status(404).json({ success: false, message: 'Tourist not found' });
     }   
@@ -99,11 +99,7 @@ export const updatePoints = async (req, res) => {
     }
 
     await tourist.save();
-
-    res.status(200).json({
-      success: true,
-      message: `Payment processed successfully. Points Earned: ${pointsEarned}, New Total Points: ${tourist.loyaltyPoints}, Badge Level: ${tourist.badgeLevel}`,
-    });
+    res.status(200).json(tourist);
   } catch (error) {
     res.status(500).json({ success: false, message: `Error processing payment: ${error.message}` });
   }
@@ -112,7 +108,7 @@ export const updatePoints = async (req, res) => {
 
 
 export const redeemPoints = async (req, res) => {
-  const { id } = req.params;  
+  //const { id } = req.params;  
   const userId = req.user.userId;
   try {
     const tourist = await Tourist.findById(userId);
@@ -120,7 +116,6 @@ export const redeemPoints = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Tourist not found' });
     }
 
-    // Check if the tourist has enough points to redeem
     if (tourist.loyaltyPoints < 10000) {
       return res.status(400).json({ success: false, message: 'Not enough points to redeem' });
     }
@@ -129,17 +124,17 @@ export const redeemPoints = async (req, res) => {
     const pointsRedeemed = Math.floor(tourist.loyaltyPoints / 10000) * 10000;
 
     // Update tourist's wallet and points
-    tourist.wallet += cashEarned;
-    tourist.loyaltyPoints -= pointsRedeemed;
- 
-    await tourist.save();
+    const updatedTourist = await Tourist.findByIdAndUpdate(
+      userId,
+      { 
+        $inc: { wallet: cashEarned } ,  
+        $set: { loyaltyPoints:0 }    
+      },
+      { new: true, runValidators: true }  
+    );
+    await updatedTourist.save();
 
-    res.status(200).json({
-      success: true,
-      message: `Successfully redeemed ${pointsRedeemed} points for ${cashEarned} EGP. New wallet balance: ${tourist.wallet} EGP.`,
-      newLoyaltyPoints: tourist.loyaltyPoints,
-      newWalletBalance: tourist.wallet,
-    });
+    res.status(200).json(updatedTourist);
   } catch (error) {
     res.status(500).json({ success: false, message: `Error redeeming points: ${error.message}` });
   }

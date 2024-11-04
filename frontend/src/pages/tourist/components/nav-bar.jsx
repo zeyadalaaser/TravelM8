@@ -10,7 +10,7 @@ const pages = [
     { label: "View My Complaints", value: "complaints" },
 ];
 
-export function NavBar({ onComplaintClick,onRedeemClick }) { // Accept onComplaintClick as a prop
+export function NavBar({onComplaintClick,onRedeemClick}) { // Accept onComplaintClick as a prop
     const { location, searchParams, navigate } = useRouter();
     const currentPage = searchParams.get("type");
 
@@ -43,7 +43,7 @@ export function NavBar({ onComplaintClick,onRedeemClick }) { // Accept onComplai
                 className="rounded-full py-2 px-4 border-[1px] border-transparent"
                 onClick={onRedeemClick}  
             >
-                File a Complaint
+                Redeem Points
             </Button>
         </div>
     );

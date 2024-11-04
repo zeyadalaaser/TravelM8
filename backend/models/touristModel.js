@@ -68,7 +68,7 @@ const touristSchema = new Schema({
     type: Number,
     required: false,
     default: 0,
-    immutable: true,
+   // immutable: true,
   },
   loyaltyPoints: {
     type: Number,
