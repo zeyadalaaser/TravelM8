@@ -72,28 +72,44 @@ const TouristProfilePage = () => {
     }
   };
 
-  const handleChangePassword = (e) => {
-    e.preventDefault()
-    setError('')
+  const handlePasswordChange= async (e) => {
+    e.preventDefault();
+    setError('');
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError('All fields are required')
+      setError('All fields are required');
       return
     }
     if (newPassword !== confirmPassword) {
+
       setError('New password and confirm password do not match')
       return
     }
     if (newPassword.length < 8) {
+      alert("New password must be at least 8 characters long");
       setError('New password must be at least 8 characters long')
       return
     }
-    console.log('Password change requested')
-    
-    // Close the modal and reset fields
-    setIsPasswordModalOpen(false)
-    setCurrentPassword('')
-    setNewPassword('')
-    setConfirmPassword('')
+    try {
+      const passwordData = {
+        currentPassword,
+        newPassword,
+        confirmNewPassword: confirmPassword,
+      };
+      console.log(passwordData);
+      const response = await changePassword(passwordData, token);
+      alert('Password changed successfully');
+      console.log("success");
+      setIsPasswordModalOpen(false);
+      setCurrentPassword(null);
+      setNewPassword(null);
+      setConfirmPassword(null);
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(error.response.data.message); // Display the specific error message
+      } else {
+        setError('An unexpected error occurred');
+      }
+    }
   }
 
   useEffect(() => {
@@ -447,11 +463,10 @@ const TouristProfilePage = () => {
                 <X className="h-6 w-6" />
               </button>
             </div>
-            <form onSubmit={handleChangePassword}>
               <div className="mb-4">
                 <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
                 <div className="relative">
-                  <input
+                  <Input
                     type={showCurrentPassword ? "text" : "password"}
                     id="currentPassword"
                     value={currentPassword}
@@ -518,13 +533,13 @@ const TouristProfilePage = () => {
                   Cancel
                 </button>
                 <button
+                  onClick= {handlePasswordChange}
                   type="submit"
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   Change Password
                 </button>
               </div>
-            </form>
           </div>
         </div>
       )}
