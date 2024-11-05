@@ -10,6 +10,7 @@ const pages = [
     { label: "View My Complaints", value: "complaints" },
     { label: "Completed Tours", value: "completed-tours" },
     { label: "Past Activities", value: "past-activities" },
+    {label: "Purchased Products", value: "products-purchased"},
 ];
 
 export function NavBar({ onComplaintClick }) { // Accept onComplaintClick as a prop

@@ -1,8 +1,43 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "../stars";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-export default function Products({ products, currency, exchangeRate }) {
+export default function Products({ products, currency, exchangeRate, touristId }) {
+const navigate = useNavigate();
+
+const handlePurchase = async (product) => {
+  const quantity = 1; // Example quantity for simplicity; adjust as needed
+
+  try {
+    const response = await axios.post('http://localhost:5001/api/purchases', {
+      productId: product._id,
+      touristId: touristId, 
+      quantity,
+    });
+
+    // Accessing the productId from the purchase object in the response
+    console.log("product id:", response.data.purchase.productId);
+    console.log("id el zeftx2: ", touristId);
+
+    alert('Purchase successful!');
+    const viewPurchased = window.confirm(
+      "Do you want to view purchased products or continue shopping?"
+    );
+
+    if (viewPurchased) {
+      console.log("Id el zeft: ", touristId);
+      navigate(`/products-purchased`); 
+       }
+  } catch (error) {
+    console.error("Error purchasing product:", error.response ? error.response.data : error.message);
+    alert("Failed to purchase product.");
+  }
+};
+
+
+
   return (
     <div className="space-y-4">
       {products.map((product, index) => (
@@ -48,8 +83,3 @@ export default function Products({ products, currency, exchangeRate }) {
     </div>
   );
 }
-// Function to handle purchase logic
-const handlePurchase = (product) => {
-  console.log(`Purchasing: ${product.name}`);
-  
-};

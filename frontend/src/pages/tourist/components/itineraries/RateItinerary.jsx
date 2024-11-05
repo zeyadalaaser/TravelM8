@@ -46,7 +46,7 @@ const RateItinerary = ({ itineraryId, tourGuideId, touristId, onClose }) => {
         />
       </div>
       <div className="flex justify-end space-x-2">
-        <button onClick={submitRating} className="px-4 py-2 bg-blue-500 text-white rounded">
+        <button onClick={submitRating} className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
           Submit
         </button>
         <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">

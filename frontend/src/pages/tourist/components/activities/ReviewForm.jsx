@@ -1,19 +1,19 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const RateTourGuide = ({ tourGuideId, touristId, onClose }) => {
+const ReviewForm = ({ activityId, touristId, onClose }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
   const submitRating = async () => {
     try {
-      await axios.post(`http://localhost:5001/api/tourguides/rate`, {
-        tourGuideId,
+      await axios.post(`http://localhost:5001/api/bookedactivities/rate`, {
+        activityId,
         touristId,
         rating,
-        comment
+        comment,
       });
-      alert("Rating and comment submitted successfully!");
+      alert("Rating submitted successfully!");
       onClose();
     } catch (error) {
       console.error("Error submitting rating:", error);
@@ -22,13 +22,13 @@ const RateTourGuide = ({ tourGuideId, touristId, onClose }) => {
 
   return (
     <div>
-      <h3 className="text-lg font-bold mb-2">Rate this Tour Guide</h3>
+      <h3 className="text-lg font-bold mb-2">Rate this Activity</h3>
       <div className="mb-3">
         <label>Rating:</label>
         <select
           value={rating}
           onChange={(e) => setRating(Number(e.target.value))}
-          className="ml-2 border p-1"
+          className="ml-2 border p-1 rounded"
         >
           <option value={0}>Select Rating</option>
           {[1, 2, 3, 4, 5].map((num) => (
@@ -57,4 +57,4 @@ const RateTourGuide = ({ tourGuideId, touristId, onClose }) => {
   );
 };
 
-export default RateTourGuide;
+export default ReviewForm;

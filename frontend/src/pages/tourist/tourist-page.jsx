@@ -10,6 +10,7 @@ import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 import { ComplaintForm } from "./components/complaints/complaint-form";
 import { CompletedToursPage } from "./components/itineraries/CompletedToursPage";
 import { PastActivitiesPage } from "./components/activities/PastActivitiesPage";
+import  PurchasedProductsPage   from "./components/products/PurchasedProductsPage";
 
 export default function TouristPage() {
   const { location, navigate, searchParams } = useRouter();
@@ -63,7 +64,9 @@ export default function TouristPage() {
       {page === "activities" && <ActivitiesPage />}
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
-      {page === "products" && <ProductsPage />}
+      {page === "products" && touristId && (
+  <ProductsPage touristId={touristId} />
+)}
       {page === "complaints" && <MyComplaintsPage />}
       {page === "completed-tours" && touristId && ( 
         <CompletedToursPage touristId={touristId} />
@@ -71,9 +74,14 @@ export default function TouristPage() {
       {page === "past-activities" && touristId && (
         <PastActivitiesPage touristId={touristId} />
       )}
+{page === "products-purchased" && touristId && (
+    <PurchasedProductsPage touristId={touristId} />
+)}
+
           {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />
       )}
     </div>
   );
+
 }

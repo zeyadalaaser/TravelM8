@@ -21,7 +21,7 @@ import loginRoute from "./routes/loginRoute.js";
 import complaintRoute from "./routes/complaintsRoute.js";
 import bookingsRoute from "./routes/bookingsRoute.js";
 import bookingsActivityRoute from "./routes/bookingsActivityRoute.js";
-
+import purchaseRoute from "./routes/purchaseRoute.js";
 
 
 dotenv.config({path:'../.env'});
@@ -63,7 +63,7 @@ app.use("/api", ratingRoute);
 app.use('/api/auth', loginRoute);
 app.use("/api", bookingsRoute);
 app.use("/api", bookingsActivityRoute)
-
+app.use("/api", purchaseRoute);
 
 app.listen(PORT, () => {
   connectDB();

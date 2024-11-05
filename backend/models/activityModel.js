@@ -76,7 +76,10 @@ const activitySchema = new mongoose.Schema({
         ref: 'Advertiser',
         required: true,
     },
-    
+    averageRating: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

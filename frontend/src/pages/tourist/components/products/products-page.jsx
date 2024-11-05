@@ -20,13 +20,16 @@ const exchangeRates = {
   JPY: 110,
 };
 
-export function ProductsPage() {
+export function ProductsPage({ touristId }) {
+  console.log("Tourist ID in ProductsPage:", touristId);
   const { location } = useRouter();
   const [products, setProducts] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [loading, setLoading] = useState(true); // Add loading state
 
   const fetchProducts = useDebouncedCallback(async () => {
+    setLoading(true); // Start loading
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
     queryParams.set("exchangeRate", exchangeRates[currency]);
@@ -35,8 +38,15 @@ export function ProductsPage() {
     if (priceRange.min) queryParams.set("minPrice", priceRange.min);
     if (priceRange.max) queryParams.set("maxPrice", priceRange.max);
 
-    const products = await getProducts(`?${queryParams.toString()}`);
-    setProducts(products);
+    try {
+      const products = await getProducts(`?${queryParams.toString()}`);
+      setProducts(products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      alert("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false); // End loading
+    }
   }, 200);
 
   useEffect(() => {
@@ -50,6 +60,8 @@ export function ProductsPage() {
   const handlePriceChange = (min, max) => {
     setPriceRange({ min, max });
   };
+
+  if (loading) return <p>Loading products...</p>; // Loading UI
 
   return (
     <>
@@ -90,6 +102,7 @@ export function ProductsPage() {
             products={products}
             currency={currency}
             exchangeRate={exchangeRates[currency]}
+            touristId={touristId}
           />
         </div>
       </div>

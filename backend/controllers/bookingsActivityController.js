@@ -98,3 +98,31 @@ export const addReview = async (req, res) => {
         return res.status(500).json({ message: "Internal server error." });
     }
 };
+
+export const addRatingAndComment = async (req, res) => {
+    const { bookingId, rating, comment } = req.body;
+
+    try {
+        // Update the booking with rating and comment
+        const booking = await BookingActivity.findByIdAndUpdate(
+            bookingId,
+            { rating, comment },
+            { new: true }
+        ).populate('activityId');
+        
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found." });
+        }
+
+        // Update average rating and review count in Activity
+        const activity = booking.activityId;
+        activity.reviewCount += 1;
+        activity.averageRating = ((activity.averageRating * (activity.reviewCount - 1)) + rating) / activity.reviewCount;
+        await activity.save();
+
+        return res.status(200).json({ message: "Rating and comment added successfully." });
+    } catch (error) {
+        console.error("Error adding rating and comment:", error);
+        return res.status(500).json({ message: "Internal server error." });
+    }
+};
