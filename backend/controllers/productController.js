@@ -32,16 +32,20 @@ export const createProduct = async (req, res) => {
 export const archiveProduct = async (req, res) => {
   try {
     const{id}= req.params;
-    console.log(`Archiving product with ID: ${productId}`);
+    console.log(`Archiving product with ID: ${id}`);
 
-    const ArchivedProduct = await Product.findByIdAndUpdate(id, {archived: true}, {new: true});
+    const ArchivedProduct = await Product.findByIdAndUpdate(
+      id,
+      {archived: true}, 
+      {new: true}
+    );
 
     if(!ArchivedProduct){
       return res.status(404).json({ message: 'Product not found'});
     }
-    res.status(200).json({ message: 'Product archived successfully', ArchivedProduct});
+    res.status(200).json({ message: 'Product archived successfully'});
   } catch(error){
-    res.status(500).json({message: 'error occured'});
+    res.status(500).json({message: 'error occured ...'});
   }
   }
 
@@ -110,9 +114,9 @@ export const getAllProducts = async (req, res) => {
 
     //My Filter Logic
     let filter = {};   //this is empty filter object and if user did not provide min and max, will retrieve all products
-    if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
-      filter.archived = false; // toursits only see unarchived products
-    }
+    //if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
+      //filter.archived = false; // toursits only see unarchived products
+   // }
     if (minPrice || maxPrice) {
       filter.price = {}; //ba-initialize empty price filter object
       if (minPrice) filter.price.$gte = parseFloat(minPrice);  // Price >= minPrice
