@@ -100,7 +100,7 @@ export default function TouristProfile() {
               <p className="text-muted-foreground">email: {tourist ? tourist.email : 'null'}</p>
               <p className="text-muted-foreground">wallet: ${tourist ? tourist.wallet : '0'}</p>
               <p className="text-muted-foreground">Loyality points: {tourist ? tourist.loyaltyPoints : 'null'}</p>
-              <p className="text-muted-foreground">My Level: {tourist ? tourist.badgeLevel : '0'}</p>
+              
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                 <DialogTrigger asChild>
                   <Button className="mt-4">Edit Profile</Button>

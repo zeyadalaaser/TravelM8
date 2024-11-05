@@ -17,7 +17,7 @@ export default function TouristPage() {
   const { location, navigate, searchParams } = useRouter();
   const [showComplaintForm, setShowComplaintForm] = useState(false)
   const [showRedeemPoints, setShowRedeemPoints] = useState(false)
-  const [badgeInfo, setBadgeInfo] = useState({ loyaltyPoints: 1000, badgeLevel: "Level 1" });
+  const [badgeInfo, setBadgeInfo] = useState({ loyaltyPoints: 0, badgeLevel: "Level 1" });
 
 
   // Function to decode JWT and get user role
@@ -28,9 +28,11 @@ export default function TouristPage() {
   // Fetch tourist's badge information from the backend
   const fetchBadgeInfo = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:5001/api/tourists/myBadgeInfo", {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get('http://localhost:5001/api/tourists/myProfile', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
       });
       setBadgeInfo(response.data);
     } catch (error) {
@@ -68,32 +70,25 @@ export default function TouristPage() {
   return (
     <div className="container mx-auto p-4 overflow-y-scroll min-h-[101vh]">
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
-      <div className="flex justify-between">
-      <NavBar onComplaintClick={() => setShowComplaintForm(true)} 
-         onRedeemClick={() => setShowRedeemPoints(true)}/>
-      
-      <CircleUserRound
-            className="cursor-pointer h-10 w-10" 
-            onClick={() => navigate('/tourist-profile')}
-      <div className="flex justify-between items-center mb-4">
-        <NavBar onComplaintClick={() => setShowComplaintForm(true)} />
-        
-        {/* Badge Display with Styling */}
-        <div className="flex flex-col items-center">
-          <div className="badge-container flex items-center p-4 rounded-full shadow-lg bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
-            <Award className="w-8 h-10 mr-1" />
+      <div className="flex justify-between items-center">
+        <NavBar onComplaintClick={() => setShowComplaintForm(true)} onRedeemClick={() => setShowRedeemPoints(true)} />
+        <div className="flex items-center">
+          {/* Badge Display with Styling */}
+          <div className="badge-container flex items-center p-2 rounded-full shadow-md bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm mr-2">
+            <Award className="w-4 h-4 mr-1" />
             <div className="text-center">
-              <p className="font-bold">{badgeInfo.badgeLevel}</p>
-              <p>{badgeInfo.loyaltyPoints} Points</p>
+              <p className="font-semibold">{badgeInfo.badgeLevel}</p>
+              <p className="text-xs">{badgeInfo.loyaltyPoints} Points</p>
             </div>
           </div>
+          <CircleUserRound
+            className="cursor-pointer h-10 w-10"
+            onClick={() => navigate("/tourist-profile")}
+          />
         </div>
-
-        <CircleUserRound
-          className="cursor-pointer h-10 w-10"
-          onClick={() => navigate("/tourist-profile")}
-        />
       </div>
+
+        
       {page === "activities" && <ActivitiesPage />}
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
@@ -106,8 +101,7 @@ export default function TouristPage() {
         <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
       )}
 
-      {page === "complaints" && <MyComplaintsPage />}
-      {showComplaintForm && <ComplaintForm onClose={() => setShowComplaintForm(false)} />}
+
     </div>
   );
 }
