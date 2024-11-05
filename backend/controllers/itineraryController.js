@@ -27,7 +27,6 @@ export const createItinerary = async (req, res) => {
 };
 
 // read/retrieve all itineraries
-// read/retrieve all itineraries
 export const readItineraries = async (req, res) => {
   try {
     const { upcoming, isAdmin } = req.query;
@@ -45,8 +44,6 @@ export const readItineraries = async (req, res) => {
 
     // Fetch itineraries with the specified filters
     const itineraries = await Itinerary.find(filters)
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
 

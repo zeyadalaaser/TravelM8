@@ -71,9 +71,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
 
 
-        <Route path="/add" element={<HistoricalPlaceForm />} />
-        <Route path="/edit/:id" element={<HistoricalPlaceForm />} />
-        <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
         <Route path="/tourGuideProfile" element={<TourGuideProfile />} />
         <Route path="/tourGuideDashboard" element={<TourGuideDashboard />} />
         <Route path="/itineraryForm" element={<ItineraryForm />} />
