@@ -67,7 +67,7 @@ const TouristProfilePage = () => {
       }
     } catch (error) {
       console.log(changes);
-      alert("Error updating");
+      alert("Error updating profile");
       console.error('Error updating:', error);
     }
   };
@@ -218,27 +218,6 @@ const TouristProfilePage = () => {
                   </div>
                 </div>
               </section>
-              <section className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">Sign-in details</h2>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Password</label>
-                    <Input 
-                    name="password"
-                    type="password" 
-                    value="********" 
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" readOnly />
-                  </div>
-                  <div>
-                    <button 
-                      className="text-blue-600 hover:text-blue-800"
-                      onClick={() => setIsPasswordModalOpen(true)}
-                    >
-                      Change password
-                    </button>
-                  </div>
-                </div>
-              </section>
               <div className="flex justify-end">
                 <button 
                   onClick={handleFormSubmit}
@@ -272,8 +251,38 @@ const TouristProfilePage = () => {
       case 'settings':
         return (
           <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Settings</h1>
+            <h1 className="text-2xl font-bold mb-6">Settings & Security</h1>
             {/* Settings content */}
+            <section className="mb-8">
+                <h2 className="text-xl font-semibold mb-4">Sign-in details</h2>
+                <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Email address</label>
+                      <Input 
+                      name="email"
+                      onChange={handleInputChange}
+                      type="email" 
+                      value={profile ? profile.email : ''} 
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <Input 
+                    name="password"
+                    type="password" 
+                    value="********" 
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" readOnly />
+                  </div>
+                  <div className="flex justify-end">
+                    <button 
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      onClick={() => setIsPasswordModalOpen(true)}
+                    >
+                      Change password
+                    </button>
+                  </div>
+                </div>
+              </section>
           </div>
         );
       default:

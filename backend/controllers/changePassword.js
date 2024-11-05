@@ -1,6 +1,4 @@
 import bcrypt from "bcrypt";
-import jwt from 'jsonwebtoken';
-import express from "express";
 import Tourist from '../models/touristModel.js'; 
 import TourismGovernor from "../models/tourismGovernorModel.js";
 import TourGuide from "../models/tourguideModel.js"; 
@@ -8,7 +6,7 @@ import Seller from '../models/sellerModel.js';
 import Advertiser from '../models/advertiserModel.js';
 import Admin from '../models/adminModel.js';
 
-const changeUserPassword = async (userId, currentPassword, newPassword, UserModel) => {
+const changeUserPassword = async (userId, currentPassword, newPassword, confirmNewPassword, UserModel) => {
     const user = await UserModel.findById(userId);
     if (!user) {
         console.log(userId);
@@ -21,16 +19,21 @@ const changeUserPassword = async (userId, currentPassword, newPassword, UserMode
       // console.log(hashedPassword);
          throw new Error('Current password is incorrect.');
     }
-    user.password = newPassword;
-    await user.save();
-    return { message: 'Password changed successfully.' };
+    if (newPassword==confirmNewPassword) {
+      user.password = newPassword;
+      await user.save();
+      return { message: 'Password changed successfully.' }; 
+    }
+    else {
+      return { message: 'New Password and Confirm Password do not match' }; 
+    }
 };
 
 export const changePasswordTourist = async (req,res) => {
-    const { currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.userId; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, Tourist);
+      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, Tourist);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -38,10 +41,10 @@ export const changePasswordTourist = async (req,res) => {
 }
 
 export const changePasswordTourismGovernor = async (req,res) => {
-    const { currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword, confirmNewPassword  } = req.body;
     const userId = req.user.id; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, TourismGovernor);
+      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, TourismGovernor);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -49,10 +52,10 @@ export const changePasswordTourismGovernor = async (req,res) => {
 }
 
 export const changePasswordTourGuide = async (req,res) => {
-    const { currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.id; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, TourGuide);
+      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, TourGuide);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -61,10 +64,10 @@ export const changePasswordTourGuide = async (req,res) => {
 
 
 export const changePasswordSeller = async (req,res) => {
-    const { currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.id; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, Seller);
+      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, Seller);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -73,10 +76,10 @@ export const changePasswordSeller = async (req,res) => {
 
 
 export const changePasswordAdvertiser = async (req,res) => {
-    const { currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.id; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, Advertiser);
+      const result = await changeUserPassword(userId, currentPassword, newPassword,confirmNewPassword, Advertiser);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -84,10 +87,10 @@ export const changePasswordAdvertiser = async (req,res) => {
 }
 
 export const changePasswordAdmin= async (req,res) => {
-    const { currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.id; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, Admin);
+      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, Admin);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
