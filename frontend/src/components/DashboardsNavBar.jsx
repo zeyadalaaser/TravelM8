@@ -5,6 +5,7 @@ import logo from "../assets/logo4.jpg";
 
 
 const DashboardsNavBar = ({profilePageString}) => {
+  const navigate = useNavigate();
   return (
     <div className="sticky top-0 z-10 shadow mx-auto bg-white w-full h-auto flex justify-between items-center mb-4">
       <div>

@@ -44,7 +44,7 @@ export default function Login() {
       } else if (role === 'Admin') {
         navigate('/dashboard');
       } else if (role === 'Advertiser') {
-        navigate('/advertiserHomePage');
+        navigate('/advertiserDashboard');
       } else {
         navigate('/default-page'); // Default page if role doesn't match
       }

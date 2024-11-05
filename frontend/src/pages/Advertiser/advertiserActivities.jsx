@@ -232,7 +232,7 @@ const handleUpdateActivity = async (updatedData) => {
     <DialogHeader>
       <DialogTitle>Edit Activity</DialogTitle>
     </DialogHeader>
-    <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-6">
+    <div className="max-h-[calc(100vh-500px)] overflow-y-auto pr-6">
       {currentActivity && <ActivityForm initialData={currentActivity} onSubmit={handleUpdateActivity} />}
     </div>
   </DialogContent>

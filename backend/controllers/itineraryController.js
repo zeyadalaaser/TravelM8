@@ -8,10 +8,11 @@ import mongoose from "mongoose";
 
 export const createItinerary = async (req, res) => {
   try {
-    const newItineraryData = new Itinerary({
-      ...req.body,
-      tourGuideId: req.user.userId,
-    });
+    // const newItineraryData = new Itinerary({
+    //   ...req.body,
+    //   tourGuideId: req.user.userId,
+    // });
+    const newItineraryData = new Itinerary(req.body);
     await newItineraryData.save();
     res.status(201).json({
       message: "Itinerary added successfully",
@@ -48,6 +49,18 @@ export const readItineraries = async (req, res) => {
   }
 };
 
+export const fetchItinerary = async (req,res) => {
+  const id = req.params.id;
+  try{
+    const itinerary = await Itinerary.findById(id)
+      .populate("tags")
+      .populate("tourGuideId");
+    return res.status(200).json(itinerary);
+  } catch (error) {
+    return res.status(400).json({ message: "Error", error: error.message });
+  }
+}
+
 //TourGuide only
 export const getMyItineraries = async (req, res) => {
   try {
@@ -56,8 +69,6 @@ export const getMyItineraries = async (req, res) => {
       return res.status(404).json({ message: "Enter a valid id" });
     }
     const itineraries = await Itinerary.find({ tourGuideId })
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
     if (itineraries.length == 0)
@@ -75,8 +86,6 @@ export const updateItinerary = async (req, res) => {
     const updatedItinerary = await Itinerary.findByIdAndUpdate(id, req.body, {
       new: true,
     })
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
 
@@ -126,7 +135,7 @@ export const deleteItinerary = async (req, res) => {
         .status(400)
         .json({ message: "Cannot delete itinerary with existing bookings" });
     } else {
-      const deletedItinerary = await Itinerary.findByIdAndDelete(id);
+      await Itinerary.findByIdAndDelete(id);
     }
 
     return res.status(200).json({ message: "Itinerary deleted successfully" });

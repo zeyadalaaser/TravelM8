@@ -7,11 +7,11 @@ const apiClient = axios.create({
 });
 
 
-export async function getActivities(query) {
-    const searchParams = new URLSearchParams(query);
-    searchParams.delete("type");
-    return (await apiClient.get('activities?' + searchParams.toString())).data;
-}
+export const getActivities = async (query) => {
+    const response = await fetch(`API_ENDPOINT${query}`);
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  };
 
 export async function getProducts(query) {
     const searchParams = new URLSearchParams(query);

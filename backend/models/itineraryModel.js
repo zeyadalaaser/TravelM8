@@ -1,8 +1,4 @@
 import mongoose from "mongoose";
-import Activity from "./activityModel.js";
-import HistoricalPlaces from "./historicalPlacesModel.js";
-import TourGuide from './tourguideModel.js'
-import PreferenceTag from './preferenceTagModel.js'
 
 const itineraySchema = new mongoose.Schema({
     name: {

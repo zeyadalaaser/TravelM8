@@ -13,6 +13,8 @@ import Login from "./pages/signIn/login";
 import TouristRegistration from './pages/SignUp/signupTourist';
 import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard";
 
+import AdvertiserActivities from "./pages/Advertiser/advertiserActivities";
+import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard";
 
 
 export default function App() {
@@ -48,6 +50,6 @@ export default function App() {
   };
 
   return (
-    <TourGuideDashboard/>
+    <AdvertiserDashboard/>
   );
 }

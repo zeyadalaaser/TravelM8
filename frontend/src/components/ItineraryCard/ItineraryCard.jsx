@@ -12,8 +12,9 @@ import  {
     DialogTitle,
   }  from "@/components/ui/dialog";
 import { Stars } from "../Stars";
+import { useNavigate } from "react-router-dom";
 
-export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
+export default function ItineraryCard({ itineraries, isTourist, isTourGuide, isAdmin }) {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [selectedItinerary, setSelectedItinerary] = useState(null);
 
@@ -21,6 +22,22 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
         setSelectedItinerary(itinerary);
         setDialogOpen(true);
     };
+    const navigate = useNavigate();
+
+    const handleDelete = async (id) =>{
+        try {
+            const response = await fetch(`http://localhost:5001/api/itineraries/${id}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            console.log('Success:', response);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
 
     return (
         <>
@@ -40,7 +57,6 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
                                     <span className="ml-2 text-sm text-gray-600">{itinerary.totalRatings} reviews</span>
                                 </div>
                                 <p className="text-sm text-gray-600 mb-2">{itinerary.description}</p>
-                                {itinerary.activities.length>0 &&
                                     <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                                         <Label className="text-m font-semibold text-black">Activities:</Label>
                                         <div className="flex items-center gap-1">
@@ -51,8 +67,6 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
                                             ))}
                                         </div>
                                     </div>
-                                }
-                                {itinerary.historicalSites.length>0 && 
                                     <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                                         <Label className="text-m font-semibold text-black">Sites:</Label>
                                         <div className="flex items-center gap-1">
@@ -63,7 +77,7 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
                                             ))}
                                         </div>
                                     </div>
-                                }
+                                
                                 <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                                     <Label className="text-m font-semibold text-black">Available Slots:</Label>
                                     <div className="flex items-center gap-4">
@@ -87,13 +101,17 @@ export default function ItineraryCard({ itineraries, isTourist, isTourGuide }) {
                                 </div>
                                 <div className="text-xl font-bold">{`$${itinerary.price}`}</div>
                                 <div className="flex justify-end items-center">
-                                    {isTourist && <Button>Book Tour!</Button>}
+                                    {isTourist && <Button onClick={()=>handleBook} >Book Tour!</Button>}
                                     {isTourGuide && (
                                         <div className="flex items-center gap-2">
-                                            <Button variant="destructive">Delete</Button>
-                                            <Button>Update</Button>
+                                            <Button onClick={()=> handleDelete(itinerary._id)} variant="destructive">Delete</Button>
+                                            <Button onClick={()=>navigate("/itineraryForm", { state: { itinerary: itinerary } })}>
+                                                Update
+                                            </Button>
                                         </div>
                                     )}
+                                    {isAdmin && <Button onClick={()=>handleFalg(itinerary._id)} variant="destructive">Flag Inappropriate</Button>}
+
                                 </div>
                             </div>
                         </div>

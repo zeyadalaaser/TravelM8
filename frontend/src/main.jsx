@@ -26,15 +26,16 @@ import HistoricalPlaceDetails from "@/pages/TourismGovernor/HistoricalPlaceDetai
 //import ProductForm from './pages/admin/ProductForm.jsx'
 //import ProductList from './pages/admin/ProductList.jsx'
 import Product from "./pages/admin/product.jsx";
-import ProfileTemplate from "./pages/TourGuide/profileTemplate.jsx";
-import Itinerary from "./pages/TourGuide/itinerary2.jsx";
+import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.jsx";
 import TouristProfile from "./pages/tourist/components/tourist-profile.jsx";
 import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
-import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
 import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
+import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
+import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
+import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
 
 
 
@@ -47,7 +48,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="/SellerProduct" element={<SellerProducts />} />
         <Route path="/SellerProfile" element={<SellerProfile />} />
         <Route path="/tourist" element={<TouristPage />} />
-        <Route path="/myItineraries" element={<Itineraries />} />
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/viewComplaints" element={<ComplaintsPage />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
@@ -80,12 +80,18 @@ createRoot(document.getElementById("root")).render(
           path="/advertiserActivities"
           element={<AdvertiserActivities />}
         />
+        <Route path="/activityForm" element={<ActivityForm />} />
+        <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
+
+
         <Route path="/add" element={<HistoricalPlaceForm />} />
         <Route path="/edit/:id" element={<HistoricalPlaceForm />} />
         <Route path="/view/:id" element={<HistoricalPlaceDetails />} />
-        <Route path="/profileTemplate" element={<ProfileTemplate />} />
+        <Route path="/tourGuideProfile" element={<TourGuideProfile />} />
         <Route path="/tourGuideDashboard" element={<TourGuideDashboard />} />
-        <Route path="/itinerary" element={<Itinerary />} />
+        <Route path="/itineraryForm" element={<ItineraryForm />} />
+
+
       </Routes>
     </BrowserRouter>
   </StrictMode>
