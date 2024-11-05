@@ -251,7 +251,7 @@ const TouristProfilePage = () => {
       case 'settings':
         return (
           <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Settings & Security</h1>
+            <h1 className="text-2xl font-bold mb-6">Security & Settings</h1>
             {/* Settings content */}
             <section className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">Sign-in details</h2>
@@ -273,16 +273,16 @@ const TouristProfilePage = () => {
                     value="********" 
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" readOnly />
                   </div>
-                  <div className="flex justify-end">
+                </div>
+              </section>
+              <div className="flex justify-end">
                     <button 
                       className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                       onClick={() => setIsPasswordModalOpen(true)}
                     >
-                      Change password
+                      Update Login Info
                     </button>
                   </div>
-                </div>
-              </section>
           </div>
         );
       default:
@@ -366,7 +366,7 @@ const TouristProfilePage = () => {
               onClick={() => setActiveView('settings')}
             >
               <Settings className="mr-3" />
-              Settings
+              Security & Settings
             </button>
             </nav>
     </aside>
