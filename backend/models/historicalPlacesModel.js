@@ -57,15 +57,9 @@ const HistoricalSchema = new mongoose.Schema({
   // }
 
   tags: {
-    type: {
-      type: String, // Example: "museum", "landmark", etc.
-      enum: ["museum", "Palaces/castles", "monument", "religious site"], //list of valid types
-      default: null,
-    },
-    historicalPeriod: {
-      type: String,
-      default: null,
-    },
+    type:String,
+    ref:"placeTag",
+    required:true
   },
 
   tourismGovernorId: {

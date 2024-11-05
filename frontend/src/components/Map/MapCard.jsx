@@ -39,7 +39,7 @@ import { Card, CardContent } from "@/components/ui/card"
   const placeMarker = (lat, lng, name) => {
     setMarkerPosition({ lat, lng })
     setMapCenter([lat, lng])
-    setLatLng({ lat, lng })
+    setLatLng({lat:lat, lng:lng })
     setAddress(name)
   }
 
@@ -99,13 +99,14 @@ const MapClickHandler = ({ placeMarker, setAddress }) => {
   useEffect(() => {
     const handleMapClick = async (e) => {
       const { lat, lng } = e.latlng
-      placeMarker(lat, lng, "")
       try {
         const response = await axios.get(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
         )
         const displayName = response.data.display_name
-        setAddress(displayName)
+        setAddress(displayName);
+        placeMarker(lat, lng, displayName);
+
       } catch (error) {
         console.error("Error fetching address from coordinates:", error)
       }
@@ -130,4 +131,4 @@ const RecenterMap = ({ center }) => {
   return null
 }
 
-export default MapCard
+export default MapCard;
