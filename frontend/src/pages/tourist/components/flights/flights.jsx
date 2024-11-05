@@ -2,9 +2,6 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { itineraryToFlight } from "./helpers";
 
-
-
-
 function Trip({ trip, isOutbound }) {
     return (
         <div className="space-y-4">

@@ -35,7 +35,7 @@ export function itineraryToFlight(itinerary) {
     const inbound = parseTrip(itinerary["inbound"]);
     const outbound = parseTrip(itinerary["outbound"]);
 
-    const nights = (new Date(inbound.departure.dateTime).setHours(0, 0) - outbound.arrival.dateTime.setHours(0, 0)) / 86400000;
+    const nights = (new Date(inbound.departure.dateTime).setUTCHours(0, 0) - outbound.arrival.dateTime.setUTCHours(0, 0)) / 86400000;
 
     return {
         outbound,
