@@ -6,11 +6,13 @@ import { ProductsPage } from "./components/products/products-page";
 import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myComplaints.jsx";
 import { NavBar } from "./components/nav-bar";
 import { MuseumsPage } from "./components/museums/museums-page";
-import { CircleUserRound , Award} from "lucide-react";
+import { CircleUserRound, Award } from "lucide-react";
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 import { FlightsPage } from "./components/flights/flights-page";
+import { HotelsPage } from "./components/hotels/hotels-page";
 import { ComplaintForm } from "./components/complaints/complaint-form"
-import {RedeemPoints}  from "./components/Points/redeemPoints"
+import { RedeemPoints } from "./components/Points/redeemPoints"
+
 
 
 export default function TouristPage() {
@@ -71,11 +73,11 @@ export default function TouristPage() {
   return (
     <div className="container mx-auto p-4 min-h-[101vh]">
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between">
         <NavBar onComplaintClick={() => setShowComplaintForm(true)} onRedeemClick={() => setShowRedeemPoints(true)} />
-        <div className="flex items-center">
+        <div className="flex">
           {/* Badge Display with Styling */}
-          <div className="badge-container flex items-center p-2 rounded-full shadow-md bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm mr-2">
+          <div className="-translate-y-1 badge-container flex items-center p-2 rounded-full shadow-md bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm mr-2">
             <Award className="w-4 h-4 mr-1" />
             <div className="text-center">
               <p className="font-semibold">{badgeInfo.badgeLevel}</p>
@@ -89,17 +91,18 @@ export default function TouristPage() {
         </div>
       </div>
 
-        
+
       {page === "activities" && <ActivitiesPage />}
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
       {page === "products" && <ProductsPage />}
       {page === "flights" && <FlightsPage />}
-      {page === "complaints" && <MyComplaintsPage />}   
+      {page === "hotels" && <HotelsPage />}
+      {page === "complaints" && <MyComplaintsPage />}
       {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />
       )}
-      {showRedeemPoints&& (
+      {showRedeemPoints && (
         <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
       )}
 
