@@ -57,13 +57,11 @@ const TouristProfilePage = () => {
         const response = await updateProfile(updatedProfile, token);
         console.log(changes);
         alert("Profile updated successfully", response);
-        window.location.reload();
       }
       else {
         const response = await updateProfile(changes, token);
         console.log(changes);
         alert("Profile updated successfully", response);
-        window.location.reload();
       }
     } catch (error) {
       console.log(changes);
@@ -211,9 +209,35 @@ const TouristProfilePage = () => {
                             <SelectValue placeholder={profile ? profile.mobileNumber.split(" ")[0] : ''} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="+1">+1</SelectItem>
-                            <SelectItem value="+44">+44</SelectItem>
-                            <SelectItem value="+91">+91</SelectItem>
+                          <SelectItem value="+1">+1</SelectItem>
+                              <SelectItem value="+44">+44</SelectItem>
+                              <SelectItem value="+91">+91</SelectItem>
+                              <SelectItem value="+20">+20</SelectItem>
+                              <SelectItem value="+33">+33</SelectItem>
+                              <SelectItem value="+34">+34</SelectItem>
+                              <SelectItem value="+39">+39</SelectItem>
+                              <SelectItem value="+49">+49</SelectItem>
+                              <SelectItem value="+55">+55</SelectItem>
+                              <SelectItem value="+61">+61</SelectItem>
+                              <SelectItem value="+81">+81</SelectItem>
+                              <SelectItem value="+86">+86</SelectItem>
+                              <SelectItem value="+971">+971</SelectItem>
+                              <SelectItem value="+353">+353</SelectItem>
+                              <SelectItem value="+358">+358</SelectItem>
+                              <SelectItem value="+64">+64</SelectItem>
+                              <SelectItem value="+7">+7</SelectItem>
+                              <SelectItem value="+82">+82</SelectItem>
+                              <SelectItem value="+47">+47</SelectItem>
+                              <SelectItem value="+46">+46</SelectItem>
+                              <SelectItem value="+27">+27</SelectItem>
+                              <SelectItem value="+34">+34</SelectItem>
+                              <SelectItem value="+31">+31</SelectItem>
+                              <SelectItem value="+63">+63</SelectItem>
+                              <SelectItem value="+62">+62</SelectItem>
+                              <SelectItem value="+52">+52</SelectItem>
+                              <SelectItem value="+60">+60</SelectItem>
+                              <SelectItem value="+234">+234</SelectItem>
+                              <SelectItem value="+92">+92</SelectItem>
                           </SelectContent>
                         </Select>
                         <Input
