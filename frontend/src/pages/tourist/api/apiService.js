@@ -43,6 +43,17 @@ export async function getItineraries(query) {
     return (await apiClient.get('FilterItineraries?' + searchParams.toString())).data;
 }
 
+export async function fetchProfileInfo(token) {
+    return (await apiClient.get('tourists/myProfile', {
+        headers: {
+                'Content-Type': 'application/json',
+                 Authorization: `Bearer ${token}`
+        }
+    })).data;
+}
+
+
+
 export async function getCategories() {
     return (await apiClient.get('activity-categories')).data;
 }
@@ -78,4 +89,16 @@ export const getCompletedToursByTourist = async (touristId) => {
     }
     return await response.json();
 };
+
+export async function updateProfile(updatedData,token) {
+    console.log(token);
+    console.log(updatedData);
+    return (await apiClient.put('tourists/updateMyProfile',updatedData, {   
+        headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+        }
+    })).data
+}
+
 
