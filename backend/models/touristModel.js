@@ -77,28 +77,22 @@ const touristSchema = new Schema(
       type: Number,
       required: false,
       default: 0,
-      immutable: true,
+      //immutable: true,
+    },
+    
+    loyaltyPoints: {
+      type: Number,
+      default: 0,
+    },
+    badgeLevel: {
+      type: String,
+      enum: ['Level 1', 'Level 2', 'Level 3'],
+      default: 'Level 1',
     },
   },
   { timestamps: true }
 );
-  wallet:{
-    type: Number,
-    required: false,
-    default: 0,
-   // immutable: true,
-  },
-  loyaltyPoints: {
-    type: Number,
-    default: 0,
-  },
-  badgeLevel: {
-    type: String,
-    enum: ['Level 1', 'Level 2', 'Level 3'],
-    default: 'Level 1',
-  },
-
-}, { timestamps: true });
+ 
 
 
 

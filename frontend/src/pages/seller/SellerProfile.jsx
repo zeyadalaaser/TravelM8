@@ -336,6 +336,7 @@ export default function sellerProfile() {
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                 <DialogTrigger asChild>
                   <Button className="mt-4">Edit Profile</Button>
+
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
@@ -349,6 +350,9 @@ export default function sellerProfile() {
           <Button className="mt-4 flex items-center" onClick={() => go('/sellerProduct')}>
             <PackageSearch className="mr-2" /> View Products
           </Button>
+
+
+          
         </div>
       </div>
     </div>

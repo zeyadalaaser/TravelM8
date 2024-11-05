@@ -66,12 +66,12 @@ export const updateTouristProfile = async (req, res) => {
 
 
 export const updatePoints = async (req, res) => {
-  const { id } = req.params;
-   // const userId = req.user.userId;
+ // const { id } = req.params;
+    const userId = req.user.userId;
   const { amountPaid } = req.body;
 
   try {
-    const tourist = await Tourist.findById(id);
+    const tourist = await Tourist.findById(userId);
     if (!tourist) {
       return res.status(404).json({ success: false, message: 'Tourist not found' });
     }   
