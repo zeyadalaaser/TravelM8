@@ -35,10 +35,7 @@ export async function getMuseums(query) {
     searchParams.delete('type');
 
     return (await apiClient.get('filterbyTags?' + searchParams.toString())).data;
-  const searchParams = new URLSearchParams(query);
-  searchParams.delete("type");
-
-  return (await apiClient.get("filterbyTags?" + searchParams.toString())).data;
+ 
 }
 
 export async function getItineraries(query) {
@@ -47,11 +44,7 @@ export async function getItineraries(query) {
 
 
     return (await apiClient.get('FilterItineraries?' + searchParams.toString())).data;
-  const searchParams = new URLSearchParams(query);
-  searchParams.delete("type");
-
-  return (await apiClient.get("FilterItineraries?" + searchParams.toString()))
-    .data;
+  
 }
 
 export async function fetchProfileInfo(token) {
@@ -151,18 +144,9 @@ export async function submitComplaint(complaintData, token) {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
         }
-    })).data;
+    })).data;}
 
-export async function submitComplaint(complaintData, token) {
-  return (
-    await apiClient.post("complaints", complaintData, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-  ).data;
-}
+ 
 
 
 

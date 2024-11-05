@@ -8,7 +8,7 @@ import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myCompla
 import { NavBar } from "./components/nav-bar";
 import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound, Award } from "lucide-react";
-import { CircleUserRound, Award } from "lucide-react";
+ 
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 import { FlightsPage } from "./components/flights/flights-page";
 import { HotelsPage } from "./components/hotels/hotels-page";
