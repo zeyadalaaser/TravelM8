@@ -1,7 +1,9 @@
-import mongoose from "mongoose"; //to communicate with the db
+import mongoose from "mongoose"; // to communicate with the db
 import Product from "../models/productModel.js";
 import { createRatingStage } from "../helpers/aggregationHelper.js";
 import axios from "axios";
+
+// Function to create a product
 export const createProduct = async (req, res) => {
   try {
     const { name, image, price, quantity, description } = req.body;
@@ -23,6 +25,7 @@ export const createProduct = async (req, res) => {
   }
 };
 
+// Function to delete a product
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params; // Get the product ID from the request parameters
@@ -42,6 +45,7 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
+// Function to create a populate stage
 const createPopulateStage = (minRating) => {
   const ratingStage = createRatingStage("Product", false, minRating);
   return [
@@ -65,6 +69,7 @@ const createPopulateStage = (minRating) => {
   ];
 };
 
+// Function to get exchange rates
 async function getExchangeRates(base = "USD") {
   const response = await axios.get(
     `https://api.exchangerate-api.com/v4/latest/${base}`
@@ -72,6 +77,7 @@ async function getExchangeRates(base = "USD") {
   return response.data.rates;
 }
 
+// Function to get all products
 export const getAllProducts = async (req, res) => {
   try {
     const {
@@ -111,9 +117,10 @@ export const getAllProducts = async (req, res) => {
       sortCondition[sortBy] = order === "desc" ? -1 : 1;
     }
 
+    // Use createPopulateStage to populate the data
     const aggregationPipeline = [
       { $match: filter },
-      ...populateStage,
+      ...createPopulateStage(minRating),
       ...(sortBy ? [{ $sort: sortCondition }] : []),
     ];
 
@@ -133,6 +140,7 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+// Function to update a product
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -149,25 +157,20 @@ export const updateProduct = async (req, res) => {
       runValidators: true, // Validate the data against the schema
     });
 
-    //law mafeesh product
-    //if (!updatedProduct) {
-    //return res.status(404).json({ message: 'Product not found' });
-    //}
-
     res.status(200).json(updatedProduct);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// Function to get products belonging to the authenticated user
 export const getMyProducts = async (req, res) => {
   const userId = req.user?.userId;
   try {
-    let Places;
-    Places = await Product.find({ sellerId: userId });
-    if (Places.length == 0) res.status(204);
-    else res.status(200).json({ Places });
+    const products = await Product.find({ sellerId: userId });
+    if (products.length === 0) res.status(204).send();
+    else res.status(200).json({ products });
   } catch (error) {
-    res.status(400).json({ message: "enter a valid id" });
+    res.status(400).json({ message: "Enter a valid ID" });
   }
 };

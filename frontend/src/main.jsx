@@ -9,7 +9,7 @@ import FormPage from "@/pages/SignUp/signupTourguide.jsx";
 import FormPageSeller from "@/pages/SignUp/signupSeller.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
-import TourismGovernor from "@/pages/TourismGovernor/TourismGovernorDashboard.jsx";
+import TourismGovernor from "@/pages/TourismGovernor/dashboard.jsx";
 import ActivityCategories from "@/pages/admin/services/ActivityCategories.jsx"; // Ensure this path is correct
 import Admin from "@/pages/admin/services/Admin"; // Import the Admin component
 import TourismGovernor1 from "@/pages/admin/services/TourismGovernor.jsx";
@@ -17,14 +17,6 @@ import DeleteUser from "./pages/admin/deleteUser-page.jsx";
 import PreferenceTag from "./pages/admin/preferenceTag-page.jsx";
 import Dashboard from "./pages/admin/dashboard.jsx";
 import AdvertiserProfile from "./pages/Advertiser/advertiserProfile";
-import AdvertiserActivities from "./pages/Advertiser/advertiserActivities";
-import AdvertiserHomePage from "./pages/Advertiser/advertiserHomePage";
-//import HistoricalPlacesList from '@/pages/TourismGovernor/HistoricalPlacesList.jsx';
-import HistoricalPlaceForm from "@/pages/TourismGovernor/HistoricalPlaceForm.jsx";
-import HistoricalPlaceDetails from "@/pages/TourismGovernor/HistoricalPlaceDetails.jsx";
-//import ProductApp from './pages/admin/ProductApp.jsx'
-//import ProductForm from './pages/admin/ProductForm.jsx'
-//import ProductList from './pages/admin/ProductList.jsx'
 import Product from "./pages/admin/product.jsx";
 import TourGuideProfile from "./pages/TourGuide/TourGuideProfile.jsx";
 import TouristProfile from "./pages/tourist/components/tourist-profile.jsx";
@@ -74,12 +66,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/tourist-page" element={<TouristPage />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
-        <Route path="/advertiserHomePage" element={<AdvertiserHomePage />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
-        <Route
-          path="/advertiserActivities"
-          element={<AdvertiserActivities />}
-        />
         <Route path="/activityForm" element={<ActivityForm />} />
         <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
 
