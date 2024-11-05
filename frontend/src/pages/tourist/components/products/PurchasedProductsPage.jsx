@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card } from "@/components/ui/card";
+import RateProduct from './RateProduct'; 
 
 export default function PurchasedProductsPage({ touristId }) {
     const [purchases, setPurchases] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [ratings, setRatings] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPurchaseId, setCurrentPurchaseId] = useState(null);
 
@@ -32,23 +32,6 @@ export default function PurchasedProductsPage({ touristId }) {
         fetchPurchases();
     }, [touristId]);
 
-    const handleRate = async (purchaseId) => {
-        const { rating, comment } = ratings[purchaseId] || {};
-        if (!rating) {
-            alert("Please select a rating.");
-            return;
-        }
-
-        try {
-            await axios.post(`http://localhost:5001/api/purchases/${purchaseId}/rate`, { rating, comment });
-            alert('Rating submitted successfully!');
-            closeModal(); // Close modal after submission
-        } catch (error) {
-            console.error("Error submitting rating:", error);
-            alert("Failed to submit rating.");
-        }
-    };
-
     const openModal = (purchaseId) => {
         setCurrentPurchaseId(purchaseId);
         setIsModalOpen(true);
@@ -57,66 +40,6 @@ export default function PurchasedProductsPage({ touristId }) {
     const closeModal = () => {
         setIsModalOpen(false);
         setCurrentPurchaseId(null);
-    };
-
-    const Modal = ({ isOpen, onClose, onRate, purchaseId }) => {
-        if (!isOpen) return null;
-
-        const handleRatingChange = (e) => {
-            setRatings({
-                ...ratings,
-                [purchaseId]: { ...ratings[purchaseId], rating: e.target.value }
-            });
-        };
-
-        const handleCommentChange = (e) => {
-            setRatings({
-                ...ratings,
-                [purchaseId]: { ...ratings[purchaseId], comment: e.target.value }
-            });
-        };
-
-        const handleSubmit = () => {
-            onRate(purchaseId);
-            onClose();
-        };
-
-        return (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white p-6 rounded shadow-lg max-w-sm">
-                    <h2 className="text-xl mb-4">Rate this Product</h2>
-                    <label className="block mb-2">Rate this product:</label>
-                    <select 
-                        onChange={handleRatingChange} 
-                        className="border p-2 mb-2 w-full"
-                    >
-                        <option value="">Select a rating</option>
-                        {[1, 2, 3, 4, 5].map(star => (
-                            <option key={star} value={star}>{star} Star{star > 1 ? 's' : ''}</option>
-                        ))}
-                    </select>
-                    <textarea 
-                        placeholder="Leave a comment..." 
-                        onChange={handleCommentChange} 
-                        className="border p-2 mb-2 w-full"
-                    />
-                    <div className="flex justify-end">
-                        <button 
-                            onClick={handleSubmit} 
-                            className="bg-black text-white font-semibold py-2 px-4 rounded mr-2"
-                        >
-                            Submit Rating
-                        </button>
-                        <button 
-                            onClick={onClose} 
-                            className="bg-gray-300 text-black font-semibold py-2 px-4 rounded"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
     };
 
     if (loading) return <p>Loading purchased products...</p>;
@@ -131,21 +54,21 @@ export default function PurchasedProductsPage({ touristId }) {
                     <p className="text-sm text-gray-600 mb-2">Total Price: {purchase.totalPrice}</p>
                     <p className="text-sm text-gray-600 mb-2">Status: {purchase.status}</p>
 
+                    {/* Enhanced Rate Product button with black background */}
                     <button 
                         onClick={() => openModal(purchase._id)} 
-                        className="bg-blue-500 text-white font-semibold py-2 px-4 rounded"
+                        className="bg-black text-white font-semibold py-2 px-4 rounded hover:bg-gray-800 transition duration-200"
                     >
                         Rate Product
                     </button>
                 </Card>
             ))}
 
-            {/* Modal for rating */}
-            <Modal 
+            {/* RateProduct Modal */}
+            <RateProduct 
                 isOpen={isModalOpen} 
-                onClose={closeModal} 
-                onRate={handleRate} 
                 purchaseId={currentPurchaseId} 
+                onClose={closeModal} 
             />
         </div>
     );
