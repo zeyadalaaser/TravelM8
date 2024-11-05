@@ -1,14 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import useRouter from "@/hooks/useRouter"
+import useRouter from "@/hooks/useRouter";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Tag, Package, Activity, MapPin, ArrowRight } from "lucide-react"; // Import MapPin for Tourism Governor icon
+import {
+  Users,
+  Tag,
+  Package,
+  Activity,
+  MapPin,
+  ArrowRight,
+} from "lucide-react"; // Import MapPin for Tourism Governor icon
 
 function AdminDashboard() {
   const [sidebarState, setSidebarState] = useState(false);
@@ -26,7 +39,7 @@ function AdminDashboard() {
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
   };
- 
+
   return (
     <div style={{ display: "flex" }}>
       <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
@@ -44,55 +57,70 @@ function AdminDashboard() {
             {/* Total Users Card */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Users
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalUsers}</div>
-                <p className="text-xs text-muted-foreground">+2.5% from last month</p>
+                <p className="text-xs text-muted-foreground">
+                  +2.5% from last month
+                </p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => navigate('/deleteUser')}>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/deleteUser")}
+                >
                   Go to Users
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardFooter>
             </Card>
 
-
-              {/* Admins Card */}
-              <Card>
+            {/* Admins Card */}
+            <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Admins</CardTitle>
                 <MapPin className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalGovernors}</div>
-                <p className="text-xs text-muted-foreground">+2 new admins this month</p>
+                <p className="text-xs text-muted-foreground">
+                  +2 new admins this month
+                </p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => navigate('/admin/addAdmin')}>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/admin/addAdmin")}
+                >
                   Manage Admins
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardFooter>
             </Card>
 
-            
             {/* Tourism Governors Card */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Tourism Governors</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Tourism Governors
+                </CardTitle>
                 <MapPin className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalGovernors}</div>
-                <p className="text-xs text-muted-foreground">+1 new governor this month</p>
+                <p className="text-xs text-muted-foreground">
+                  +1 new governor this month
+                </p>
               </CardContent>
               <CardFooter>
-
-                <Button className="w-full" onClick={() => navigate('/admin/addTourismGovernor')}>
-
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/admin/addTourismGovernor")}
+                >
                   Manage Governors
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -102,15 +130,24 @@ function AdminDashboard() {
             {/* Other existing cards like Activity Categories, Preference Tags, Total Products */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Activity Categories</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Activity Categories
+                </CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.totalCategories}</div>
-                <p className="text-xs text-muted-foreground">+1 new category this week</p>
+                <div className="text-2xl font-bold">
+                  {stats.totalCategories}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +1 new category this week
+                </p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => navigate('/admin/EditActivityCategories')}>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/admin/EditActivityCategories")}
+                >
                   Manage Categories
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -119,15 +156,22 @@ function AdminDashboard() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Preference Tags</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Preference Tags
+                </CardTitle>
                 <Tag className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalTags}</div>
-                <p className="text-xs text-muted-foreground">+3 new tags this month</p>
+                <p className="text-xs text-muted-foreground">
+                  +3 new tags this month
+                </p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => navigate('/preferenceTag')}>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/preferenceTag")}
+                >
                   Manage Tags
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -136,15 +180,19 @@ function AdminDashboard() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Products
+                </CardTitle>
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stats.totalProducts}</div>
-                <p className="text-xs text-muted-foreground">+12 new products this week</p>
+                <p className="text-xs text-muted-foreground">
+                  +12 new products this week
+                </p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => navigate('/product')}>
+                <Button className="w-full" onClick={() => navigate("/product")}>
                   Manage Products
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -153,21 +201,54 @@ function AdminDashboard() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Complaints</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Complaints
+                </CardTitle>
                 <Package className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stats.totalComplaints}</div>
-                <p className="text-xs text-muted-foreground">+16 new complaints this week</p>
+                <div className="text-2xl font-bold">
+                  {stats.totalComplaints}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +16 new complaints this week
+                </p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" onClick={() => navigate('/viewComplaints')}>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/viewComplaints")}
+                >
                   Manage Complaints
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </CardFooter>
             </Card>
-
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Itineraries
+                </CardTitle>
+                <Package className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {stats.totalComplaints}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  +10 new Itineraries this week
+                </p>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  onClick={() => navigate("/admin/itineraries")}
+                >
+                  Manage Itineraries
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
           </div>
         </div>
         <Footer />
@@ -177,4 +258,3 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
-

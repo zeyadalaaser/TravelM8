@@ -1,18 +1,18 @@
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Separator } from "@/components/ui/separator";
-import { ClearFilters } from "../filters/clear-filters";
-import { DateFilter } from "../filters/date-filter";
-import { PriceFilterTwo } from "../filters/PriceFilterTwo";
-import { SortSelection } from "../filters/sort-selection";
-import ItineraryCard from "@/components/ItineraryCard/ItineraryCard";
-import { SearchBar } from "../filters/search";
-import { getItineraries } from "../../api/apiService";
-import { LanguageFilter } from "./language-filter";
+import { Separator } from "../../components/ui/separator";
+import { ClearFilters } from "../tourist/components/filters/clear-filters";
+import { DateFilter } from "../tourist/components/filters/date-filter";
+import { PriceFilterTwo } from "../tourist/components/filters/PriceFilterTwo";
+import ItineraryCard from "../../components/ItineraryCard/ItineraryCard";
+import { SearchBar } from "../tourist/components/filters/search";
+import { getItineraries } from "../tourist/api/apiService";
+import { LanguageFilter } from "../tourist/components/itineraries/language-filter";
+import { SortSelection } from "../tourist/components/filters/sort-selection";
 import axios from "axios";
 
-export function ItinerariesPage() {
+export function AdminItinerariesPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
@@ -20,10 +20,6 @@ export function ItinerariesPage() {
   const [exchangeRates, setExchangeRates] = useState({});
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
 
-  // Check if the user is a tourist (i.e., not an admin)
-  const isAdmin = false; // Set to `true` for admin, `false` for tourists
-
-  // Fetch exchange rates on mount
   useEffect(() => {
     async function fetchExchangeRates() {
       try {
@@ -38,9 +34,14 @@ export function ItinerariesPage() {
     fetchExchangeRates();
   }, []);
 
+  // Modify the call to fetch all itineraries for the admin
   const fetchItineraries = useDebouncedCallback(async () => {
     const queryParams = new URLSearchParams(location.search);
-    queryParams.set("isAdmin", isAdmin);
+
+    // Add the isAdmin flag to the query for admin users
+    queryParams.set("isAdmin", true);
+
+    // Convert prices to USD using exchange rate for server-side filtering
     const minPriceUSD = priceRange.min
       ? priceRange.min / (exchangeRates[currency] || 1)
       : "";
@@ -48,22 +49,15 @@ export function ItinerariesPage() {
       ? priceRange.max / (exchangeRates[currency] || 1)
       : "";
 
+    // Update queryParams with converted minPrice and maxPrice
     if (minPriceUSD) queryParams.set("minPrice", minPriceUSD);
     if (maxPriceUSD) queryParams.set("maxPrice", maxPriceUSD);
     queryParams.set("currency", currency);
 
     try {
-      let fetchedItineraries = await getItineraries(
+      const fetchedItineraries = await getItineraries(
         `?${queryParams.toString()}`
       );
-
-      // Filter out flagged itineraries if the user is a tourist
-      if (!isAdmin) {
-        fetchedItineraries = fetchedItineraries.filter(
-          (itinerary) => !itinerary.flagged
-        );
-      }
-
       setItineraries(fetchedItineraries);
     } catch (error) {
       console.error("Error fetching itineraries:", error);
@@ -78,11 +72,14 @@ export function ItinerariesPage() {
     const selectedCurrency = e.target.value;
     setCurrency(selectedCurrency);
 
+    // Reset query params with new currency
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", selectedCurrency);
     navigate(`${location.pathname}?${queryParams.toString()}`, {
       replace: true,
     });
+
+    // Trigger a new fetch with the updated currency
     fetchItineraries();
   };
 
@@ -107,7 +104,7 @@ export function ItinerariesPage() {
           <select value={currency} onChange={handleCurrencyChange}>
             {Object.keys(exchangeRates).map((cur) => (
               <option key={cur} value={cur}>
-                {`${cur} `}
+                {`${cur}`}
               </option>
             ))}
           </select>
@@ -136,7 +133,7 @@ export function ItinerariesPage() {
           {itineraries.length > 0 ? (
             <ItineraryCard
               itineraries={itineraries}
-              isTourist={!isAdmin}
+              isAdmin={true} // Enable flagging
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
@@ -148,3 +145,5 @@ export function ItinerariesPage() {
     </>
   );
 }
+
+export default AdminItinerariesPage;

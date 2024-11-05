@@ -32,7 +32,7 @@ import Itineraries from "@/pages/TourGuide/myItineraries.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
-
+import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -77,8 +77,9 @@ createRoot(document.getElementById("root")).render(
           element={<AdvertiserActivities />}
         />
         <Route path="/profileTemplate" element={<ProfileTemplate />} />
-{/*         <Route path="/tourguideHomePage" element={<TourGuideHomePage />} />
+        {/*         <Route path="/tourguideHomePage" element={<TourGuideHomePage />} />
         <Route path="/itinerary" element={<Itinerary />} /> */}
+        <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

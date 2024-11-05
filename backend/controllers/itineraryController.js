@@ -26,21 +26,32 @@ export const createItinerary = async (req, res) => {
 };
 
 // read/retrieve all itineraries
+// read/retrieve all itineraries
 export const readItineraries = async (req, res) => {
   try {
-    const { upcoming } = req.query;
+    const { upcoming, isAdmin } = req.query;
     const filters = {};
 
-    if (upcoming === "true")
-      filters["availableSlots.startTime"] = { $gte: new Date() };
+    // Apply flagged filter for non-admin users
+    if (isAdmin !== "true") {
+      filters.flagged = false; // Only show unflagged itineraries to non-admin users
+    }
 
+    // Apply the upcoming filter, if specified
+    if (upcoming === "true") {
+      filters["availableSlots.startTime"] = { $gte: new Date() };
+    }
+
+    // Fetch itineraries with the specified filters
     const itineraries = await Itinerary.find(filters)
       .populate("activities")
       .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
+
     res.status(200).json(itineraries);
   } catch (error) {
+    console.error("Error fetching itineraries:", error.message);
     res.status(500).json({
       message: "Error fetching itineraries",
       error: error.message,
@@ -167,10 +178,7 @@ export const filterItineraries = async (req, res) => {
     // Fetch exchange rates for price conversion
     const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
-
     const filters = {};
-
-    // Additional filters based on request params
     if (search) filters.name = { $regex: search, $options: "i" };
     if (startDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };
@@ -308,5 +316,27 @@ export const searchItems2 = async (req, res) => {
       message: "Error occurred while searching",
       error: error.message,
     });
+  }
+};
+export const flagItinerary = async (req, res) => {
+  const { id } = req.params;
+  console.log("ittt");
+  try {
+    const itinerary = await Itinerary.findByIdAndUpdate(
+      id,
+      { flagged: true }, // Set flagged to true
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Itinerary flagged as inappropriate", itinerary });
+  } catch (error) {
+    console.error("Error flagging itinerary:", error);
+    res.status(500).json({ message: "Error flagging itinerary" });
   }
 };
