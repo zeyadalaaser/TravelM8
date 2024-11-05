@@ -69,7 +69,7 @@ export default function TouristPage() {
   const page = searchParams.get("type");
 
   return (
-    <div className="container mx-auto p-4 overflow-y-scroll min-h-[101vh]">
+    <div className="container mx-auto p-4 min-h-[101vh]">
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
       <div className="flex justify-between items-center">
         <NavBar onComplaintClick={() => setShowComplaintForm(true)} onRedeemClick={() => setShowRedeemPoints(true)} />
