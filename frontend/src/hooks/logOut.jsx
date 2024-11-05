@@ -25,7 +25,7 @@ const Logout = () => {
     <AlertDialog>
     <AlertDialogTrigger asChild>
         <Button variant="outline" size="sm" className="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
-            <LogOut className="mr-3" />Logout
+            <LogOut className="mr-3" />Log out
         </Button>
     </AlertDialogTrigger>
     <AlertDialogContent>
