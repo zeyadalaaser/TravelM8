@@ -19,8 +19,7 @@ import pendingUserRoute from "./routes/pendingUserRoute.js";
 import ratingRoute from './routes/ratingRoute.js';
 import loginRoute from "./routes/loginRoute.js";
 import complaintRoute from "./routes/complaintsRoute.js";
-
-
+import uploadRoutes from './routes/uploadRoutes.js';
 
 dotenv.config({path:'../.env'});
 
@@ -59,7 +58,9 @@ app.use("/api", itineraryRoute);
 app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
 app.use('/api/auth', loginRoute);
-
+// Static route to serve uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api', uploadRoutes);
 
 app.listen(PORT, () => {
   connectDB();
