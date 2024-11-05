@@ -59,15 +59,15 @@ const tourGuideSchema = new mongoose.Schema({
   timestamps: true 
 });
 
-// tourGuideSchema.pre('save', async function (next) {
-//   if (!this.isModified('password')) {
-//       next();
-//   }
-//   const salt = await bcrypt.genSalt(10);
-//   this.password = bcrypt.hash(this.password, salt);
-//   next();
-//   }
-// );  
+tourGuideSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+      next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = bcrypt.hash(this.password, salt);
+  next();
+  }
+);  
 
 const TourGuide= mongoose.model("TourGuide", tourGuideSchema);
 export default TourGuide;
