@@ -11,10 +11,7 @@ import Testimonials from "./components/Testimonials";
 import scrollreveal from "scrollreveal";
 import Login from "./pages/signIn/login";
 import TouristRegistration from './pages/SignUp/signupTourist';
-import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard";
 
-import AdvertiserActivities from "./pages/Advertiser/advertiserActivities";
-import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard";
 
 
 export default function App() {
@@ -50,6 +47,19 @@ export default function App() {
   };
 
   return (
-    <AdvertiserDashboard/>
+    <div style={{ display: "flex" }}>
+      <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
+      <div style={{ transition: "margin-left 0.3s ease", marginLeft: sidebarState ? "250px" : "0", width: "100%" }}>
+        <ScrollToTop />
+        <Navbar toggleSidebar={toggleSidebar} />
+        {/* Outlet for nested routing */}
+        <Outlet />
+        <Hero />
+        <Services />
+        <Recommend />
+        <Testimonials />
+        <Footer />
+      </div>
+    </div>
   );
 }
