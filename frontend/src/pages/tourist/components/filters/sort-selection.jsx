@@ -1,7 +1,16 @@
 import useRouter from '@/hooks/useRouter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export function SortSelection() {
+const defaultOptions = [
+    { value: "price-asc", description: "Price: Low to High" },
+    { value: "price-desc", description: "Price: High to High" },
+    { value: "averageRating-desc", description: "Rating" },
+];
+
+export function SortSelection({ options }) {
+
+    if (!options)
+        options = defaultOptions;
 
     const { searchParams, navigate, location } = useRouter();
 
@@ -33,9 +42,11 @@ export function SortSelection() {
             </SelectTrigger>
             <SelectContent>
                 <SelectItem value="featured-?">Featured</SelectItem>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                <SelectItem value="averageRating-desc">Rating</SelectItem>
+                {
+                    options.map((option, index) => (
+                        <SelectItem key={index} value={option.value}>{option.description}</SelectItem>
+                    ))
+                }
             </SelectContent>
         </Select>
     )

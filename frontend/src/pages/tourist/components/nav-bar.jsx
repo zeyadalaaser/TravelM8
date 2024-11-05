@@ -7,6 +7,8 @@ const pages = [
     { label: "Itineraries", value: "itineraries" },
     { label: "Museums & Historical Places", value: "museums" },
     { label: "Products", value: "products" },
+    { label: "Flights", value: "flights" },
+    { label: "Hotels", value: "hotels" },
     { label: "View My Complaints", value: "complaints" },
     { label: "Completed Tours", value: "completed-tours" },
 ];
@@ -16,7 +18,7 @@ export function NavBar({onComplaintClick,onRedeemClick}) { // Accept onComplaint
     const currentPage = searchParams.get("type");
 
     return (
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-1.5 mb-4">
             {pages.map((page) => (
                 <Button
                     key={page.value}
