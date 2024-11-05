@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Bell, ChevronDown, Eye, EyeOff, User, X, CreditCard, Tag, Star, Shield, Layout, List, Settings, Map, TagsIcon, DollarSign } from 'lucide-react'
 import {Input} from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {DatePickerWithRange} from "@/components/ui/date-picker-with-range.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { fetchProfileInfo, updateProfile, changePassword } from '../api/apiService';
+import Logout from "@/hooks/logOut.jsx";
 
 const TouristProfilePage = () => {
 
@@ -406,6 +406,7 @@ const TouristProfilePage = () => {
               <Settings className="mr-3" />
               Security & Settings
             </button>
+              <Logout />
             </nav>
     </aside>
 

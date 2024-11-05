@@ -22,7 +22,6 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";  
 import * as services from "@/pages/TourismGovernor/services.js";
-import { Copy } from "lucide-react";
 import Logout from "@/hooks/logOut.jsx";
 
 
