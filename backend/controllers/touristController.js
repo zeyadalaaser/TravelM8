@@ -1,6 +1,6 @@
 import Tourist from '../models/touristModel.js'; 
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
-import bcrypt from 'bcryptjs';
+
 
 
 
@@ -26,11 +26,9 @@ export const createTourist = async(req,res) => {
 export const updateTouristProfile = async (req, res) => {
    const userId = req.user.userId;
    try{
-       // Check if the password is being updated and hash it if so
     if (req.body.password) {
       req.body.password = await hashPassword(req.body.password);
     }
-
       const updatedTourist = await Tourist.findByIdAndUpdate(
          userId,        
          req.body,         

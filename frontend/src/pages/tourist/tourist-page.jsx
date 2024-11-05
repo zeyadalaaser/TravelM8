@@ -1,6 +1,5 @@
 import useRouter from "@/hooks/useRouter"
 import { useEffect, useState } from "react";
-
 import { ActivitiesPage } from "./components/activities/activities-page";
 import { ProductsPage } from "./components/products/products-page";
 import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myComplaints.jsx";
@@ -9,6 +8,7 @@ import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound , Award} from "lucide-react";
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 import { ComplaintForm } from "./components/complaints/complaint-form"
+import { CompletedToursPage } from "./components/itineraries/CompletedToursPage"; 
 import {RedeemPoints}  from "./components/Points/redeemPoints"
 
 
@@ -93,6 +93,8 @@ export default function TouristPage() {
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
       {page === "products" && <ProductsPage />}
+      {page === "complaints" && <MyComplaintsPage />}
+      {page === "completed-tours" && <CompletedToursPage />}
       {page === "complaints" && <MyComplaintsPage />}   
       {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />

@@ -89,7 +89,7 @@ export default function AdvertiserActivities() {
 const handleUpdateActivity = async (updatedData) => {
   setLoading(true);
   try {
-    const response = await fetch(`http://localhost:5001/api/activities/${updatedData._id}`, {
+    const response = await fetch(`http://localhost:5001/api/activities/${updatedData.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

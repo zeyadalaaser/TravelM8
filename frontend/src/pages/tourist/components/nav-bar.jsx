@@ -8,6 +8,7 @@ const pages = [
     { label: "Museums & Historical Places", value: "museums" },
     { label: "Products", value: "products" },
     { label: "View My Complaints", value: "complaints" },
+    { label: "Completed Tours", value: "completed-tours" },
 ];
 
 export function NavBar({onComplaintClick,onRedeemClick}) { // Accept onComplaintClick as a prop

@@ -22,7 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getMyItineraries } from "@/services/itirenaryService.js"; // Import itinerary service
+import { getMyItineraries } from "@/pages/admin/services/itirenaryService.js"; // Import itinerary service
 
 const ItineraryPage = () => {
   const [sidebarState, setSidebarState] = useState(false);
