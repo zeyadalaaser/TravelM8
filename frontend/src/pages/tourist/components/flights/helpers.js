@@ -41,6 +41,6 @@ export function itineraryToFlight(itinerary) {
         outbound,
         inbound,
         nights,
-        price: itinerary["price"]["amount"]
+        price: Math.round(Number(itinerary["price"]["amount"]))
     };
 }
