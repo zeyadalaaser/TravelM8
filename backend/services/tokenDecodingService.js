@@ -1,4 +1,3 @@
-
 import jwt from 'jsonwebtoken';
 const secret = "a$T8#fGz!x7%kH4q";
 
