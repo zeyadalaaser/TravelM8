@@ -8,6 +8,7 @@ import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound } from "lucide-react";
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 import { ComplaintForm } from "./components/complaint-form"
+import { FlightsPage } from "./components/flights/flights-page";
 
 export default function TouristPage() {
 
@@ -59,6 +60,7 @@ export default function TouristPage() {
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
       {page === "products" && <ProductsPage />}
+      {page === "flights" && <FlightsPage />}
       {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />
       )}

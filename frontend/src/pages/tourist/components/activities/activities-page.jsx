@@ -47,7 +47,7 @@ export function ActivitiesPage() {
             </div>
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">
-                    <div className="flex h-5 items-center space-x-4 text-sm">
+                    <div className="flex h-10 items-center space-x-4 text-sm">
                         <div>{activities.length} results</div>
                         <ClearFilters />
                     </div>
