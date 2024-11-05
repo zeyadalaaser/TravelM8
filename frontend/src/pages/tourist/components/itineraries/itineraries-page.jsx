@@ -4,9 +4,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { DateFilter } from "../filters/date-filter";
-import { PriceFilterTwo } from "../filters/PriceFilterTwo"; // Updated import for PriceFilterTwo
+import { PriceFilterTwo } from "../filters/PriceFilterTwo";
 import { SortSelection } from "../filters/sort-selection";
-import { Itineraries } from "./itineraries";
+import ItineraryCard from "@/components/ItineraryCard/ItineraryCard";
 import { SearchBar } from "../filters/search";
 import { getItineraries } from "../../api/apiService";
 import { LanguageFilter } from "./language-filter";
@@ -19,6 +19,9 @@ export function ItinerariesPage() {
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+
+  // Check if the user is a tourist (i.e., not an admin)
+  const isAdmin = false; // Set to `true` for admin, `false` for tourists
 
   // Fetch exchange rates on mount
   useEffect(() => {
@@ -37,8 +40,7 @@ export function ItinerariesPage() {
 
   const fetchItineraries = useDebouncedCallback(async () => {
     const queryParams = new URLSearchParams(location.search);
-
-    // Convert prices to USD using exchange rate for server-side filtering
+    queryParams.set("isAdmin", isAdmin);
     const minPriceUSD = priceRange.min
       ? priceRange.min / (exchangeRates[currency] || 1)
       : "";
@@ -46,15 +48,22 @@ export function ItinerariesPage() {
       ? priceRange.max / (exchangeRates[currency] || 1)
       : "";
 
-    // Update queryParams with converted minPrice and maxPrice
     if (minPriceUSD) queryParams.set("minPrice", minPriceUSD);
     if (maxPriceUSD) queryParams.set("maxPrice", maxPriceUSD);
     queryParams.set("currency", currency);
 
     try {
-      const fetchedItineraries = await getItineraries(
+      let fetchedItineraries = await getItineraries(
         `?${queryParams.toString()}`
       );
+
+      // Filter out flagged itineraries if the user is a tourist
+      if (!isAdmin) {
+        fetchedItineraries = fetchedItineraries.filter(
+          (itinerary) => !itinerary.flagged
+        );
+      }
+
       setItineraries(fetchedItineraries);
     } catch (error) {
       console.error("Error fetching itineraries:", error);
@@ -69,14 +78,11 @@ export function ItinerariesPage() {
     const selectedCurrency = e.target.value;
     setCurrency(selectedCurrency);
 
-    // Reset query params with new currency
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", selectedCurrency);
     navigate(`${location.pathname}?${queryParams.toString()}`, {
       replace: true,
     });
-
-    // Trigger a new fetch with the updated currency
     fetchItineraries();
   };
 
@@ -85,15 +91,10 @@ export function ItinerariesPage() {
   };
 
   const resetFilters = () => {
-    // Reset price range, currency, and itineraries
     setPriceRange({ min: "", max: "" });
     setCurrency("USD");
     setItineraries([]);
-
-    // Remove all query parameters
     navigate(location.pathname, { replace: true });
-
-    // Trigger a new fetch with default filters
     fetchItineraries();
   };
 
@@ -106,7 +107,7 @@ export function ItinerariesPage() {
           <select value={currency} onChange={handleCurrencyChange}>
             {Object.keys(exchangeRates).map((cur) => (
               <option key={cur} value={cur}>
-                {`${cur} - ${cur}`}
+                {`${cur} `}
               </option>
             ))}
           </select>
@@ -133,8 +134,9 @@ export function ItinerariesPage() {
             <SortSelection />
           </div>
           {itineraries.length > 0 ? (
-            <Itineraries
+            <ItineraryCard
               itineraries={itineraries}
+              isTourist={!isAdmin}
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />

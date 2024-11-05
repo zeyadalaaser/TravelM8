@@ -38,8 +38,13 @@ export function ProductsPage() {
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
 
-    const products = await getProducts(`?${queryParams.toString()}`);
-    setProducts(products);
+    try {
+      const fetchedProducts = await getProducts(`?${queryParams.toString()}`);
+      console.log("Fetched products:", fetchedProducts); // Log for debugging
+      setProducts(fetchedProducts);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
   }, 200);
 
   useEffect(() => {

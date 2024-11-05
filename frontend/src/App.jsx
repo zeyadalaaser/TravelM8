@@ -13,6 +13,7 @@ import Login from "./pages/signIn/login";
 import TouristRegistration from './pages/SignUp/signupTourist';
 
 
+
 export default function App() {
   // State to manage sidebar visibility
   const [sidebarState, setSidebarState] = useState(false);

@@ -1,6 +1,5 @@
 import useRouter from "@/hooks/useRouter"
 import { useEffect, useState } from "react";
-
 import { ActivitiesPage } from "./components/activities/activities-page";
 import { ProductsPage } from "./components/products/products-page";
 import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myComplaints.jsx";
@@ -9,6 +8,9 @@ import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound } from "lucide-react";
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 import { ComplaintForm } from "./components/complaints/complaint-form"
+import { CompletedToursPage } from "./components/itineraries/CompletedToursPage"; 
+import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
+
 
 export default function TouristPage() {
 
@@ -48,19 +50,16 @@ export default function TouristPage() {
 
   return (
     <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
-      <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
-      <div className="flex justify-between">
-      <NavBar onComplaintClick={() => setShowComplaintForm(true)} />
-      <CircleUserRound
-            className="cursor-pointer h-10 w-10" 
-            onClick={() => navigate('/tourist-profile')}
-        />
+      <DashboardsNavBar profilePageString="/tourist-profile"/>
+      <div className="flex">
+        <NavBar onComplaintClick={() => setShowComplaintForm(true)} />
       </div>
       {page === "activities" && <ActivitiesPage />}
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
       {page === "products" && <ProductsPage />}
       {page === "complaints" && <MyComplaintsPage />}
+      {page === "completed-tours" && <CompletedToursPage />}
       {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />
       )}

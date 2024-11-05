@@ -8,10 +8,11 @@ import mongoose from "mongoose";
 
 export const createItinerary = async (req, res) => {
   try {
-    const newItineraryData = new Itinerary({
-      ...req.body,
-      tourGuideId: req.user.userId,
-    });
+    // const newItineraryData = new Itinerary({
+    //   ...req.body,
+    //   tourGuideId: req.user.userId,
+    // });
+    const newItineraryData = new Itinerary(req.body);
     await newItineraryData.save();
     res.status(201).json({
       message: "Itinerary added successfully",
@@ -28,25 +29,45 @@ export const createItinerary = async (req, res) => {
 // read/retrieve all itineraries
 export const readItineraries = async (req, res) => {
   try {
-    const { upcoming } = req.query;
+    const { upcoming, isAdmin } = req.query;
     const filters = {};
 
-    if (upcoming === "true")
-      filters["availableSlots.startTime"] = { $gte: new Date() };
+    // Apply flagged filter for non-admin users
+    if (isAdmin !== "true") {
+      filters.flagged = false; // Only show unflagged itineraries to non-admin users
+    }
 
+    // Apply the upcoming filter, if specified
+    if (upcoming === "true") {
+      filters["availableSlots.startTime"] = { $gte: new Date() };
+    }
+
+    // Fetch itineraries with the specified filters
     const itineraries = await Itinerary.find(filters)
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
+
     res.status(200).json(itineraries);
   } catch (error) {
+    console.error("Error fetching itineraries:", error.message);
     res.status(500).json({
       message: "Error fetching itineraries",
       error: error.message,
     });
   }
 };
+
+export const fetchItinerary = async (req,res) => {
+  const id = req.params.id;
+  try{
+    const itinerary = await Itinerary.findById(id)
+      .populate("tags")
+      .populate("tourGuideId");
+    return res.status(200).json(itinerary);
+  } catch (error) {
+    return res.status(400).json({ message: "Error", error: error.message });
+  }
+}
 
 //TourGuide only
 export const getMyItineraries = async (req, res) => {
@@ -56,8 +77,6 @@ export const getMyItineraries = async (req, res) => {
       return res.status(404).json({ message: "Enter a valid id" });
     }
     const itineraries = await Itinerary.find({ tourGuideId })
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
     if (itineraries.length == 0)
@@ -75,8 +94,6 @@ export const updateItinerary = async (req, res) => {
     const updatedItinerary = await Itinerary.findByIdAndUpdate(id, req.body, {
       new: true,
     })
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
 
@@ -126,7 +143,7 @@ export const deleteItinerary = async (req, res) => {
         .status(400)
         .json({ message: "Cannot delete itinerary with existing bookings" });
     } else {
-      const deletedItinerary = await Itinerary.findByIdAndDelete(id);
+      await Itinerary.findByIdAndDelete(id);
     }
 
     return res.status(200).json({ message: "Itinerary deleted successfully" });
@@ -167,10 +184,7 @@ export const filterItineraries = async (req, res) => {
     // Fetch exchange rates for price conversion
     const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
-
     const filters = {};
-
-    // Additional filters based on request params
     if (search) filters.name = { $regex: search, $options: "i" };
     if (startDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };
@@ -308,5 +322,27 @@ export const searchItems2 = async (req, res) => {
       message: "Error occurred while searching",
       error: error.message,
     });
+  }
+};
+export const flagItinerary = async (req, res) => {
+  const { id } = req.params;
+  console.log("ittt");
+  try {
+    const itinerary = await Itinerary.findByIdAndUpdate(
+      id,
+      { flagged: true }, // Set flagged to true
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Itinerary flagged as inappropriate", itinerary });
+  } catch (error) {
+    console.error("Error flagging itinerary:", error);
+    res.status(500).json({ message: "Error flagging itinerary" });
   }
 };

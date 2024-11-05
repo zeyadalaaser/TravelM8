@@ -1,4 +1,3 @@
-
 import jwt from 'jsonwebtoken';
 const secret = "a$T8#fGz!x7%kH4q";
 
@@ -13,12 +12,14 @@ const verifyToken = (req, res, next) => {
     if (err) {
       return res.status(403).json({ message: 'Token is not valid' });
     }
+    // console.log('Decoded Token:', decoded); 
 
     // Attach user info to the request object
     req.user = {
       userId: decoded.userId, // Extract userId from the payload
       role: decoded.role       // Extract role from the payload
     };
+    // console.log('req.user:', req.user); 
 
     // Call next() to proceed to the next middleware or route handler
     next();
