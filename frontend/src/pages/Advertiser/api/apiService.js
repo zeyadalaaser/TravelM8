@@ -11,20 +11,12 @@ const apiClient = axios.create({
     },
 });
 
-// Fetch all products with optional query parameters
-export async function getProducts(query = '') {
-    return (await apiClient.get(`products${query}`)).data;
-}
 
-// Fetch all product categories
-export async function getCategories() {
-    return (await apiClient.get('activity-categories')).data;
-}
 
 // Fetch profile info
 export async function fetchProfileInfo() {
     try {
-        const response = await apiClient.get("sellers/myProfile");
+        const response = await apiClient.get("advertisers/myProfile");
         return response.data;
     } catch (error) {
         console.error('Error fetching profile info:', error);
@@ -35,7 +27,7 @@ export async function fetchProfileInfo() {
 // Update profile info
 export async function updateProfile(updatedData) {
     try {
-        const response = await apiClient.put("sellers/updateMyProfile", updatedData);
+        const response = await apiClient.put("advertisers/updateMyProfile", updatedData);
         return response.data;
     } catch (error) {
         console.error('Error updating profile info:', error);
@@ -44,7 +36,7 @@ export async function updateProfile(updatedData) {
 }
 export async function changePassword(passwordData) {
     return (
-      await apiClient.post("sellers/changepassword", passwordData)
+      await apiClient.post("advertisers/changepassword", passwordData)
     ).data;
   }
   
