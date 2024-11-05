@@ -4,7 +4,7 @@ import {Input} from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {DatePickerWithRange} from "@/components/ui/date-picker-with-range.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { fetchProfileInfo, updateProfile } from '../api/apiService';
+import { fetchProfileInfo, updateProfile, changePassword } from '../api/apiService';
 
 const TouristProfilePage = () => {
 
@@ -257,12 +257,10 @@ const TouristProfilePage = () => {
                 <h2 className="text-xl font-semibold mb-4">Sign-in details</h2>
                 <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Email address</label>
+                      <label className="block text-sm font-medium text-gray-700">Username</label>
                       <Input 
-                      name="email"
-                      onChange={handleInputChange}
-                      type="email" 
-                      value={profile ? profile.email : ''} 
+                      readOnly
+                      value={profile ? profile.username : 'null'} 
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
                     </div>
                   <div>
@@ -270,7 +268,7 @@ const TouristProfilePage = () => {
                     <Input 
                     name="password"
                     type="password" 
-                    value="********" 
+                    value={profile ? profile.password : 'null'} 
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" readOnly />
                   </div>
                 </div>
@@ -280,7 +278,7 @@ const TouristProfilePage = () => {
                       className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                       onClick={() => setIsPasswordModalOpen(true)}
                     >
-                      Update Login Info
+                      Change Password
                     </button>
                   </div>
           </div>

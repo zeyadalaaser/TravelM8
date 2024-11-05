@@ -12,6 +12,8 @@ export async function getActivities(query) {
   return (await apiClient.get("activities?" + searchParams.toString())).data;
 }
 
+
+
 export async function getProducts(query) {
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
@@ -81,6 +83,20 @@ export async function submitComplaint(complaintData, token) {
     })
   ).data;
 }
+
+
+
+export async function changePassword(passwordData, token) {
+  return (
+    await apiClient.post("tourists/changepassword", passwordData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data;
+}
+
 
 export const getCompletedToursByTourist = async (touristId) => {
   const response = await fetch(
