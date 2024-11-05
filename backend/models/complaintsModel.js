@@ -8,6 +8,14 @@ const complaintsSchema = new mongoose.Schema({
         required: true,
         index: true,
     },
+
+    status: {
+        type: String,
+        required: true,
+        enum: ["Pending","Resolved"], //list of valid types
+        default: "Pending",
+    },
+
     body: {
         type: String,
         required: true,

@@ -8,9 +8,10 @@ const pages = [
     { label: "Museums & Historical Places", value: "museums" },
     { label: "Products", value: "products" },
     { label: "Flights", value: "flights" },
+    { label: "View My Complaints", value: "complaints" },
 ];
 
-export function NavBar({ onComplaintClick }) { // Accept onComplaintClick as a prop
+export function NavBar({onComplaintClick,onRedeemClick}) { // Accept onComplaintClick as a prop
     const { location, searchParams, navigate } = useRouter();
     const currentPage = searchParams.get("type");
 
@@ -36,6 +37,14 @@ export function NavBar({ onComplaintClick }) { // Accept onComplaintClick as a p
                 onClick={onComplaintClick} // Trigger the complaint form
             >
                 File a Complaint
+            </Button>
+
+            <Button
+                variant="ghost"  
+                className="rounded-full py-2 px-4 border-[1px] border-transparent"
+                onClick={onRedeemClick}  
+            >
+                Redeem Points
             </Button>
         </div>
     );

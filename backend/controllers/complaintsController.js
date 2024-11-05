@@ -21,6 +21,20 @@ export const createComplaint = async (req, res) => {
     }
 };
 
+export const getMyComplaints = async (req, res) => {
+    const userId = req.user?.userId;
+    try {
+      let complaints;
+      complaints = await Complaints.find({ touristId: userId });
+      if (complaints.length == 0)
+        res.status(204);
+      else
+        res.status(200).json({ complaints });
+    } catch (error) {
+      res.status(400).json({ message: "enter a valid id" });
+    }
+  };
+
   export const getComplaints = async (req, res) => {
    
     try{
