@@ -20,7 +20,6 @@ const pdfDetails2Schema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['Advertiser', 'Aeller', 'Tourguide'],  // Ensure the type is one of these values
   },
 });
 
