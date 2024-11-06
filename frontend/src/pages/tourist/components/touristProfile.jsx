@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Bell, ChevronDown, Eye, EyeOff, User, X, CreditCard, Tag, Star, Shield, Layout, List, Settings, Map, TagsIcon, DollarSign } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, User, X, CreditCard, Tag, Star, Shield, Layout, List, Settings, Map, TagsIcon, DollarSign, HeartCrack } from 'lucide-react'
 import {Input} from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -410,7 +410,7 @@ const TouristProfilePage = () => {
               className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
               onClick={() => setShowDialog(true)}
             >
-              <User className="mr-3" />
+              <HeartCrack className="mr-3" />
               Delete My account
             </button>
             {showDialog && (
@@ -434,6 +434,7 @@ const TouristProfilePage = () => {
           </div>
         </div>
       )}
+      <Logout/>
             </nav>
     </aside>
 
