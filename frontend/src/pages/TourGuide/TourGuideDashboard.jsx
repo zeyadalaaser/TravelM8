@@ -10,16 +10,25 @@ const TourGuideDashboard = () => {
   const navigate = useNavigate();
 
   const [itineraries, setItineraries] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
-
+  const refreshItineraries = () => {
+      setRefresh((prev) => !prev); // Toggles to trigger a refresh
+  };
+  
   const getItineraries = useDebouncedCallback(async () => {
     const response = await fetch('http://localhost:5001/api/FilterItineraries')
     setItineraries(await response.json());
-  }, 200);
+  }, 500);
 
   useEffect(() => {
       getItineraries();
-  }, []); 
+  }, [refresh]);
+
+
+  // useEffect(() => {
+  //     getItineraries();
+  // }, []); 
 
 
   return (
@@ -34,7 +43,7 @@ const TourGuideDashboard = () => {
                 <Plus className="mr-2 h-4 w-4" /> Create Itinerary
               </Button>
             </div>
-            <ItineraryCard itineraries={itineraries} isTourGuide={true} />
+            <ItineraryCard itineraries={itineraries} onRefresh={refreshItineraries} isTourGuide={true} />
           </div>
         </div>
       </div>

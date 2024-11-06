@@ -21,6 +21,7 @@ export default function ItineraryCard({
   isTourist,
   currency,
   exchangeRate,
+  onRefresh,
   isTourGuide,
 }) {
   const [isDialogOpen, setDialogOpen] = useState(false);
@@ -41,16 +42,44 @@ export default function ItineraryCard({
         }
       );
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const data = await response.json();
+        alert(data.message); 
+        return;       
       }
-
+      await onRefresh();
+      alert("Itinerary Deleted successfully");
       console.log("Success:", response);
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-  const handleBook = async (id) => {};
+  const handleActivationToggle = async (id, isBookingOpen) => {
+    const state = isBookingOpen?"Deactivated":"Activated";
+    try {
+      const response = await fetch(`http://localhost:5001/api/itineraries/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json", // Add the Content-Type header
+          },
+          body: JSON.stringify({ isBookingOpen: !isBookingOpen }),
+        }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.message); 
+        return;       
+      }
+      onRefresh();
+      alert(`Itinerary ${state} successfully`);
+      console.log("Success:", response);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  const handleBook = async (id) => {}; 
 
   const handleFlagItinerary = async (itineraryId) => {
     try {
@@ -73,12 +102,31 @@ export default function ItineraryCard({
                   <h3 className="text-xl font-semibold mb-2">
                     {itinerary.name}
                   </h3>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleViewTimeline(itinerary)}
-                  >
-                    View Timeline
-                  </Button>
+                  <div className="flex items-center gap-2 ">
+                      {isTourGuide && itinerary.isBookingOpen && 
+                          <Button
+                            className="min-w-[70px] hover:bg-red-700"
+                            variant = "destructive"
+                            onClick={() => handleActivationToggle(itinerary._id, itinerary.isBookingOpen)}
+                          >
+                            Deactivate Itinerary
+                          </Button>
+                      }
+                      {isTourGuide && !itinerary.isBookingOpen && 
+                          <Button
+                            className="min-w-[70px] hover:bg-green-700 bg-green-500"
+                            onClick={() => handleActivationToggle(itinerary._id, false)}
+                          >
+                            {itinerary.isBookingOpen ? 'Deactivate Itinerary' : 'Activate Itinerary'}
+                          </Button>
+                      }
+                    <Button
+                      variant="outline"
+                      onClick={() => handleViewTimeline(itinerary)}
+                    >
+                      View Timeline
+                    </Button>
+                    </div>      
                 </div>
                 <div className="flex items-center mb-2">
                   <Stars rating={itinerary.averageRating} />
@@ -161,12 +209,15 @@ export default function ItineraryCard({
                   {isTourGuide && (
                     <div className="flex items-center gap-2">
                       <Button
+                        className = "hover:bg-red-700"
                         onClick={() => handleDelete(itinerary._id)}
                         variant="destructive"
                       >
                         Delete
                       </Button>
                       <Button
+                        variant="secondary"
+                        className = "hover:bg-gray-300"
                         onClick={() =>
                           navigate("/itineraryForm", {
                             state: { itinerary: itinerary },
@@ -179,6 +230,7 @@ export default function ItineraryCard({
                   )}
                   {isAdmin && (
                     <Button
+                      className = "hover:bg-red-700"
                       variant="destructive"
                       onClick={() => handleFlagItinerary(itinerary._id)}
                     >

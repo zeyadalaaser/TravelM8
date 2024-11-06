@@ -8,12 +8,12 @@ import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myCompla
 import { NavBar } from "./components/nav-bar";
 import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound, Award } from "lucide-react";
- 
+
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 import { FlightsPage } from "./components/flights/flights-page";
 import { HotelsPage } from "./components/hotels/hotels-page";
-import { ComplaintForm } from "./components/complaints/complaint-form"
-import { CompletedToursPage } from "./components/itineraries/CompletedToursPage"; 
+import { ComplaintForm } from "./components/complaints/complaint-form";
+import { CompletedToursPage } from "./components/itineraries/CompletedToursPage";
 import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
 
 import { RedeemPoints } from "./components/Points/redeemPoints"
@@ -42,12 +42,15 @@ export default function TouristPage() {
     if (!token) return;
 
     try {
-      const response = await axios.get("http://localhost:5001/api/tourists/myProfile", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        "http://localhost:5001/api/tourists/myProfile",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const { loyaltyPoints, badgeLevel } = response.data; // Adjust according to your schema
       setTotalPoints(loyaltyPoints);
       setLevel(badgeLevel);
@@ -75,20 +78,22 @@ export default function TouristPage() {
 
   useEffect(() => {
     if (!searchParams.has("type")) searchParams.set("type", "activities");
-    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    navigate(`${location.pathname}?${searchParams.toString()}`, {
+      replace: true,
+    });
   }, []);
 
   const page = searchParams.get("type");
 
   return (
-  
-  
     <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
-    <DashboardsNavBar profilePageString="/tourist-profile"/>
-    <div className="flex">
-      <NavBar onComplaintClick={() => setShowComplaintForm(true)} 
-        onRedeemClick={() => setShowRedeemPoints(true)}/>
+      <DashboardsNavBar profilePageString="/tourist-profile" />
       <div className="flex">
+        <NavBar
+          onComplaintClick={() => setShowComplaintForm(true)}
+          onRedeemClick={() => setShowRedeemPoints(true)}
+        />
+        <div className="flex">
           {/* Badge Display with Styling */}
           <div className="-translate-y-1 badge-container flex items-center p-2 rounded-full shadow-md bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm mr-2">
             <Award className="w-4 h-4 mr-1" />
@@ -97,10 +102,8 @@ export default function TouristPage() {
               <p className="text-xs">{totalPoints || 0} Points</p>
             </div>
           </div>
-          </div>
-</div>
-
-
+        </div>
+      </div>
 
       {page === "activities" && <ActivitiesPage />}
       {page === "itineraries" && <ItinerariesPage />}
@@ -116,11 +119,6 @@ export default function TouristPage() {
       {showRedeemPoints && (
         <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
       )}
-
-
-       
-     
-</div>
-    
+    </div>
   );
 }
