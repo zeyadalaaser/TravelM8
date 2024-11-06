@@ -57,9 +57,9 @@ export const readItineraries = async (req, res) => {
   }
 };
 
-export const fetchItinerary = async (req,res) => {
+export const fetchItinerary = async (req, res) => {
   const id = req.params.id;
-  try{
+  try {
     const itinerary = await Itinerary.findById(id)
       .populate("tags")
       .populate("tourGuideId");
@@ -67,7 +67,7 @@ export const fetchItinerary = async (req,res) => {
   } catch (error) {
     return res.status(400).json({ message: "Error", error: error.message });
   }
-}
+};
 
 //TourGuide only
 export const getMyItineraries = async (req, res) => {

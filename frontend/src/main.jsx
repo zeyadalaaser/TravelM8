@@ -24,12 +24,12 @@ import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
-import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
+import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";
+import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
-
-
+import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -70,12 +70,11 @@ createRoot(document.getElementById("root")).render(
         <Route path="/activityForm" element={<ActivityForm />} />
         <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
 
-
         <Route path="/tourGuideProfile" element={<TourGuideProfile />} />
         <Route path="/tourGuideDashboard" element={<TourGuideDashboard />} />
         <Route path="/itineraryForm" element={<ItineraryForm />} />
         <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
-
+        <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
