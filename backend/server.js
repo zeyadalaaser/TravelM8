@@ -20,8 +20,12 @@ import ratingRoute from "./routes/ratingRoute.js";
 import loginRoute from "./routes/loginRoute.js";
 import complaintRoute from "./routes/complaintsRoute.js";
 import bookingsRoute from "./routes/bookingsRoute.js";
+
+import bookingsActivityRoute from "./routes/bookingsActivityRoute.js";
+import purchaseRoute from "./routes/purchaseRoute.js";
 import uploadRoutes from './routes/uploadRoutes.js';
 import placeTagRoute from "./routes/placeTagRoute.js";
+
 
 
 
@@ -61,8 +65,12 @@ app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
 app.use('/api/auth', loginRoute);
 app.use("/api", bookingsRoute);
+app.use("/api", bookingsActivityRoute)
+app.use("/api", purchaseRoute);
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', uploadRoutes);
+
 
 app.listen(PORT, () => {
   connectDB();

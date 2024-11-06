@@ -1,4 +1,4 @@
-// Import required libraries and hooks
+
 import useRouter from "@/hooks/useRouter";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -10,18 +10,16 @@ import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound, Award } from "lucide-react";
  
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
+
+import { ComplaintForm } from "./components/complaints/complaint-form";
+import { CompletedToursPage } from "./components/itineraries/CompletedToursPage";
+import { PastActivitiesPage } from "./components/activities/PastActivitiesPage";
+import  PurchasedProductsPage   from "./components/products/PurchasedProductsPage";
 import { FlightsPage } from "./components/flights/flights-page";
 import { HotelsPage } from "./components/hotels/hotels-page";
-import { ComplaintForm } from "./components/complaints/complaint-form"
-import { CompletedToursPage } from "./components/itineraries/CompletedToursPage"; 
 import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
-
 import { RedeemPoints } from "./components/Points/redeemPoints"
 
-
- 
- 
- 
 
 export default function TouristPage() {
   const { location, navigate, searchParams } = useRouter();
@@ -29,11 +27,15 @@ export default function TouristPage() {
   const [showRedeemPoints, setShowRedeemPoints] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [level, setLevel] = useState("");
+  const [touristId, setTouristId] = useState(null);
 
-  // Function to decode JWT and get user role
-  function getRoleFromToken(token) {
+
+  // Function to decode JWT and get user role and id
+  function getUserFromToken(token) {
+    if (!token) return {};
     const decoded = JSON.parse(atob(token.split(".")[1])); // Decode the token
-    return decoded.role; // Get the role from the token
+    console.log("User ID:", decoded.userId);
+    return { id: decoded.userId ,role: decoded.role}; // Get the role and tourist ID from the token
   }
 
   // Fetch tourist's badge information from the backend
@@ -58,25 +60,32 @@ export default function TouristPage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (!token) {
       navigate("/login"); // Redirect to login page if no token
       return;
     }
 
-    // Decode the JWT token to get the role
-    const userRole = getRoleFromToken(token);
-    if (userRole !== "Tourist") {
-      navigate("/login"); // Redirect if the role is not 'Tourist'
+    const { role, id } = getUserFromToken(token);
+    if (role !== "Tourist") {
+      navigate("/login"); // Redirect if the role is not 'tourist'
       return;
     }
-    // Fetch badge information once the token is verified
+      // Fetch badge information once the token is verified
     fetchBadgeInfo();
+  
+    setTouristId(id);
   }, [navigate]);
 
+
+
   useEffect(() => {
-    if (!searchParams.has("type")) searchParams.set("type", "activities");
-    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
-  }, []);
+    if (!searchParams.has("type")) {
+      searchParams.set("type", "activities");
+      navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    }
+  }, [location.pathname, navigate, searchParams]);
+
 
   const page = searchParams.get("type");
 
@@ -84,6 +93,7 @@ export default function TouristPage() {
   
   
     <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
+
     <DashboardsNavBar profilePageString="/tourist-profile"/>
     <div className="flex">
       <NavBar onComplaintClick={() => setShowComplaintForm(true)} 
@@ -98,8 +108,8 @@ export default function TouristPage() {
             </div>
           </div>
           </div>
-</div>
-
+</div>    
+      </div>
 
 
       {page === "activities" && <ActivitiesPage />}
@@ -108,11 +118,24 @@ export default function TouristPage() {
       {page === "products" && <ProductsPage />}
       {page === "flights" && <FlightsPage />}
       {page === "hotels" && <HotelsPage />}
+      {page === "products" && touristId && (
+  <ProductsPage touristId={touristId} />
+
       {page === "complaints" && <MyComplaintsPage />}
-      {page === "completed-tours" && <CompletedToursPage />}
-      {showComplaintForm && (
+      {page === "completed-tours" && touristId && ( 
+        <CompletedToursPage touristId={touristId} />
+      )}  
+      {page === "past-activities" && touristId && (
+        <PastActivitiesPage touristId={touristId} />
+      )}
+{page === "products-purchased" && touristId && (
+    <PurchasedProductsPage touristId={touristId} />
+)}
+
+          {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />
       )}
+
       {showRedeemPoints && (
         <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
       )}
@@ -123,4 +146,5 @@ export default function TouristPage() {
 </div>
     
   );
+
 }

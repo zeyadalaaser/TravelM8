@@ -324,6 +324,31 @@ export const searchItems2 = async (req, res) => {
     });
   }
 };
+
+
+////For rating the itineraries
+export const rateItinerary = async (req, res) => {
+  const { itineraryId, touristId, rating, comment } = req.body;
+  try {
+    const itinerary = await Itinerary.findById(itineraryId);
+    if (!itinerary) return res.status(404).json({ message: "Itinerary not found" });
+
+    // Add or update the rating for this tourist
+    const existingRating = itinerary.ratings.find(r => r.touristId.toString() === touristId);
+    if (existingRating) {
+      existingRating.rating = rating;
+      existingRating.comment = comment;
+    } else {
+      itinerary.ratings.push({ touristId, rating, comment });
+    }
+
+    await itinerary.save();
+    res.status(200).json({ message: "Rating submitted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error submitting rating", error });
+  }
+};
+
 export const flagItinerary = async (req, res) => {
   const { id } = req.params;
   console.log("ittt");
@@ -346,3 +371,4 @@ export const flagItinerary = async (req, res) => {
     res.status(500).json({ message: "Error flagging itinerary" });
   }
 };
+
