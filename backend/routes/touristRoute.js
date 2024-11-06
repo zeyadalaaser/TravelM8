@@ -1,5 +1,6 @@
 import express from 'express';
-import { createTourist, updateTouristProfile, getTourists, getMyProfile } from '../controllers/touristController.js';
+import { createTourist, updateTouristProfile, getTourists, getMyProfile
+,updatePoints,redeemPoints } from '../controllers/touristController.js';
 import verifyToken from '../services/tokenDecodingService.js';
 import { changePasswordTourist } from '../controllers/changePassword.js';
 
@@ -12,5 +13,9 @@ touristRoute.put('/tourists/updateMyProfile', verifyToken , updateTouristProfile
 touristRoute.get('/tourists', getTourists);                 // Read user by email
 touristRoute.get('/tourists/myProfile', verifyToken , getMyProfile);
 touristRoute.post("/tourists/changepassword", verifyToken, changePasswordTourist);
+ touristRoute.put('/updatePoints', verifyToken , updatePoints);
+touristRoute.put('/redeemPoints',verifyToken,redeemPoints);
+ //touristRoute.put('/redeemPoints/:id',redeemPoints);
+ // touristRoute.put('/updatePoints/:id',updatePoints);
 
 export default touristRoute; 

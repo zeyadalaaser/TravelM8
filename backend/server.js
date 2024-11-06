@@ -21,6 +21,9 @@ import loginRoute from "./routes/loginRoute.js";
 import complaintRoute from "./routes/complaintsRoute.js";
 import bookingsRoute from "./routes/bookingsRoute.js";
 import uploadRoutes from './routes/uploadRoutes.js';
+import placeTagRoute from "./routes/placeTagRoute.js";
+
+
 
 dotenv.config({path:'../.env'});
 
@@ -40,6 +43,7 @@ app.use(
 app.options("*", cors());
 
 app.use(express.json()); // allows us to accept JSON data in the req.body
+app.use("/api", placeTagRoute);
 app.use("/api", activityCategoryRoute);
 app.use("/api", adminRoute);
 app.use("/api", preferenceTagRoute);

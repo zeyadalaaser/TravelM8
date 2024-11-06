@@ -21,12 +21,9 @@ const FormPage = () => {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [image, setImage] = useState();
-
+    const [idfile,setidfile]=useState();
+    const [taxfile,settaxfile]=useState();
     const navigate = useNavigate();
-
-    const onInputChange = (e) => {
-      setImage(e.target.files[0]);
-    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -38,14 +35,14 @@ const FormPage = () => {
         }
     };
 
-    const handleDocumentChange = (e) => {
-        const { name, files } = e.target;
+    const handleImageChange = (e) => {
+      setImage(e.target.files[0]);
+  };
 
-        if (files && files.length > 0) {
-            const file = files[0];
-            setDocumentData((prev) => ({ ...prev, [name]: file }));
-        }
-    };
+  const handleFileChange = (e) => {
+    setidfile(e.target.files[0]);
+    settaxfile(e.target.files[0]);
+  };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -53,37 +50,29 @@ const FormPage = () => {
 
         try {
             const response = await axios.post('http://localhost:5001/api/pending-users', formData);
+
             if (response.status === 200) {
 
-                // Second request to upload documents
-               // await axios.post('http://localhost:5001/api/documents/advertiser', documentData);
-               // Prepare FormData to include the image, username, and type
             const formDataToSend = new FormData();
             formDataToSend.append("image", image);
+            formDataToSend.append("idfile", idfile);
+            formDataToSend.append("taxfile", taxfile);
             formDataToSend.append("username", documentData.username);  // Add username here
             formDataToSend.append("type", documentData.type);  // Add type here
+            await axios.post(
+              'http://localhost:5001/api/upload-files',
+              formDataToSend,
+              { headers: { "Content-Type": "multipart/form-data" } }
+          );
 
-               const result = await axios.post(
-                'http://localhost:5001/api/upload-image',
-                formDataToSend,
-                {
-                  headers: { "Content-Type": "multipart/form-data" },
-                }
-              );
-              console.log(result.data);
-                alert('Your Request Is Pending');
-                setMessageType('success');
-                navigate('/');
+            alert('Your Request Is Pending');
+            setMessageType('success');
+            navigate('/');
             }
         } catch (error) {
-          console.log("Error uploading image:", error);
-            if (error.response) {
-                console.error("Backend response:", error.response.data);
-                setMessage(error.response.data.message || 'Error during signup. Please try again.');
-            } else {
-                setMessage('Error during signup. Please try again.');
-            }
-            setMessageType('error');
+          console.log("Error:", error);
+        setMessage('Error during signup. Please try again.');
+        setMessageType('error');
         }
     };
 
@@ -150,28 +139,25 @@ const FormPage = () => {
                     <input
                         type="file"
                         accept="image/*"
-                        onChange={onInputChange}
+                        onChange={handleImageChange}
                         name="image"
                     />
 
-                    <label className="form-label" htmlFor="idDocument">Upload ID File</label>
+                    <label >Upload ID File</label>
                     <input
-                        className="form-input"
                         type="file"
-                        name="idDocument"
                         accept=".pdf,.doc,.docx,image/*"
-                        onChange={handleDocumentChange}
+                        onChange={handleFileChange}
+                        name="idfile"
                         required
                     />
 
-                    <label className="form-label" htmlFor="taxationRegistryDocument">Upload Taxation Registry Card</label>
+                    <label >Upload Taxation Registry Card</label>
                     <input
-                        className="form-input"
                         type="file"
-                        name="taxationRegistryDocument"
                         accept=".pdf,.doc,.docx,image/*"
-                        onChange={handleDocumentChange}
-                        required
+                        onChange={handleFileChange}
+                        name="taxfile"
                     />
 
                     <label className="form-label terms-container">
