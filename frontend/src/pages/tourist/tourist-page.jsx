@@ -8,13 +8,13 @@ import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myCompla
 import { NavBar } from "./components/nav-bar";
 import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound, Award } from "lucide-react";
- 
+
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 
 import { ComplaintForm } from "./components/complaints/complaint-form";
 import { CompletedToursPage } from "./components/itineraries/CompletedToursPage";
 import { PastActivitiesPage } from "./components/activities/PastActivitiesPage";
-import  PurchasedProductsPage   from "./components/products/PurchasedProductsPage";
+import PurchasedProductsPage from "./components/products/PurchasedProductsPage";
 import { FlightsPage } from "./components/flights/flights-page";
 import { HotelsPage } from "./components/hotels/hotels-page";
 import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
@@ -35,7 +35,7 @@ export default function TouristPage() {
     if (!token) return {};
     const decoded = JSON.parse(atob(token.split(".")[1])); // Decode the token
     console.log("User ID:", decoded.userId);
-    return { id: decoded.userId ,role: decoded.role}; // Get the role and tourist ID from the token
+    return { id: decoded.userId, role: decoded.role }; // Get the role and tourist ID from the token
   }
 
   // Fetch tourist's badge information from the backend
@@ -71,9 +71,9 @@ export default function TouristPage() {
       navigate("/login"); // Redirect if the role is not 'tourist'
       return;
     }
-      // Fetch badge information once the token is verified
+    // Fetch badge information once the token is verified
     fetchBadgeInfo();
-  
+
     setTouristId(id);
   }, [navigate]);
 
@@ -90,15 +90,15 @@ export default function TouristPage() {
   const page = searchParams.get("type");
 
   return (
-  
-  
+
+
     <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
 
-    <DashboardsNavBar profilePageString="/tourist-profile"/>
-    <div className="flex">
-      <NavBar onComplaintClick={() => setShowComplaintForm(true)} 
-        onRedeemClick={() => setShowRedeemPoints(true)}/>
+      <DashboardsNavBar profilePageString="/tourist-profile" />
       <div className="flex">
+        <NavBar onComplaintClick={() => setShowComplaintForm(true)}
+          onRedeemClick={() => setShowRedeemPoints(true)} />
+        <div className="flex">
           {/* Badge Display with Styling */}
           <div className="-translate-y-1 badge-container flex items-center p-2 rounded-full shadow-md bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm mr-2">
             <Award className="w-4 h-4 mr-1" />
@@ -107,43 +107,54 @@ export default function TouristPage() {
               <p className="text-xs">{totalPoints || 0} Points</p>
             </div>
           </div>
-          </div>
-</div>    
+        </div>
       </div>
 
+  
+      { page === "activities" && <ActivitiesPage /> }
+  { page === "itineraries" && <ItinerariesPage /> }
+  { page === "museums" && <MuseumsPage /> }
+  { page === "products" && <ProductsPage /> }
+  { page === "flights" && <FlightsPage /> }
+  { page === "hotels" && <HotelsPage /> }
+  {
+    page === "products" && touristId && (
+      <ProductsPage touristId={touristId} />)
+  }
 
-      {page === "activities" && <ActivitiesPage />}
-      {page === "itineraries" && <ItinerariesPage />}
-      {page === "museums" && <MuseumsPage />}
-      {page === "products" && <ProductsPage />}
-      {page === "flights" && <FlightsPage />}
-      {page === "hotels" && <HotelsPage />}
-      {page === "products" && touristId && (
-  <ProductsPage touristId={touristId} />
+  { page === "complaints" && <MyComplaintsPage /> }
+  {
+    page === "completed-tours" && touristId && (
+      <CompletedToursPage touristId={touristId} />
+    )
+  }
+  {
+    page === "past-activities" && touristId && (
+      <PastActivitiesPage touristId={touristId} />
+    )
+  }
+  {
+    page === "products-purchased" && touristId && (
+      <PurchasedProductsPage touristId={touristId} />
+    )
+  }
 
-      {page === "complaints" && <MyComplaintsPage />}
-      {page === "completed-tours" && touristId && ( 
-        <CompletedToursPage touristId={touristId} />
-      )}  
-      {page === "past-activities" && touristId && (
-        <PastActivitiesPage touristId={touristId} />
-      )}
-{page === "products-purchased" && touristId && (
-    <PurchasedProductsPage touristId={touristId} />
-)}
+  {
+    showComplaintForm && (
+      <ComplaintForm onClose={() => setShowComplaintForm(false)} />
+    )
+  }
 
-          {showComplaintForm && (
-        <ComplaintForm onClose={() => setShowComplaintForm(false)} />
-      )}
-
-      {showRedeemPoints && (
-        <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
-      )}
+  {
+    showRedeemPoints && (
+      <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
+    )
+  }
 
 
        
      
-</div>
+</div >
     
   );
 
