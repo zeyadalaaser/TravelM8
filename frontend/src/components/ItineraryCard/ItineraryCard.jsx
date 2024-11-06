@@ -5,11 +5,13 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+
   Dialog,
   DialogOverlay,
   DialogClose,
   DialogContent,
   DialogTitle,
+
 } from "@/components/ui/dialog";
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +34,7 @@ export default function ItineraryCard({
     setDialogOpen(true);
   };
   const navigate = useNavigate();
+
 
   const handleDelete = async (id) => {
     try {
@@ -151,6 +154,7 @@ export default function ItineraryCard({
                           {activity} -
                         </div>
                       ))}
+
                     </div>
                   </div>
                 )}
