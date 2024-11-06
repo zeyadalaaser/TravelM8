@@ -32,7 +32,7 @@ const ItineraryForm = () => {
   useEffect(() => {
     if(itinerary)
       setFormData(itinerary);
-  }, [itinerary]); 
+  }, []); 
 
   
     const handleInputChange = (e) => {
