@@ -12,14 +12,18 @@ import { SearchBar } from "../filters/search";
 import { getProducts } from "../../api/apiService";
 import axios from "axios";
 
-export function ProductsPage() {
+
+export function ProductsPage({ touristId }) {
+  console.log("Tourist ID in ProductsPage:", touristId);
+  //const { location } = useRouter();
   const location = useLocation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [currency, setCurrency] = useState("USD");
+  //const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [loading, setLoading] = useState(true); // Add loading state
   const [exchangeRates, setExchangeRates] = useState({});
-
-  // Fetch exchange rates on mount
+    // Fetch exchange rates on mount
   useEffect(() => {
     async function fetchExchangeRates() {
       try {
@@ -34,9 +38,16 @@ export function ProductsPage() {
     fetchExchangeRates();
   }, []);
 
+
   const fetchProducts = useDebouncedCallback(async () => {
+    setLoading(true); // Start loading
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
+
+
+    // Apply price filtering
+    //if (priceRange.min) queryParams.set("minPrice", priceRange.min);
+    //if (priceRange.max) queryParams.set("maxPrice", priceRange.max);
 
     try {
       const fetchedProducts = await getProducts(`?${queryParams.toString()}`);
@@ -44,6 +55,10 @@ export function ProductsPage() {
       setProducts(fetchedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
+      alert("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false); // End loading
+
     }
   }, 200);
 
@@ -68,6 +83,8 @@ export function ProductsPage() {
       replace: true,
     });
   };
+
+  if (loading) return <p>Loading products...</p>; // Loading UI
 
   return (
     <>
@@ -105,7 +122,10 @@ export function ProductsPage() {
           <Products
             products={products}
             currency={currency}
-            exchangeRate={exchangeRates[currency] || 1}
+
+            exchangeRate={exchangeRates[currency]}
+            touristId={touristId}
+
           />
         </div>
       </div>

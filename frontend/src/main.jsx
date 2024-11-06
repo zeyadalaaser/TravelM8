@@ -29,7 +29,6 @@ import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
-import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -67,6 +66,8 @@ createRoot(document.getElementById("root")).render(
         <Route path="/tourist-profile" element={<TouristProfile />} />
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/products-purchased" element={<PurchasedProductsPage />} />
         <Route path="/activityForm" element={<ActivityForm />} />
         <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
 

@@ -228,6 +228,7 @@ const TourismGovernorDashboard = () => {
     try {
       const response = await services.createPlaceTag({ type, historicalPeriod })
       setMessage(response.message || "Tag created successfully");
+      setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
       setType("");
       setHistoricalPeriod("");
       setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
@@ -331,11 +332,11 @@ const TourismGovernorDashboard = () => {
           <div className="flex justify-between items-center mb-4">
             <Tabs defaultValue="all" className="w-full">
               <div className="flex justify-between items-center">
-                <TabsList>
+                {/* <TabsList>
                   <TabsTrigger value="all">All Locations</TabsTrigger>
                   <TabsTrigger value="museums">Museums</TabsTrigger>
                   <TabsTrigger value="historical">Historical Sites</TabsTrigger>
-                </TabsList>
+                </TabsList> */}
                 <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
                         <Button>
@@ -556,6 +557,17 @@ const TourismGovernorDashboard = () => {
                         <img src={location.image} alt={location.name} className="w-full h-48 object-cover rounded-t-lg" />
                         <CardTitle >{location.name}</CardTitle>
                         <CardDescription >{location.description}</CardDescription>
+                        
+  
+    {location.tags && (
+      <div className="mt-2 flex flex-wrap gap-2">
+      {location.tags.split(',').map((tag, index) => (
+      <span key={index} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+        {tag.trim()}
+      </span>
+    ))}
+  </div>
+)}
                       </CardHeader>
                       <CardFooter className="flex justify-end space-x-2">
                         <Dialog onOpenChange={(open) => !open && handleDialogClose()}>
