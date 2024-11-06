@@ -68,3 +68,25 @@ export async function changePassword(passwordData) {
     await apiClient.post("tourguides/changepassword", passwordData)
   ).data;
 }
+
+export async function addItinerary(token,newItinerary) {
+  await apiClient.post('itineraries', newItinerary, {
+      headers: { Authorization: `Bearer ${token}` },
+  });
+} 
+
+export async function getTags() {
+  return (await apiClient.get("preference-tags")).data;
+}
+
+export async function getPlaceTags() {
+  return (await apiClient.get('placetag')).data;
+}
+
+export async function getActivities() {
+  return (await apiClient.get("activities")).data;
+}
+
+export async function getAllPlaces() {
+  return (await apiClient.get("getAllPlaces")).data;
+}

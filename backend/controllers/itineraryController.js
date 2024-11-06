@@ -8,11 +8,11 @@ import mongoose from "mongoose";
 
 export const createItinerary = async (req, res) => {
   try {
-    // const newItineraryData = new Itinerary({
-    //   ...req.body,
-    //   tourGuideId: req.user.userId,
-    // });
-    const newItineraryData = new Itinerary(req.body);
+    const newItineraryData = new Itinerary({
+      ...req.body,
+      tourGuideId: req.user.userId,
+    });
+    // const newItineraryData = new Itinerary(req.body);
     await newItineraryData.save();
     res.status(201).json({
       message: "Itinerary added successfully",
@@ -23,6 +23,7 @@ export const createItinerary = async (req, res) => {
       message: "Error adding itinerary",
       error: error.message,
     });
+    console.log("helloooo");
   }
 };
 

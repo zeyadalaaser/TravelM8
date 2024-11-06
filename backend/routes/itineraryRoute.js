@@ -16,7 +16,7 @@ import { adminOnly } from "../middlewares/adminOnlyMiddleware.js";
 const router = express.Router();
 
 // router.post("/itineraries", verifyToken, createItinerary); // Create a new itinerary
-router.post("/itineraries", createItinerary); // Create a new itinerary
+router.post("/itineraries",verifyToken, createItinerary); // Create a new itinerary
 router.get("/itineraries", readItineraries); // Retrieve all itineraries
 router.put("/itineraries/:id", updateItinerary); // Update an itinerary by ID
 router.delete("/itineraries/:id", deleteItinerary); // Delete an itinerary by ID

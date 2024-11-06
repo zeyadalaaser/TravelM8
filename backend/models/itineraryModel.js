@@ -57,6 +57,8 @@ const itineraySchema = new mongoose.Schema({
     },
   ],
 
+  isBookingOpen: { type:Boolean, default:true},
+
   availableSlots: [
     {
       date: {
