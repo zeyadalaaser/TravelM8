@@ -42,14 +42,15 @@ export async function deleteItinerary(id){
   };
 
   // Fetch profile info
-export async function fetchProfileInfo() {
-  try {
-      const response = await apiClient.get("tourguides/myProfile");
-      return response.data;
-  } catch (error) {
-      console.error('Error fetching profile info:', error);
-      throw error;
-  }
+  export async function fetchProfileInfo(token) {
+    return (
+        await apiClient.get("tourguides/myProfile", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      ).data;
 }
 
 // Update profile info
