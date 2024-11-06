@@ -52,7 +52,6 @@ export const getPurchasesByTourist = async (req, res) => {
     }
   };
 
-  // In your purchases controller
 export async function rateProduct(req, res) {
     const { purchaseId } = req.params;
     const { rating, comment } = req.body;

@@ -8,7 +8,7 @@ export default function Products({ products, currency, exchangeRate, touristId }
 const navigate = useNavigate();
 
 const handlePurchase = async (product) => {
-  const quantity = 1; // Example quantity for simplicity; adjust as needed
+  const quantity = 1; 
 
   try {
     const response = await axios.post('http://localhost:5001/api/purchases', {
@@ -17,7 +17,6 @@ const handlePurchase = async (product) => {
       quantity,
     });
 
-    // Accessing the productId from the purchase object in the response
     console.log("product id:", response.data.purchase.productId);
     console.log("id el zeftx2: ", touristId);
 
