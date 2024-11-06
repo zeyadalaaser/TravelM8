@@ -377,7 +377,8 @@ const ItineraryForm = () => {
                 {formData.tags.map((tag, index) => (
                   <div key={index} className="flex items-center space-x-2">
                     <Input
-                      value={tag._id || ''}
+                      name='tags'
+                      value={tag || ''}
                       onChange={(e) => handleArrayInputChange(index, 'tags', e.target.value)}
                       required
                     />
@@ -397,7 +398,7 @@ const ItineraryForm = () => {
               <Input
                 id="tourGuideId"
                 name="tourGuideId"
-                value={formData.tourGuideId._id || ''}
+                value={formData.tourGuideId || ''}
                 onChange={handleInputChange}
                 required
               />

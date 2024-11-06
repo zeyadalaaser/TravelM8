@@ -228,7 +228,6 @@ const TourismGovernorDashboard = () => {
     try {
       const response = await services.createPlaceTag({ type, historicalPeriod })
       setMessage(response.message || "Tag created successfully");
-      setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
       setType("");
       setHistoricalPeriod("");
       setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
