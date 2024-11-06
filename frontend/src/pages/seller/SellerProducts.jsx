@@ -98,7 +98,22 @@ export default function SellerProducts() {
   };
 
 
-  const archiveProduct = async (productId) => {
+
+  const toggleArchive = async (productId, isArchived) => {
+    try{
+      await fetch(`http://localhost:5001/api/products/${productId}/${isArchived? 'unarchive' : 'archive'}`,{
+        method: 'PUT',
+        headers:{
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setProducts((prev) => prev.map((product) => product._id === productId ? {...product, archived: !isArchived}: product));
+    }catch (error){
+      console.error(`Error ${isArchived? 'unarchive' : 'archive'} product:` , error);
+    }
+  };
+
+  /* const archiveProduct = async (productId) => {
     try{
       await fetch(`http://localhost:5001/api/products/${productId}/archive`,{
         method: 'PUT',
@@ -124,7 +139,7 @@ export default function SellerProducts() {
     }catch (error){
       console.error('Error unarchiving product:' , error);
     }
-  };
+  }; */
 
 
   // Function to update the product
@@ -213,14 +228,11 @@ export default function SellerProducts() {
                 <p className="font-bold">{`Price: EGP ${product.price.toFixed(2)}`}</p>
                 <p className="mb-2">{product.description}</p>
                 <p className="font-semibold">{`Seller ID: ${product.sellerId}`}</p>
-                <Button className="mt-2" onClick={() => handleEdit(product)}>
+                <Button className="mt-2 ml-2" onClick={() => handleEdit(product)}>
                   Edit
                 </Button>
-                <Button onClick={() => archiveProduct(product._id)} disabled={product.archived}>
-                  Archive
-                </Button>
-                <Button onClick={() => unarchiveProduct(product._id)} disabled={!product.archived}>
-                  Unrchive
+                <Button className="mt-2 ml-2" onClick={() => toggleArchive(product._id, product.archived)}>
+                  {product.archived? 'Unarchive' : 'Archive'}
                 </Button>
                 <Button
                   className="mt-2 ml-2"

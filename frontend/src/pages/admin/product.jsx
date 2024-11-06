@@ -28,6 +28,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ToggleLeft, ToggleRightIcon } from "lucide-react";
+import axios from "axios";
 
 const ProductPage = () => {
   const [sidebarState, setSidebarState] = useState(false);
@@ -116,6 +118,23 @@ const ProductPage = () => {
       }
     }
   };
+
+
+const toggleArchive = async (productId, isArchived) => {
+    try{
+      await fetch(`http://localhost:5001/api/products/${productId}/${isArchived? 'unarchive' : 'archive'}`,{
+        method: 'PUT',
+        headers:{
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setProducts((prev) => prev.map((product) => product._id === productId ? {...product, archived: !isArchived}: product));
+    }catch (error){
+      console.error(`Error ${isArchived? 'unarchive' : 'archive'} product:` , error);
+    }
+  };
+  
+
 
   const handleCreateProduct = async () => {
     try {
@@ -290,8 +309,11 @@ const ProductPage = () => {
                   <TableCell>{product.quantity}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell>
-                    <Button onClick={() => openEditModal(product)} className="mr-2">Edit</Button>
-                    <Button onClick={() => handleDeleteProduct(product._id)} className="bg-red-500 text-white">Delete</Button>
+                    {/* //toggle to archive / unarchive a p */}
+                  <Button onClick={() => toggleArchive(product._id, product.archived )} className="mr-2 ml-2">{product.archived ? 'Unarchive' : 'Archive'}</Button>
+                    <Button onClick={() => openEditModal(product)} className="mr-2 ml-2 ">Edit</Button>
+                    <Button onClick={() => handleDeleteProduct(product._id)} className="bg-red-500 text-white ml-2">Delete</Button>
+                    
                   </TableCell>
                 </TableRow>
               ))}
