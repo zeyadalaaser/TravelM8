@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Bell, ChevronDown, Eye, EyeOff, User, X, CreditCard, Tag, Star, Shield, Layout, List, Settings, Map, TagsIcon, DollarSign } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, User, X, CreditCard, Tag, Star, Shield, Layout, List, Settings, Map, TagsIcon, DollarSign, HeartCrack } from 'lucide-react'
 import {Input} from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -26,7 +26,7 @@ const TouristProfilePage = () => {
   const [changes, setChanges] = useState([]);
   const [countryCode, setCountryCode] = useState(profile ? profile.mobileNumber.slice(0, 2) : '+1'); // Default to '+1'
   const [mobileNumber, setMobileNumber] = useState(profile ? profile.mobileNumber.slice(2) : ''); // Default to empty
-
+  const [showDialog, setShowDialog] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -406,7 +406,35 @@ const TouristProfilePage = () => {
               <Settings className="mr-3" />
               Security & Settings
             </button>
-              <Logout />
+            <button
+              className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+              onClick={() => setShowDialog(true)}
+            >
+              <HeartCrack className="mr-3" />
+              Delete My account
+            </button>
+            {showDialog && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded shadow-lg">
+            <p>Are you sure you want to delete your account?</p>
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-black text-white px-4 py-2 rounded mr-2"
+                
+              >
+                Yes
+              </button>
+              <button
+                className="bg-gray-300 px-4 py-2 rounded"
+                onClick={() => setShowDialog(false)}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <Logout/>
             </nav>
     </aside>
 

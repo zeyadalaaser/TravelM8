@@ -13,13 +13,13 @@ const TourGuideDashboard = () => {
 
 
   const getItineraries = useDebouncedCallback(async () => {
-    const response = await fetch(`http://localhost:5001/api/itineraries`)
+    const response = await fetch('http://localhost:5001/api/itineraries')
     setItineraries(await response.json());
   }, 200);
 
   useEffect(() => {
       getItineraries();
-  }, [itineraries]); 
+  }, []); 
 
 
   return (

@@ -19,7 +19,7 @@ import Dashboard from "./pages/admin/dashboard.jsx";
 import AdvertiserProfile from "./pages/Advertiser/advertiserProfile";
 import Product from "./pages/admin/product.jsx";
 import TourGuideProfile from "./pages/TourGuide/TourguideProfile.jsx";
-import TouristProfile from "./pages/tourist/components/tourist-profile.jsx";
+import TouristProfile from "./pages/tourist/components/touristProfile.jsx";
 import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";

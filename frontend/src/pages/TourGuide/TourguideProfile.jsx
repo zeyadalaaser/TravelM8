@@ -25,8 +25,8 @@ const TourGuideProfilePage = () => {
   const token = localStorage.getItem('token');
   const [profile, setProfile] = useState(null);
   const [changes, setChanges] = useState([]);
-  const [countryCode, setCountryCode] = useState(profile ? profile.mobileNumber.slice(0, 2) : '+1'); // Default to '+1'
-  const [mobileNumber, setMobileNumber] = useState(profile ? profile.mobileNumber.slice(2) : ''); // Default to empty
+  const [countryCode, setCountryCode] = useState(profile && profile.mobileNumber ? profile.mobileNumber.slice(0, 2) : '+1'); // Default to '+1'
+  const [mobileNumber, setMobileNumber] = useState(profile && profile.mobileNumber ? profile.mobileNumber.slice(2) : ''); // Default to empty
 
 
   const handleInputChange = (e) => {
@@ -202,11 +202,11 @@ const TourGuideProfilePage = () => {
                         <Select
                           onValueChange={(value) => {
                             handleCountryCodeChange(value);
-                            // handleInputChange({ target: { name: 'mobileNumber', value: mobileNumber } }); // Keep mobile number intact
+                            handleInputChange({ target: { name: 'mobileNumber', value: mobileNumber } }); // Keep mobile number intact
                           }}
                         >
                           <SelectTrigger className="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <SelectValue placeholder={profile ? profile.mobileNumber.split(" ")[0] : ''} />
+                            <SelectValue placeholder={profile && profile.mobileNumber ? profile.mobileNumber.split(" ")[0] : ''} />
                           </SelectTrigger>
                           <SelectContent>
                           <SelectItem value="+1">+1</SelectItem>
@@ -244,7 +244,7 @@ const TourGuideProfilePage = () => {
                           name="mobileNumber"
                           onChange={handleInputChange}
                           type="tel"
-                          value={profile ? profile.mobileNumber.split(" ")[1] : ''} // Controlled input
+                          value={profile && profile.mobileNumber ? profile.mobileNumber.split(" ")[1] : ''} // Controlled input
                           placeholder="Enter mobile number"
                           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                         />
