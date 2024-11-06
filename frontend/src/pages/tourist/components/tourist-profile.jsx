@@ -99,6 +99,8 @@ export default function TouristProfile() {
             <CardContent className="text-center">
               <p className="text-muted-foreground">email: {tourist ? tourist.email : 'null'}</p>
               <p className="text-muted-foreground">wallet: ${tourist ? tourist.wallet : '0'}</p>
+              <p className="text-muted-foreground">Loyality points: {tourist ? tourist.loyaltyPoints : 'null'}</p>
+              
               <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                 <DialogTrigger asChild>
                   <Button className="mt-4">Edit Profile</Button>

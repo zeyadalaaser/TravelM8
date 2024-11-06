@@ -1,7 +1,6 @@
 import activityModel from "../models/activityModel.js";
 import mongoose from "mongoose";
 import { getActivities } from "../services/activities/activityServices.js";
-import { runInNewContext } from "vm";
 
 const createNewActivity = async (req, res) => {
   const {
@@ -31,7 +30,7 @@ const createNewActivity = async (req, res) => {
     isLocationValid && // Ensure location is valid
     mongoose.Types.ObjectId.isValid(req.user.userId) // Ensure advertiserId is valid
   ) {
-    const newActivity = {
+    const newActivity = new activityModel({
       title,
       description,
       date,
@@ -43,18 +42,16 @@ const createNewActivity = async (req, res) => {
       isBookingOpen,
       image,
       advertiserId: req.user.userId,
-    };
+    });
 
     try {
-      const createdActivity = await activityModel
-        .create(newActivity)
-        .populate("advertiserId", "username");
-      res
-        .status(201)
-        .json({
-          message: "successfully created new activity",
-          createdActivity,
-        });
+      const createdActivity = await newActivity.save();
+      await createdActivity.populate("advertiserId", "username");
+
+      res.status(201).json({
+        message: "successfully created new activity",
+        createdActivity,
+      });
     } catch (error) {
       res.status(400).json({ message: "unsuccessful creation of activity" });
     }
@@ -62,6 +59,7 @@ const createNewActivity = async (req, res) => {
     res.status(400).json({ message: "bad parameters" });
   }
 };
+
 
 export const createManualActivity = async (req, res) => {
   const {
@@ -78,25 +76,40 @@ export const createManualActivity = async (req, res) => {
     advertiserId,
   } = req.body;
 
+  // Print the incoming request body
+  console.log("Incoming request body:", req.body);
+  console.log(location);
   // Validate the location field
-  const isLocationValid =
-    typeof location === "object" &&
+  const isLocationValid = 
+    //typeof location === "object";  //&&
     location !== null &&
     typeof location.lat === "number" &&
-    typeof location.lng === "number";
+    typeof location.lng === "number" ;
+  //   // // typeof location.name === "string";
 
-  if (
-    mongoose.Types.ObjectId.isValid(category) &&
-    Array.isArray(tags) &&
-    tags.every((tag) => mongoose.Types.ObjectId.isValid(tag)) && // Check each tag in the array
-    mongoose.Types.ObjectId.isValid(advertiserId) &&
-    isLocationValid // Ensure location is valid
-  ) {
-    const newActivity = {
+  // console.log("Location valid:", isLocationValid);
+
+  // Validate other fields
+  const isCategoryValid = mongoose.Types.ObjectId.isValid(category);
+  console.log("Category valid:", isCategoryValid);
+
+  const areTagsValid = Array.isArray(tags) && tags.every((tag) => {
+    const isValid = mongoose.Types.ObjectId.isValid(tag);
+    console.log(`Tag "${tag}" valid:`, isValid);
+    return isValid;
+  });
+  
+  console.log("Tags valid:", areTagsValid);
+
+  const isAdvertiserIdValid = mongoose.Types.ObjectId.isValid(advertiserId);
+  console.log("Advertiser ID valid:", isAdvertiserIdValid);
+
+  if (isCategoryValid && areTagsValid && isAdvertiserIdValid && isLocationValid) {
+    const newActivity = new activityModel({
       title,
       description,
       date,
-      location, // Keep the location object as it is validated above
+      location,
       price,
       category,
       tags,
@@ -104,25 +117,39 @@ export const createManualActivity = async (req, res) => {
       isBookingOpen,
       image,
       advertiserId,
-    };
+    });
 
     try {
-      const createdActivity = await activityModel
-        .create(newActivity)
-        .populate("advertiserId", "username");
-      res
-        .status(201)
-        .json({
-          message: "Successfully created new activity",
-          createdActivity,
-        });
+      const createdActivity = await newActivity.save();
+      await createdActivity.populate("advertiserId", "username");
+
+      return res.status(201).json({
+        message: "Successfully created new activity",
+        createdActivity,
+      });
     } catch (error) {
-      res.status(400).json({ message: "Unsuccessful creation of activity" });
+      console.error("Error creating activity:", error); // Log the error for debugging
+      return res.status(400).json({ message: "Unsuccessful creation of activity" });
     }
   } else {
-    res.status(400).json({ message: "Bad parameters" });
+    console.log("Validation failed:");
+    if (!isCategoryValid) {
+      console.log("Invalid category:", category);
+    }
+    if (!areTagsValid) {
+      console.log("Invalid tags:", tags);
+    }
+    if (!isAdvertiserIdValid) {
+      console.log("Invalid advertiser ID:", advertiserId);
+    }
+    if (!isLocationValid) {
+      console.log("Invalid location:", location);
+    }
+
+    return res.status(400).json({ message: "Bad parameters" });
   }
 };
+
 
 const getAllActivities = async (req, res) => {
   res.status(200).json(await getActivities(req.query, {}));
@@ -234,10 +261,7 @@ const deleteActivity = async (req, res) => {
         .populate("advertiserId", "username")
         .populate("category", "name")
         .populate("tags", "name");
-      if (activity.length == 0)
-        res
-          .status(200)
-          .json({ message: "Activity successfully deleted", activityDeleted });
+        res.status(200).json({ message: "Activity successfully deleted", activityDeleted });
     } catch (error) {
       res.status(400).json({ message: "unseuccessful deletion of activity" });
     }

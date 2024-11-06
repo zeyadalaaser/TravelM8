@@ -42,6 +42,7 @@ export function Stars({ rating, onRate }) {
     };
 
     const stars = [];
+
     for (let i = 0; i < 5; i++) {
         const isFilled = hoverRating ? i < hoverRating : i < selectedRating;
         stars.push(
@@ -58,6 +59,7 @@ export function Stars({ rating, onRate }) {
                 />
             </span>
         );
+
     }
     return <div className="flex">{stars}</div>;
 }

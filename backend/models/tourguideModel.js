@@ -1,7 +1,13 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import validator from "validator";
-//import Tourist from './touristModel';
+
+import {
+  validateUsername,
+  validatePassword,
+} from "../services/validators/validators.js";
+
+
 
 const tourGuideSchema = new mongoose.Schema({
   name: {
@@ -12,7 +18,10 @@ const tourGuideSchema = new mongoose.Schema({
     required: true,
     unique: true,
     immutable: true,
-    match: /^[a-zA-Z0-9]{3,16}$/,
+    validate: {
+      validator: validateUsername,
+      message: "Username must contain numbers, letters and length 3-16",
+    },
   },
   email: {
     type: String,
@@ -27,16 +36,21 @@ const tourGuideSchema = new mongoose.Schema({
     type: String,
     minlength: 6,
     required: true,
-    validate: function(value) {
-      return /[a-zA-Z]/.test(value) && /\d/.test(value);
+
+    validate: {
+      validator: validatePassword,
+      message: "Password must contain numbers, letters and min length is 4",
     }
   },
+
+
   mobileNumber: {
     type: String,
   },
   yearsOfExperience: {
     type: Number,
   },
+
   previousWork: [
     {
       type: String,
@@ -77,6 +91,7 @@ tourGuideSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+
 
 const TourGuide = mongoose.model("TourGuide", tourGuideSchema);
 export default TourGuide;

@@ -8,10 +8,11 @@ import mongoose from "mongoose";
 
 export const createItinerary = async (req, res) => {
   try {
-    const newItineraryData = new Itinerary({
-      ...req.body,
-      tourGuideId: req.user.userId,
-    });
+    // const newItineraryData = new Itinerary({
+    //   ...req.body,
+    //   tourGuideId: req.user.userId,
+    // });
+    const newItineraryData = new Itinerary(req.body);
     await newItineraryData.save();
     res.status(201).json({
       message: "Itinerary added successfully",
@@ -28,25 +29,45 @@ export const createItinerary = async (req, res) => {
 // read/retrieve all itineraries
 export const readItineraries = async (req, res) => {
   try {
-    const { upcoming } = req.query;
+    const { upcoming, isAdmin } = req.query;
     const filters = {};
 
-    if (upcoming === "true")
-      filters["availableSlots.startTime"] = { $gte: new Date() };
+    // Apply flagged filter for non-admin users
+    if (isAdmin !== "true") {
+      filters.flagged = false; // Only show unflagged itineraries to non-admin users
+    }
 
+    // Apply the upcoming filter, if specified
+    if (upcoming === "true") {
+      filters["availableSlots.startTime"] = { $gte: new Date() };
+    }
+
+    // Fetch itineraries with the specified filters
     const itineraries = await Itinerary.find(filters)
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
+
     res.status(200).json(itineraries);
   } catch (error) {
+    console.error("Error fetching itineraries:", error.message);
     res.status(500).json({
       message: "Error fetching itineraries",
       error: error.message,
     });
   }
 };
+
+export const fetchItinerary = async (req,res) => {
+  const id = req.params.id;
+  try{
+    const itinerary = await Itinerary.findById(id)
+      .populate("tags")
+      .populate("tourGuideId");
+    return res.status(200).json(itinerary);
+  } catch (error) {
+    return res.status(400).json({ message: "Error", error: error.message });
+  }
+}
 
 //TourGuide only
 export const getMyItineraries = async (req, res) => {
@@ -56,8 +77,6 @@ export const getMyItineraries = async (req, res) => {
       return res.status(404).json({ message: "Enter a valid id" });
     }
     const itineraries = await Itinerary.find({ tourGuideId })
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
     if (itineraries.length == 0)
@@ -75,8 +94,6 @@ export const updateItinerary = async (req, res) => {
     const updatedItinerary = await Itinerary.findByIdAndUpdate(id, req.body, {
       new: true,
     })
-      .populate("activities")
-      .populate("historicalSites")
       .populate("tags")
       .populate("tourGuideId");
 
@@ -126,7 +143,7 @@ export const deleteItinerary = async (req, res) => {
         .status(400)
         .json({ message: "Cannot delete itinerary with existing bookings" });
     } else {
-      const deletedItinerary = await Itinerary.findByIdAndDelete(id);
+      await Itinerary.findByIdAndDelete(id);
     }
 
     return res.status(200).json({ message: "Itinerary deleted successfully" });
@@ -149,7 +166,6 @@ async function getExchangeRates(base = "USD") {
   }
 }
 
-// Read all itineraries with filtering and currency conversion
 export const filterItineraries = async (req, res) => {
   try {
     const {
@@ -162,29 +178,22 @@ export const filterItineraries = async (req, res) => {
       search,
       sortBy,
       order,
-      currency = "USD", // Default to USD if currency is not provided
+      currency = "USD",
     } = req.query;
 
     // Fetch exchange rates for price conversion
-    const rates = await getExchangeRates(currency); // Pass the currency directly
-
+    const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
-
-    // Build filters based on query params
     const filters = {};
-
     if (search) filters.name = { $regex: search, $options: "i" };
-
     if (startDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };
-    if (endDate) {
+    if (endDate)
       filters["availableSlots.date"] = {
         ...filters["availableSlots.date"],
         $lte: new Date(endDate),
       };
-    }
 
-    // Convert prices based on selected currency
     const minConvertedPrice = parseFloat(minPrice) / exchangeRate;
     const maxConvertedPrice = parseFloat(maxPrice) / exchangeRate;
     filters.price = { $gte: minConvertedPrice, $lte: maxConvertedPrice };
@@ -196,18 +205,15 @@ export const filterItineraries = async (req, res) => {
       }).select("_id");
       filters.tags = { $in: tagIds.map((tag) => tag._id) };
     }
-
     if (language) filters.tourLanguage = language;
 
     const sortCondition = sortBy ? { [sortBy]: order === "desc" ? -1 : 1 } : {};
 
-    // Fetch itineraries with filters and sort
     let itineraries = await Itinerary.find(filters)
       .populate("tags")
       .populate("tourGuideId")
       .sort(sortCondition);
 
-    // Convert itinerary prices to the selected currency
     itineraries = itineraries.map((itinerary) => ({
       ...itinerary.toObject(),
       price: (itinerary.price * exchangeRate).toFixed(2),
@@ -221,67 +227,6 @@ export const filterItineraries = async (req, res) => {
       .json({ message: "Server error. Could not filter itineraries." });
   }
 };
-
-// export const searchItems = async (req, res) => {
-//   try {
-
-//       const { name, category, tags } = req.query;
-
-//       const activityFilter = {};
-//       const historicalPlacesFilter = {};
-//       const itineraryFilter = {};
-
-//       if (name) {
-//         const regexName = { $regex: name, $options: 'i' };
-//         activityFilter.title = regexName;
-//         historicalPlacesFilter.name = regexName;
-//         itineraryFilter.name = regexName;
-//       }
-
-//       if (category) {
-//         //activityFilter.category = category.toLowerCase()
-//        // const categoryResult = await ActivityCategory.findOne({ name: category.toLowerCase() });
-//        const tagsArray = category.split(',').map(category => category.trim());
-//         activityFilter.category = { $in: await ActivityCategory.find({ name: { $in: tagsArray } }).select('_id') };
-//         // const activities = await Activity.find(activityFilter);
-//         // return  res.status(200).json(activities);
-//       }
-
-//       if (tags) {
-//         const tagsArray = tags.split(',').map(tag => tag.trim().toLowerCase());
-//          activityFilter['tags'] = { $in: await PreferenceTag.find({ name: { $in: tagsArray } }).select('_id') };
-//        historicalPlacesFilter.tags = { $in: tagsArray };
-//         itineraryFilter['tags']={ $in: await PreferenceTag.find({ name: { $in: tagsArray } }).select('_id') };
-
-//       }
-
-//       const activities =  await Activity.find(activityFilter) ;
-//       const historicalPlace = await HistoricalPlaces.find(historicalPlacesFilter);
-//       const itineraries = await Itinerary.find(itineraryFilter).populate('activities').populate(
-//           'historicalSites');
-
-//       const results = { activities, historicalPlace, itineraries };
-
-//       if (activities.length === 0 && historicalPlace.length === 0 && itineraries.length==0) {
-//         return res.status(404).json({
-//           success: false,
-//           message: 'No matching results found for the given criteria',
-//         });
-//       }
-
-//       res.status(200).json({
-//         success: true,
-//         message: 'Results fetched successfully',
-//         results,
-//       });
-//     } catch (error) {
-//       res.status(500).json({
-//         success: false,
-//         message: 'Error occurred while searching',
-//         error: error.message,
-//       });
-//     }
-//   };
 export const searchItems2 = async (req, res) => {
   try {
     const { name, category, tags } = req.query;
@@ -380,6 +325,7 @@ export const searchItems2 = async (req, res) => {
   }
 };
 
+
 ////For rating the itineraries
 export const rateItinerary = async (req, res) => {
   const { itineraryId, touristId, rating, comment } = req.body;
@@ -402,3 +348,27 @@ export const rateItinerary = async (req, res) => {
     res.status(500).json({ message: "Error submitting rating", error });
   }
 };
+
+export const flagItinerary = async (req, res) => {
+  const { id } = req.params;
+  console.log("ittt");
+  try {
+    const itinerary = await Itinerary.findByIdAndUpdate(
+      id,
+      { flagged: true }, // Set flagged to true
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Itinerary flagged as inappropriate", itinerary });
+  } catch (error) {
+    console.error("Error flagging itinerary:", error);
+    res.status(500).json({ message: "Error flagging itinerary" });
+  }
+};
+
