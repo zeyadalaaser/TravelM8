@@ -20,12 +20,10 @@ import ratingRoute from "./routes/ratingRoute.js";
 import loginRoute from "./routes/loginRoute.js";
 import complaintRoute from "./routes/complaintsRoute.js";
 import bookingsRoute from "./routes/bookingsRoute.js";
-import uploadRoutes from './routes/uploadRoutes.js';
+import uploadRoutes from "./routes/uploadRoutes.js";
 import placeTagRoute from "./routes/placeTagRoute.js";
 
-
-
-dotenv.config({path:'../.env'});
+dotenv.config({ path: "../.env" });
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -59,10 +57,10 @@ app.use("/api", historicalPlacesRoute);
 app.use("/api", itineraryRoute);
 app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
-app.use('/api/auth', loginRoute);
+app.use("/api/auth", loginRoute);
 app.use("/api", bookingsRoute);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/api', uploadRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/api", uploadRoutes);
 
 app.listen(PORT, () => {
   connectDB();
