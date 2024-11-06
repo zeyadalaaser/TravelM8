@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Stars } from "../Stars";
+import { useNavigate } from "react-router-dom";
 import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
 
 export default function ItineraryCard({
@@ -20,6 +21,7 @@ export default function ItineraryCard({
   isTourist,
   currency,
   exchangeRate,
+  isTourGuide,
 }) {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [selectedItinerary, setSelectedItinerary] = useState(null);
@@ -28,6 +30,27 @@ export default function ItineraryCard({
     setSelectedItinerary(itinerary);
     setDialogOpen(true);
   };
+  const navigate = useNavigate();
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/itineraries/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      console.log("Success:", response);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleBook = async (id) => {};
 
   const handleFlagItinerary = async (itineraryId) => {
     try {
@@ -41,7 +64,7 @@ export default function ItineraryCard({
 
   return (
     <>
-      <div className="w-4/5 mx-auto m-3 space-y-2">
+      <div className="w-full mx-auto m-3 space-y-2">
         {itineraries?.map((itinerary) => (
           <Card key={itinerary._id}>
             <div className="flex flex-row">
@@ -130,9 +153,30 @@ export default function ItineraryCard({
                 </div>
                 <div className="text-xl font-bold">
                   {`${(itinerary.price * 1).toFixed(2)} ${currency}`}
-                </div>
+                </div>{" "}
                 <div className="flex justify-end items-center">
-                  {isTourist && !isAdmin && <Button>Book Tour!</Button>}
+                  {isTourist && (
+                    <Button onClick={() => handleBook}>Book Tour!</Button>
+                  )}
+                  {isTourGuide && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => handleDelete(itinerary._id)}
+                        variant="destructive"
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          navigate("/itineraryForm", {
+                            state: { itinerary: itinerary },
+                          })
+                        }
+                      >
+                        Update
+                      </Button>
+                    </div>
+                  )}
                   {isAdmin && (
                     <Button
                       variant="destructive"
@@ -154,9 +198,11 @@ export default function ItineraryCard({
           <div className="flex flex-col mt-4">
             {selectedItinerary?.timeline.map((event, index) => (
               <div key={index} className="flex items-center mb-2">
-                <div className="w-4 h-4 bg-black rounded-full mr-2"></div>
+                <div className="w-4 h-4 bg-black rounded-full mr-2"></div>{" "}
+                {/* Dot */}
                 <div className="flex-1">
-                  <h4 className="font-semibold">{event.event}</h4>
+                  <h4 className="font-semibold">{event.event}</h4>{" "}
+                  {/* Adjust based on your data structure */}
                   <p>Start: {new Date(event.startTime).toLocaleString()}</p>
                   <p>End: {new Date(event.endTime).toLocaleString()}</p>
                 </div>

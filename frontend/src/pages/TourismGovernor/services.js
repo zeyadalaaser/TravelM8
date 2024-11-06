@@ -35,7 +35,7 @@ export async function placeDetails(id) {
 } 
 
 export async function getTags() {
-    return (await apiClient.get('preference-tags')).data;
+    return (await apiClient.get('placetag')).data;
 }
 
 export async function getMuseums(query) {
@@ -49,10 +49,9 @@ export async function deleteHistoricalPlaceApi(id)  {
     await apiClient.delete(`/deletePlace/${id}`);
 };
 
-// export const createPreferenceTag = async (tagName) => {
-//     const response = await axios.post(API_URL, { name: tagName });
-//     return response.data;
-// };
+export const createPlaceTag = async (placeTag) => {
+    return (await apiClient.post(`placetag`,placeTag)).data;
+};
 
 
 

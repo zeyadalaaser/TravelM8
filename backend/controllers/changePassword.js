@@ -42,7 +42,7 @@ export const changePasswordTourist = async (req,res) => {
 
 export const changePasswordTourismGovernor = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword  } = req.body;
-    const userId = req.user.id; 
+    const userId = req.user.userId; 
     try {
       const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, TourismGovernor);
       return res.status(200).json(result);
@@ -53,7 +53,7 @@ export const changePasswordTourismGovernor = async (req,res) => {
 
 export const changePasswordTourGuide = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
-    const userId = req.user.id; 
+    const userId = req.user.userId; 
     try {
       const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, TourGuide);
       return res.status(200).json(result);
@@ -65,7 +65,8 @@ export const changePasswordTourGuide = async (req,res) => {
 
 export const changePasswordSeller = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
-    const userId = req.user.id; 
+    const userId = req.user.userId; 
+    console.log("hello",userId);
     try {
       const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, Seller);
       return res.status(200).json(result);
@@ -77,7 +78,7 @@ export const changePasswordSeller = async (req,res) => {
 
 export const changePasswordAdvertiser = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
-    const userId = req.user.id; 
+    const userId = req.user.userId; 
     try {
       const result = await changeUserPassword(userId, currentPassword, newPassword,confirmNewPassword, Advertiser);
       return res.status(200).json(result);
@@ -88,7 +89,7 @@ export const changePasswordAdvertiser = async (req,res) => {
 
 export const changePasswordAdmin= async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
-    const userId = req.user.id; 
+    const userId = req.user.userId; 
     try {
       const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, Admin);
       return res.status(200).json(result);

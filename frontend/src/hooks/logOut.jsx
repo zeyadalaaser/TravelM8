@@ -24,9 +24,11 @@ const Logout = () => {
   return (
     <AlertDialog>
     <AlertDialogTrigger asChild>
-        <Button variant="outline" size="sm" className="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
-            <LogOut className="mr-3" />Log out
-        </Button>
+    <div className="flex justify-center">
+        <button variant="outline" className="text-red-600 hover:text-red-800">
+            Sign out
+        </button>
+        </div>
     </AlertDialogTrigger>
     <AlertDialogContent>
         <AlertDialogHeader>
@@ -38,7 +40,7 @@ const Logout = () => {
         <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction variant="outline" size="sm" onClick={handleLogout}>
-            <LogOut className="mr-3" /> Sign Out
+            Sign Out
             </AlertDialogAction>
         </AlertDialogFooter>
     </AlertDialogContent>

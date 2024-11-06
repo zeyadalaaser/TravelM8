@@ -24,42 +24,41 @@ function createFilterStage({
 }) {
   const filters = {};
 
-  if (search) {
-    if (searchBy === "categoryName") {
-      filters["categoryName"] = { $regex: search, $options: "i" };
-    } else if (searchBy === "tag") {
-      filters["tags.name"] = { $regex: search, $options: "i" };
-    } else if (searchBy === "name") {
-      filters["title"] = { $regex: search, $options: "i" };
+    if (search) {
+        if (searchBy === 'categoryName') {
+            filters['categoryName'] = { $regex: search, $options: 'i' };
+        } else if (searchBy === 'tag') {
+            filters['tags.name'] = { $regex: search, $options: 'i' }; // Match tag name case-insensitively
+        } else if (searchBy === 'name') {
+            filters['title'] = { $regex: search, $options: 'i' }; // Match activity name case-insensitively
+        }
     }
-  }
 
-  const now = new Date();
-  const start = upcoming
-    ? new Date(Math.max(now, new Date(startDate ?? 0)))
-    : startDate
-    ? new Date(startDate)
-    : null;
-  if (start) filters.date = { $gte: start };
-  if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
+    const now = new Date();
+    const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
+        startDate ? new Date(startDate) : null;
 
-  const conversionRate = rates[currency] || 1;
-  if ((minPrice !== undefined || maxPrice !== undefined) && conversionRate) {
-    const minConvertedPrice =
-      minPrice !== undefined ? parseFloat(minPrice) / conversionRate : null;
-    const maxConvertedPrice =
-      maxPrice !== undefined ? parseFloat(maxPrice) / conversionRate : null;
+    if (start) filters.date = { $gte: start }; // Filter by startDate or current date for upcoming
 
-    filters.price = {};
-    if (minConvertedPrice !== null) filters.price.$gte = minConvertedPrice;
-    if (maxConvertedPrice !== null) filters.price.$lte = maxConvertedPrice;
-  }
+    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
-  if (categoryName) {
-    filters.categoryName = categoryName;
-  }
+        const conversionRate = rates[currency] || 1;
+        if ((minPrice !== undefined || maxPrice !== undefined) && conversionRate) {
+          const minConvertedPrice =
+            minPrice !== undefined ? parseFloat(minPrice) / conversionRate : null;
+          const maxConvertedPrice =
+            maxPrice !== undefined ? parseFloat(maxPrice) / conversionRate : null;
+      
+          filters.price = {};
+          if (minConvertedPrice !== null) filters.price.$gte = minConvertedPrice;
+          if (maxConvertedPrice !== null) filters.price.$lte = maxConvertedPrice;
+        }
 
-  return filters;
+    if (categoryName) {
+        filters.categoryName = categoryName;
+    }
+
+    return filters;
 }
 
 // Function to handle sorting stages
@@ -139,14 +138,15 @@ export async function getActivities({
   const advertiserStage = createAdvertiserStage();
   const tagsStage = createTagsStage();
 
-  const aggregationPipeline = [
-    ...tagsStage,
-    { $match: filters },
-    ...addRatingStage,
-    ...sortStage,
-    ...advertiserStage,
-  ];
+    const aggregationPipeline = [
+        ...tagsStage,
+        { $match: filters },
+        ...addRatingStage,
+        ...sortStage,
+        ...advertiserStage
+    ];
 
-  const activities = await Activity.aggregate(aggregationPipeline);
-  return activities;
+    // Execute the aggregation pipeline
+    const activities = await Activity.aggregate(aggregationPipeline);
+    return activities;
 }

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes, useNavigate,useParams } from 'react-router-dom';
-import { Bell, ChevronDown, Layout, List, Map, Plus, Settings, Tag, User, Edit, Trash2, Eye, LogOut  } from 'lucide-react';
+import { Bell, ChevronDown, Layout, List, Map, Plus, Settings, Tag, User, Edit, Trash2, Eye  } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast"
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -22,7 +21,6 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";  
 import * as services from "@/pages/TourismGovernor/services.js";
-import { Copy } from "lucide-react";
 import Logout from "@/hooks/logOut.jsx";
 
 
@@ -32,9 +30,13 @@ const TourismGovernorDashboard = () => {
     const token = localStorage.getItem('token');
     const navigate = useNavigate();
     const { id } = useParams();
-    const [tags, setTags] = useState(['Ancient', 'Medieval', 'Renaissance', 'Museum', 'Historical Site']);
-    const [newTag, setNewTag] = useState('');
+    const [type, setType] = useState("");
+    const [historicalPeriod, setHistoricalPeriod] = useState("");
     const [selectedPlace, setSelectedPlace] = useState(null);
+    const [tags, setTags] = useState([]); // State to hold the tags
+    const [error, setError] = useState(""); // State to hold error message
+    const [message, setMessage] = useState("")
+    const [selectedTags, setSelectedTags] = useState([]);
     const [newLocation, setNewLocation] = useState({
         name: '',
         description: '',
@@ -46,7 +48,7 @@ const TourismGovernorDashboard = () => {
             { type: 'Student', price: '' },
             { type: 'Foreigner', price: '' },
         ],
-        tags: { type: '', historicalPeriod: '' },
+        tags: '',
      });
      const [isEditing, setIsEditing] = useState({
         image: false,
@@ -88,8 +90,21 @@ const TourismGovernorDashboard = () => {
             { type: 'Student', price: '' },
             { type: 'Foreigner', price: '' },
         ],
-        tags: { type: '', historicalPeriod: '' },
+        tags: '',
      });;
+
+     useEffect(() => {
+      // Fetch tags when the component mounts
+      const fetchTags = async () => {
+        try {
+          const fetchedTags = await services.getTags(); // Call the function to fetch the tags
+          setTags(fetchedTags); // Set the fetched tags in the state
+        } catch (error) {
+          setError("Error fetching place tags."); // Handle error if the API call fails
+        }
+      };
+      fetchTags();
+    }, []);
 
 
     const handleInputChange = (e, field) => {
@@ -98,14 +113,6 @@ const TourismGovernorDashboard = () => {
         [field]: e.target.value,
     });
     };
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setFormData(prev => ({ ...prev, [name]: value }));
-    // };
-
-    const handleEdit = async(event) => {
-        event.preventDefault();
-    }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -158,14 +165,14 @@ const TourismGovernorDashboard = () => {
             alert('Place updated successfully!');
             window.location.reload();
           } else {
-            if (missingFields.length > 0) {
-                alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
-                return;
-            }
+            // if (missingFields.length > 0) {
+            //     alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
+            //     return;
+            // }
             services.postPlace(token,newPlace);
             alert("Place Added Succesfully");
             console.log("form submitted");
-            window.location.reload();
+             window.location.reload();
           }
           navigate('/TourismGovernorDashboard');
         }catch (error) {
@@ -175,6 +182,13 @@ const TourismGovernorDashboard = () => {
         }
         setOpen(false)
       };
+      const handleTagChange = (value) => {
+        console.log("Selected Tag:", value); // Debugging line
+        setNewLocation(prevLocation => ({
+            ...prevLocation,
+            tags: value, // Ensure this matches the field you're using
+        }));
+    };
 
   useEffect(() => {
     if (!token) {
@@ -203,10 +217,23 @@ const TourismGovernorDashboard = () => {
     }
   };
 
-  const handleAddTag = () => {
-    if (newTag && !tags.includes(newTag)) {
-      setTags([...tags, newTag]);
-      setNewTag('');
+  const handleAddTag = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    if (!type || !historicalPeriod) {
+      setMessage("All fields are required.");
+      return;
+    }
+
+    try {
+      const response = await services.createPlaceTag({ type, historicalPeriod })
+      setMessage(response.message || "Tag created successfully");
+      setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
+      setType("");
+      setHistoricalPeriod("");
+      setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
+    } catch (error) {
+      setMessage(error.response ? error.response.data.message : "Error occurred");
     }
   };
 
@@ -397,33 +424,23 @@ const TourismGovernorDashboard = () => {
                             </div>
 
                             {/* Type and Period in two columns */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4"> 
                                 <div className="flex flex-col gap-2">
-                                <Label htmlFor="type" className="text-left">
-                                    Type
+                                <Label htmlFor="tag" className="text-left">
+                                    Tag
                                 </Label>
-                                <Select required onValueChange={(value) => setNewLocation({ ...newLocation, tags: { ...newLocation.tags, type: value } })}>
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="museum">Museum</SelectItem>
-                                        <SelectItem value="Palaces/castles">Palaces and Castles</SelectItem>
-                                        <SelectItem value="monument">Monument</SelectItem>
-                                        <SelectItem value="religious site">Religious Site</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                <Label htmlFor="period" className="text-left">
-                                    Period
-                                </Label>
-                                <Input
-                                    id="period"
-                                    required
-                                    value={newLocation.tags.historicalPeriod}
-                                    onChange={e => setNewLocation({ ...newLocation, tags: { ...newLocation.tags, historicalPeriod: e.target.value } })}
-                                />
+                                <Select onValueChange={handleTagChange} value={newLocation.tags}>
+                                  <SelectTrigger>
+                                      <SelectValue placeholder="Select a tag" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                  {tags.map((tag) => (
+                                        <SelectItem key={tag._id} value={tag._id}>
+                                            {tag.type} - {tag.historicalPeriod}
+                                        </SelectItem>
+                                    ))}
+                                 </SelectContent>
+                              </Select>
                                 </div>
                              </div>
 
@@ -541,14 +558,6 @@ const TourismGovernorDashboard = () => {
                         <CardTitle >{location.name}</CardTitle>
                         <CardDescription >{location.description}</CardDescription>
                       </CardHeader>
-                      {/* <CardContent>
-                        <p className="text-sm text-gray-600 mb-2">{location.description}</p>
-                        <p className="text-sm"><strong>Opening Hours:</strong> {location.openingHours.open} - {location.openingHours.close} </p>
-                        <p className="text-sm"><strong>Ticket Prices:</strong></p>
-                        <p className="text-sm">Regular: {location.price[0].price}</p>
-                        <p className="text-sm">Students: {location.price[1].price}</p>
-                        <p className="text-sm">Foreigners: {location.price[2].price}</p>
-                      </CardContent> */}
                       <CardFooter className="flex justify-end space-x-2">
                         <Dialog onOpenChange={(open) => !open && handleDialogClose()}>
                             <DialogTrigger asChild>
@@ -813,7 +822,7 @@ const TourismGovernorDashboard = () => {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure you want to delete this place?</AlertDialogTitle>
+                                    <AlertDialogTitle>Are you sure you want to delete this  historical place?</AlertDialogTitle>
                                     <AlertDialogDescription>
                                         This action cannot be undone. This will permanently delete your
                                         created place and remove it from our servers.
@@ -843,22 +852,41 @@ const TourismGovernorDashboard = () => {
               <CardDescription>Create and manage tags for categorizing locations</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex space-x-2 mb-4">
-                <Input
-                  placeholder="New tag name"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  className="w-64"
-                />
-                <Button onClick={handleAddTag}>Add Tag</Button>
-              </div>
+            <div className="flex space-x-2 mb-4">
+            <Select value ={type} onValueChange={(value) => setType(value)}>
+               <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                     <SelectContent>
+                        <SelectItem value="Museum">Museum</SelectItem>
+                        <SelectItem value="Palace">Palace</SelectItem>
+                        <SelectItem value="Monument">Monument</SelectItem>
+                        <SelectItem value="Religious Site">Religious Site</SelectItem>
+                  </SelectContent>
+            </Select>
+              {/* <Input
+                placeholder="Type"
+                className="w-1/2"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+              /> */}
+              <Input
+                value={historicalPeriod}
+                onChange={(e) => setHistoricalPeriod(e.target.value)}
+                placeholder="Historical Period"
+                className="w-1/2" // Half width
+              />
+              <Button onClick={handleAddTag}>Add Tag</Button>
+            </div>
               <div className="flex flex-wrap gap-2">
-                {tags.map((tag, index) => (
-                  <div key={index} className="bg-gray-200 px-3 py-1 rounded-full text-sm">
-                    
-                    {tag}
-                  </div>
-                ))}
+              {tags.map((tag, index) => (
+                <div key={index} className="bg-gray-200 px-3 py-1 rounded-full text-sm flex items-center space-x-2">
+                  <span className="font-semibold">{tag.type}</span>
+                  <span>-</span>
+                  <span className="font-semibold">{tag.historicalPeriod}</span>
+                </div>
+              ))}
+
               </div>
             </CardContent>
           </Card>

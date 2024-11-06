@@ -38,13 +38,13 @@ export default function Login() {
       } else if (role === 'Seller') {
         navigate('/SellerProfile'); // Seller role
       } else if (role === 'TourGuide') {
-        navigate('/TourGuideDashboard');
+        navigate('/tourGuideDashboard');
     } else if (role === 'TourismGovernor') {
         navigate('/TourismGovernorDashboard');
       } else if (role === 'Admin') {
         navigate('/dashboard');
       } else if (role === 'Advertiser') {
-        navigate('/advertiserHomePage');
+        navigate('/advertiserDashboard');
       } else {
         navigate('/default-page'); // Default page if role doesn't match
       }
