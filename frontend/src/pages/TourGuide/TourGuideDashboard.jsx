@@ -43,7 +43,7 @@ const TourGuideDashboard = () => {
                 <Plus className="mr-2 h-4 w-4" /> Create Itinerary
               </Button>
             </div>
-            <ItineraryCard itineraries={itineraries} onRefresh={refreshItineraries} isTourGuide={true} />
+            <ItineraryCard itineraries={itineraries} currency= {"USD"} onRefresh={refreshItineraries} isTourGuide={true} />
           </div>
         </div>
       </div>

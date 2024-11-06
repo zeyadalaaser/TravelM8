@@ -114,7 +114,7 @@ export default function TouristPage() {
       </div>
 
   
-      { page === "activities" && <ActivitiesPage /> }
+  { page === "activities" && <ActivitiesPage /> }
   { page === "itineraries" && <ItinerariesPage /> }
   { page === "museums" && <MuseumsPage /> }
   { page === "products" && <ProductsPage /> }
