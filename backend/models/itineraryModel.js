@@ -102,7 +102,7 @@ const itineraySchema = new mongoose.Schema({
   ],
     ratings: [
         {
-          touristId: { type: mongoose.Schema.Types.ObjectId, ref: "Tourist", required: true },
+          touristId: { type: mongoose.Schema.Types.ObjectId, ref: "Tourist", required: false },
           rating: { type: Number, required: false, min: 1, max: 5 },
           comment: { type: String }
         }
