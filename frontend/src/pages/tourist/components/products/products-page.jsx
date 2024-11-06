@@ -15,8 +15,8 @@ import axios from "axios";
 
 export function ProductsPage({ touristId }) {
   console.log("Tourist ID in ProductsPage:", touristId);
-  const { location } = useRouter();
-   const location = useLocation();
+  //const { location } = useRouter();
+  const location = useLocation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [currency, setCurrency] = useState("USD");

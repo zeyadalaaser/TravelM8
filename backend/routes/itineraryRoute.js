@@ -9,7 +9,7 @@ import {
   getMyItineraries,
   searchItems2,
   flagItinerary,
-  fetchItinerary
+  fetchItinerary,
   rateItinerary
 
 } from "../controllers/itineraryController.js";
