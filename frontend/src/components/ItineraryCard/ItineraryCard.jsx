@@ -19,6 +19,7 @@ export default function ItineraryCard({
   itineraries,
   isAdmin,
   isTourist,
+  isTourGuide,
   currency,
   exchangeRate,
   isTourGuide,
