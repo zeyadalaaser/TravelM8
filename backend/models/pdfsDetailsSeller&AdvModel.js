@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const pdfDetailsSchema = new mongoose.Schema({
-    image: {
-        type: String,
-        required: true,
-      },
+  image: {
+    type: String,
+    required: true,
+  },
   idpdf: {
     type: String,
     required: true,
@@ -20,9 +20,9 @@ const pdfDetailsSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['Advertiser', 'Seller'],  // Ensure the type is one of these values
+    enum: ["Advertiser", "Seller"], // Ensure the type is one of these values
   },
 });
 
-const pdfDetailsModel = mongoose.model('PdfDetails', pdfDetailsSchema);
+const pdfDetailsModel = mongoose.model("PdfDetails", pdfDetailsSchema);
 export default pdfDetailsModel;

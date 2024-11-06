@@ -4,13 +4,10 @@ import Tourist from '../models/touristModel.js';
 import Itinerary from '../models/itineraryModel.js';
 import TourGuide from '../models/tourguideModel.js';
 
-
-
 export const createBooking = async (req, res) => {
   try {
     const { tourist, itinerary, tourGuide, tourDate } = req.body;
 
-    
     const newBooking = new Booking({
       tourist,
       itinerary,
