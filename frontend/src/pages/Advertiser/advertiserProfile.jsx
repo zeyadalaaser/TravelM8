@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react'
   import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
   import { fetchProfileInfo ,updateProfile,changePassword} from '../Advertiser/api/apiService';
   import { Textarea } from "@/components/ui/textarea";
+  import Logout from "@/hooks/logOut.jsx";
   
   const advertiserProfilePage = () => {
   
@@ -363,6 +364,7 @@ import React, { useState, useEffect } from 'react'
                 <Settings className="mr-3" />
                 Security & Settings
               </button>
+              <Logout />
               </nav>
       </aside>
   
