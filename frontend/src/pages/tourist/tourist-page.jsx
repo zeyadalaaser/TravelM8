@@ -83,11 +83,12 @@ export default function TouristPage() {
   return (
   
   
-    <div className="container mx-auto p-4 min-h-[101vh]">
-      <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
-      <div className="flex justify-between">
-        <NavBar onComplaintClick={() => setShowComplaintForm(true)} onRedeemClick={() => setShowRedeemPoints(true)} />
-        <div className="flex">
+    <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
+    <DashboardsNavBar profilePageString="/tourist-profile"/>
+    <div className="flex">
+      <NavBar onComplaintClick={() => setShowComplaintForm(true)} 
+        onRedeemClick={() => setShowRedeemPoints(true)}/>
+      <div className="flex">
           {/* Badge Display with Styling */}
           <div className="-translate-y-1 badge-container flex items-center p-2 rounded-full shadow-md bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm mr-2">
             <Award className="w-4 h-4 mr-1" />
@@ -96,9 +97,8 @@ export default function TouristPage() {
               <p className="text-xs">{totalPoints || 0} Points</p>
             </div>
           </div>
-          <CircleUserRound className="cursor-pointer h-10 w-10" onClick={() => navigate("/tourist-profile")} />
-        </div>
-      </div>
+          </div>
+</div>
 
 
 
