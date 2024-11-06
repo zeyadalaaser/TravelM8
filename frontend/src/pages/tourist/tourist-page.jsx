@@ -20,7 +20,7 @@ import { RedeemPoints } from "./components/Points/redeemPoints"
 
 
  
-import { CompletedToursPage } from "./components/itineraries/CompletedToursPage";
+ 
  
 
 export default function TouristPage() {
@@ -81,10 +81,8 @@ export default function TouristPage() {
   const page = searchParams.get("type");
 
   return (
-    <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
-      <DashboardsNavBar profilePageString="/tourist-profile"/>
-      <div className="flex">
-        <NavBar onComplaintClick={() => setShowComplaintForm(true)} />
+  
+  
     <div className="container mx-auto p-4 min-h-[101vh]">
       <h1 className="text-2xl font-bold mb-4">TravelM8</h1>
       <div className="flex justify-between">
@@ -111,6 +109,7 @@ export default function TouristPage() {
       {page === "flights" && <FlightsPage />}
       {page === "hotels" && <HotelsPage />}
       {page === "complaints" && <MyComplaintsPage />}
+      {page === "completed-tours" && <CompletedToursPage />}
       {showComplaintForm && (
         <ComplaintForm onClose={() => setShowComplaintForm(false)} />
       )}
@@ -120,8 +119,8 @@ export default function TouristPage() {
 
 
        
-      {page === "completed-tours" && <CompletedToursPage />}
-      
-    </div>
+     
+</div>
+    
   );
 }
