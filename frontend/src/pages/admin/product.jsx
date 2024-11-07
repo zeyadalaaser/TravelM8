@@ -297,6 +297,7 @@ const toggleArchive = async (productId, isArchived) => {
                 <TableHead>Product Name</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead>Quantity</TableHead>
+                <TableHead>Sales</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -307,6 +308,7 @@ const toggleArchive = async (productId, isArchived) => {
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.price}</TableCell>
                   <TableCell>{product.quantity}</TableCell>
+                  <TableCell>{product.sales}</TableCell>
                   <TableCell>{product.description}</TableCell>
                   <TableCell>
                     {/* //toggle to archive / unarchive a p */}

@@ -113,33 +113,7 @@ export default function SellerProducts() {
     }
   };
 
-  /* const archiveProduct = async (productId) => {
-    try{
-      await fetch(`http://localhost:5001/api/products/${productId}/archive`,{
-        method: 'PUT',
-        headers:{
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      setProducts((prev) => prev.map((product) => product._id === productId ? {...product, archived: true}: product));
-    }catch (error){
-      console.error('Error archiving product:' , error);
-    }
-  };
-
-  const unarchiveProduct = async (productId) => {
-    try{
-      await fetch(`http://localhost:5001/api/products/${productId}/unarchive`,{
-        method: 'PUT',
-        headers:{
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      setProducts((prev) => prev.map((product) => product._id === productId ? {...product, archived: false}: product));
-    }catch (error){
-      console.error('Error unarchiving product:' , error);
-    }
-  }; */
+ 
 
 
   // Function to update the product
@@ -227,6 +201,8 @@ export default function SellerProducts() {
                 />
                 <p className="font-bold">{`Price: EGP ${product.price.toFixed(2)}`}</p>
                 <p className="mb-2">{product.description}</p>
+                <p className='mb-2'>{`Sold: ${product.sales} `}</p>
+                <p className='mb-2'>{`Remaining stock: ${product.quantity}`}</p>
                 <p className="font-semibold">{`Seller ID: ${product.sellerId}`}</p>
                 <Button className="mt-2 ml-2" onClick={() => handleEdit(product)}>
                   Edit
