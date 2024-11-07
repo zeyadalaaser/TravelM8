@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+
 const ProductList = ({ onEdit }) => {
   const [products, setProducts] = useState([]);
 
@@ -18,6 +19,38 @@ const ProductList = ({ onEdit }) => {
     setProducts(products.filter((product) => product._id !== id));
   };
 
+//added archive and unarchive toggle to products 
+
+  const archiveProduct = async (productId) => {
+    try{
+      await fetch(`http://localhost:5001/api/products/${productId}/archive`,{
+        method: 'PUT',
+        headers:{
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setProducts((prev) => prev.map((product) => product._id === productId ? {...product, archived: true}: product));
+    }catch (error){
+      console.error('Error archiving product:' , error);
+    }
+  };
+
+  const unarchiveProduct = async (productId) => {
+    try{
+      await fetch(`http://localhost:5001/api/products/${productId}/unarchive`,{
+        method: 'PUT',
+        headers:{
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setProducts((prev) => prev.map((product) => product._id === productId ? {...product, archived: false}: product));
+    }catch (error){
+      console.error('Error unarchiving product:' , error);
+    }
+  };
+
+
+
   return (
     <div>
       <h2>Products</h2>
@@ -29,6 +62,7 @@ const ProductList = ({ onEdit }) => {
             <p>Price: ${product.price}</p>
             <p>Quantity: {product.quantity}</p>
             <p>{product.description}</p>
+            
             <button onClick={() => onEdit(product)}>Edit</button>
             <button onClick={() => handleDelete(product._id)}>Delete</button>
           </li>

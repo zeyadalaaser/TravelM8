@@ -97,6 +97,25 @@ export default function SellerProducts() {
     setIsEditProductModalOpen(true);
   };
 
+
+
+  const toggleArchive = async (productId, isArchived) => {
+    try{
+      await fetch(`http://localhost:5001/api/products/${productId}/${isArchived? 'unarchive' : 'archive'}`,{
+        method: 'PUT',
+        headers:{
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setProducts((prev) => prev.map((product) => product._id === productId ? {...product, archived: !isArchived}: product));
+    }catch (error){
+      console.error(`Error ${isArchived? 'unarchive' : 'archive'} product:` , error);
+    }
+  };
+
+ 
+
+
   // Function to update the product
   const updateProduct = async (productData) => {
     try {
@@ -182,9 +201,14 @@ export default function SellerProducts() {
                 />
                 <p className="font-bold">{`Price: EGP ${product.price.toFixed(2)}`}</p>
                 <p className="mb-2">{product.description}</p>
+                <p className='mb-2'>{`Sold: ${product.sales} `}</p>
+                <p className='mb-2'>{`Remaining stock: ${product.quantity}`}</p>
                 <p className="font-semibold">{`Seller ID: ${product.sellerId}`}</p>
-                <Button className="mt-2" onClick={() => handleEdit(product)}>
+                <Button className="mt-2 ml-2" onClick={() => handleEdit(product)}>
                   Edit
+                </Button>
+                <Button className="mt-2 ml-2" onClick={() => toggleArchive(product._id, product.archived)}>
+                  {product.archived? 'Unarchive' : 'Archive'}
                 </Button>
                 <Button
                   className="mt-2 ml-2"
