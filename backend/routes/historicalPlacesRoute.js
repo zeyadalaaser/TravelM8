@@ -16,18 +16,18 @@ import {
 const router = express.Router();
 
 
+
+
+
 router.get("/getPlace/:id",getTourById)
 router.get('/getMyGovernor', verifyToken, getMyGovernor);
 router.post("/addPlace",verifyToken , createHistoricalPlace);  
 router.get("/getAllPlaces", getAllHistoricalPlaces);    
-router.put("/updatePlace/:id", updateHistoricalPLace); 
+router.put("/updatePlace/:id",verifyToken, updateHistoricalPLace); 
 router.delete("/deletePlace/:id", deleteHistoricalPLace); 
 router.put("/createTag/:id",createTags);
 router.get("/filterbyTags",filterbyTags);
 router.get("/myPlaces",verifyToken, getMyPlaces); // Retrieve my places
-
-
-
 
 
 export default router;

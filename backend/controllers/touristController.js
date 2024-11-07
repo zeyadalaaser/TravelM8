@@ -1,6 +1,6 @@
 import Tourist from '../models/touristModel.js'; 
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
-import bcrypt from 'bcryptjs';
+
 
 
 
@@ -26,11 +26,9 @@ export const createTourist = async(req,res) => {
 export const updateTouristProfile = async (req, res) => {
    const userId = req.user.userId;
    try{
-       // Check if the password is being updated and hash it if so
     if (req.body.password) {
       req.body.password = await hashPassword(req.body.password);
     }
-
       const updatedTourist = await Tourist.findByIdAndUpdate(
          userId,        
          req.body,         
@@ -65,4 +63,78 @@ export const updateTouristProfile = async (req, res) => {
       res.status(400).json({ message: "could not fetch account information" });
    }
 }
+
+
+export const updatePoints = async (req, res) => {
+ // const { id } = req.params;
+    const userId = req.user.userId;
+  const { amountPaid } = req.body;
+
+  try {
+    const tourist = await Tourist.findById(userId);
+    if (!tourist) {
+      return res.status(404).json({ success: false, message: 'Tourist not found' });
+    }   
+    let pointsEarned;
+    if (tourist.loyaltyPoints <= 100000) {
+      pointsEarned = amountPaid * 0.5;
+    } else if (tourist.loyaltyPoints <= 500000) {
+      pointsEarned = amountPaid * 1;
+    } else {
+      pointsEarned = amountPaid * 1.5;
+    }
+
+    // Update loyalty points
+    tourist.loyaltyPoints += pointsEarned;
+
+    
+    if (tourist.loyaltyPoints <= 100000) {
+      tourist.badgeLevel = 'Level 1';
+    } else if (tourist.loyaltyPoints <= 500000) {
+      tourist.badgeLevel = 'Level 2';
+    } else {
+      tourist.badgeLevel = 'Level 3';
+    }
+
+    await tourist.save();
+    res.status(200).json(tourist);
+  } catch (error) {
+    res.status(500).json({ success: false, message: `Error processing payment: ${error.message}` });
+  }
+};
+
+
+
+export const redeemPoints = async (req, res) => {
+  //const { id } = req.params;  
+  const userId = req.user.userId;
+  try {
+    const tourist = await Tourist.findById(userId);
+    if (!tourist) {
+      return res.status(404).json({ success: false, message: 'Tourist not found' });
+    }
+
+    if (tourist.loyaltyPoints < 10000) {
+      return res.status(400).json({ success: false, message: 'Not enough points to redeem' });
+    }
+
+    const cashEarned = Math.floor(tourist.loyaltyPoints / 10000) * 100;
+    const pointsRedeemed = Math.floor(tourist.loyaltyPoints / 10000) * 10000;
+
+    // Update tourist's wallet and points
+    const updatedTourist = await Tourist.findByIdAndUpdate(
+      userId,
+      { 
+        $inc: { wallet: cashEarned } ,  
+        $set: { loyaltyPoints:0 }    
+      },
+      { new: true, runValidators: true }  
+    );
+    await updatedTourist.save();
+
+    res.status(200).json(updatedTourist);
+  } catch (error) {
+    res.status(500).json({ success: false, message: `Error redeeming points: ${error.message}` });
+  }
+};
 

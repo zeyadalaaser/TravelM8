@@ -1,77 +1,98 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
-import bcrypt from 'bcryptjs';
-import moment from 'moment';
+import bcrypt from "bcryptjs";
+import moment from "moment";
 import validator from "validator";
+import {
+  validateUsername,
+  validatePassword,
+} from "../services/validators/validators.js";
 
-const touristSchema = new Schema({
-  name: {
+const touristSchema = new Schema(
+  {
+    name: {
+      type: String,
+    },
 
-    type: String
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      immutable: true,
+      validate: {
+        validator: validateUsername,
+        message: "Username must contain numbers, letters and length 3-16",
+      },
+    },
 
-  },
-  
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    immutable: true,
-    match: /^[a-zA-Z0-9]{3,16}$/,
-  },
- 
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    validate: {
-      validator: (email) => validator.isEmail(email), // Using Validator.js
-      message: 'Please enter a valid email address.',
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: {
+        validator: (email) => validator.isEmail(email), // Using Validator.js
+        message: "Please enter a valid email address.",
+      },
+    },
+
+    password: {
+      type: String,
+      required: true,
+      validate: {
+        validator: validatePassword,
+        message: "Password must contain numbers, letters and min length is 4",
+      },
+    },
+
+    mobileNumber: {
+      type: String,
+      required: true,
+    },
+
+    nationality: {
+      type: String,
+      required: true,
+    },
+
+    dob: {
+      type: Date,
+      required: true,
+      immutable: true, // This ensures that dob cannot be changed after creation
+      validate: {
+        validator: function (value) {
+          const age = moment().diff(moment(value), "years");
+          return age >= 18; // Returns false if the age is less than 18
+        },
+        message: "You must be at least 18 years old to register.",
+      },
+    },
+
+    occupation: {
+      // student/job
+      type: String,
+      required: true,
+    },
+
+    wallet: {
+      type: Number,
+      required: false,
+      default: 0,
+      //immutable: true,
+    },
+    
+    loyaltyPoints: {
+      type: Number,
+      default: 0,
+    },
+    badgeLevel: {
+      type: String,
+      enum: ['Level 1', 'Level 2', 'Level 3'],
+      default: 'Level 1',
     },
   },
-  password: {
-    type: String,
-    minlength: 6,
-    required: true,
-    validate: function(value) {
-        // Regular expression to check if the password has at least one letter and one number
-        return /[a-zA-Z]/.test(value) && /\d/.test(value);
-      }
-  },
-
-  mobileNumber: {
-    type: String,
-    required: true,
-     
-  },
-  nationality: {
-    type: String,
-    required: true,
-  },
-  dob: {
-    type: Date,
-    required: true,
-    immutable: true,  // This ensures that dob cannot be changed after creation
-    validate: {
-      validator: function(value) {
-        const age = moment().diff(moment(value), 'years');
-        return age >= 18; // Returns false if the age is less than 18
-      },
-      message: 'You must be at least 18 years old to register.'
-    }
-  },
-  occupation:{  // student/job
-    type: String,
-    required: true,
-},
-
-  wallet:{
-    type: Number,
-    required: false,
-    default: 0,
-    immutable: true,
-  },
-
-}, { timestamps: true });
+  { timestamps: true }
+);
+ 
 
 
 
@@ -83,14 +104,14 @@ touristSchema.pre('save', function(next) {
   next();
 });
 
-touristSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-      next();
+touristSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
-const Tourist= mongoose.model("Tourist", touristSchema);
+const Tourist = mongoose.model("Tourist", touristSchema);
 export default Tourist;

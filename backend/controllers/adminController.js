@@ -12,7 +12,6 @@ import TourismGovernor from '../models/tourismGovernorModel.js';
 import HistoricalPlaces from '../models/historicalPlacesModel.js';
 import Rating from '../models/ratingModel.js';
 
-
 export const registerAdmin = async (req, res) => {
     const { username, password } = req.body;
     const isNotUnique = await checkUniqueUsername(username);

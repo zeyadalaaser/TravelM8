@@ -21,6 +21,10 @@ const activitySchema = new mongoose.Schema({
     },
 
     location: {
+        // name:{
+        //     type:String,
+        //     required: true
+        // },
         lat: {
             type: Number,
             required: true,
@@ -70,13 +74,16 @@ const activitySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-
+    
     advertiserId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Advertiser',
         required: true,
     },
-    
+    averageRating: {
+        type: Number,
+        default: 0,
+    },
 });
 
 const Activity = mongoose.model("Activity", activitySchema);

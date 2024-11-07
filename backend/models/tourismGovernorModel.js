@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
-import validator from "validator";
+import {
+  validateUsername,
+  validatePassword,
+} from "../services/validators/validators.js";
+
 
 const tourismGovernorSchema = new mongoose.Schema({
   username: { 
@@ -7,17 +11,19 @@ const tourismGovernorSchema = new mongoose.Schema({
     required: true, 
     unique: true, 
     immutable: true,
-    match: /^[a-zA-Z0-9]{3,16}$/,
+    validate: {
+      validator: validateUsername,
+      message: "Username must contain numbers, letters and length 3-16",
+    },
   },
   password: { 
     type: String,
-    minlength: 6,
     required: true,
-    validate: function(value) {
-        // Regular expression to check if the password has at least one letter and one number
-        return /[a-zA-Z]/.test(value) && /\d/.test(value);
-    }
-   },
+    validate: {
+      validator: validatePassword,
+      message: "Password must contain numbers, letters and min length is 4",
+    },
+  }
 });
 
 const TourismGovernor = mongoose.model(
