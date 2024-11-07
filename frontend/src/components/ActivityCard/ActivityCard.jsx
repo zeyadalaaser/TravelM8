@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
 
-export default function ActivityCard({ activities, isTourist, isAdvertiser, isAdmin }) {
+export default function ActivityCard({ activities, isAdvertiser, isAdmin }) {
+
+
 
   const navigate = useNavigate();
+
 
   const handleDelete = async (id) => {
     try {
@@ -82,7 +85,6 @@ export default function ActivityCard({ activities, isTourist, isAdvertiser, isAd
                     : activity.price}
                 </div>
                 <div className="flex justify-end items-center">
-                  {isTourist && <Button onClick={()=>handleBook}>Book Activity!</Button>}
                   {isAdvertiser && (
                     <div className="flex items-center gap-2">
                       <Button

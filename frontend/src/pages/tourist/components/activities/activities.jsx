@@ -2,8 +2,16 @@ import { Clock, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "../stars";
+import { Button } from "@/components/ui/button";
 
-function Activities({ activities, currency, exchangeRate }) {
+
+function Activities({token, bookActivity, activities, currency, exchangeRate }) {
+  
+    const handleBook = (activityId) =>{
+      // if(bookActivity){
+        const response =  bookActivity(activityId, token);
+        alert(response.message);
+    }
   return (
     <div className="space-y-4">
       {activities.map((activity, index) => (
@@ -51,6 +59,9 @@ function Activities({ activities, currency, exchangeRate }) {
                       activity.price[1] * exchangeRate
                     ).toFixed(2)} ${currency}`
                   : `${(activity.price * exchangeRate).toFixed(2)} ${currency}`}
+              </div>
+              <div className="flex justify-end items-center">
+                <Button onClick={()=>handleBook(activity._id)}>Book Activity!</Button>
               </div>
             </div>
           </div>

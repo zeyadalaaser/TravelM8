@@ -3,7 +3,7 @@ const secret = "a$T8#fGz!x7%kH4q";
 
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1]; // Get the token from the Authorization header
-
+  console.log(token);
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
   }
@@ -12,7 +12,7 @@ const verifyToken = (req, res, next) => {
     if (err) {
       return res.status(403).json({ message: 'Token is not valid' });
     }
-    // console.log('Decoded Token:', decoded); 
+    console.log('Decoded Token:', decoded); 
 
     // Attach user info to the request object
     req.user = {
