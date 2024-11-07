@@ -34,7 +34,7 @@ export function Flights({ flights }) {
     return flights.map((flight, index) => {
         const details = itineraryToFlight(flight);
         return (
-            <Card key={index} className="mb-4 bg-inherit border-none shadow-none w-full flex justify-between">
+            <Card key={index} className="mb-4 bg-inherit border-none shadow-none w-full flex">
                 <div className="border rounded bg-white p-6 space-y-6 w-full">
                     <Trip trip={details.outbound} isOutbound={true} />
 
