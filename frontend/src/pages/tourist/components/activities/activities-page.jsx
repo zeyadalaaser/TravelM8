@@ -17,6 +17,7 @@ import { createActivityBooking } from "../../api/apiService";
 
 export function ActivitiesPage() {
   const token = localStorage.getItem('token');
+  console.log(token);
 
   const { location } = useRouter();
   const [activities, setActivities] = useState([]);

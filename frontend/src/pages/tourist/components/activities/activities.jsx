@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 
 function Activities({token, bookActivity, activities, currency, exchangeRate }) {
   
-    const handleBook = (activityId) =>{
-      // if(bookActivity){
-        const response =  bookActivity(activityId, token);
+    const handleBook = async (activityId) =>{
+      console.log(token);
+        const response = await bookActivity(activityId, token);
+        console.log(response.message);
         alert(response.message);
     }
   return (
