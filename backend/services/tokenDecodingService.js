@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 const secret = "a$T8#fGz!x7%kH4q";
+import { invalidatedTokens } from '../controllers/logoutController.js';
 
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1]; // Get the token from the Authorization header
@@ -7,6 +8,10 @@ const verifyToken = (req, res, next) => {
   if (!token) {
     console.log("where", token);
     return res.status(401).json({ message: 'No token provided' });
+  }
+
+  if (invalidatedTokens.has(token)) {
+    return res.status(401).json({ error: 'Token is invalid or has been logged out' });
   }
 
   jwt.verify(token, secret, (err, decoded) => {

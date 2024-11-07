@@ -25,6 +25,42 @@ export const createProduct = async (req, res) => {
   }
 };
 
+
+export const archiveProduct = async (req, res) => {
+  try {
+    const{id}= req.params;
+    console.log(`Archiving product with ID: ${id}`);
+
+    const ArchivedProduct = await Product.findByIdAndUpdate(
+      id,
+      {archived: true}, 
+      {new: true}
+    );
+
+    if(!ArchivedProduct){
+      return res.status(404).json({ message: 'Product not found'});
+    }
+    res.status(200).json({ message: 'Product archived successfully'});
+  } catch(error){
+    res.status(500).json({message: 'error occured ...'});
+  }
+  }
+
+export const unarchiveProduct = async (req, res) =>{
+  try{
+    const {id} = req.params;
+    const unArchivedProduct = await Product.findByIdAndUpdate(id, {archived: false}, {new: true});
+
+    if(!unArchivedProduct){
+      return res.status(404).json({messege: "Product not found"});
+    }
+    res.status(200).json({messege: 'Product unarchived successfully'});
+  } catch (error){
+    res.status(500).json({messege: 'Error occured'});
+  }
+}
+
+
 // Function to delete a product
 export const deleteProduct = async (req, res) => {
   try {
@@ -94,9 +130,13 @@ export const getAllProducts = async (req, res) => {
     // Fetch exchange rates
     const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
+    const userRole = req.user?.role; //user role available on req.user ? 
 
     // Prepare filter for price range, converting values from the selected currency to USD
     let filter = {};
+    //if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
+      //filter.archived = false; // toursits only see unarchived products
+   // }
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = parseFloat(minPrice) / exchangeRate;

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
 
-export default function ActivityCard({ bookActivity, activities, isAdvertiser, isAdmin }) {
+export default function ActivityCard({ activities, isAdvertiser, isAdmin }) {
 
 
 

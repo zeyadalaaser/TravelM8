@@ -151,7 +151,7 @@ const TourismGovernorDashboard = () => {
         if (typeof value === 'object') {
             Object.entries(value).forEach(([subKey, subValue]) => {
             if (subValue === '') {
-                missingFields.push(`${key}.${subKey}`);
+                missingFields.push(key);
             }
             });
         } else if (value === '') {
@@ -165,10 +165,10 @@ const TourismGovernorDashboard = () => {
             alert('Place updated successfully!');
             window.location.reload();
           } else {
-            // if (missingFields.length > 0) {
-            //     alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
-            //     return;
-            // }
+            if (missingFields.length > 0) {
+                alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
+                return;
+            }
             services.postPlace(token,newPlace);
             alert("Place Added Succesfully");
             console.log("form submitted");
@@ -332,11 +332,11 @@ const TourismGovernorDashboard = () => {
           <div className="flex justify-between items-center mb-4">
             <Tabs defaultValue="all" className="w-full">
               <div className="flex justify-between items-center">
-                {/* <TabsList>
+                <TabsList>
                   <TabsTrigger value="all">All Locations</TabsTrigger>
                   <TabsTrigger value="museums">Museums</TabsTrigger>
                   <TabsTrigger value="historical">Historical Sites</TabsTrigger>
-                </TabsList> */}
+                </TabsList>
                 <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
                         <Button>
@@ -577,7 +577,7 @@ const TourismGovernorDashboard = () => {
                                     View Details
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
+                            <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
                                 <DialogHeader> 
                                     <div className="flex items-center justify-center"> 
                                     {isEditing.name ? (

@@ -32,6 +32,12 @@ import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
 import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
 import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
+import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
+// import SellerProducts from './SellerProducts';
+// import SellerProfile from './SellerProfile';
+
+
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -39,7 +45,8 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
-        <Route path="/SellerProduct" element={<SellerProducts />} />
+        <Route path="/Sellerdashboard" element={<Sellerdashboard />} />
+        <Route path="/SellerProducts" element={<SellerProducts />} />
         <Route path="/SellerProfile" element={<SellerProfile />} />
         <Route path="/tourist" element={<TouristPage />} />
         <Route path="/deleteUser" element={<DeleteUser />} />
@@ -69,8 +76,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="/tourist-profile" element={<TouristProfile />} />
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products-purchased" element={<PurchasedProductsPage />} />
         <Route path="/activityForm" element={<ActivityForm />} />
         <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
         <Route path="/tourGuideProfile" element={<TourGuideProfile />} />

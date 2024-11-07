@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Eye, X, CheckCircle, ArrowRight } from "lucide-react"; // Icons for styling
+import { X, CheckCircle } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -17,33 +17,78 @@ const PendingUserDocuments = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUserDocuments = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5001/api/pending-user-documents",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch documents");
-        }
-
-        const data = await response.json();
-        setUserDocuments(data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
     fetchUserDocuments();
   }, []);
+
+  const fetchUserDocuments = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5001/api/pending-user-documents",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch documents");
+      }
+
+      const data = await response.json();
+      setUserDocuments(data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const handleReject = async (userId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/pending-users-documents/${userId}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        setUserDocuments(
+          userDocuments.filter((item) => item.user._id !== userId)
+        );
+      } else {
+        throw new Error("Failed to delete the user and documents");
+      }
+    } catch (error) {
+      console.error("Error rejecting user:", error);
+      alert("There was an issue rejecting the user.");
+    }
+  };
+
+  const handleApprove = async (userId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/approve-user/${userId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        setUserDocuments(
+          userDocuments.filter((item) => item.user._id !== userId)
+        );
+        alert("User approved and moved to the main collection.");
+      } else {
+        throw new Error("Failed to approve the user");
+      }
+    } catch (error) {
+      console.error("Error approving user:", error);
+      alert("There was an issue approving the user.");
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -76,6 +121,7 @@ const PendingUserDocuments = () => {
                     <Button
                       variant="ghost"
                       className="text-red-500 hover:bg-red-100"
+                      onClick={() => handleReject(item.user._id)}
                     >
                       <X size={16} />
                     </Button>
@@ -139,10 +185,15 @@ const PendingUserDocuments = () => {
                     <Button
                       variant="outline"
                       className="w-full mr-2 text-green-600"
+                      onClick={() => handleApprove(item.user._id)}
                     >
                       <CheckCircle className="mr-2" size={16} /> Approve
                     </Button>
-                    <Button variant="outline" className="w-full text-red-600">
+                    <Button
+                      variant="outline"
+                      className="w-full text-red-600"
+                      onClick={() => handleReject(item.user._id)}
+                    >
                       <X className="mr-2" size={16} /> Reject
                     </Button>
                   </CardFooter>
