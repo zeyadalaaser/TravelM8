@@ -68,3 +68,4 @@ export async function changePassword(passwordData) {
     await apiClient.post("tourguides/changepassword", passwordData)
   ).data;
 }
+

@@ -1,4 +1,5 @@
 import TourGuide from "../models/tourguideModel.js"; 
+import Booking from '../models/bookingsModel.js';
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
 import bcrypt from 'bcrypt';
 
@@ -58,4 +59,10 @@ export const updateTourGuideProfile = async (req, res) => {
       res.status(400).json({ message: "could not fetch account information" });
    }
 }
+
+
+ 
+
+
+
 

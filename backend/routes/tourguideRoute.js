@@ -1,5 +1,5 @@
 import express from 'express';
-import { createTourGuide, updateTourGuideProfile, getTourGuides, getMyProfile } from '../controllers/tourguideController.js';
+import { createTourGuide, updateTourGuideProfile, getTourGuides, getMyProfile,requestAccountDeletion } from '../controllers/tourguideController.js';
 import verifyToken from '../services/tokenDecodingService.js';
 import { changePasswordTourGuide } from '../controllers/changePassword.js';
 
