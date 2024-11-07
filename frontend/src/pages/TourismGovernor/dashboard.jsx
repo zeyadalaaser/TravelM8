@@ -332,11 +332,11 @@ const TourismGovernorDashboard = () => {
           <div className="flex justify-between items-center mb-4">
             <Tabs defaultValue="all" className="w-full">
               <div className="flex justify-between items-center">
-                {/* <TabsList>
+                <TabsList>
                   <TabsTrigger value="all">All Locations</TabsTrigger>
                   <TabsTrigger value="museums">Museums</TabsTrigger>
                   <TabsTrigger value="historical">Historical Sites</TabsTrigger>
-                </TabsList> */}
+                </TabsList>
                 <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
                         <Button>
