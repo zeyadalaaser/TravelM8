@@ -24,6 +24,8 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 import placeTagRoute from "./routes/placeTagRoute.js";
 import activityBookingsRoute from "./routes/bookingsActivityRoute.js";
 import itineraryBookingsRoute from "./routes/bookingsRoute.js";
+import logoutRoute from "./routes/logoutRouter.js";
+
 
 dotenv.config({ path: "../.env" });
 
@@ -35,7 +37,7 @@ const __dirname = path.resolve();
 app.use(
   cors({
     origin: "http://localhost:5173", // Allow your frontend origin
-    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed methods
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Specify allowed methods
     credentials: true, // If you are sending cookies or authorization headers
   })
 );
