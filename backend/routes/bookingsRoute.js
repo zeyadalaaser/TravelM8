@@ -2,7 +2,7 @@ import express from 'express';
 import {
   createBooking,
   getCompletedToursByTourist,
-  createBooking,
+  createBooking2,
   getAllTourBookings
 } from '../controllers/bookingsController.js';
 import verifyToken from '../services/tokenDecodingService.js';
@@ -13,6 +13,6 @@ router.post('/bookings', createBooking);
 router.get('/bookings/completed/:touristId', getCompletedToursByTourist); 
 
 router.get('/itinerary-bookings', verifyToken, getAllTourBookings);
-router.post('/itinerary-bookings', verifyToken, createBooking);
+router.post('/itinerary-bookings', verifyToken, createBooking2);
 
 export default router;
