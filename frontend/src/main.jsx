@@ -32,6 +32,9 @@ import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";import T
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
+import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
+// import SellerProducts from './SellerProducts';
+// import SellerProfile from './SellerProfile';
 
 
 
@@ -42,6 +45,7 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
+        <Route path="/Sellerdashboard" element={<Sellerdashboard />} />
         <Route path="/SellerProduct" element={<SellerProducts />} />
         <Route path="/SellerProfile" element={<SellerProfile />} />
         <Route path="/tourist" element={<TouristPage />} />
