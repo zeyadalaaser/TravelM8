@@ -29,6 +29,30 @@ const changeUserPassword = async (userId, currentPassword, newPassword, confirmN
     }
 };
 
+
+const changeAccountPassword = async (userId, currentPassword, newPassword, confirmNewPassword, UserModel) => {
+  const user = await UserModel.findById(userId);
+  if (!user) {
+      console.log(userId);
+      throw new Error('User not found.');
+  }
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    // const tempPassword = "Password16";
+    // console.log(hashedPassword);
+       throw new Error('Current password is incorrect.');
+  }
+  if (newPassword==confirmNewPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    return { message: 'Password changed successfully.' }; 
+  }
+  else {
+    return { message: 'New Password and Confirm Password do not match' }; 
+  }
+};
+
 export const changePasswordTourist = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.userId; 
@@ -44,7 +68,7 @@ export const changePasswordTourismGovernor = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword  } = req.body;
     const userId = req.user.userId; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, TourismGovernor);
+      const result = await changeAccountPassword(userId, currentPassword, newPassword, confirmNewPassword, TourismGovernor);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -55,7 +79,7 @@ export const changePasswordTourGuide = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.userId; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, TourGuide);
+      const result = await changeAccountPassword(userId, currentPassword, newPassword, confirmNewPassword, TourGuide);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -91,7 +115,7 @@ export const changePasswordAdmin= async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.userId; 
     try {
-      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, Admin);
+      const result = await changeAccountPassword(userId, currentPassword, newPassword, confirmNewPassword, Admin);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });

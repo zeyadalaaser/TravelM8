@@ -23,9 +23,19 @@ const productSchema = new mongoose.Schema({
         required: true
     },
 
+    sales:{
+        type: Number,
+        default: 0
+    },
+
     description:{
         type: String,
         default: null
+    },
+
+    archived:{
+        type: Boolean,
+        default: false
     },
 
     sellerId: {

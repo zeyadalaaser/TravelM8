@@ -1,17 +1,18 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import validator from "validator";
+
 import {
   validateUsername,
   validatePassword,
 } from "../services/validators/validators.js";
 
 
+
 const tourGuideSchema = new mongoose.Schema({
-  name:{
+  name: {
     type: String,
   },
-  
   username: {
     type: String,
     required: true,
@@ -27,7 +28,7 @@ const tourGuideSchema = new mongoose.Schema({
     required: true,
     unique: true,
     validate: {
-      validator: (email) => validator.isEmail(email), // Using Validator.js
+      validator: (email) => validator.isEmail(email),
       message: 'Please enter a valid email address.',
     },
   },
@@ -35,11 +36,13 @@ const tourGuideSchema = new mongoose.Schema({
     type: String,
     minlength: 6,
     required: true,
+
     validate: {
       validator: validatePassword,
       message: "Password must contain numbers, letters and min length is 4",
     }
   },
+
 
   mobileNumber: {
     type: String,
@@ -47,27 +50,48 @@ const tourGuideSchema = new mongoose.Schema({
   yearsOfExperience: {
     type: Number,
   },
-  previousWork:[ {
-    type: String,
-  }],
-  languages:[ {
-    type: String,
-  }],
-  
-}, 
-{ 
+
+  previousWork: [
+    {
+      type: String,
+    },
+  ],
+  languages: [
+    {
+      type: String,
+    },
+  ],
+  ratings: [
+    {
+      touristId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tourist",
+        required: true,
+      },
+      rating: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5,
+      },
+      comment: {
+        type: String,
+      },
+    },
+  ],
+}, { 
   timestamps: true 
 });
 
 tourGuideSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
-      next();
+    next();
   }
   const salt = await bcrypt.genSalt(10);
-  this.password = bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password, salt);
   next();
-  }
-);  
+});
 
-const TourGuide= mongoose.model("TourGuide", tourGuideSchema);
+
+const TourGuide = mongoose.model("TourGuide", tourGuideSchema);
 export default TourGuide;

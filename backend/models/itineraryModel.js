@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 import Activity from "./activityModel.js";
 import HistoricalPlaces from "./historicalPlacesModel.js";
-import TourGuide from "./tourguideModel.js";
-import PreferenceTag from "./preferenceTagModel.js";
+import TourGuide from './tourguideModel.js'
+import PreferenceTag from './preferenceTagModel.js'
+import Tourist from "./touristModel.js";
+
 
 const itineraySchema = new mongoose.Schema({
   name: {
@@ -57,6 +59,8 @@ const itineraySchema = new mongoose.Schema({
     },
   ],
 
+  isBookingOpen: { type:Boolean, default:true},
+
   availableSlots: [
     {
       date: {
@@ -96,7 +100,18 @@ const itineraySchema = new mongoose.Schema({
       ref: "PreferenceTag",
       required: true,
     },
+
   ],
+    ratings: [
+        {
+          touristId: { type: mongoose.Schema.Types.ObjectId, ref: "Tourist", required: false },
+          rating: { type: Number, required: false, min: 1, max: 5 },
+          comment: { type: String }
+        }
+      ],
+
+
+  
 
   tourGuideId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -104,6 +119,7 @@ const itineraySchema = new mongoose.Schema({
     required: true,
   },
   flagged: { type: Boolean, default: false },
+
 });
 
 const Itinerary = mongoose.model("Itinerary", itineraySchema);

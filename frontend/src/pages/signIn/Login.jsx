@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Import useNavigate 3alashan kol user yeroo7 lel page ely el mafrood yero7ha
+import { jwtDecode } from 'jwt-decode';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,14 +30,26 @@ export default function Login() {
       const { token, role } = response.data;
       localStorage.setItem('token', token); // Store JWT token in localStorage
 
+  // Decode the token to extract the user ID
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id || decodedToken.userId; // Check for the correct field name in your JWT payload
+
+  // Log the user ID to the console
+  console.log("User ID:", userId);
+
+  // Store the user ID if needed
+  localStorage.setItem('userId', userId);
+
       console.log("Login successful. Role:", role);
       console.log("token:", token);
+  
+    
 
       // Redirect to different pages based on role
       if (role === 'Tourist') {
         navigate('/tourist-page'); // Tourist role
       } else if (role === 'Seller') {
-        navigate('/SellerProfile'); // Seller role
+        navigate('/Sellerdashboard'); // Seller role
       } else if (role === 'TourGuide') {
         navigate('/tourGuideDashboard');
     } else if (role === 'TourismGovernor') {

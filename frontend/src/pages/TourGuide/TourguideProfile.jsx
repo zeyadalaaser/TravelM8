@@ -25,10 +25,10 @@ const TourGuideProfilePage = () => {
   const token = localStorage.getItem('token');
   const [profile, setProfile] = useState(null);
   const [changes, setChanges] = useState([]);
-  const [countryCode, setCountryCode] = useState(profile ? profile.mobileNumber.slice(0, 2) : '+1'); // Default to '+1'
-  const [mobileNumber, setMobileNumber] = useState(profile ? profile.mobileNumber.slice(2) : ''); // Default to empty
-
-
+  const [countryCode, setCountryCode] = useState(profile && profile.mobileNumber ? profile.mobileNumber.slice(0, 2) : '+1'); // Default to '+1'
+  const [mobileNumber, setMobileNumber] = useState(profile && profile.mobileNumber ? profile.mobileNumber.slice(2) : ''); // Default to empty
+  const [showDialog, setShowDialog] = useState(false);
+ 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === 'mobileNumber') 
@@ -202,11 +202,11 @@ const TourGuideProfilePage = () => {
                         <Select
                           onValueChange={(value) => {
                             handleCountryCodeChange(value);
-                            // handleInputChange({ target: { name: 'mobileNumber', value: mobileNumber } }); // Keep mobile number intact
+                            handleInputChange({ target: { name: 'mobileNumber', value: mobileNumber } }); // Keep mobile number intact
                           }}
                         >
                           <SelectTrigger className="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            <SelectValue placeholder={profile ? profile.mobileNumber.split(" ")[0] : ''} />
+                            <SelectValue placeholder={profile && profile.mobileNumber ? profile.mobileNumber.split(" ")[0] : ''} />
                           </SelectTrigger>
                           <SelectContent>
                           <SelectItem value="+1">+1</SelectItem>
@@ -244,7 +244,7 @@ const TourGuideProfilePage = () => {
                           name="mobileNumber"
                           onChange={handleInputChange}
                           type="tel"
-                          value={profile ? profile.mobileNumber.split(" ")[1] : ''} // Controlled input
+                          value={profile && profile.mobileNumber ? profile.mobileNumber.split(" ")[1] : ''} // Controlled input
                           placeholder="Enter mobile number"
                           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                         />
@@ -401,6 +401,44 @@ const TourGuideProfilePage = () => {
               <Settings className="mr-3" />
               Security & Settings
             </button>
+            <button
+              className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+              onClick={() => setShowDialog(true)}
+            >
+              <User className="mr-3" />
+              Delete My account
+            </button>
+            {showDialog && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+          {/* Close button */}
+          <button
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            onClick={() => setShowDialog(false)}
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span className="sr-only">Close</span>
+          </button>
+      
+          <p className="text-lg">Are you sure you want to delete your account?</p>
+          <div className="flex justify-end mt-4">
+            <button className="bg-black text-white px-6 py-3 rounded mr-4">
+              Yes
+            </button>
+            <button
+              className="bg-gray-300 px-6 py-3 rounded"
+              onClick={() => setShowDialog(false)}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      )}
+            
               <Logout />
             </nav>
     </aside>

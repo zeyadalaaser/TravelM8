@@ -29,9 +29,7 @@ export const uploadFile = async (req, res) => {
 
 export const uploadFile2 = async (req, res) => {
     const { username, type } = req.body;
-
-    // Check if files are uploaded
-    if (!req.files || !req.files.image || !req.files.idfile || !req.files.certificates) {
+    if (!req.files || !req.files.image || !req.files.idfile || !req.files.certificatesfile) {
         return res.status(400).json({ status: 'error', message: 'No files uploaded' });
     }
     const imageName = req.files.image[0].filename;
@@ -41,7 +39,7 @@ export const uploadFile2 = async (req, res) => {
         const fileDetails = new pdfDetailsModelTourGuide({
             image: imageName,
             idpdf: idFileName,
-            certificates: certificatesFileName,
+            certificatespdf: certificatesFileName,
             username: username,
             type: type,
         });
