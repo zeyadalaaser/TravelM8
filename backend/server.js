@@ -20,16 +20,10 @@ import ratingRoute from "./routes/ratingRoute.js";
 import loginRoute from "./routes/loginRoute.js";
 import complaintRoute from "./routes/complaintsRoute.js";
 import bookingsRoute from "./routes/bookingsRoute.js";
-
-import bookingsActivityRoute from "./routes/bookingsActivityRoute.js";
-import purchaseRoute from "./routes/purchaseRoute.js";
-import uploadRoutes from './routes/uploadRoutes.js';
+import uploadRoutes from "./routes/uploadRoutes.js";
 import placeTagRoute from "./routes/placeTagRoute.js";
 
-
-
-
-dotenv.config({path:'../.env'});
+dotenv.config({ path: "../.env" });
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -39,7 +33,7 @@ const __dirname = path.resolve();
 app.use(
   cors({
     origin: "http://localhost:5173", // Allow your frontend origin
-    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed methods
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Specify allowed methods
     credentials: true, // If you are sending cookies or authorization headers
   })
 );
@@ -63,14 +57,10 @@ app.use("/api", historicalPlacesRoute);
 app.use("/api", itineraryRoute);
 app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
-app.use('/api/auth', loginRoute);
+app.use("/api/auth", loginRoute);
 app.use("/api", bookingsRoute);
-app.use("/api", bookingsActivityRoute)
-app.use("/api", purchaseRoute);
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/api', uploadRoutes);
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/api", uploadRoutes);
 
 app.listen(PORT, () => {
   connectDB();

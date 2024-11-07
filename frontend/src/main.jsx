@@ -24,14 +24,14 @@ import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
-
-import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
-import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
-
-import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
+import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";
+import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
+import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
+import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
+import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
 // import SellerProducts from './SellerProducts';
 // import SellerProfile from './SellerProfile';
@@ -76,17 +76,15 @@ createRoot(document.getElementById("root")).render(
         <Route path="/tourist-profile" element={<TouristProfile />} />
         <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products-purchased" element={<PurchasedProductsPage />} />
         <Route path="/activityForm" element={<ActivityForm />} />
         <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
+
         <Route path="/tourGuideProfile" element={<TourGuideProfile />} />
         <Route path="/tourGuideDashboard" element={<TourGuideDashboard />} />
         <Route path="/itineraryForm" element={<ItineraryForm />} />
         <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
-
+        <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
       </Routes>
-
     </BrowserRouter>
   </StrictMode>
 );
