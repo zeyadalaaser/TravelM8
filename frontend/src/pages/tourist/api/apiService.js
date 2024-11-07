@@ -170,7 +170,7 @@ export async function getHotels(query) {
     requestBody.sortParams.sortMode = sort;
 
   try {
-    const response = await apiClient.post("getHotels?currency=EGP", requestBody);
+    const response = await apiClient.post("getHotels?currency=USD", requestBody);
     return response["data"];
   }
   catch (error) {

@@ -33,14 +33,17 @@ async function fetchCities(cityName) {
 export function FlightsPage() {
     const { location } = useRouter();
     const [flights, setFlights] = useState([]);
+    const [loading, setLoading] = useState(false);
     const requestCounter = useRef(0);
 
     const fetchFlights = useDebouncedCallback(async () => {
+        setLoading(true);
         const currentRequestId = ++requestCounter.current;
         const flights = await getFlights(location.search);
         
         if (currentRequestId === requestCounter.current)
             setFlights(flights);
+        setLoading(false);
     }, 200);
 
     useEffect(() => {
@@ -66,7 +69,7 @@ export function FlightsPage() {
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex h-10 items-center space-x-4 text-sm">
-                        <div>{flights.length} results</div>
+                        {loading ? <div>Loading...</div> : <div>{flights.length} results</div>}
                         <ClearFilters />
                     </div>
                     <SortSelection options={sortOptions} />
