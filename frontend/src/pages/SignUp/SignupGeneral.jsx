@@ -5,65 +5,87 @@ import { FaUser, FaCompass, FaStore, FaAd } from 'react-icons/fa';
 import './signup.css'; 
 
 export default function SignupPage() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     username: '',
     password: '',
-    idCard: null,
-    role: '',
-    DOB: '',
-    mobile: '',
-    nationality: '',
-    status: '',
-    jobTitle: '',
-    profilePic: null, // Added for profile picture
-    taxationCard: null,
-    certificates: [] // Added to store certificate files
+    type: '',
   });
-  const [errors, setErrors] = useState({});
+
+  const [documentData, setDocumentData] = useState({
+    username: formData.username,
+    type:formData.type
+  });
+  
+const [formData2, setformData2] = useState({
+  name: '',
+  username: formData.username,
+  email: formData.email,
+  password: formData.password,
+  mobileNumber: '',
+  nationality: '',
+  dob: '',
+  occupation: 'student',
+});
+
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [errors, setErrors] = useState({});
+  const [image, setImage] = useState();
+  const [idfile,setidfile]=useState();
+  const [taxfile,settaxfile]=useState();
+  const [certificatesfile,setcertificatesfile]=useState();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({...prevState,[name]: value,}));
+    setformData2(prevState => ({...prevState,[name]: value,}));
+
+    if (name === 'username') {
+      setDocumentData((prev) => ({ ...prev, username: value }));
+  }
+
   };
 
   const validateForm = () => {
     const newErrors = {};
-    const { email, username, password, idCard, role, DOB, mobile, nationality, status, profilePic, taxationCard, certificates } = formData;
+    const { email, username, password, idfile, type, dob, mobileNumber, nationality, occupation, taxfile, certificatesfile } = formData;
 
     if (!email) newErrors.email = 'Email is required';
-    else if (!validateEmail(email)) newErrors.email = 'Email format is invalid';
     if (!username) newErrors.username = 'Username is required';
-    if (!idCard) newErrors.idCard = 'ID is required';
     if (!password) newErrors.password = 'Password is required';
-    if (!role) newErrors.role = 'Role is required';
+    if (!type) newErrors.type = 'type is required';
 
-    // Role-specific validations
-    if (role === 'Tourist') {
-       if (!mobile) newErrors.mobile = 'Mobile number is required';
-       if (!DOB) newErrors.DOB = 'Date of Birth is required';
+    if (type === 'Tourist') {
+       if (!mobileNumber) newErrors.mobile = 'Mobile number is required';
+       if (!dob) newErrors.DOB = 'Date of Birth is required';
        if (!nationality) newErrors.nationality = 'Nationality is required';
-       if (!status) newErrors.status = 'Status is required';
-       if (formData.status === 'Job' && !formData.jobTitle) {
-        newErrors.jobTitle = 'Job title is required';
-      }
-      if (formData.status === 'Student' && !formData.schoolName) {
-        newErrors.schoolName = 'School/University Name is required';
-      }
-    }
-    if (role === 'Tour Guide' && !certificates) newErrors.certificates = 'certificates is required';
-    if ((role === 'Advertiser' || role === 'Seller') && !taxationCard) newErrors.taxationCard = 'Taxation Card is required';
+       if (!occupation) newErrors.occupation = 'occupation is required';
 
+    }
+    if (type === 'Tour Guide'){
+      if (!idfile) newErrors.idfile = 'ID is required';
+      if (!certificatesfile) newErrors.certificatesfile = 'certificatesfile is required';
+    } 
+    if (type === 'Advertiser' || type === 'Seller') {
+      //if (!idfile) newErrors.idfile = 'ID is required';
+      //if (!taxfile) newErrors.taxfile = 'Taxation Card is required';
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateEmail = (email) => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex pattern
-    return emailPattern.test(email);
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleFileChange = (e) => {
+    setidfile(e.target.files[0]);
+    settaxfile(e.target.files[0]);
+    setcertificatesfile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -72,13 +94,61 @@ export default function SignupPage() {
     // Validate the form
     const isValid = validateForm();
     if (!isValid) {formData
-        return; // If the form is not valid, do not proceed with the submission
+        return;
     }
     try {
-        const response = await axios.post('http://localhost:5001/api/pending-users', );
+      if(!formData.type=="Tourist"){
+        const response = await axios.post('http://localhost:5001/api/pending-users', formData );
+
+        if (response.status === 200) {
+          if(!formData.type=="Tour guide"){
+            const formDataToSend = new FormData();
+            formDataToSend.append("image", image);
+            formDataToSend.append("idfile", idfile);
+            formDataToSend.append("taxfile", taxfile);
+            formDataToSend.append("username", documentData.username);  // Add username here
+            formDataToSend.append("type", documentData.type);  // Add type here
+            await axios.post(
+              'http://localhost:5001/api/upload-files',
+              formDataToSend,
+              { headers: { "Content-Type": "multipart/form-data" } }
+            );
+          }
+          else{
+            const formDataToSend = new FormData();
+            formDataToSend.append("image", image);
+            formDataToSend.append("idfile", idfile);
+            formDataToSend.append("certificatesfile", certificatesfile);
+            formDataToSend.append("username", documentData.username);  // Add username here
+            formDataToSend.append("type", documentData.type);  // Add type here
+            await axios.post(
+              'http://localhost:5001/api/upload-files2',
+              formDataToSend,
+              { headers: { "Content-Type": "multipart/form-data" } }
+            );
+            }
+        }
         alert('Your Request Is Pending');
         setMessageType('success');  
         navigate('/');
+
+      }
+      else{
+        const formDataToSend = new FormData();
+            formDataToSend.append("name", formData2.username);
+            formDataToSend.append("username", formData.username);
+            formDataToSend.append("email", formData.email);
+            formDataToSend.append("password", formData.password);
+            formDataToSend.append("mobile", mobileNumber);  
+            formDataToSend.append("nationality", nationality);
+            formDataToSend.append("DOB", dob); 
+            formDataToSend.append("occupation", occupation); 
+          const response = await axios.post('http://localhost:5001/api/tourists', formData);
+        }
+
+        alert('success');
+        setMessageType('success');  
+      
     } catch (error) {
         setMessage('Error during signup. Please try again.');
         setMessageType('error');  
@@ -134,93 +204,106 @@ const closeModal = () => setIsModalOpen(false);
                 </div>
               ))}
               <div>
-                <label htmlFor="profilePic" className="block text-sm font-medium text-gray-700">profilePic</label>
+                <label htmlFor="image" className="block text-sm font-medium text-gray-700">profilePic</label>
                 <input
                   type="file"
-                  id="profilePic"
-                  name="profilePic"
-                  onChange={(e) => setFormData({ ...formData, profilePic: e.target.files[0] })}
+                  accept="image/*"
+                  id="image"
+                  name="image"
+                  onChange={handleImageChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  required
                 />
-                {errors.profilePic && <p className="text-red-500 text-xs mt-1">{errors.profilePic}</p>}
+                {errors.image && <p className="text-red-500 text-xs mt-1">{errors.image}</p>}
               </div>
               <div>
-                <label htmlFor="idCard" className="block text-sm font-medium text-gray-700">idCard</label>
+                <label htmlFor="idfile" className="block text-sm font-medium text-gray-700">idCard</label>
                 <input
                   type="file"
-                  id="idCard"
-                  name="idCard"
-                  onChange={(e) => setFormData({ ...formData, idCard: e.target.files[0] })}
+                  accept=".pdf,.doc,.docx,image/*"
+                  id="idfile"
+                  name="idfile"
+                  onChange={handleFileChange}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  required
                 />
-                {errors.idCard && <p className="text-red-500 text-xs mt-1">{errors.idCard}</p>}
+                {errors.idfile && <p className="text-red-500 text-xs mt-1">{errors.idfile}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Select Your Role</label>
                 <div className="grid grid-cols-2 gap-4">
-                  {roles.map((role) => (
+                  {roles.map((type) => (
                     <motion.button
-                      key={role.name}
+                      key={type.name}
                       type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, role: role.name }))}
+                      onClick={() => setFormData(prev => ({ ...prev, type: type.name }))}
                       variants={buttonVariants}
                       whileHover="hover"
                       whileTap="tap"
                       className={`py-2 px-4 rounded-lg font-semibold text-sm flex items-center justify-center space-x-2 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${
-                        formData.role === role.name
+                        formData.type === type.name
                           ? 'bg-black text-white'
                           : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                       }`}
                     >
-                      {role.icon}
-                      <span>{role.name}</span>
+                      {type.icon}
+                      <span>{type.name}</span>
                     </motion.button>
                   ))}
                 </div>
-                {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role}</p>}
+                {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type}</p>}
               </div>
 
               {/* Role-specific fields */}
-              {formData.role === 'Tourist' && (
+              {formData.type === 'Tourist' && (
                 <>
-                  <div>
-                    <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">Mobile Number</label>
+                 <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
                     <input
                       type="text"
-                      id="mobile"
-                      name="mobile"
-                      value={formData.mobile}
+                      id="name"
+                      name="name"
+                      value={formData2.name}
                       onChange={handleChange}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       required
                     />
-                    {errors.mobile && <p className="text-red-500 text-xs mt-1">{errors.mobile}</p>}
+                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                   </div>
                   <div>
-                    <label htmlFor="DOB" className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700">Mobile Number</label>
+                    <input
+                      type="text"
+                      id="mobileNumber"
+                      name="mobileNumber"
+                      value={formData2.mobileNumber}
+                      onChange={handleChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      required
+                    />
+                    {errors.mobileNumber && <p className="text-red-500 text-xs mt-1">{errors.mobileNumber}</p>}
+                  </div>
+                  <div>
+                    <label htmlFor="dob" className="block text-sm font-medium text-gray-700">Date of Birth</label>
                     <input
                     type="date"
-                    id="DOB"
-                    name="DOB"
-                    value={formData.DOB}
+                    id="dob"
+                    name="dob"
+                    value={formData2.dob}
                     onChange={(e) => {
                       const selectedDate = new Date(e.target.value);
                       const today = new Date();
                       const age = today.getFullYear() - selectedDate.getFullYear();
                       const monthDiff = today.getMonth() - selectedDate.getMonth();
                       if (age < 18 || (age === 18 && monthDiff < 0) || (age === 18 && monthDiff === 0 && today.getDate() < selectedDate.getDate())) {
-                        setErrors({ ...errors, DOB: "You must be at least 18 years old." });
+                        setErrors({ ...errors, dob: "You must be at least 18 years old." });
                       } else {
-                        setErrors({ ...errors, DOB: "" }); // Clear the error message if valid
+                        setErrors({ ...errors, dob: "" }); // Clear the error message if valid
                       }
                       handleChange(e); // Call the original handleChange function
                     }}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     required
                     />
-                    {errors.DOB && <p className="text-red-500 text-xs mt-1">{errors.DOB}</p>}
+                    {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
                   </div>
 
                   <div>
@@ -228,7 +311,7 @@ const closeModal = () => setIsModalOpen(false);
                     <select
                     id="nationality"
                     name="nationality"
-                    value={formData.nationality}
+                    value={formData2.nationality}
                     onChange={handleChange}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     required>
@@ -238,17 +321,6 @@ const closeModal = () => setIsModalOpen(false);
                     <option value="Canadian">Canadian</option>
                     <option value="Australian">Australian</option>
                     <option value="Indian">Indian</option>
-                    <option value="Chinese">Chinese</option>
-                    <option value="German">German</option>
-                    <option value="French">French</option>
-                    <option value="Brazilian">Brazilian</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Mexican">Mexican</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Russian">Russian</option>
-                    <option value="Spanish">Spanish</option>
-                    <option value="South African">South African</option>
-                    <option value="Nigerian">Nigerian</option>
                     <option value="Saudi">Saudi</option>
                     <option value="Egyptian">Egyptian</option>
                     <option value="Korean">Korean</option>
@@ -258,89 +330,55 @@ const closeModal = () => setIsModalOpen(false);
                   {errors.nationality && <p className="text-red-500 text-xs mt-1">{errors.nationality}</p>}
                   </div>
                   <div>
-                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                    <label htmlFor="occupation" className="block text-sm font-medium text-gray-700">occupation</label>
                     <select
-                      id="status"
-                      name="status"
-                      value={formData.status}
-                      onChange={(e) => {handleChange(e);
-                      if (e.target.value !== 'Job') {
-                        setFormData((prevState) => ({ ...prevState, jobTitle: '' }));}
-                      if (e.target.value !== 'Student') {
-                        setFormData((prevState) => ({ ...prevState, schoolName: '' }));}
-                      }}
+                      id="occupation"
+                      name="occupation"
+                      value={formData2.occupation}
+                      onChange={handleChange}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       required>
-                      <option value="">Select Status</option>
-                      <option value="Student">Student</option>
-                      <option value="Job">Job</option>
+              <option value="student">Student</option>
+              <option value="employed">Employed</option>
+              <option value="unemployed">Unemployed</option>                
+
                     </select>
-                    {errors.status && <p className="text-red-500 text-xs mt-1">{errors.status}</p>}
+                    {errors.occupation && <p className="text-red-500 text-xs mt-1">{errors.occupation}</p>}
                   </div>
-                  {formData.status === 'Job' && (
-                  <div>
-                    <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700">Job Title</label>
-                    <input
-                    type="text"
-                    id="jobTitle"
-                    name="jobTitle"
-                    value={formData.jobTitle}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required/>
-                    {errors.jobTitle && (<p className="text-red-500 text-xs mt-1">{errors.jobTitle}</p>)}
-                  </div>
-                   )}
-                  {formData.status === 'Student' && (
-                  <div>
-                    <label htmlFor="schoolName" className="block text-sm font-medium text-gray-700">School/University Name</label>
-                    <input
-                    type="text"
-                    id="schoolName"
-                    name="schoolName"
-                    value={formData.schoolName}
-                    onChange={handleChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required/>
-                    {errors.schoolName && (<p className="text-red-500 text-xs mt-1">{errors.schoolName}</p>)}
-                  </div>
-                  )}
                 </>
               )}
 
-              {formData.role === 'Tour Guide' && (
+              {formData.type === 'Tour Guide' && (
                 <div>
-                <label htmlFor="certificates" className="block text-sm font-medium text-gray-700">Certificates</label>
+                <label htmlFor="certificatesfile" className="block text-sm font-medium text-gray-700">Certificates</label>
                 <input
                   type="file"
-                  id="certificates"
-                  name="certificates"
+                  id="certificatesfile"
+                  name="certificatesfile"
                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" // Specify accepted file types
                   onChange={(e) => {
                     const files = Array.from(e.target.files); // Convert FileList to an array
-                    handleChange({ target: { name: 'certificates', value: files } });
+                    handleChange({ target: { name: 'certificatesfile', value: files } });
                   }}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                   multiple // Enable multiple file selection
-                  required
                 />
-                {errors.certificates && <p className="text-red-500 text-xs mt-1">{errors.certificates}</p>}
+                {errors.certificatesfile && <p className="text-red-500 text-xs mt-1">{errors.certificatesfile}</p>}
               </div>
               
               )}
 
-              {(formData.role === 'Advertiser' || formData.role === 'Seller') && (
+              {(formData.type === 'Advertiser' || formData.type === 'Seller') && (
                 <div>
-                  <label htmlFor="taxationCard" className="block text-sm font-medium text-gray-700">Taxation Card</label>
+                  <label htmlFor="taxfile" className="block text-sm font-medium text-gray-700">Taxation Card</label>
                   <input
                     type="file"
-                    id="taxationCard"
-                    name="taxationCard"
-                    onChange={(e) => setFormData({ ...formData, taxationCard: e.target.files[0] })}
+                    accept=".pdf,.doc,.docx,image/*"
+                    name="taxfile"
+                    onChange={handleFileChange}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                    required
                   />
-                  {errors.taxationCard && <p className="text-red-500 text-xs mt-1">{errors.taxationCard}</p>}
+                  {errors.taxfile && <p className="text-red-500 text-xs mt-1">{errors.taxfile}</p>}
                 </div>
               )}
               {/* Terms and Conditions */}

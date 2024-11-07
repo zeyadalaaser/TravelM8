@@ -1,23 +1,13 @@
-import Product from '../models/productModel.js'; 
+// controllers/reviewController.js
+import Product from '../models/productModel.js';
+import Itinerary from '../models/itineraryModel.js';
 import Rating from '../models/ratingModel.js';
-
-const calculateAverageRating = async (productId) => {
-    const reviews = await Rating.find({ entityId: productId, entityType: 'Product' }); 
-
-    if (reviews.length === 0) {
-        return null; // or 0 if you prefer no rating yet
-    }
-
-    const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
-    const averageRating = totalRating / reviews.length;
-
-    return averageRating;
-};
+import calculateAverageRating from './calculateAverageRating.js';
 
 export const createReview = async (req, res) => {
     const { userId, entityId, entityType, rating, comment } = req.body;
 
-    // Check if all required fields are provided
+    // Validate the required fields
     if (!userId || !entityId || !entityType || !rating || !comment) {
         return res.status(400).json({
             message: 'Please provide all required fields: userId, entityId, entityType, rating, comment.'
@@ -25,18 +15,23 @@ export const createReview = async (req, res) => {
     }
 
     try {
-        // Create the new review
-        const review = await Rating.create(req.body);
+        // Create a new review entry
+        const review = await Rating.create({ userId, entityId, entityType, rating, comment });
 
-        // Update the average rating for the product
-        const averageRating = await calculateAverageRating(entityId);
-        console.log(averageRating);
-        await Product.findByIdAndUpdate(entityId, { rating: averageRating });
+        // Calculate the new average rating
+        const averageRating = await calculateAverageRating(entityId, entityType);
 
-        res.status(201).json(review);
+        // Update the average rating based on entity type
+        if (entityType === 'Product') {
+            await Product.findByIdAndUpdate(entityId, { rating: averageRating });
+        } else if (entityType === 'Itinerary') {
+            await Itinerary.findByIdAndUpdate(entityId, { averageRating });
+        } else {
+            return res.status(400).json({ message: 'Invalid entityType provided.' });
+        }
+
+        res.status(201).json({ message: 'Rating submitted successfully', review });
     } catch (error) {
         res.status(500).json({ message: 'Server error. Please try again later.', error });
     }
 };
-
-

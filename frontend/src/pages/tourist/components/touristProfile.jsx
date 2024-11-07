@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect} from 'react'
+import { useNavigate} from 'react-router-dom';
 import { Bell, ChevronDown, Eye, EyeOff, User, X, CreditCard, Tag, Star, Shield, Layout, List, Settings, Map, TagsIcon, DollarSign, HeartCrack } from 'lucide-react'
 import {Input} from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,6 +28,7 @@ const TouristProfilePage = () => {
   const [countryCode, setCountryCode] = useState(profile ? profile.mobileNumber.slice(0, 2) : '+1'); // Default to '+1'
   const [mobileNumber, setMobileNumber] = useState(profile ? profile.mobileNumber.slice(2) : ''); // Default to empty
   const [showDialog, setShowDialog] = useState(false);
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -111,6 +113,10 @@ const TouristProfilePage = () => {
   }
 
   useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
     const getProfileInfo = async () => {
       try {
         const data = await fetchProfileInfo(token);
@@ -122,7 +128,7 @@ const TouristProfilePage = () => {
     };
 
     getProfileInfo();
-  }, [token]);
+  }, [navigate,token]);
 
   const renderContent = () => {
     if (!profile) {

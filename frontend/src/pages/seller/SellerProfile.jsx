@@ -235,7 +235,7 @@ await onSubmit(form);
   import { fetchProfileInfo ,updateProfile,changePassword} from '../seller/api/apiService';
   import { Textarea } from "@/components/ui/textarea";
   
-  const SellerProfilePage = () => {
+  const SellerProfile = () => {
   
     const amount = 45231.89,
     percentageChange = 20.1,
@@ -736,4 +736,4 @@ await onSubmit(form);
     )
   }
   
-  export default SellerProfilePage;
+  export default SellerProfile;

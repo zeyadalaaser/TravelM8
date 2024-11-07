@@ -60,9 +60,24 @@ export const updateTourGuideProfile = async (req, res) => {
    }
 }
 
-
+export const rateTourGuide = async (req, res) => {
+   const { tourGuideId, touristId, rating, comment } = req.body;
+   try {
+     const tourGuide = await TourGuide.findById(tourGuideId);
+     if (!tourGuide) return res.status(404).json({ message: "Tour guide not found" });
  
-
-
-
-
+     // Check if the tourist already rated the guide
+     const existingRating = tourGuide.ratings.find(r => r.touristId.toString() === touristId);
+     if (existingRating) {
+       existingRating.rating = rating;
+       existingRating.comment = comment;
+     } else {
+       tourGuide.ratings.push({ touristId, rating, comment });
+     }
+ 
+     await tourGuide.save();
+     res.status(200).json({ message: "Rating and comment submitted successfully" });
+   } catch (error) {
+     res.status(500).json({ message: "Error submitting rating", error });
+   }
+ };
