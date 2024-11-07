@@ -26,9 +26,7 @@ const PendingUserDocuments = () => {
         "http://localhost:5001/api/pending-user-documents",
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
@@ -47,19 +45,15 @@ const PendingUserDocuments = () => {
 
   const handleReject = async (userId) => {
     try {
-      // Ensure the route is correct for deleting both user and documents
       const response = await fetch(
-        `http://localhost:5001/api/pending-users-documents/${userId}`, // Update this if rejectPendingUser2 is the desired endpoint
+        `http://localhost:5001/api/pending-users-documents/${userId}`,
         {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
       if (response.ok) {
-        // Update UI by removing the rejected user from state
         setUserDocuments(
           userDocuments.filter((item) => item.user._id !== userId)
         );
@@ -69,6 +63,30 @@ const PendingUserDocuments = () => {
     } catch (error) {
       console.error("Error rejecting user:", error);
       alert("There was an issue rejecting the user.");
+    }
+  };
+
+  const handleApprove = async (userId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5001/api/approve-user/${userId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        setUserDocuments(
+          userDocuments.filter((item) => item.user._id !== userId)
+        );
+        alert("User approved and moved to the main collection.");
+      } else {
+        throw new Error("Failed to approve the user");
+      }
+    } catch (error) {
+      console.error("Error approving user:", error);
+      alert("There was an issue approving the user.");
     }
   };
 
@@ -167,6 +185,7 @@ const PendingUserDocuments = () => {
                     <Button
                       variant="outline"
                       className="w-full mr-2 text-green-600"
+                      onClick={() => handleApprove(item.user._id)}
                     >
                       <CheckCircle className="mr-2" size={16} /> Approve
                     </Button>

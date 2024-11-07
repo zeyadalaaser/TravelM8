@@ -161,3 +161,59 @@ export const rejectPendingUser2 = async (req, res) => {
       .json({ error: "Error rejecting user and deleting documents" });
   }
 };
+export const approvePendingUser = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Find the pending user by ID
+    const pendingUser = await PendingUser.findById(userId);
+    if (!pendingUser) {
+      return res.status(404).json({ message: "Pending user not found" });
+    }
+
+    // Prepare new user data
+    const { username, email, password, type } = pendingUser;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    let newUser;
+    // Move user to respective collection
+    switch (type) {
+      case "TourGuide":
+        newUser = await TourGuide.create({
+          username,
+          email,
+          password: hashedPassword,
+        });
+        break;
+      case "Seller":
+        newUser = await Seller.create({
+          username,
+          email,
+          password: hashedPassword,
+        });
+        break;
+      case "Advertiser":
+        newUser = await Advertiser.create({
+          username,
+          email,
+          password: hashedPassword,
+        });
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid user type" });
+    }
+
+    // Delete user from PendingUser collection if added successfully
+    if (newUser) {
+      await PendingUser.findByIdAndDelete(userId);
+      return res
+        .status(200)
+        .json({ message: `${type} approved successfully`, user: newUser });
+    } else {
+      throw new Error("Failed to approve user");
+    }
+  } catch (error) {
+    console.error("Error approving user:", error);
+    res.status(500).json({ message: "Error approving user" });
+  }
+};

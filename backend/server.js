@@ -33,7 +33,7 @@ const __dirname = path.resolve();
 app.use(
   cors({
     origin: "http://localhost:5173", // Allow your frontend origin
-    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed methods
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], // Specify allowed methods
     credentials: true, // If you are sending cookies or authorization headers
   })
 );
