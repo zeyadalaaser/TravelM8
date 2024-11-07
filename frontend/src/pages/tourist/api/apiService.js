@@ -96,16 +96,18 @@ export async function createActivityBooking(activityId, token){
   ).data
 }
 
-export async function getActivityBookings(token){
-  // const token = localStorage.getItem('token');
+export async function getActivityBookings(){
+  const token = localStorage.getItem('token');
+  const response = await apiClient.get("/activity-bookings", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.data
   return (
-    await apiClient.get("/activity-bookings", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-  ).data.data
+    data.allBookings
+  );
 }
 
 export async function createItineraryBooking(itinerary, tourGuide, tourDate, token){
@@ -123,16 +125,18 @@ export async function createItineraryBooking(itinerary, tourGuide, tourDate, tok
     )
   )}
 
-export async function getItineraryBookings(token){
-  // const token = localStorage.getItem('token');
+export async function getItineraryBookings(){
+  const token = localStorage.getItem('token');
+  const response = await apiClient.get("/itinerary-bookings", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const data = await response.data
   return (
-    await apiClient.get("/itinerary-bookings", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-  ).data.data
+    data.allBookings
+  );
 }
 
 

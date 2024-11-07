@@ -1,8 +1,5 @@
 import Booking from '../models/bookingsModel.js';
 import Rating from '../models/ratingModel.js';
-import Tourist from '../models/touristModel.js';
-import Itinerary from '../models/itineraryModel.js';
-import TourGuide from '../models/tourguideModel.js';
 
 
 export const createBooking2 = async (req, res) => {
@@ -16,7 +13,7 @@ export const createBooking2 = async (req, res) => {
       tourDate
     });
     const savedBooking = await newBooking.save();
-    res.status(201).json(savedBooking, {"message": "Successful Booking of Itinerary!"});
+    res.status(201).json({savedBooking, message: "Successful Booking of Itinerary!"});
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -25,8 +22,10 @@ export const createBooking2 = async (req, res) => {
 export const getAllTourBookings = async(req, res) => {
   try{
       const tourist = req.user.userId;
-      const allBookings = await Booking.find({tourist : tourist}).populate('itinerary').populate('tourGuide');
-      res.status(200).json(allBookings, {"message": "Successful Retrieval of Itineraries!"});
+    const allBookings = await Booking.find({ tourist: tourist })
+      .populate('itinerary') // Populating the itinerary field
+      .populate('tourGuideId', 'name'); 
+      res.status(200).json({allBookings, message: "Successful Retrieval of Itineraries!"});
   } catch (error) {
       res.status(400).json({ message: error.message });
   }   
@@ -76,34 +75,6 @@ export const getCompletedToursByTourist = async (req, res) => {
       res.status(500).json({ message: 'Error retrieving completed tours', error });
     }
   };
-  
-export const createBooking2 = async (req, res) => {
-  try {
-    const { itinerary, tourGuide, tourDate } = req.body;
-    const { tourist } = req.user.userId
-    const newBooking = new Booking({
-      tourist,
-      itinerary,
-      tourGuide,
-      tourDate
-    });
-    const savedBooking = await newBooking.save();
-    res.status(201).json(savedBooking, {"message": "Successful Booking of Itinerary!"});
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-}
-
-export const getAllTourBookings = async(req, res) => {
-  try{
-      const tourist = req.user.userId;
-      const allBookings = await Booking.find({tourist : tourist}).populate('itinerary').populate('tourGuide');
-      res.status(200).json(allBookings, {"message": "Successful Retrieval of Itineraries!"});
-  } catch (error) {
-      res.status(400).json({ message: error.message });
-  }   
-}
-
 // Rate a tour guide after completing a tour
 export const rateTourGuide = async (req, res) => {
     try {
