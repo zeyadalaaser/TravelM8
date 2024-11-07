@@ -33,7 +33,7 @@ export function SearchBar({ categories }) {
           onChange={(e) => handleSearchParam(e.target.value)}
           className="rounded-r-none pl-10 !ring-0"
         />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
       </div>
       <Select value={searchParams.get("searchBy") ?? "name"} onValueChange={handleSearchBy}>
         <SelectTrigger className="w-[120px] rounded-l-none border-l-0 !ring-0">

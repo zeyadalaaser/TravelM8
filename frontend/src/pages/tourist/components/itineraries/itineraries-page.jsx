@@ -98,9 +98,14 @@ export function ItinerariesPage() {
     fetchItineraries();
   };
 
+  const searchCategories = [
+    { name: 'Name', value: 'name' },
+    { name: 'Tag', value: 'tag' },
+];
+
   return (
     <>
-      <SearchBar categories={["Name", "Tag"]} />
+      <SearchBar categories={searchCategories} />
       <div className="flex justify-between items-center mb-4">
         <label>
           Currency:
