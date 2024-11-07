@@ -29,6 +29,8 @@ import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
+import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
+import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 
 createRoot(document.getElementById("root")).render(
