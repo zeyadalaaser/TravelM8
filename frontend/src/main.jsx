@@ -28,7 +28,7 @@ import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";import T
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
-
+import AccountDelete from "./pages/admin/accountDelete.jsx"
 
 
 createRoot(document.getElementById("root")).render(
@@ -46,6 +46,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/product" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
+        <Route path="/deleteAccount" element={<AccountDelete />} />
         <Route
           path="/admin/EditActivityCategories"
           element={<ActivityCategories />}

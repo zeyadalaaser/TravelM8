@@ -418,12 +418,16 @@ const TouristProfilePage = () => {
           <div className="bg-white p-4 rounded shadow-lg">
             <p>Are you sure you want to delete your account?</p>
             <div className="flex justify-end mt-4">
-              <button
-                className="bg-black text-white px-4 py-2 rounded mr-2"
-                
-              >
-                Yes
-              </button>
+            <button
+        className="bg-black text-white px-4 py-2 rounded mr-2"
+        onClick={() => {
+          // Show a confirmation message without making an API call
+          alert("Your account deletion request has been sent successfully.");
+          setShowDialog(false); // Close the dialog
+        }}
+      >
+        Yes
+      </button>
               <button
                 className="bg-gray-300 px-4 py-2 rounded"
                 onClick={() => setShowDialog(false)}
