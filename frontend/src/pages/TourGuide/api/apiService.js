@@ -11,6 +11,15 @@ const apiClient = axios.create({
     },
 });
 
+export async function getMyItineraries(token) {
+  return (await apiClient.get('myItineraries', {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })).data;
+}
+
 
 export async function fetchItineraries(){
     try {

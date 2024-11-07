@@ -252,14 +252,22 @@ const handleSubmit = async (e) => {
 }
 
 
-  const getItineraries = useDebouncedCallback(async () => {
-    const response = await fetch('http://localhost:5001/api/itineraries')
-    setItineraries(await response.json());
-  }, 200);
+useEffect(() => {
+  if (!token) {
+    navigate("/login");
+    return;
+  }
+  fetchItineraries();
+}, [navigate, token]);
 
-  useEffect(() => {
-      getItineraries();
-  }, []); 
+async function fetchItineraries() {
+  try {
+    const response = await services.getMyItineraries(token);
+    setItineraries(Array.isArray(response) ? response : []);
+  } catch (error) {
+    console.error('Error fetching itineraries:', error);
+  }
+}; 
 
 
   return (
