@@ -82,7 +82,10 @@ export default function ItineraryCard({
     }
   }
 
-  const handleBook = async (id) => {}; 
+  const handleBook = async (itineraryId, tourGuideId) => {
+    
+
+  }; 
 
   const handleFlagItinerary = async (itineraryId) => {
     try {
@@ -108,8 +111,7 @@ export default function ItineraryCard({
                   <div className="flex items-center gap-2 ">
                       {isTourGuide && itinerary.isBookingOpen && 
                           <Button
-                            className="min-w-[70px] hover:bg-red-700"
-                            variant = "destructive"
+                            className="w-[150px] h-[38px] bg-sky-800 hover:bg-sky-900"
                             onClick={() => handleActivationToggle(itinerary._id, itinerary.isBookingOpen)}
                           >
                             Deactivate Itinerary
@@ -117,14 +119,15 @@ export default function ItineraryCard({
                       }
                       {isTourGuide && !itinerary.isBookingOpen && 
                           <Button
-                            className="min-w-[70px] hover:bg-green-700 bg-green-500"
+                            className="w-[150px] h-[38px] bg-sky-500 hover:bg-sky-600"
                             onClick={() => handleActivationToggle(itinerary._id, false)}
                           >
-                            {itinerary.isBookingOpen ? 'Deactivate Itinerary' : 'Activate Itinerary'}
+                          Activate Itinerary
                           </Button>
                       }
                     <Button
                       variant="outline"
+                      className="h-[40px]"
                       onClick={() => handleViewTimeline(itinerary)}
                     >
                       View Timeline
@@ -236,6 +239,7 @@ export default function ItineraryCard({
                     <Button
                       className = "hover:bg-red-700"
                       variant="destructive"
+                      
                       onClick={() => handleFlagItinerary(itinerary._id)}
                     >
                       Flag as Inappropriate

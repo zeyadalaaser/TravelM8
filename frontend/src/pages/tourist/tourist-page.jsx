@@ -19,6 +19,7 @@ import { FlightsPage } from "./components/flights/flights-page";
 import { HotelsPage } from "./components/hotels/hotels-page";
 import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
 import { RedeemPoints } from "./components/Points/redeemPoints"
+import BookingHistory from "./components/bookings/BookingHistory.jsx";
 
 
 export default function TouristPage() {
@@ -141,6 +142,7 @@ export default function TouristPage() {
       <PurchasedProductsPage touristId={touristId} />
     )
   }
+  {page === "booking-history" && <BookingHistory/>}
 
   {
     showComplaintForm && (
@@ -153,6 +155,7 @@ export default function TouristPage() {
       <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
     )
   }
+
 
 
        

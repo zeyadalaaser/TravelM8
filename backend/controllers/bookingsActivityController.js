@@ -38,6 +38,32 @@ export const bookActivity = async (req, res) => {
     }
 };
 
+export const createBooking = async (req, res) => {
+    try {
+      const { activityId, bookingDate } = req.body;
+      const { touristId } = req.user.userId
+      const newActivity = new BookingActivity({
+        touristId,
+        activityId,
+        bookingDate
+      });
+      const savedBooking = await newActivity.save();
+      res.status(201).json(savedBooking, {"message": "Successful Booking of Activity!"});
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+export const getAllActivityBookings = async(req, res) => {
+    try{
+        const touristId = req.user.userId;
+        const allBookings = await BookingActivity.find({touristId : touristId});
+        res.status(201).json(allBookings, {"message": "Successful Fetched All Your Tour Bookings!"});
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }   
+}
+
 export const getCompletedActivities = async (req, res) => {
     const { touristId } = req.params;
 

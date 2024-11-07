@@ -211,7 +211,6 @@ const updateActivity = async (req, res) => {
         .populate("category", "name")
         .populate("tags", "name");
 
-      // Check if the activity was updated
 
       // Check if the activity was updated
       if (!newActivity) {

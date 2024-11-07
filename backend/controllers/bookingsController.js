@@ -49,8 +49,32 @@ export const getCompletedToursByTourist = async (req, res) => {
     }
   };
   
+export const createBooking2 = async (req, res) => {
+  try {
+    const { itinerary, tourGuide, tourDate } = req.body;
+    const { tourist } = req.user.userId
+    const newBooking = new Booking({
+      tourist,
+      itinerary,
+      tourGuide,
+      tourDate
+    });
+    const savedBooking = await newBooking.save();
+    res.status(201).json(savedBooking, {"message": "Successful Booking of Itinerary!"});
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
 
-
+export const getAllTourBookings = async(req, res) => {
+  try{
+      const tourist = req.user.userId;
+      const allBookings = await Booking.find({tourist : tourist});
+      res.status(201).json(allBookings, {"message": "Successful Fetched All Your Activity Bookings!"});
+  } catch (error) {
+      res.status(400).json({ message: error.message });
+  }   
+}
 
 // Rate a tour guide after completing a tour
 export const rateTourGuide = async (req, res) => {
