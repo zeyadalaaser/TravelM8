@@ -69,8 +69,8 @@ export const createBooking2 = async (req, res) => {
 export const getAllTourBookings = async(req, res) => {
   try{
       const tourist = req.user.userId;
-      const allBookings = await Booking.find({tourist : tourist});
-      res.status(201).json(allBookings, {"message": "Successful Fetched All Your Activity Bookings!"});
+      const allBookings = await Booking.find({tourist : tourist}).populate('itinerary').populate('tourGuide');
+      res.status(200).json(allBookings, {"message": "Successful Retrieval of Itineraries!"});
   } catch (error) {
       res.status(400).json({ message: error.message });
   }   

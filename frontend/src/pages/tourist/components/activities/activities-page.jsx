@@ -12,8 +12,12 @@ import { SortSelection } from "../filters/sort-selection";
 import Activities from "./activities";
 import { SearchBar } from "../filters/search";
 import { getActivities } from "../../api/apiService";
+import { createActivityBooking } from "../../api/apiService";
+
+
 
 export function ActivitiesPage() {
+  const token = localStorage.getItem('token');
   const { location } = useRouter();
   const [activities, setActivities] = useState([]);
   const [currency, setCurrency] = useState("USD");
@@ -103,6 +107,8 @@ export function ActivitiesPage() {
             <SortSelection />
           </div>
           <Activities
+            token ={token}
+            bookActivity={createActivityBooking}
             activities={activities}
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}

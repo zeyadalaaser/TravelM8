@@ -79,21 +79,25 @@ export async function getMyComplaints(token) {
   ).data;
 }
 
-export async function createActivityBooking(activityId, bookingDate){
-  const token = localStorage.getItem("token"); // Get token 
+export async function createActivityBooking(activityId, token){
+  // const token = localStorage.getItem('token');
+  console.log(token);
   return (
-    await apiClient.post("/activity-bookings", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({activityId: activityId, bookingDate: bookingDate})
-    })
-  ).data;
+    await apiClient.post(
+      '/activity-bookings',
+      { activityId }, // Body payload goes here
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+  ).data
 }
 
-export async function getActivityBookings(){
-  const token = localStorage.getItem("token"); // Get token 
+export async function getActivityBookings(token){
+  // const token = localStorage.getItem('token');
   return (
     await apiClient.get("/activity-bookings", {
       headers: {
@@ -101,24 +105,26 @@ export async function getActivityBookings(){
         Authorization: `Bearer ${token}`,
       },
     })
-  ).data.populate('activityId');
+  ).data.data
 }
 
-export async function createItineraryBooking(itinerary, tourGuide, tourDate){
-  const token = localStorage.getItem("token"); // Get token 
+export async function createItineraryBooking(itinerary, tourGuide, tourDate, token){
+  // const token = localStorage.getItem('token');
   return (
-    await apiClient.post("/itinerary-bookings", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({itinerary: itinerary, tourGuide: tourGuide,tourDate: tourDate})
-    })
-  ).data;
-}
+    await apiClient.post(
+      "/itinerary-bookings",
+      { itinerary, tourGuide, tourDate }, // Body payload goes here
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+  )}
 
-export async function getItineraryBookings(){
-  const token = localStorage.getItem("token"); // Get token 
+export async function getItineraryBookings(token){
+  // const token = localStorage.getItem('token');
   return (
     await apiClient.get("/itinerary-bookings", {
       headers: {
@@ -126,8 +132,7 @@ export async function getItineraryBookings(){
         Authorization: `Bearer ${token}`,
       },
     })
-  ).data.populate('itinerary')
-        .populate('tourGuide');
+  ).data.data
 }
 
 

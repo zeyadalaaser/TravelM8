@@ -22,6 +22,7 @@ import { RedeemPoints } from "./components/Points/redeemPoints"
 import BookingHistory from "./components/bookings/BookingHistory.jsx";
 
 
+
 export default function TouristPage() {
   const { location, navigate, searchParams } = useRouter();
   const [showComplaintForm, setShowComplaintForm] = useState(false);
