@@ -1,7 +1,7 @@
 // products.jsx
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Stars } from "../stars";
+import { Stars } from "@/components/Stars";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
