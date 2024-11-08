@@ -9,15 +9,14 @@ export default function PurchasedProductsPage({ touristId }) {
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentPurchaseId, setCurrentPurchaseId] = useState(null);
-
     useEffect(() => {
         const fetchPurchases = async () => {
             if (!touristId) {
-                setError("Tourist ID is required.");
+                setError("Tourist ID is requiredddddd.");
                 setLoading(false);
                 return;
             }
-
+    
             try {
                 const response = await axios.get(`http://localhost:5001/api/purchases/${touristId}`);
                 setPurchases(response.data.purchases);
@@ -28,10 +27,13 @@ export default function PurchasedProductsPage({ touristId }) {
                 setLoading(false);
             }
         };
-
-        fetchPurchases();
-    }, [touristId]);
-
+    
+        // Only call fetchPurchases if touristId is defined
+        if (touristId) {
+            fetchPurchases();
+        }
+    }, [touristId]); // Re-run the effect whenever touristId changes
+    
     const openModal = (purchaseId) => {
         setCurrentPurchaseId(purchaseId);
         setIsModalOpen(true);

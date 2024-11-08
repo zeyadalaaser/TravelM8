@@ -24,8 +24,12 @@ import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
+
+import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
+import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";
 import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
+
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
