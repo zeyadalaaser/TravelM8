@@ -16,9 +16,26 @@ import {Button} from "@/components/ui/button";
 const Logout = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    navigate("/");
+  const handleLogout = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch('http://localhost:5001/api/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+  
+      if (response.ok) {
+        localStorage.removeItem('token'); 
+        navigate("/"); 
+      } else {
+        console.error('Failed to logout');
+      }
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   return (

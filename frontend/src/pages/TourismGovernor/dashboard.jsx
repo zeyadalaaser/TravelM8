@@ -151,7 +151,7 @@ const TourismGovernorDashboard = () => {
         if (typeof value === 'object') {
             Object.entries(value).forEach(([subKey, subValue]) => {
             if (subValue === '') {
-                missingFields.push(`${key}.${subKey}`);
+                missingFields.push(key);
             }
             });
         } else if (value === '') {
@@ -165,10 +165,10 @@ const TourismGovernorDashboard = () => {
             alert('Place updated successfully!');
             window.location.reload();
           } else {
-            // if (missingFields.length > 0) {
-            //     alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
-            //     return;
-            // }
+            if (missingFields.length > 0) {
+                alert(`Please fill in the following fields: ${missingFields.join(', ')}`);
+                return;
+            }
             services.postPlace(token,newPlace);
             alert("Place Added Succesfully");
             console.log("form submitted");
@@ -228,6 +228,7 @@ const TourismGovernorDashboard = () => {
     try {
       const response = await services.createPlaceTag({ type, historicalPeriod })
       setMessage(response.message || "Tag created successfully");
+      setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
       setType("");
       setHistoricalPeriod("");
       setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
@@ -556,6 +557,17 @@ const TourismGovernorDashboard = () => {
                         <img src={location.image} alt={location.name} className="w-full h-48 object-cover rounded-t-lg" />
                         <CardTitle >{location.name}</CardTitle>
                         <CardDescription >{location.description}</CardDescription>
+                        
+  
+    {location.tags && (
+      <div className="mt-2 flex flex-wrap gap-2">
+      {location.tags.split(',').map((tag, index) => (
+      <span key={index} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+        {tag.trim()}
+      </span>
+    ))}
+  </div>
+)}
                       </CardHeader>
                       <CardFooter className="flex justify-end space-x-2">
                         <Dialog onOpenChange={(open) => !open && handleDialogClose()}>
@@ -565,7 +577,7 @@ const TourismGovernorDashboard = () => {
                                     View Details
                                 </Button>
                             </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
+                            <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
                                 <DialogHeader> 
                                     <div className="flex items-center justify-center"> 
                                     {isEditing.name ? (

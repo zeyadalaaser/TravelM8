@@ -12,7 +12,7 @@ const formatDateToISOString = (date) => {
     return `${year}-${month}-${day}`;
 };
 
-export function SingleDateFilter({ param, name }) {
+export function SingleDateFilter({ className, param, name }) {
     const createDate = (date) => {
         return date ? new Date(date) : null;
     };
@@ -28,5 +28,5 @@ export function SingleDateFilter({ param, name }) {
         navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
     };
 
-    return <DatePicker name={name} date={createDate(searchParams.get(param))} onSelect={handleSelectDate} />;
+    return <DatePicker className={className} name={name} date={createDate(searchParams.get(param))} onSelect={handleSelectDate} />;
 }

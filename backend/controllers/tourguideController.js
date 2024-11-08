@@ -1,4 +1,5 @@
 import TourGuide from "../models/tourguideModel.js"; 
+import Booking from '../models/bookingsModel.js';
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
 import bcrypt from 'bcrypt';
 
