@@ -14,7 +14,7 @@ const handlePurchase = async (product) => {
     return;
   }
 
-  const quantity = 1;
+  const quantity = 10;
 
   try {
     const response = await axios.post('http://localhost:5001/api/purchases', {
