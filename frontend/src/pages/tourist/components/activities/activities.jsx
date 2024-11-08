@@ -42,7 +42,7 @@ function Activities({ activities, currency, exchangeRate }) {
               <div className="flex items-center mb-2">
                 <span className="text-sm font-semibold mr-2">Category:</span>
                 <Badge variant="outline">
-                  {activity.categoryName ?? activity.category}
+                  {activity.category?.name ?? activity.category}
                 </Badge>
               </div>
               <div className="text-xl font-bold">
