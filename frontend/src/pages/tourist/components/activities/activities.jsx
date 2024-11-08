@@ -1,7 +1,7 @@
 import { Clock, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Stars } from "../stars";
+import { Stars } from "@/components/Stars";
 
 function Activities({ activities, currency, exchangeRate }) {
   return (

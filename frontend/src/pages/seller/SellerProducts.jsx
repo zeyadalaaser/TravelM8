@@ -7,7 +7,7 @@ import { Input } from '../../components/ui/input';
 import { useToast } from "./components/useToast";
 import { SearchBar } from './components/filters/search';
 import { PriceFilter } from "./components/filters/price-filter";
-import { getProducts } from './api/apiService'; // Import the getProducts function
+import { getProducts } from './api/apiService'; 
 import useRouter from '../../hooks/useRouter';
 
 const token = localStorage.getItem('token');
@@ -199,8 +199,8 @@ export default function SellerProducts() {
                   alt={product.name}
                   className="w-full h-40 object-cover mb-2"
                 />
-                <p className="font-bold">{`Price: EGP ${product.price.toFixed(2)}`}</p>
-                <p className="mb-2">{product.description}</p>
+<p className="font-bold">{`Price: EGP ${parseFloat(product.price).toFixed(2)}`}</p>
+<p className="mb-2">{product.description}</p>
                 <p className='mb-2'>{`Sold: ${product.sales} `}</p>
                 <p className='mb-2'>{`Remaining stock: ${product.quantity}`}</p>
                 <p className="font-semibold">{`Seller ID: ${product.sellerId}`}</p>

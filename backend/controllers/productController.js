@@ -163,9 +163,9 @@ export const getAllProducts = async (req, res) => {
 
     // Prepare filter for price range, converting values from the selected currency to USD
     let filter = {};
-    //if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
-      //filter.archived = false; // toursits only see unarchived products
-   // }
+    if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
+      filter.archived = false; // toursits only see unarchived products
+   }
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = parseFloat(minPrice) / exchangeRate;
