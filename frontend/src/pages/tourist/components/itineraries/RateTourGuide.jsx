@@ -1,22 +1,29 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const RateTourGuide = ({ tourGuideId, touristId, onClose }) => {
+const RateTourGuide = ({ entityId, touristId, onClose }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
   const submitRating = async () => {
     try {
-      await axios.post(`http://localhost:5001/api/tourguides/rate`, {
-        tourGuideId,
-        touristId,
+      await axios.post(`http://localhost:5001/api/ratings`, {
+        userId: touristId,
+        entityId,          
+        entityType: "TourGuide",
         rating,
         comment
       });
+
       alert("Rating and comment submitted successfully!");
       onClose();
     } catch (error) {
       console.error("Error submitting rating:", error);
+
+      if (error.response) {
+        console.error("Error response data:", error.response.data);
+        alert(`Failed to submit rating: ${error.response.data.message}`);
+      }
     }
   };
 
@@ -46,7 +53,11 @@ const RateTourGuide = ({ tourGuideId, touristId, onClose }) => {
         />
       </div>
       <div className="flex justify-end space-x-2">
-        <button onClick={submitRating} className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
+        <button
+          onClick={submitRating}
+          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          disabled={rating === 0 || !comment}
+        >
           Submit
         </button>
         <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">

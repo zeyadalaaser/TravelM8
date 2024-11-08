@@ -61,24 +61,7 @@ const tourGuideSchema = new mongoose.Schema({
       type: String,
     },
   ],
-  ratings: [
-    {
-      touristId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Tourist",
-        required: true,
-      },
-      rating: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 5,
-      },
-      comment: {
-        type: String,
-      },
-    },
-  ],
+  
 }, { 
   timestamps: true 
 });

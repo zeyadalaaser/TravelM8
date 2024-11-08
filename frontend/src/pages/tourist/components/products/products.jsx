@@ -9,7 +9,12 @@ export default function Products({ products, currency, exchangeRate, touristId }
 const navigate = useNavigate();
 
 const handlePurchase = async (product) => {
-  const quantity = 1; 
+  if (!touristId) {
+    alert("Tourist ID is required.");
+    return;
+  }
+
+  const quantity = 1;
 
   try {
     const response = await axios.post('http://localhost:5001/api/purchases', {
@@ -19,17 +24,8 @@ const handlePurchase = async (product) => {
     });
 
     console.log("product id:", response.data.purchase.productId);
-    console.log("id el zeftx2: ", touristId);
-
     alert('Purchase successful!');
-    const viewPurchased = window.confirm(
-      "Do you want to view purchased products or continue shopping?"
-    );
-
-    if (viewPurchased) {
-      console.log("Id el zeft: ", touristId);
-      navigate(`/products-purchased`); 
-       }
+    
   } catch (error) {
     console.error("Error purchasing product:", error.response ? error.response.data : error.message);
     alert("Failed to purchase product.");
@@ -90,8 +86,4 @@ const handlePurchase = async (product) => {
   );
 }
 
-// Function to handle purchase logic
-const handlePurchase = (product) => {
-  console.log(`Purchasing: ${product.name}`);
-};
 
