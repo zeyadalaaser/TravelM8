@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const RateItinerary = ({ itineraryId, tourGuideId, touristId, onClose }) => {
+const RateItinerary = ({ entityId, entityType, touristId, onClose }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
   const submitRating = async () => {
     try {
-      await axios.post(`http://localhost:5001/api/itineraries/rate`, {
-        itineraryId,
-        touristId,
+      await axios.post(`http://localhost:5001/api//ratings`, {
+        userId: touristId,
+        entityId,
+        entityType,
         rating,
         comment
       });
@@ -22,7 +23,7 @@ const RateItinerary = ({ itineraryId, tourGuideId, touristId, onClose }) => {
 
   return (
     <div>
-      <h3 className="text-lg font-bold mb-2">Rate this Itinerary</h3>
+      <h3 className="text-lg font-bold mb-2">Rate this {entityType}</h3>
       <div className="mb-3">
         <label>Rating:</label>
         <select

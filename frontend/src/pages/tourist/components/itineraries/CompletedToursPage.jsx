@@ -51,57 +51,69 @@ export const CompletedToursPage = ({ touristId }) => {
       ) : (
         <ul>
           {completedTours.map((tour) => (
-            <Card key={tour._id} className="p-4 mb-4">
-              <div className="flex justify-between mb-2">
-                <h3 className="text-xl font-semibold">{tour.itinerary?.name}</h3>
-              </div>
-              <div className="text-sm text-gray-600 mb-2">{tour.itinerary?.description}</div>
-              
-              <div className="flex items-center mb-2">
+            <Card key={tour._id} className="p-4 mb-4 flex flex-col md:flex-row">
+              {/* Tour Details */}
+              <div className="w-full md:w-2/3 p-4">
+                <h3 className="text-xl font-semibold mb-2">{tour.itinerary?.name}</h3>
+                
+
+                {/* Tour Description */}
+                <p className="text-sm text-gray-600 mb-2">
+                  {tour.itinerary?.description}
+                </p>
+
+                {/* Tour Date */}
+                <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
+                  <Clock className="w-4 h-4 mr-1" />
+                  {tour.tourDate?.slice(0, 10)} {/* Display tour date */}
+                </div>
+
+             
+
+                {/* Tour Price */}
+                <div className="text-xl font-bold mb-4">
+                  {Array.isArray(tour.itinerary?.price) && tour.itinerary?.price.length > 0
+                    ? tour.itinerary.price
+                        .map(({ value }) => `${value} ${tour.currency}`)
+                        .join(" - ")
+                    : `${tour.itinerary?.price} ${tour.currency}`}
+                </div>
+
+                <div className="text-xl font-bold mb-4">
                 <Label className="text-m font-semibold text-black">Tour Guide:</Label>
                 <span className="ml-2">{tour.tourGuide?.name}</span>
-                <Button
-                  onClick={() => setSelectedTourGuide(tour)}
-                  className="ml-4 text-sm bg-black text-white px-4 py-1 rounded-lg hover:bg-gray-800 transition duration-300"
-                >
-                  Rate Tour Guide
-                </Button>
-              </div>
+                </div>
 
-              <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
-                <Clock className="w-4 h-4 mr-1" />
-                <span>{new Date(tour.tourDate).toLocaleDateString()}</span>
+                {/* Rating Buttons */}
+                <div className="flex gap-4">
+                  <Button
+                    onClick={() => setSelectedItinerary({ id: tour.itinerary._id, type: "Itinerary" })}
+                    className="text-sm mt-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-300"
+                  >
+                    Rate Itinerary
+                  </Button>
+
+                  <Button
+                    onClick={() => setSelectedTourGuide({ id: tour.tourGuide._id, type: "Tour Guide" })}
+                    className="text-sm mt-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-300"
+                  >
+                    Rate Tour Guide
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center flex-wrap gap-2">
-                {tour.tags && tour.tags.map((tag, index) => (
-                  <Badge key={index} variant="secondary">{tag}</Badge>
-                ))}
-              </div>
-              
-              <Button
-                onClick={() => setSelectedItinerary(tour)}
-                className="text-sm mt-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition duration-300"
-              >
-                Rate Itinerary
-              </Button>
             </Card>
           ))}
         </ul>
       )}
-      
-      {/* Modal for rating the itinerary */}
+
+      {/* Modals for Ratings */}
       {selectedItinerary && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-            <button
-              onClick={() => setSelectedItinerary(null)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-            >
-              ×
-            </button>
+            <button onClick={() => setSelectedItinerary(null)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">×</button>
             <RateItinerary
-              itineraryId={selectedItinerary.itinerary._id}
-              tourGuideId={selectedItinerary.tourGuide._id}
+              entityId={selectedItinerary.id}
+              entityType={selectedItinerary.type}
               touristId={touristId}
               onClose={() => setSelectedItinerary(null)}
             />
@@ -109,24 +121,19 @@ export const CompletedToursPage = ({ touristId }) => {
         </div>
       )}
 
-      {/* Modal for rating the tour guide */}
-      {selectedTourGuide && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-            <button
-              onClick={() => setSelectedTourGuide(null)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-            >
-              ×
-            </button>
-            <RateTourGuide
-              tourGuideId={selectedTourGuide.tourGuide._id}
-              touristId={touristId}
-              onClose={() => setSelectedTourGuide(null)}
-            />
-          </div>
-        </div>
-      )}
+{selectedTourGuide && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+      <button onClick={() => setSelectedTourGuide(null)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">×</button>
+      <RateTourGuide
+        entityId={selectedTourGuide.id} 
+        touristId={touristId}
+        onClose={() => setSelectedTourGuide(null)}
+      />
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

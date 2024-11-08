@@ -20,17 +20,7 @@ const bookingActivitySchema = new mongoose.Schema({
     enum: ['booked', 'completed'],
     default: 'booked',
   },
-  rating: {
-    type: Number,
-    min: 1,
-    max: 5,
-    required: false, 
-  },
-  comment: {
-    type: String,
-    trim: true,
-    required: false, 
-  },
+ 
 });
 
 const BookingActivity = mongoose.model('BookingActivity', bookingActivitySchema);
