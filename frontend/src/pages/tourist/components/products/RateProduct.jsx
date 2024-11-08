@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-export default function RateProduct({ isOpen, onClose, purchaseId }) {
+export default function RateProduct({ isOpen, onClose, purchaseId, touristId, productId }) {
     const [rating, setRating] = useState('');
     const [comment, setComment] = useState('');
 
@@ -22,10 +22,15 @@ export default function RateProduct({ isOpen, onClose, purchaseId }) {
         }
 
         try {
-            // Use the correct endpoint with purchaseId
-            await axios.post(`http://localhost:5001/api/purchases/${purchaseId}/rate`, { rating, comment });
+            await axios.post(`http://localhost:5001/api/ratings`, {
+                userId: touristId,  
+                entityId: productId, 
+                entityType: "Product",
+                rating,
+                comment
+            });
             alert('Rating submitted successfully!');
-            onClose(); // Close modal after submission
+            onClose(); 
         } catch (error) {
             console.error("Error submitting rating:", error);
             alert("Failed to submit rating.");

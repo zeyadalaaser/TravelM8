@@ -17,11 +17,11 @@ export const purchaseProduct = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient stock' });
     }
 
-    // Deduct the purchased quantity
+    
     product.quantity -= quantity;
+    product.sales += quantity; 
     await product.save();
 
-    // Record the purchase
     const purchase = new Purchase({
       productId,
       touristId,
@@ -39,7 +39,7 @@ export const getPurchasesByTourist = async (req, res) => {
     const { touristId } = req.params;
   
     try {
-      const purchases = await Purchase.find({ touristId }).populate('productId');
+      const purchases = await Purchase.find({ touristId }).populate('productId', 'name price');
   
       if (purchases.length === 0) {
         return res.status(404).json({ message: 'No purchases found for this tourist' });
@@ -52,23 +52,18 @@ export const getPurchasesByTourist = async (req, res) => {
     }
   };
 
-export async function rateProduct(req, res) {
-    const { purchaseId } = req.params;
-    const { rating, comment } = req.body;
 
-    try {
-        const purchase = await Purchase.findById(purchaseId);
-        if (!purchase) {
-            return res.status(404).json({ message: "Purchase not found" });
-        }
+export const deletePurchase = async (req, res) => {
+  const { purchaseId} = req.params;
 
-        purchase.rating = rating;
-        purchase.comment = comment;
-
-        await purchase.save();
-        return res.status(200).json({ message: "Rating submitted successfully", purchase });
-    } catch (error) {
-        console.error("Error rating product:", error);
-        return res.status(500).json({ message: "Error rating product" });
-    }
-}
+  try {
+      const result = await Purchase.findByIdAndDelete(purchaseId);
+      if (!result) {
+          return res.status(404).json({ message: "Purchase not found" });
+      }
+      res.status(200).json({ message: "Purchase deleted successfully" });
+  } catch (error) {
+      console.error("Error deleting purchase:", error);
+      res.status(500).json({ message: "Server error" });
+  }
+};
