@@ -31,7 +31,7 @@ const ActivityForm = () => {
     title: "",
     description: "",
     date: "",
-    location: { lat: latlng.lat, lng: latlng.lng },
+    location: { name: latlng.name, lat: latlng.lat, lng: latlng.lng },
     price: priceType === 'single' ? 0 : [0,1],
     category: "",
     tags: ["6706131d28bbe93c185b087d"],
@@ -45,6 +45,7 @@ const ActivityForm = () => {
     setFormData((prev) => ({
       ...prev,
       location: {
+        name: latlng.name,
         lat: latlng.lat,
         lng: latlng.lng
       }

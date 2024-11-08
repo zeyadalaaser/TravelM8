@@ -39,7 +39,7 @@ import { Card, CardContent } from "@/components/ui/card"
   const placeMarker = (lat, lng, name) => {
     setMarkerPosition({ lat, lng })
     setMapCenter([lat, lng])
-    setLatLng({lat:lat, lng:lng })
+    setLatLng({name:name, lat:lat, lng:lng })
     setAddress(name)
   }
 

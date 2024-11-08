@@ -89,6 +89,75 @@ export const getMyItineraries = async (req, res) => {
 };
 
 // update an itinerary in the database
+export const updateItineraryUponBookingModification = async (id, slotDate, action) => {
+  try {
+    // Fetch the itinerary by its ID
+    const updatedItinerary = await Itinerary.findById(id);
+
+    if (!updatedItinerary) {
+      return { success: false, message: "Itinerary not found" };
+    }
+
+    // Ensure slotDate is provided if action is specified
+    if (slotDate) {
+      if (!action) {
+        return { success: false, message: "Action is required when slot date is specified" };
+      }
+
+      // Find the slot matching the provided date
+      const slotToUpdate = updatedItinerary.availableSlots.find(
+        (slot) => new Date(slot.date).toDateString() === new Date(slotDate).toDateString()
+      );
+
+      if (!slotToUpdate) {
+        return { success: false, message: "Slot not found for the given date" };
+      }
+
+      // Handle booking action
+      if (action === "book") {
+        if (slotToUpdate.numberOfBookings < slotToUpdate.maxNumberOfBookings) {
+          slotToUpdate.numberOfBookings += 1;
+        } else {
+          return { success: false, message: "Max bookings reached for this date" };
+        }
+      } 
+      // Handle cancellation action
+      else if (action === "cancel") {
+        // Decrement bookings, ensuring it doesn't go below zero
+        if (slotToUpdate.numberOfBookings > 0) {
+          slotToUpdate.numberOfBookings -= 1;
+        } else {
+          return { success: false, message: "No bookings to cancel for this slot" };
+        }
+      } else {
+        return { success: false, message: "Invalid action specified" };
+      }
+
+      // Save the updated itinerary
+      await updatedItinerary.save();
+
+      // Return success response
+      return {
+        success: true,
+        message: "Booking modified successfully",
+        data: updatedItinerary,
+      };
+    }
+
+    // If slotDate is not provided, there's nothing to update
+    return { success: false, message: "Slot date not provided" };
+
+  } catch (error) {
+    // Return error response
+    return {
+      success: false,
+      message: "Error updating itinerary",
+      error: error.message,
+    };
+  }
+};
+
+// update an itinerary in the database
 export const updateItinerary = async (req, res) => {
   try {
     const { id } = req.params;
@@ -155,6 +224,7 @@ export const deleteItinerary = async (req, res) => {
     });
   }
 };
+
 async function getExchangeRates(base = "USD") {
   try {
     const response = await axios.get(
@@ -228,6 +298,7 @@ export const filterItineraries = async (req, res) => {
       .json({ message: "Server error. Could not filter itineraries." });
   }
 };
+
 export const searchItems2 = async (req, res) => {
   try {
     const { name, category, tags } = req.query;
@@ -372,4 +443,5 @@ export const flagItinerary = async (req, res) => {
     res.status(500).json({ message: "Error flagging itinerary" });
   }
 };
+
 

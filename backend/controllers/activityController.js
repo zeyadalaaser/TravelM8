@@ -2,6 +2,7 @@ import activityModel from "../models/activityModel.js";
 import mongoose from "mongoose";
 import { getActivities } from "../services/activities/activityServices.js";
 
+
 const createNewActivity = async (req, res) => {
   const {
     title,
@@ -59,7 +60,6 @@ const createNewActivity = async (req, res) => {
     res.status(400).json({ message: "bad parameters" });
   }
 };
-
 
 export const createManualActivity = async (req, res) => {
   const {
@@ -149,7 +149,6 @@ export const createManualActivity = async (req, res) => {
     return res.status(400).json({ message: "Bad parameters" });
   }
 };
-
 
 const getAllActivities = async (req, res) => {
   res.status(200).json(await getActivities(req.query, {}));

@@ -44,13 +44,39 @@ export const getAllActivityBookings = async (req, res) => {
     try {
         const touristId = req.user.userId;
         const allBookings = await BookingActivity.find({ touristId: touristId })
-            .populate('activityId')
-            .populate('advertiserId', 'name');        
-        res.status(201).json({ allBookings, message: "Successfully fetched all your tour bookings!" });
+            .populate('activityId');
+        res.status(201).json({ allBookings, message: "Successfully fetched all your activity bookings!" });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 }
+
+export const cancelBooking = async (req, res) => {
+    try {
+        // const touristId = req.user.userId;
+        const bookingId = req.params.id;
+        const bookingToCancel = await BookingActivity.findById(bookingId)
+            .populate('activityId');
+
+        const currentDate = new Date();
+        const slotDateObj = new Date(bookingToCancel.activityId.date);
+
+        const hoursDifference = (slotDateObj - currentDate) / (1000 * 60 * 60);
+
+        if (hoursDifference < 48) {
+            return res.status(400).json({
+                message: "Cancellations are only allowed 48 hours before the activity date",
+            });
+        }
+
+        bookingToCancel.status = 'cancelled';
+        await bookingToCancel.save();
+        res.status(201).json({ bookingToCancel, message: "Successfully cancelled your booking!" });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 export const bookActivity = async (req, res) => {
     const { touristId, activityId } = req.body;
 

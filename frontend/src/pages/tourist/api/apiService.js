@@ -110,7 +110,7 @@ export async function getActivityBookings(){
   );
 }
 
-export async function createItineraryBooking(itinerary, tourGuide, tourDate, token){
+export async function createItineraryBooking(itinerary, tourGuide, tourDate, token) {
   // const token = localStorage.getItem('token');
   return (
     await apiClient.post(
@@ -123,7 +123,8 @@ export async function createItineraryBooking(itinerary, tourGuide, tourDate, tok
         },
       }
     )
-  )}
+  )
+}
 
 export async function getItineraryBookings(){
   const token = localStorage.getItem('token');
@@ -137,6 +138,54 @@ export async function getItineraryBookings(){
   return (
     data.allBookings
   );
+}
+
+export async function cancelActivityBooking(id) {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    return { message: 'No token provided' };
+  }
+
+  try {
+    // Correct usage of PUT request: data should be sent as the second argument, headers as third
+    const response = await apiClient.put(`/activity-bookings/${id}`, {}, {  // You can send an empty object {} if you don't need a body
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    console.error('Error in canceling activity booking:', error);
+    return { message: error.response ? error.response.data.message : error.message };
+  }
+}
+
+export async function cancelItineraryBooking(id) {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    return { message: 'No token provided' };
+  }
+
+  try {
+    // Correct usage of PUT request: data should be sent as the second argument, headers as third
+    const response = await apiClient.put(`/itinerary-bookings/${id}`, {}, {  // You can send an empty object {} if you don't need a body
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    console.error('Error in canceling itinerary booking:', error);
+    return { message: error.response ? error.response.data.message : error.message };
+  }
 }
 
 
