@@ -62,8 +62,6 @@ export function HotelsPage() {
             if (!("providers" in hotel))
                 return null;
 
-            console.log(hotel.providers);
-
             const name = hotel.localizedHotelName;
             const nearby = "Nearby: " + hotel.localizedNearbyLandmarkNames.join(', ');
             const location = hotel.geolocation.localizedCity;

@@ -38,11 +38,13 @@ export function FlightsPage() {
 
     const fetchFlights = useDebouncedCallback(async () => {
         setLoading(true);
+        
         const currentRequestId = ++requestCounter.current;
         const flights = await getFlights(location.search);
         
         if (currentRequestId === requestCounter.current)
             setFlights(flights);
+
         setLoading(false);
     }, 200);
 
