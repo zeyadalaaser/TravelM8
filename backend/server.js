@@ -23,7 +23,7 @@ import bookingsRoute from "./routes/bookingsRoute.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import placeTagRoute from "./routes/placeTagRoute.js";
 import logoutRoute from "./routes/logoutRouter.js";
-
+import  deleteRequestRoute from "./routes/deleteRequestRoute.js";
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -63,6 +63,7 @@ app.use("/api/", logoutRoute);
 app.use("/api", bookingsRoute);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api", uploadRoutes);
+app.use("/api", deleteRequestRoute);
 
 app.listen(PORT, () => {
   connectDB();
