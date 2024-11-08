@@ -22,9 +22,12 @@ import complaintRoute from "./routes/complaintsRoute.js";
 // import bookingsRoute from "./routes/bookingsRoute.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import placeTagRoute from "./routes/placeTagRoute.js";
+// import bookingsActivityRoute from "./routes/bookingsActivityRoute.js";
+import purchaseRoute from "./routes/purchaseRoute.js";
+import hotelsRoute from "./routes/hotelsRoute.js";
+import logoutRoute from "./routes/logoutRouter.js";
 import activityBookingsRoute from "./routes/bookingsActivityRoute.js";
 import itineraryBookingsRoute from "./routes/bookingsRoute.js";
-import logoutRoute from "./routes/logoutRouter.js";
 
 
 dotenv.config({ path: "../.env" });
@@ -65,6 +68,9 @@ app.use("/api/auth", loginRoute);
 // app.use("/api", bookingsRoute);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api", uploadRoutes);
+app.use("/api", hotelsRoute);
+// app.use("/api", bookingsActivityRoute)
+app.use("/api", purchaseRoute);
 
 app.use("/api", activityBookingsRoute);
 app.use("/api", itineraryBookingsRoute);

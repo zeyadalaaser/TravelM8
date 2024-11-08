@@ -76,10 +76,10 @@ export default function TouristPage() {
       navigate("/login"); // Redirect if the role is not 'tourist'
       return;
     }
+    setTouristId(id);
     // Fetch badge information once the token is verified
     fetchBadgeInfo();
-
-    setTouristId(id);
+ 
   }, [navigate]);
 
 
@@ -119,48 +119,19 @@ export default function TouristPage() {
   { page === "activities" && <ActivitiesPage /> }
   { page === "itineraries" && <ItinerariesPage /> }
   { page === "museums" && <MuseumsPage /> }
-  { page === "products" && <ProductsPage /> }
   { page === "flights" && <FlightsPage /> }
   { page === "hotels" && <HotelsPage /> }
-  {
-    page === "products" && touristId && (
-      <ProductsPage touristId={touristId} />)
-  }
-
+  { page === "products" && touristId && (<ProductsPage touristId={touristId} />)}
   { page === "complaints" && <MyComplaintsPage /> }
-  {
-    page === "completed-tours" && touristId && (
-      <CompletedToursPage touristId={touristId} />
-    )
-  }
-  {
-    page === "past-activities" && touristId && (
-      <PastActivitiesPage touristId={touristId} />
-    )
-  }
-  {
-    page === "products-purchased" && touristId && (
-      <PurchasedProductsPage touristId={touristId} />
-    )
-  }
-  {page === "booking-history" && <BookingHistory/>}
+  { page === "completed-tours" && touristId && (<CompletedToursPage touristId={touristId} /> )}
+  { page === "past-activities" && touristId && (<PastActivitiesPage touristId={touristId} /> )}
+  { page === "products-purchased" && touristId && (<PurchasedProductsPage touristId={touristId} />)}
+  { page === "booking-history" && <BookingHistory/> }
 
-  {
-    showComplaintForm && (
-      <ComplaintForm onClose={() => setShowComplaintForm(false)} />
-    )
-  }
-
-  {
-    showRedeemPoints && (
-      <RedeemPoints onClose={() => setShowRedeemPoints(false)} />
-    )
-  }
+  { showComplaintForm && ( <ComplaintForm onClose={() => setShowComplaintForm(false)} />) }
+  { showRedeemPoints && (<RedeemPoints onClose={() => setShowRedeemPoints(false)} />)}
 
 
-
-       
-     
 </div >
     
   );

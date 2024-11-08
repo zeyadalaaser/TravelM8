@@ -17,8 +17,8 @@ export async function getActivities(query) {
 
 
 export async function getProducts(query) {
-    
-  
+
+
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
 
@@ -33,20 +33,20 @@ export async function getProducts(query) {
 }
 
 export async function getMuseums(query) {
-    const searchParams = new URLSearchParams(query);
-    searchParams.delete('type');
+  const searchParams = new URLSearchParams(query);
+  searchParams.delete('type');
 
-    return (await apiClient.get('filterbyTags?' + searchParams.toString())).data;
- 
+  return (await apiClient.get('filterbyTags?' + searchParams.toString())).data;
+
 }
 
 export async function getItineraries(query) {
-    const searchParams = new URLSearchParams(query);
-    searchParams.delete('type');
+  const searchParams = new URLSearchParams(query);
+  searchParams.delete('type');
 
 
-    return (await apiClient.get('FilterItineraries?' + searchParams.toString())).data;
-  
+  return (await apiClient.get('FilterItineraries?' + searchParams.toString())).data;
+
 }
 
 export async function fetchProfileInfo(token) {
@@ -195,70 +195,113 @@ const variables = `{"search":{"itinerary":{"source":{"ids":["City:"]},"destinati
 
 export async function getFlights(query) // source, dest, departureDate, arrivalDate
 {
-    const searchParams = new URLSearchParams(query);
-    if (!searchParams.has("from") || !searchParams.has("to"))
-        return [];
+  const searchParams = new URLSearchParams(query);
+  if (!searchParams.has("from") || !searchParams.has("to"))
+    return [];
 
-    const source = searchParams.get("from")?.split(',')[1];
-    const dest = searchParams.get("to")?.split(',')[1];
-    const departureDate = searchParams.get("departure");
-    const arrivalDate = searchParams.get("return");
-    const price = searchParams.get("price");
-    const sortBy = searchParams.get("sortBy");
-
-
-    const createDepartureDates = (date) => ({
-        start: `${date}T00:00:00`,
-        end: `${date}T23:59:59`
-    });
+  const source = searchParams.get("from")?.split('--')[1];
+  const dest = searchParams.get("to")?.split('--')[1];
+  const departureDate = searchParams.get("departure");
+  const arrivalDate = searchParams.get("return");
+  const price = searchParams.get("price");
+  const sortBy = searchParams.get("sortBy");
 
 
-    const body = {};
-    body["query"] = flightsQuery;
+  const createDepartureDates = (date) => ({
+    start: `${date}T00:00:00`,
+    end: `${date}T23:59:59`
+  });
 
-    const variablesJson = JSON.parse(variables);
-    const flightDetails = variablesJson["search"]["itinerary"];
 
-    if (departureDate)
-        flightDetails["outboundDepartureDate"] = createDepartureDates(departureDate);
+  const body = {};
+  body["query"] = flightsQuery;
 
-    if (arrivalDate)
-        flightDetails["inboundDepartureDate"] = createDepartureDates(arrivalDate);
+  const variablesJson = JSON.parse(variables);
+  const flightDetails = variablesJson["search"]["itinerary"];
 
-    if (price)
-        variablesJson["filter"]["price"] = { start: Number(price.split('-')[0]), end: Number(price.split('-')[1]) };
+  if (departureDate)
+    flightDetails["outboundDepartureDate"] = createDepartureDates(departureDate);
 
-    if (sortBy)
-        variablesJson["options"]["sortBy"] = sortBy.toUpperCase();
+  if (arrivalDate)
+    flightDetails["inboundDepartureDate"] = createDepartureDates(arrivalDate);
 
-    flightDetails["source"]["ids"] = ["City:" + source];
-    flightDetails["destination"]["ids"] = ["City:" + dest];
+  if (price)
+    variablesJson["filter"]["price"] = { start: Number(price.split('-')[0]), end: Number(price.split('-')[1]) };
 
-    body["variables"] = variablesJson;
+  if (sortBy)
+    variablesJson["options"]["sortBy"] = sortBy.toUpperCase();
 
-    try {
-        const response = await axios.post("https://api.skypicker.com/umbrella/v2/graphql?featureName=SearchReturnItinerariesQuery", body);
+  flightDetails["source"]["ids"] = ["City:" + source];
+  flightDetails["destination"]["ids"] = ["City:" + dest];
 
-        if ("itineraries" in response["data"]["data"]["returnItineraries"])
-            return response["data"]["data"]["returnItineraries"]["itineraries"];
+  body["variables"] = variablesJson;
 
-        return [];
-    }
-    catch {
-        return [];
-    }
+  try {
+    const response = await axios.post("https://api.skypicker.com/umbrella/v2/graphql?featureName=SearchReturnItinerariesQuery", body);
+
+    if ("itineraries" in response["data"]["data"]["returnItineraries"])
+      return response["data"]["data"]["returnItineraries"]["itineraries"];
+
+    return [];
+  }
+  catch {
+    return [];
+  }
+}
+
+export async function getToken() {
+  await apiClient.get("getHotelsToken");
+}
+
+const hotelsBody = `{"mapParams":{"estimateBoundingBox":true},"filterParams":{},"sortParams":{"sortMode":"rank_a"},"userSearchParams":{"searchLocation":{"locationType":"place","locationQuery":"2800"},"adults":"4","checkin":"2024-11-09","checkout":"2024-11-16","rooms":"3","childAges":[0]},"priceMode":"nightly-base","pageNumber":1,"metadata":{"impressionCount":1}}`;
+
+export async function getHotels(query) {
+  const searchParams = new URLSearchParams(query);
+  if (!searchParams.has("checkin") || !searchParams.has("checkout") || !searchParams.has("where"))
+    return [];
+
+  const location = searchParams.get("where")?.split('--')[1].split(':');
+  const checkin = searchParams.get("checkin");
+  const checkout = searchParams.get("checkout");
+
+  const price = searchParams.get("price");
+  const sort = searchParams.get("order");
+
+  const requestBody = JSON.parse(hotelsBody);
+
+  requestBody.userSearchParams.checkin = checkin;
+  requestBody.userSearchParams.checkout = checkout;
+
+  requestBody.userSearchParams.searchLocation.locationType = location[0];
+  requestBody.userSearchParams.searchLocation.locationQuery = location[1];
+
+  if (price)
+    requestBody.filterParams["fs=price"] = price;
+
+  if (sort)
+    requestBody.sortParams.sortMode = sort;
+
+  try {
+    const response = await apiClient.post("getHotels?currency=USD", requestBody);
+    return response["data"];
+  }
+  catch (error) {
+    console.error('Error fetching data:', error.message);
+    return [];
+  }
 }
 
 export async function submitComplaint(complaintData, token) {
 
-    return (await apiClient.post('complaints', complaintData, {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-        }
-    })).data;}
+  return (await apiClient.post('complaints', complaintData, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  })).data;
+}
 
- 
+
 
 
 

@@ -29,17 +29,7 @@ const purchaseSchema = new mongoose.Schema(
       enum: ['completed', 'pending', 'cancelled'],
       default: 'completed',
     },
-    rating: {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: false, 
-      },
-      comment: {
-        type: String,
-        trim: true,
-        required: false, 
-      },
+   
   },
   {
     timestamps: true, 

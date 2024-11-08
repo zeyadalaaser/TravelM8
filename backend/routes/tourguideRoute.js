@@ -12,7 +12,7 @@ router.put('/tourguides/updateMyProfile',verifyToken, updateTourGuideProfile);  
 router.get('/tourguides', getTourGuides);                 // Read user by email
 router.get('/tourguides/myProfile', verifyToken , getMyProfile);
 
-router.post('/tourguides/rate',rateTourGuide);
+//router.post('/tourguides/rate',rateTourGuide);
 
 router.post("/tourguides/changepassword", verifyToken, changePasswordTourGuide);
 

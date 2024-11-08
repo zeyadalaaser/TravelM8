@@ -24,6 +24,9 @@ import AdvertiserRegistration from "@/pages/SignUp/signupAdvertiser.jsx";
 import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
+
+//import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
+//import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";
 import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
@@ -33,11 +36,7 @@ import { ProductsPage } from "./pages/tourist/components/products/products-page.
 import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
-// import SellerProducts from './SellerProducts';
-// import SellerProfile from './SellerProfile';
-
-
-
+import AccountDelete from "./pages/admin/accountDelete.jsx"
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -55,6 +54,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/product" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
+        <Route path="/deleteAccount" element={<AccountDelete />} />
         <Route
           path="/admin/EditActivityCategories"
           element={<ActivityCategories />}
