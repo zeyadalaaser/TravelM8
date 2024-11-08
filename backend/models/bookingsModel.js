@@ -39,7 +39,8 @@ const bookingsSchema = new Schema({
   ratingGiven: {
     type: Boolean,
     default: false,
-  }
+  },
+ 
 }, { timestamps: true });
 
 const Booking = mongoose.model('Booking', bookingsSchema);

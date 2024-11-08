@@ -17,10 +17,12 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { useEffect, useRef, useState } from "react"
 
 
 interface ComboboxProps {
-    data: [{ value: string, label: string, image?: string }]
+    className: string
+    data: [{ value: string, label: string, sublabel?: string, image?: any }]
     placeholder: string
     empty: string
     value: string
@@ -28,29 +30,41 @@ interface ComboboxProps {
     onSelect?: (value: string) => void
 }
 
-export function Combobox({ data, placeholder, empty, value, onChange, onSelect }: ComboboxProps) {
+export function Combobox({ className, data, placeholder, empty, value, onChange, onSelect }: ComboboxProps) {
     const [open, setOpen] = React.useState(false)
+
+    const buttonRef = useRef<HTMLButtonElement | null>(null);
+    const [buttonWidth, setButtonWidth] = useState("");
+
+    useEffect(() => {
+        if (buttonRef.current) {
+            console.log(buttonRef.current.offsetWidth);
+            setButtonWidth(buttonRef.current.offsetWidth.toString());
+        }
+    }, []);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-[294px] justify-normal space-x-4"
-                >
-                    <span className="text-muted-foreground">{placeholder}</span>
-                    <div>
-                        <span className={cn("", !value && "text-muted-foreground")}>
+                <div className={cn("relative", className)}>
+                    <Button
+                        ref={buttonRef}
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className={cn("w-[294px] justify-normal", className, className && "w-full")}
+                    />
+                    <div className="w-[90%] flex space-x-2 absolute left-2 top-1/2 transform -translate-y-1/2 text-sm items-center" >
+                        <span className="text-muted-foreground">{placeholder}</span>
+                        <span className={cn("truncate", !value && "text-muted-foreground")}>
                             {value
                                 ? data.find((data) => data.value === value)?.label
                                 : empty}
                         </span>
                     </div>
-                </Button>
+                </div>
             </PopoverTrigger>
-            <PopoverContent className="w-[294px] p-0">
+            <PopoverContent className="p-0" style={{ width: buttonWidth !== null ? `${buttonWidth}px` : 'auto' }}>
                 <Command>
                     <CommandInput placeholder={empty} onChangeCapture={(e) => onChange?.(e.currentTarget.value)} />
                     <CommandList>
@@ -70,7 +84,11 @@ export function Combobox({ data, placeholder, empty, value, onChange, onSelect }
                                             value === d.value ? "opacity-100" : "opacity-0"
                                         )}
                                     />
-                                    {d.label}
+                                    {d.image}
+                                    <div className="flex flex-col max-w-[78%]">
+                                        {d.label}
+                                        {d.sublabel}
+                                    </div>
                                 </CommandItem>
                             ))}
                         </CommandGroup>

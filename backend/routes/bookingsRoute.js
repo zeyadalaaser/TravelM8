@@ -1,7 +1,7 @@
 import express from 'express';
 import {
   createBooking,
-  getCompletedToursByTourist,
+  getCompletedToursByTourist, 
 } from '../controllers/bookingsController.js';
 
 const router = express.Router();

@@ -31,7 +31,7 @@ function FractionalStar(rating, key) {
 export function Stars({ rating }) {
     const stars = [];
     for (let i = 0; i < 5; i++, rating--) {
-        if (rating > 1)
+        if (rating >= 1)
             stars.push(FractionalStar(1, i));
         else if (rating > 0 && rating < 1)
             stars.push(FractionalStar(rating, i));
