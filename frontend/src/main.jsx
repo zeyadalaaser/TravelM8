@@ -25,8 +25,8 @@ import SellerProfile from "@/pages/seller/SellerProfile.jsx";
 import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
 
-import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
-import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
+//import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
+//import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";
 import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
 
