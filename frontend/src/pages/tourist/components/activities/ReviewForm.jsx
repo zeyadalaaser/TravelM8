@@ -4,8 +4,7 @@ import axios from 'axios';
 const ReviewForm = ({ activityId, touristId, onClose }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [error, setError] = useState(""); // To hold any error messages
-
+  const [error, setError] = useState(""); 
   const submitRating = async () => {
     if (rating === 0 || !comment.trim()) {
       setError("Please provide a valid rating and comment.");
@@ -13,7 +12,6 @@ const ReviewForm = ({ activityId, touristId, onClose }) => {
     }
 
     try {
-      // Log the request data to ensure it's correct
       console.log({
         activityId,
         touristId,
