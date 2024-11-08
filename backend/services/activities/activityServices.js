@@ -106,7 +106,7 @@ function createTagsStage() {
   return [
     {
       $lookup: {
-        from: "tags",
+        from: "preferencetags",
         localField: "tags",
         foreignField: "_id",
         as: "tags",
