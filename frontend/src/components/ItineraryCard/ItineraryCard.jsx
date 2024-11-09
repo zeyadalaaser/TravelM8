@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Clock, Globe, Tag } from "lucide-react";
+import { Clock, Globe, Tag, Share2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +53,7 @@ export default function ItineraryCard({
     }
   };
 
-  const handleBook = async (id) => {};
+  const handleBook = async (id) => { };
 
   const handleFlagItinerary = async (itineraryId) => {
     try {
@@ -76,12 +76,13 @@ export default function ItineraryCard({
                   <h3 className="text-xl font-semibold mb-2">
                     {itinerary.name}
                   </h3>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleViewTimeline(itinerary)}
+                  {isTourist && <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Share activity"
                   >
-                    View Timeline
-                  </Button>
+                    <Share2 className="h-6 w-6" />
+                  </Button>}
                 </div>
                 <div className="flex items-center mb-2">
                   <Stars rating={itinerary.averageRating} />
@@ -155,10 +156,14 @@ export default function ItineraryCard({
                     </Badge>
                   ))}
                 </div>
-                <div className="text-xl font-bold">
-                  {`${(itinerary.price * 1).toFixed(2)} ${currency}`}
-                </div>{" "}
-                <div className="flex justify-end items-center">
+                <div className="flex justify-end items-center space-x-2">
+                  <span className="text-xl font-bold mr-auto">{`${(itinerary.price * 1).toFixed(2)} ${currency}`}</span>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleViewTimeline(itinerary)}
+                  >
+                    View Timeline
+                  </Button>
                   {isTourist && (
                     <Button onClick={() => handleBook}>Book Tour!</Button>
                   )}

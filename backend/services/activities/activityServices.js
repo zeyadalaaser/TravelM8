@@ -24,41 +24,45 @@ function createFilterStage({
 }) {
   const filters = {};
 
-    if (search) {
-        if (searchBy === 'categoryName') {
-            filters['categoryName'] = { $regex: search, $options: 'i' };
-        } else if (searchBy === 'tag') {
-            filters['tags.name'] = { $regex: search, $options: 'i' }; // Match tag name case-insensitively
-        } else if (searchBy === 'name') {
-            filters['title'] = { $regex: search, $options: 'i' }; // Match activity name case-insensitively
-        }
+  if (search) {
+    if (searchBy === 'categoryName') {
+      filters['categoryName'] = { $regex: search, $options: 'i' };
+    } else if (searchBy === 'tag') {
+      filters['tags.name'] = { $regex: search, $options: 'i' }; // Match tag name case-insensitively
+    } else if (searchBy === 'name') {
+      filters['title'] = { $regex: search, $options: 'i' }; // Match activity name case-insensitively
     }
+  }
 
-    const now = new Date();
-    const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
-        startDate ? new Date(startDate) : null;
+  const now = new Date();
+  const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
+    startDate ? new Date(startDate) : null;
 
-    if (start) filters.date = { $gte: start }; // Filter by startDate or current date for upcoming
 
-    if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
+  if (startDate && endDate)
+    filters.date = { $gte: start };
+  else if (startDate && !endDate)
+    filters.date = start;
 
-        const conversionRate = rates[currency] || 1;
-        if ((minPrice !== undefined || maxPrice !== undefined) && conversionRate) {
-          const minConvertedPrice =
-            minPrice !== undefined ? parseFloat(minPrice) / conversionRate : null;
-          const maxConvertedPrice =
-            maxPrice !== undefined ? parseFloat(maxPrice) / conversionRate : null;
-      
-          filters.price = {};
-          if (minConvertedPrice !== null) filters.price.$gte = minConvertedPrice;
-          if (maxConvertedPrice !== null) filters.price.$lte = maxConvertedPrice;
-        }
+  if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
-    if (categoryName) {
-        filters.categoryName = categoryName;
-    }
+  const conversionRate = rates[currency] || 1;
+  if ((minPrice !== undefined || maxPrice !== undefined) && conversionRate) {
+    const minConvertedPrice =
+      minPrice !== undefined ? parseFloat(minPrice) / conversionRate : null;
+    const maxConvertedPrice =
+      maxPrice !== undefined ? parseFloat(maxPrice) / conversionRate : null;
 
-    return filters;
+    filters.price = {};
+    if (minConvertedPrice !== null) filters.price.$gte = minConvertedPrice;
+    if (maxConvertedPrice !== null) filters.price.$lte = maxConvertedPrice;
+  }
+
+  if (categoryName) {
+    filters.category.name = categoryName;
+  }
+
+  return filters;
 }
 
 // Function to handle sorting stages
@@ -85,12 +89,28 @@ function createAdvertiserStage() {
   ];
 }
 
+function createCategoryStage() {
+  return [
+    {
+      $lookup: {
+        from: "activitycategories",
+        localField: "category",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
+    },
+  ];
+}
+
 // Function to add tag details
 function createTagsStage() {
   return [
     {
       $lookup: {
-        from: "tags",
+        from: "preferencetags",
         localField: "tags",
         foreignField: "_id",
         as: "tags",
@@ -137,16 +157,18 @@ export async function getActivities({
   );
   const advertiserStage = createAdvertiserStage();
   const tagsStage = createTagsStage();
+  const categoryStage = createCategoryStage();
 
-    const aggregationPipeline = [
-        ...tagsStage,
-        { $match: filters },
-        ...addRatingStage,
-        ...sortStage,
-        ...advertiserStage
-    ];
+  const aggregationPipeline = [
+    ...tagsStage,
+    ...categoryStage,
+    { $match: filters },
+    ...addRatingStage,
+    ...sortStage,
+    ...advertiserStage
+  ];
 
-    // Execute the aggregation pipeline
-    const activities = await Activity.aggregate(aggregationPipeline);
-    return activities;
+  // Execute the aggregation pipeline
+  const activities = await Activity.aggregate(aggregationPipeline);
+  return activities;
 }

@@ -82,7 +82,7 @@ export const getMyItineraries = async (req, res) => {
       .populate("tourGuideId");
     if (itineraries.length == 0)
       return res.status(404).json({ message: "no itineraries found" });
-    else return res.status(200).json( itineraries );
+    else return res.status(200).json(itineraries);
   } catch (error) {
     return res.status(400).json({ message: "Error", error: error.message });
   }
@@ -187,8 +187,12 @@ export const filterItineraries = async (req, res) => {
     const exchangeRate = rates[currency] || 1;
     const filters = {};
     if (search) filters.name = { $regex: search, $options: "i" };
-    if (startDate)
+
+    if (startDate && endDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };
+    else if (startDate && !endDate)
+      filters["availableSlots.date"] = new Date(startDate);
+
     if (endDate)
       filters["availableSlots.date"] = {
         ...filters["availableSlots.date"],
@@ -293,8 +297,8 @@ export const searchItems2 = async (req, res) => {
     const itineraries =
       Object.keys(itineraryFilter).length > 0
         ? await Itinerary.find(itineraryFilter)
-            .populate("activities")
-            .populate("historicalSites")
+          .populate("activities")
+          .populate("historicalSites")
         : [];
 
     const results = { activities, historicalPlaces, itineraries };
