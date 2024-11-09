@@ -95,13 +95,12 @@ const TourismGovernorDashboard = () => {
      });;
 
      useEffect(() => {
-      // Fetch tags when the component mounts
       const fetchTags = async () => {
         try {
-          const fetchedTags = await services.getTags(); // Call the function to fetch the tags
-          setTags(fetchedTags); // Set the fetched tags in the state
+          const fetchedTags = await services.getTags(); 
+          setTags(fetchedTags); 
         } catch (error) {
-          setError("Error fetching place tags."); // Handle error if the API call fails
+          setError("Error fetching place tags."); 
         }
       };
       fetchTags();
@@ -119,23 +118,19 @@ const TourismGovernorDashboard = () => {
         event.preventDefault();
         const newPlace = { ...newLocation };
         const filteredLocation = Object.entries(editableLocation).reduce((acc, [key, value]) => {
-            // Check if value is not empty
             if (value) {
                 if (typeof value === 'object') {
-                    // If the value is an array, filter out empty items
                     if (Array.isArray(value)) {
-                        // Only keep the items in the array that have a non-empty price
                         const filteredArray = value.filter(item => item.price);
                         if (filteredArray.length > 0) {
-                            acc[key] = filteredArray; // Add non-empty array to the result
+                            acc[key] = filteredArray; 
                         }
                     } else {
-                        // If it's a nested object, check if it has any non-empty properties
                         const nonEmptyObject = Object.fromEntries(
-                            Object.entries(value).filter(([_, v]) => v) // Filter out empty values
+                            Object.entries(value).filter(([_, v]) => v) 
                         );
                         if (Object.keys(nonEmptyObject).length > 0) {
-                            acc[key] = nonEmptyObject; // Add non-empty object to the result
+                            acc[key] = nonEmptyObject;
                         }
                     }
                 } else {
@@ -242,40 +237,37 @@ const TourismGovernorDashboard = () => {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside className="w-64 h-full bg-white drop-shadow-xl flex flex-col justify-between">
-  <div>
-    <div className="p-4">
-      <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
-    </div>
-    <nav className="mt-6">
-      <a href="#" className="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
-        <Layout className="mr-3" />
-        Dashboard
-      </a>
-      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-        <Map className="mr-3" />
-        Locations
-      </a>
-      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-        <Tag className="mr-3" />
-        Tags
-      </a>
-      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-        <List className="mr-3" />
-        Itineraries
-      </a>
-      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-        <Settings className="mr-3" />
-        Settings
-      </a>
-    </nav>
-  </div>
-
-  {/* Logout Link */}
-    <div className="p-4">
-      <Logout />
-    </div>
-    </aside>
-
+        <div>
+          <div className="p-4">
+            <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
+          </div>
+          <nav className="mt-6">
+            <button className="flex items-center w-full px-4 py-2 text-gray-700 bg-gray-100">
+              <Layout className="mr-3" />
+              Dashboard
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+              <Map className="mr-3" />
+              Locations
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+              <Tag className="mr-3" />
+              Tags
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+              <List className="mr-3" />
+              Itineraries
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+              <Settings className="mr-3" />
+              Settings
+            </button>
+          </nav>
+        </div>
+        <div className="p-4">
+          <Logout />
+        </div>
+      </aside>
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}

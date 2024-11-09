@@ -65,6 +65,7 @@ app.use("/api", itineraryRoute);
 app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
 app.use("/api/auth", loginRoute);
+app.use("/api/",logoutRoute);
 // app.use("/api", bookingsRoute);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api", uploadRoutes);
