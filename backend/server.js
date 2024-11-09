@@ -19,14 +19,17 @@ import pendingUserRoute from "./routes/pendingUserRoute.js";
 import ratingRoute from "./routes/ratingRoute.js";
 import loginRoute from "./routes/loginRoute.js";
 import complaintRoute from "./routes/complaintsRoute.js";
-import bookingsRoute from "./routes/bookingsRoute.js";
+// import bookingsRoute from "./routes/bookingsRoute.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import placeTagRoute from "./routes/placeTagRoute.js";
-import bookingsActivityRoute from "./routes/bookingsActivityRoute.js";
+// import bookingsActivityRoute from "./routes/bookingsActivityRoute.js";
 import purchaseRoute from "./routes/purchaseRoute.js";
 import hotelsRoute from "./routes/hotelsRoute.js";
 import logoutRoute from "./routes/logoutRouter.js";
-import  deleteRequestRoute from "./routes/deleteRequestRoute.js";
+import activityBookingsRoute from "./routes/bookingsActivityRoute.js";
+import itineraryBookingsRoute from "./routes/bookingsRoute.js";
+
+
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -62,14 +65,16 @@ app.use("/api", itineraryRoute);
 app.use("/api", pendingUserRoute);
 app.use("/api", ratingRoute);
 app.use("/api/auth", loginRoute);
-app.use("/api/", logoutRoute);
-app.use("/api", bookingsRoute);
+// app.use("/api", bookingsRoute);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api", uploadRoutes);
 app.use("/api", hotelsRoute);
-app.use("/api", bookingsActivityRoute)
+// app.use("/api", bookingsActivityRoute)
 app.use("/api", purchaseRoute);
-app.use("/api", deleteRequestRoute);
+
+app.use("/api", activityBookingsRoute);
+app.use("/api", itineraryBookingsRoute);
+
 
 app.listen(PORT, () => {
   connectDB();
