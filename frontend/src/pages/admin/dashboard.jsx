@@ -395,6 +395,31 @@ function AdminDashboard() {
                 </Button>
               </CardFooter>
             </Card>
+
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Change Password
+                </CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-xs text-muted-foreground">
+                  Update your account security
+                </p>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  className="w-full"
+                  onClick={() => setIsPasswordModalOpen(true)}
+                >
+                  Change Password
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </CardFooter>
+            </Card>
+            
           </div>
         </div>
         <Footer />
