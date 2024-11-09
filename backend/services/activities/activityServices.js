@@ -38,7 +38,11 @@ function createFilterStage({
   const start = upcoming ? new Date(Math.max(now, new Date(startDate ?? 0))) :
     startDate ? new Date(startDate) : null;
 
-  if (start) filters.date = { $gte: start }; // Filter by startDate or current date for upcoming
+
+  if (startDate && endDate)
+    filters.date = { $gte: start };
+  else if (startDate && !endDate)
+    filters.date = start;
 
   if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
