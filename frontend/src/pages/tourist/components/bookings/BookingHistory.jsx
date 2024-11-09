@@ -346,7 +346,7 @@ const renderCards = () => {
             )}
           </div>
         </CardContent>
-        <CardFooter className="bg-gray-50 p-6 flex flex-wrap gap-4">
+        <CardFooter className="p-6 flex flex-wrap gap-4">
           {activityBooking.status === "booked" && (
             <Button
               variant="destructive"
@@ -441,7 +441,7 @@ const renderCards = () => {
           )} */}
           </div>
         </CardContent>
-        <CardFooter className="bg-gray-50 p-6 flex flex-wrap gap-4">
+        <CardFooter className=" p-6 flex flex-wrap gap-4">
           {itineraryBooking.completionStatus === "Pending" && (
             <Button
               variant="destructive"

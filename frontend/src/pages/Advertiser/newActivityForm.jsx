@@ -25,9 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X } from "lucide-react";
 
-
-const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
-  const token = localStorage.getItem('token');
+const ActivityFormDialog = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
   const [latlng, setLatLng] = useState({ name: "", lat: 0, lng: 0 });
@@ -62,20 +61,6 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
     }
     fetchData();
   }, []);
-
-    useEffect(() => {
-    if (dialogArgs) setFormData(dialogArgs);
-    else setFormData({ title: "",
-      description: "",
-      date: "",
-      location: { name: latlng.name, lat: latlng.lat, lng: latlng.lng },
-      price: priceType === "single" ? 0 : [0, 1],
-      category: "",
-      tags: [],
-      discount: 0,
-      isBookingOpen: false,
-      image: ""})
-  }, [dialogArgs]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -112,61 +97,17 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
     }));
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let response;
-    try {
-      if (dialogArgs) {
-        const id = dialogArgs._id;
-        response = await fetch(`http://localhost:5001/api/activities/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(formData),
-        });
-      } else {
-        response = await fetch("http://localhost:5001/api/activities", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(formData),
-        });
-      }
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const result = await response.json();
-      console.log("Success:", result);
-      onRefresh();
-    } catch (error) {
-      console.error("Error:", error);
-      // isSuccess = false;
-    }
+    // Implement your submit logic here
     console.log(formData);
+    setIsOpen(false);
   };
-
-    const formatDateForInput = (dateString) => {
-    const date = new Date(dateString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-11
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-  
-    return `${year}-${month}-${day}T${hours}:${minutes}`; // Format: yyyy-MM-ddThh:mm
-  };
-
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose} className="w-auto">
+    <Dialog open={isOpen} className="w-auto" onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
+        <Button variant="outline">Open Activity Form</Button>
       </DialogTrigger>
       <DialogContent className="max-w-[800px]">
         <DialogHeader>
@@ -205,7 +146,7 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
                 id="date"
                 name="date"
                 type="datetime-local"
-                value={formatDateForInput(formData.date)}
+                value={formData.date}
                 onChange={handleInputChange}
                 required
               />
@@ -214,10 +155,10 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
             <div className="w-full h-400">
               <MapCard setLatLng={setLatLng} />
             </div>
-
+            
             <div>
               <Label>Price</Label>
-              <Select defaultValue="single" onValueChange={(value) => setPriceType(value)}>
+              <Select onValueChange={(value) => setPriceType(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select price type" />
                 </SelectTrigger>
@@ -239,15 +180,13 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
                   <Input
                     name="min"
                     type="number"
-                    value={formData.price.min}
-                    // placeholder="Min"
+                    placeholder="Min"
                     onChange={handlePriceChange}
                   />
                   <Input
                     name="max"
                     type="number"
-                    value={formData.price.min}
-                    // placeholder="Max"
+                    placeholder="Max"
                     onChange={handlePriceChange}
                   />
                 </div>

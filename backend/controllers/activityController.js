@@ -17,6 +17,7 @@ const createNewActivity = async (req, res) => {
     image,
   } = req.body;
 
+  const advertiserId = req.user.userId;
   // Validate the location field
   const isLocationValid =
     typeof location === "object" &&
@@ -28,8 +29,7 @@ const createNewActivity = async (req, res) => {
     mongoose.Types.ObjectId.isValid(category) &&
     Array.isArray(tags) &&
     tags.every((tag) => mongoose.Types.ObjectId.isValid(tag)) && // Check each tag in the array
-    isLocationValid && // Ensure location is valid
-    mongoose.Types.ObjectId.isValid(req.user.userId) // Ensure advertiserId is valid
+    isLocationValid // Ensure advertiserId is valid
   ) {
     const newActivity = new activityModel({
       title,
@@ -42,7 +42,7 @@ const createNewActivity = async (req, res) => {
       discount,
       isBookingOpen,
       image,
-      advertiserId: req.user.userId,
+      advertiserId : advertiserId,
     });
 
     try {

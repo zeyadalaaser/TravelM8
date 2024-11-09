@@ -11,8 +11,7 @@ import Testimonials from "./components/Testimonials";
 import scrollreveal from "scrollreveal";
 import Login from "./pages/signIn/login";
 import TouristRegistration from './pages/SignUp/signupTourist';
-
-
+import ActivityFormDialog from "./pages/Advertiser/newActivityForm.jsx";
 
 export default function App() {
   // State to manage sidebar visibility
@@ -61,5 +60,6 @@ export default function App() {
         <Footer />
       </div>
     </div>
+
   );
 }
