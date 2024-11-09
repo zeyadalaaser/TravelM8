@@ -76,13 +76,13 @@ export default function ItineraryCard({
                   <h3 className="text-xl font-semibold mb-2">
                     {itinerary.name}
                   </h3>
-                  <Button
+                  {isTourist && <Button
                     variant="ghost"
                     size="icon"
                     aria-label="Share activity"
                   >
                     <Share2 className="h-6 w-6" />
-                  </Button>
+                  </Button>}
                 </div>
                 <div className="flex items-center mb-2">
                   <Stars rating={itinerary.averageRating} />
