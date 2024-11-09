@@ -7,6 +7,7 @@ import { PriceFilter } from "../filters/price-filter";
 import { TagFilter } from "../filters/tag-filter";
 import { Museums } from "./museums";
 import { getMuseums } from "../../api/apiService";
+import { SearchBar } from "../filters/search";
 import axios from "axios";
 
 export function MuseumsPage() {
@@ -55,6 +56,11 @@ export function MuseumsPage() {
     setPriceRange({ min, max });
   };
 
+  const searchCategories = [
+    { name: 'Name', value: 'name' },
+    { name: 'Tag', value: 'tag' }
+  ];
+
   return (
     <>
       <div className="flex flex-row justify-between mb-4">
@@ -69,6 +75,7 @@ export function MuseumsPage() {
           </select>
         </label>
       </div>
+      <SearchBar categories={searchCategories} />
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-1/4">
           <PriceFilter
