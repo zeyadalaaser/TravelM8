@@ -89,6 +89,8 @@ const ProductPage = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
+    console.log("imageeee",file)
+    console.Conso
     setNewProductData(prev => ({
         ...prev,
         image: file
