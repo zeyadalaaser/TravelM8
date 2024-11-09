@@ -26,7 +26,7 @@ import bookingsActivityRoute from "./routes/bookingsActivityRoute.js";
 import purchaseRoute from "./routes/purchaseRoute.js";
 import hotelsRoute from "./routes/hotelsRoute.js";
 import logoutRoute from "./routes/logoutRouter.js";
-
+import  deleteRequestRoute from "./routes/deleteRequestRoute.js";
 dotenv.config({ path: "../.env" });
 
 const app = express();
@@ -69,6 +69,7 @@ app.use("/api", uploadRoutes);
 app.use("/api", hotelsRoute);
 app.use("/api", bookingsActivityRoute)
 app.use("/api", purchaseRoute);
+app.use("/api", deleteRequestRoute);
 
 app.listen(PORT, () => {
   connectDB();
