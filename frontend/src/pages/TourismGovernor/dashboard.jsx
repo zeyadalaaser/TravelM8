@@ -48,7 +48,7 @@ const TourismGovernorDashboard = () => {
             { type: 'Student', price: '' },
             { type: 'Foreigner', price: '' },
         ],
-        tags: '',
+        tags: "",
      });
      const [isEditing, setIsEditing] = useState({
         image: false,
@@ -63,6 +63,7 @@ const TourismGovernorDashboard = () => {
     });
 
     const handleDialogClose = () => {
+      setSelectedPlace(null);
         setIsEditing({
             image: false,
             name: false,
@@ -201,7 +202,7 @@ const TourismGovernorDashboard = () => {
   async function fetchHistoricalPlaces() {
     try {
       const response = await services.getMyPlaces(token);
-      console.log(historicalPlaces);
+      console.log(response);
       setHistoricalPlaces(Array.isArray(response.Places) ? response.Places : []);
     } catch (error) {
       console.error('Error fetching historical places:', error);
@@ -557,17 +558,11 @@ const TourismGovernorDashboard = () => {
                         <img src={location.image} alt={location.name} className="w-full h-48 object-cover rounded-t-lg" />
                         <CardTitle >{location.name}</CardTitle>
                         <CardDescription >{location.description}</CardDescription>
-                        
-  
-    {location.tags && (
-      <div className="mt-2 flex flex-wrap gap-2">
-      {location.tags.split(',').map((tag, index) => (
-      <span key={index} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
-        {tag.trim()}
-      </span>
-    ))}
-  </div>
-)}
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <span className="inline-flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+                            <Tag className="w-4 h-4 mr-1" /> {location.tags?.type}
+                          </span>
+                        </div>
                       </CardHeader>
                       <CardFooter className="flex justify-end space-x-2">
                         <Dialog onOpenChange={(open) => !open && handleDialogClose()}>
