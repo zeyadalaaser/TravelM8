@@ -124,6 +124,41 @@ const TourGuideProfilePage = () => {
 
     getProfileInfo();
   }, [token]);
+  const handleYesClick = async () => {
+    console.log("Yes button clicked");
+     
+      try {
+          
+          const token = localStorage.getItem('token');   
+          
+          if (!token) {
+              console.error("Authorization token is required");
+              return;
+          }
+  
+          const response = await fetch('http://localhost:5001/api/deleteRequests', {
+              method: 'POST',
+              headers: {
+                  'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+                  'Content-Type': 'application/json',
+              },
+          });
+  
+          const data = await response.json();
+  
+          if (response.ok) {
+            alert('Deletion request created successfully:');
+            setShowDialog(false);
+              console.log('Deletion request created successfully:' );
+          } else {
+            alert(data.msg);
+            setShowDialog(false);
+              console.error('Error creating deletion request:', data.msg);
+          }
+      } catch (error) {
+          console.error('Error:', error);
+      }
+  };
 
   const renderContent = () => {
     if (!profile) {
@@ -424,9 +459,12 @@ const TourGuideProfilePage = () => {
       
           <p className="text-lg">Are you sure you want to delete your account?</p>
           <div className="flex justify-end mt-4">
-            <button className="bg-black text-white px-6 py-3 rounded mr-4">
-              Yes
-            </button>
+           
+            <button  className="bg-black text-white px-6 py-3 rounded mr-4"
+            onClick={handleYesClick}  >
+       Yes
+      </button>
+      
             <button
               className="bg-gray-300 px-6 py-3 rounded"
               onClick={() => setShowDialog(false)}
@@ -438,7 +476,6 @@ const TourGuideProfilePage = () => {
       </div>
       
       )}
-            
               <Logout />
             </nav>
     </aside>

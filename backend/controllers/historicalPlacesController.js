@@ -226,8 +226,19 @@ export const filterbyTags = async (req, res) => {
       ];
     }
 
-    const filteredPlaces = await HistoricalPlace.find(filter);
+    const aggregationPipeline = [
+      {
+        $lookup: {
+          from: "placetags",
+          localField: "tags",
+          foreignField: "_id",
+          as: "tags",
+        },
+      },
+      { $match: filter }
+    ];
 
+    const filteredPlaces = await HistoricalPlace.aggregate(aggregationPipeline);
     // Send response
     res.status(200).json(filteredPlaces);
   } catch (error) {

@@ -83,8 +83,6 @@ export function ProductsPage({ touristId }) {
     });
   };
 
-  if (loading) return <p>Loading products...</p>; // Loading UI
-
   return (
     <>
       <SearchBar categories={[{ name: "Name", value: "name" }]} />
@@ -113,7 +111,7 @@ export function ProductsPage({ touristId }) {
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
-              <div>{products.length} results</div>
+            {loading ? <div>Loading...</div> : <div>{products.length} results</div>}
               <ClearFilters />
             </div>
             <SortSelection />

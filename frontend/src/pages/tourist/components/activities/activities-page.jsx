@@ -43,7 +43,7 @@ export function ActivitiesPage() {
     if (priceRange.min) queryParams.set("minPrice", priceRange.min);
     if (priceRange.max) queryParams.set("maxPrice", priceRange.max);
 
-    const fetchedActivities = await getActivities(`?${queryParams.toString()}`);
+    const fetchedActivities = (await getActivities(`?${queryParams.toString()}`)).filter(a => a.isBookingOpen);
     setActivities(fetchedActivities);
   }, 200);
 

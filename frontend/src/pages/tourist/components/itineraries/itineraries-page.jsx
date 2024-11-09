@@ -53,9 +53,9 @@ export function ItinerariesPage() {
     queryParams.set("currency", currency);
 
     try {
-      let fetchedItineraries = await getItineraries(
+      let fetchedItineraries = (await getItineraries(
         `?${queryParams.toString()}`
-      );
+      )).filter(i => i.isBookingOpen);
 
       // Filter out flagged itineraries if the user is a tourist
       if (!isAdmin) {
