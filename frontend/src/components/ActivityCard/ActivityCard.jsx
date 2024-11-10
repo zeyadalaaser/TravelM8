@@ -102,7 +102,7 @@ export default function ActivityCard({ activities, isTourist, isAdvertiser, isAd
                       </Button>
                     </div>
                   )}
-                  {isAdmin && <Button onClick={()=>handleFalg(activity._id)} variant="destructive">Flag Inappropriate</Button>}
+                  {isAdmin && <Button onClick={()=>handleFlag(activity._id)} variant="destructive">Flag Inappropriate</Button>}
 
                 </div>
               </div>
