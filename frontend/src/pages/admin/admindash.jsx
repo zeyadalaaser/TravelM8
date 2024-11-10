@@ -1,14 +1,14 @@
-import { Bell, ChevronDown, Filter, Search,X, Settings, ShoppingBag,LogOut, Users } from 'lucide-react'
+import { Bell, ChevronDown, Filter, Search,X, Settings, ShoppingBag,LogOut, Users ,CheckCircle,ArrowRight ,Eye} from 'lucide-react'
 import { useDebouncedCallback } from "use-debounce";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { changePassword } from "../admin/services/apiService.js";
 import { useToast } from "@/components/ui/use-toast";
 import { getAllUsers, deleteUser } from "@/pages/admin/services/adminDeleteServices.js";
 import { Label } from "@/components/ui/label";
@@ -78,6 +78,14 @@ const getDeletionRequests = async () => {
   export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('users');
     const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [error, setError] = useState("");
   
     const sidebarItems = [
       
@@ -117,6 +125,72 @@ const getDeletionRequests = async () => {
           return <ProductManagement />;
         default:
           return <div>Select a tab</div>;
+      }
+    };
+
+    const handleChangePassword = (e) => {
+      e.preventDefault();
+      setError("");
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        setError("All fields are required");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setError("New password and confirm password do not match");
+        return;
+      }
+      if (newPassword.length < 8) {
+        setError("New password must be at least 8 characters long");
+        return;
+      }
+      console.log("Password change requested");
+  
+      // Close the modal and reset fields
+      setIsPasswordModalOpen(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    };
+    const handlePasswordChange = async (e) => {
+      e.preventDefault();
+      setError("");
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        setError("All fields are required");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setError("New password and confirm password do not match");
+        return;
+      }
+      if (newPassword.length < 8) {
+        alert("New password must be at least 8 characters long");
+        setError("New password must be at least 8 characters long");
+        return;
+      }
+      try {
+        const passwordData = {
+          currentPassword,
+          newPassword,
+          confirmNewPassword: confirmPassword,
+        };
+        console.log(passwordData);
+        const response = await changePassword(passwordData, token);
+        alert("Password changed successfully");
+        console.log("success");
+        setIsPasswordModalOpen(false);
+        setCurrentPassword(null);
+        setNewPassword(null);
+        setConfirmPassword(null);
+      } catch (error) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          setError(error.response.data.message); // Display the specific error message
+        } else {
+          setError("An unexpected error occurred");
+        }
       }
     };
   
@@ -162,6 +236,18 @@ const getDeletionRequests = async () => {
                 />
               </div>
             </div>
+
+            <div className="flex items-center space-x-6">
+            <Button
+                  variant="ghost"
+                  className="text-red-600 hover:text-gray-900 flex items-center gap-2"
+                  onClick={() => setIsPasswordModalOpen(true)}
+                >
+                  Change Password
+                  
+                </Button>
+                
+
             <div className="flex items-center space-x-4">
               <Button variant="ghost" size="icon">
                 <Bell className="h-5 w-5" />
@@ -177,6 +263,7 @@ const getDeletionRequests = async () => {
                 <span className="font-medium">Janny</span>
                 <ChevronDown className="h-4 w-4" />
               </div>
+            </div>
             </div>
           </header>
   
@@ -198,7 +285,128 @@ const getDeletionRequests = async () => {
             {renderContent()}
           </main>
         </div>
+      
+      
+ {/* Password Change Modal */}
+ {isPasswordModalOpen && (
+      <div className="fixed inset-0 bg-gray-800 bg-opacity-40 flex items-center justify-center p-4">
+        <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+          <div className="flex justify-between items-center pb-4">
+            <h2 className="text-2xl font-bold text-gray-900">Change Password</h2>
+            <Button
+              variant="ghost"
+              onClick={() => setIsPasswordModalOpen(false)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <X className="h-6 w-6" />
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label
+                htmlFor="currentPassword"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Current Password
+              </label>
+              <div className="relative">
+                <Input
+                  type={showCurrentPassword ? "text" : "password"}
+                  id="currentPassword"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                  {showCurrentPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="newPassword"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                New Password
+              </label>
+              <div className="relative">
+                <Input
+                  type={showNewPassword ? "text" : "password"}
+                  id="newPassword"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Confirm New Password
+              </label>
+              <div className="relative">
+                <Input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400"
+                  required
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                </button>
+              </div>
+            </div>
+
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+
+            <div className="flex justify-end mt-6">
+              <Button
+                variant="ghost"
+                onClick={() => setIsPasswordModalOpen(false)}
+                className="mr-4 text-gray-700 bg-gray-100 hover:bg-gray-200"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handlePasswordChange}
+                className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 focus:ring-2 focus:ring-red-500"
+              >
+                Change Password
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
+    )}
+</div>
+
+
+
+
     );
   }
 function DocumentReview() {
@@ -284,113 +492,116 @@ function DocumentReview() {
     if (error) return <p>Error: {error}</p>;
   
     return (
-      <div>
-          <div className="container mx-auto p-6">
-            <h2 className="text-2xl font-semibold mb-6">
-              Manage Pending User Documents
-            </h2>
-            {userDocuments.length === 0 ? (
-              <p>No pending user documents found.</p>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                {userDocuments.map((item, index) => (
-                  <Card key={index} className="shadow-lg rounded-lg">
-                    <CardHeader className="flex justify-between items-center">
-                      <div>
-                        <h3 className="text-lg font-bold">
-                          {item.user.username}
-                        </h3>
-                        <p className="text-sm text-gray-500">{item.user.email}</p>
-                        <p className="text-sm font-medium text-blue-600">
-                          {item.user.type}
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        className="text-red-500 hover:bg-red-100"
-                        onClick={() => handleReject(item.user._id)}
-                      >
-                        <X size={16} />
-                      </Button>
-                    </CardHeader>
-                    <CardContent>
-                      <h4 className="text-md font-semibold mb-3">
-                        Uploaded Documents
-                      </h4>
-                      <ul className="space-y-2">
-                        {item.documents.image && (
-                          <li>
-                            <a
-                              href={`http://localhost:5001/uploads/${item.documents.image}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              View Image
-                            </a>
-                          </li>
-                        )}
-                        {item.documents.idpdf && (
-                          <li>
-                            <a
-                              href={`http://localhost:5001/uploads/${item.documents.idpdf}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              View ID PDF
-                            </a>
-                          </li>
-                        )}
-                        {item.documents.taxpdf && (
-                          <li>
-                            <a
-                              href={`http://localhost:5001/uploads/${item.documents.taxpdf}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              View Tax PDF
-                            </a>
-                          </li>
-                        )}
-                        {item.documents.certificatespdf && (
-                          <li>
-                            <a
-                              href={`http://localhost:5001/uploads/${item.documents.certificatespdf}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
-                            >
-                              View Certificates PDF
-                            </a>
-                          </li>
-                        )}
-                      </ul>
-                    </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button
-                        variant="outline"
-                        className="w-full mr-2 text-green-600"
-                        onClick={() => handleApprove(item.user._id)}
-                      >
-                        <CheckCircle className="mr-2" size={16} /> Approve
-                      </Button>
-                      <Button
-                        variant="outline"
-                        className="w-full text-red-600"
-                        onClick={() => handleReject(item.user._id)}
-                      >
-                        <X className="mr-2" size={16} /> Reject
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-      </div>
+      <Card className="bg-white rounded-xl shadow-sm">
+        <CardHeader className="flex justify-between items-center pb-4">
+          <h2 className="text-2xl font-bold text-gray-900">Manage Pending User Documents</h2>
+        </CardHeader>
+    
+        <CardContent>
+          {userDocuments.length === 0 ? (
+            <p className="text-center text-gray-500">No pending user documents found.</p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {userDocuments.map((item, index) => (
+                <Card key={index} className="shadow-sm rounded-lg">
+                  <CardHeader className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        {item.user.username}
+                      </h3>
+                      <p className="text-sm text-gray-500">{item.user.email}</p>
+                      <p className="text-sm font-medium text-blue-600">{item.user.type}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600 hover:bg-red-100"
+                      onClick={() => handleReject(item.user._id)}
+                    >
+                      <X size={16} />
+                    </Button>
+                  </CardHeader>
+    
+                  <CardContent>
+                    <h4 className="text-md font-semibold text-gray-900 mb-3">
+                      Uploaded Documents
+                    </h4>
+                    <ul className="space-y-2">
+                      {item.documents.image && (
+                        <li>
+                          <a
+                            href={`http://localhost:5001/uploads/${item.documents.image}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            View Image
+                          </a>
+                        </li>
+                      )}
+                      {item.documents.idpdf && (
+                        <li>
+                          <a
+                            href={`http://localhost:5001/uploads/${item.documents.idpdf}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            View ID PDF
+                          </a>
+                        </li>
+                      )}
+                      {item.documents.taxpdf && (
+                        <li>
+                          <a
+                            href={`http://localhost:5001/uploads/${item.documents.taxpdf}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            View Tax PDF
+                          </a>
+                        </li>
+                      )}
+                      {item.documents.certificatespdf && (
+                        <li>
+                          <a
+                            href={`http://localhost:5001/uploads/${item.documents.certificatespdf}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            View Certificates PDF
+                          </a>
+                        </li>
+                      )}
+                    </ul>
+                  </CardContent>
+    
+                  <CardFooter className="flex justify-between pt-4">
+                    <Button
+                      variant="outline"
+                      className="w-full mr-2 text-green-600 border-green-600 hover:bg-green-50"
+                      onClick={() => handleApprove(item.user._id)}
+                    >
+                      <CheckCircle className="mr-2" size={16} /> Approve
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full text-red-600 border-red-600 hover:bg-red-50"
+                      onClick={() => handleReject(item.user._id)}
+                    >
+                      <X className="mr-2" size={16} /> Reject
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     );
+    
 }
 function ItineraryManagement(){
     const location = useLocation();
@@ -1943,5 +2154,6 @@ function ProductManagement() {
             </Card>
             
           );
+          
           
       }

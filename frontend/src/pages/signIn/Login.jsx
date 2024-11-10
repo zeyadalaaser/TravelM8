@@ -57,7 +57,7 @@ export default function Login() {
             navigate('/TourismGovernorDashboard');
             break;
           case 'Admin':
-            navigate('/dashboard');
+            navigate('/AdminDashboard');
             break;
           case 'Advertiser':
             navigate('/advertiserDashboard');
