@@ -90,19 +90,14 @@ const touristSchema = new Schema(
       default: 'Level 1',
     },
     preferences: {
-      historic: { type: Boolean, default: false },
-      beaches: { type: Boolean, default: false },
-      familyFriendly: { type: Boolean, default: false },
-      shopping: { type: Boolean, default: false },
-      budget: { type: String, default: "medium" }, // could be "low", "medium", or "high"
+      type: [String],
+      default: [],
     },
     
   },
   { timestamps: true }
 );
  
-
-
 
 // Prevent dob from being updated after it's initially set
 touristSchema.pre('save', function(next) {

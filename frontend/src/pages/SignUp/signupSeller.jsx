@@ -190,7 +190,7 @@ const FormPage = () => {
                     </div>
                 )}
                 <p className="already-registered">
-                    Already registered? <a href="/signin" className="signin-link">Sign in here</a>
+                    Already registered? <a href="/login" className="signin-link">Sign in here</a>
                 </p>
             </div>
         </>
