@@ -389,7 +389,6 @@ function DocumentReview() {
               </div>
             )}
           </div>
-          <Footer />
       </div>
     );
 }
@@ -933,7 +932,6 @@ function TagManagement() {
           </CardContent>
       
           <CardFooter className="flex justify-end pt-2">
-            <Footer />
           </CardFooter>
         </Card>
       );
@@ -992,7 +990,6 @@ function SalesReport() {
           </div>
           </CardContent>
           <CardFooter className="flex justify-end pt-2">
-            <Footer />
           </CardFooter>
        </Card>
       );
@@ -1037,7 +1034,6 @@ function EventManagement() {
           </CardContent>
       
           <CardFooter className="flex justify-end pt-2">
-            <Footer />
           </CardFooter>
         </Card>
       );
@@ -1194,12 +1190,10 @@ function UserStatistics() {
           </Button>
         </div>
       </div>
-      <Footer />
     </div>
   
 
       </div>
-      <Footer />
     </div>
     
     
@@ -1947,6 +1941,7 @@ function ProductManagement() {
                 </div>
               </CardContent>
             </Card>
+            
           );
           
       }
