@@ -12,15 +12,26 @@ export async function getActivities(query) {
   return (await apiClient.get("activities?" + searchParams.toString())).data;
 }
 
-
+/* const response = await axios.get(`http://localhost:5001/api/products`,
+  {headers: {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${token}`,
+}}); */
 
 export async function getProducts(query) {
-
+  const token = localStorage.getItem('token');
 
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
   
-  return (await apiClient.get("products?" + searchParams.toString())).data.data;
+  const response = await apiClient.get("products?" + searchParams.toString(), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
+  });
+
+  return response.data.data;
 }
 
 export async function getMuseums(query) {

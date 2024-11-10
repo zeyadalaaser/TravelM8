@@ -41,8 +41,6 @@ export function SearchBar() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="name">Name</SelectItem>
-          <SelectItem value="categoryName">Category</SelectItem>
-          <SelectItem value="tag">Tag</SelectItem>
         </SelectContent>
       </Select>
     </div>
