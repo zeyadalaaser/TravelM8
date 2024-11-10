@@ -74,14 +74,14 @@ export default function ActivityCard({
                   <Tag className="w-4 h-4 mr-1" />
                   {activity.tags.map((tag, tagIndex) => (
                     <Badge key={tagIndex} variant="secondary">
-                      {tag?.name ?? tag}
+                      {tag}
                     </Badge>
                   ))}
                 </div>
                 <div className="flex items-center mb-2">
                   <span className="text-sm font-semibold mr-2">Category:</span>
                   <Badge variant="outline">
-                    {activity.categoryName ?? activity.category}
+                    {activity.category}
                   </Badge>
                 </div>
                 <div className="text-xl font-bold">
@@ -106,7 +106,7 @@ export default function ActivityCard({
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               This action cannot be undone. This will
-                              permanently delete your created place and remove
+                              permanently delete your created activity and remove
                               it from our servers.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
