@@ -7,6 +7,7 @@ import { PriceFilter } from "../filters/price-filter";
 import { TagFilter } from "../filters/tag-filter";
 import { Museums } from "./museums";
 import { getMuseums } from "../../api/apiService";
+import { SearchBar } from "../filters/search";
 import axios from "axios";
 
 export function MuseumsPage() {
@@ -14,7 +15,6 @@ export function MuseumsPage() {
   const [museums, setMuseums] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
-  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
 
   // Fetch latest exchange rates on mount
   useEffect(() => {
@@ -36,24 +36,22 @@ export function MuseumsPage() {
     queryParams.set("currency", currency);
     queryParams.set("exchangeRate", exchangeRates[currency] || 1);
 
-    if (priceRange.min) queryParams.set("minPrice", priceRange.min);
-    if (priceRange.max) queryParams.set("maxPrice", priceRange.max);
-
     const fetchedMuseums = await getMuseums(`?${queryParams.toString()}`);
     setMuseums(fetchedMuseums);
   }, 200);
 
   useEffect(() => {
     fetchMuseums();
-  }, [location.search, currency, priceRange]);
+  }, [location.search, currency]);
 
   const handleCurrencyChange = (e) => {
     setCurrency(e.target.value);
   };
 
-  const handlePriceChange = (min, max) => {
-    setPriceRange({ min, max });
-  };
+  const searchCategories = [
+    { name: 'Name', value: 'name' },
+    { name: 'Tag', value: 'tag' }
+  ];
 
   return (
     <>
@@ -69,12 +67,12 @@ export function MuseumsPage() {
           </select>
         </label>
       </div>
+      <SearchBar categories={searchCategories} />
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-1/4">
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
-            onPriceChange={handlePriceChange} // This updates price range
           />
           <Separator className="mt-5" />
           <TagFilter />

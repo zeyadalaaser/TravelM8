@@ -118,9 +118,18 @@ export const getHotels = async (req, res) => {
             
         }
         catch (error) {
-            console.log(error?.response?.data);
-            if (error?.response?.data?.toString().includes("Session is invalid or expired"))
+            const errorStr = JSON.stringify(error?.response?.data);
+            console.log(errorStr);
+            if (errorStr?.includes("Session is invalid or expired"))
+            {
                 token = null;
+                hotelsToken = null;
+            }
+            if (errorStr?.includes("The checkOutDate must be after the checkInDate"))
+            {
+                res.status(200).send([]);
+                return;
+            }
         }
         console.log(response?.data?.results?.length);
         await sleep(600);

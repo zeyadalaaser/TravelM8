@@ -38,6 +38,7 @@ export default function Login() {
       console.log("token:", token);
       console.log("pref: ", needsPreferences);
 
+
       if (needsPreferences && role === 'Tourist') {
         navigate(`/preferences-page/${userId}`);
       } else {
@@ -64,6 +65,7 @@ export default function Login() {
           default:
             navigate('/default-page');
         }
+
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
