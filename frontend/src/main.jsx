@@ -38,7 +38,7 @@ import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
 import AccountDelete from "./pages/admin/accountDelete.jsx";
 import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
-
+import SignupsRoles from "./pages/SignUp/signupRoles.jsx";
 import { Toaster } from "@/components/ui/toaster"
 
 createRoot(document.getElementById("root")).render(
@@ -67,7 +67,7 @@ createRoot(document.getElementById("root")).render(
           element={<TourismGovernor1 />}
         />
         <Route path="login" element={<Login />} />
-        <Route path="/signup" element={<SignupGeneral />} />
+        <Route path="/signup" element={<SignupsRoles />} />
         <Route path="/signup/signupTourist" element={<TouristRegistration />} />
         <Route
           path="/signup/signupAdvertiser"
