@@ -2,25 +2,24 @@ import useRouter from '@/hooks/useRouter';
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState, useEffect, Fragment } from 'react';
-import { getTags } from '../../api/apiService';
 
-export function TagFilter() {
-    const [tags, setTags] = useState([]);
+export function SelectFilter({ name, paramName, getOptions }) {
+    const [options, setOptions] = useState([]);
     const { searchParams, navigate, location } = useRouter();
 
     useEffect(() => {
-        getTags().then(tags => tags.map((t) => t.name)).then(setTags);
+        getOptions().then(setOptions);
     }, []);
 
     const handleChange = (value) => {
-        value ? searchParams.set('tag', value) : searchParams.delete('tag');
+        value ? searchParams.set(paramName, value) : searchParams.delete(paramName);
         navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
     };
 
     return <div className="mt-4">
         <div className="flex justify-between items-center">
-            <h3 className="font-semibold mb-2">Tags</h3>
-            {searchParams.get('tag') &&
+            <h3 className="font-semibold mb-2">{name}</h3>
+            {searchParams.get(paramName) &&
                 <Label
                     className="cursor-pointer underline font-normal h-[24px]"
                     onClick={() => handleChange(null)}
@@ -29,9 +28,9 @@ export function TagFilter() {
                 </Label>
             }
         </div>
-        <RadioGroup value={searchParams.get('tag')} onValueChange={handleChange}>
+        <RadioGroup value={searchParams.get(paramName)} onValueChange={handleChange}>
             <div className="space-y-2">
-                {tags.map((value, index) => (
+                {options.map((value, index) => (
                     <Fragment key={index}>
                         <div className="flex items-center">
                             <RadioGroupItem value={value} id={index} />

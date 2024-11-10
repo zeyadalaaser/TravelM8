@@ -59,7 +59,7 @@ function createFilterStage({
   }
 
   if (categoryName) {
-    filters.category.name = categoryName;
+    filters["category.name"] = categoryName;
   }
 
   return filters;

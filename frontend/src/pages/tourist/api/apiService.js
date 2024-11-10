@@ -52,11 +52,17 @@ export async function fetchProfileInfo(token) {
 }
 
 export async function getCategories() {
-  return (await apiClient.get("activity-categories")).data;
+  return (await apiClient.get("activity-categories")).data.map((c) => c.name);
 }
 
-export async function getTags() {
-  return (await apiClient.get("preference-tags")).data;
+export async function getPreferenceTags() {
+  return (await apiClient.get("preference-tags")).data.map((t) => t.name);
+}
+
+export async function getPlaceTags() {
+  const response = (await apiClient.get("placetag")).data;
+  const tags = response.map((t) => [t.type, t.historicalPeriod]).flat();
+  return [...new Set(tags)];
 }
 
 export async function getMyComplaints(token) {

@@ -7,11 +7,11 @@ import { ClearFilters } from "../filters/clear-filters";
 import { DateFilter } from "../filters/date-filter";
 import { RatingFilter } from "../filters/rating-filter";
 import { PriceFilter } from "../filters/price-filter";
-import { CategoryFilter } from "../filters/category-filter";
+import { SelectFilter } from "../filters/select-filter";
 import { SortSelection } from "../filters/sort-selection";
 import Activities from "./activities";
 import { SearchBar } from "../filters/search";
-import { getActivities } from "../../api/apiService";
+import { getActivities, getCategories } from "../../api/apiService";
 
 export function ActivitiesPage() {
   const { location } = useRouter();
@@ -81,7 +81,7 @@ export function ActivitiesPage() {
           <Separator className="mt-5" />
           <RatingFilter />
           <Separator className="mt-7" />
-          <CategoryFilter />
+          <SelectFilter name="Categories" paramName="categoryName" getOptions={getCategories} />
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
