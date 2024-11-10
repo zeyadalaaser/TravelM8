@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,16 +39,18 @@ export default function Navbar() {
                 <Button
                         variant="outline"
                         className="bg-transparent text-white hover:bg-white/10 hover:text-white rounded-full px-8 py-2"
+                        onClick={() => navigate('/login')}
                         >
-                        <Link to="/login">Login</Link>
+                        Login
                         </Button>
 
                         {/* Signup Button */}
                         <Button
                         variant="outline"
                         className="bg-white font-medium text-black hover:bg-white/90 rounded-full px-8 py-2"
+                        onClick={() => navigate('/signup')}
                         >
-                        <Link to="/signup">Signup</Link>
+                         Signup
                         </Button>
 
 

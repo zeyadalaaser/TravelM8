@@ -52,7 +52,7 @@ export const getMyPlaces = async (req, res) => {
 
   try {
     let Places;
-    Places = await HistoricalPlace.find({ tourismGovernorId: userId }).populate('tags','type');
+    Places = await HistoricalPlace.find({ tourismGovernorId: userId }).populate('tags', 'type');
     if (Places.length == 0) res.status(204);
     else res.status(200).json({ Places });
   } catch (error) {
@@ -207,7 +207,7 @@ export const createTags = async (req, res) => {
 export const filterbyTags = async (req, res) => {
   try {
     // const { type, historicalPeriod } = req.query;
-    const { id, tag, searchBy, search, price, currency = "USD", exchangeRate = 1} = req.query;
+    const { id, tag, searchBy, search, price, currency = "USD", exchangeRate = 1 } = req.query;
 
     // Build the query object dynamically
     const filter = {};
@@ -215,24 +215,28 @@ export const filterbyTags = async (req, res) => {
     if (id)
       filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
-    if (price)
-    {
+    if (price) {
       const [minPrice, maxPrice] = price.split("-").map(Number);
       filter["price.price"] = { $gte: minPrice, $lte: maxPrice };
     }
 
-    // Add filters to the query object based on the presence of query parameters
-    if (tag) {
-      filter["$or"] = [{ "tags.type": tag }, { "tags.historicalPeriod": tag }];
-    }
+    const searchByTag =  [
+      { "tags.type": { $regex: search, $options: "i" } },
+      { "tags.historicalPeriod": { $regex: search, $options: "i" } }
+    ];
+
+    const selectTag = [{ "tags.type": tag }, { "tags.historicalPeriod": tag }];
+    
+    if (tag && !(searchBy === "tag" && search)) // filter by tag only
+      filter["$or"] = selectTag;
+    else if (!tag && searchBy === "tag" && search) // search by tag only
+      filter["$or"] = searchByTag;
+    else if (searchBy === "tag" && search && tag) // both
+      filter["$and"] = [{ "$or": selectTag }, { "$or": searchByTag }];
+
 
     if (searchBy === "name" && search) {
       filter.name = { $regex: search, $options: "i" };
-    } else if (searchBy === "tag" && search) {
-      filter["$or"] = [
-        { "tags.type": { $regex: search, $options: "i" } },
-        { "tags.historicalPeriod": { $regex: search, $options: "i" } },
-      ];
     }
 
     const aggregationPipeline = [

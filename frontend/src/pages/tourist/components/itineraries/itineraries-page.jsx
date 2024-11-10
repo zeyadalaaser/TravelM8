@@ -8,9 +8,9 @@ import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
 import ItineraryCard from "@/components/ItineraryCard/ItineraryCard";
 import { SearchBar } from "../filters/search";
-import { getItineraries } from "../../api/apiService";
-import { LanguageFilter } from "./language-filter";
+import { getItineraries, getPreferenceTags } from "../../api/apiService";
 import axios from "axios";
+import { SelectFilter } from "../filters/select-filter";
 
 export function ItinerariesPage() {
   const location = useLocation();
@@ -113,7 +113,9 @@ export function ItinerariesPage() {
             exchangeRate={exchangeRates[currency] || 1}
           />
           <Separator className="mt-7" />
-          <LanguageFilter />
+          <SelectFilter name="Languages" paramName="language" getOptions={async () => ['Arabic', 'English', 'German']} />
+          <Separator className="mt-7" />
+          <SelectFilter name="Tags" paramName="tag" getOptions={getPreferenceTags} />
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">

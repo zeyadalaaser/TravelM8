@@ -49,7 +49,7 @@ import { PriceFilterTwo } from "../tourist/components/filters/PriceFilterTwo";
 import ItineraryCard from "../../components/ItineraryCard/ItineraryCard";
 import { SearchBar } from "../tourist/components/filters/search";
 import { getItineraries } from "../tourist/api/apiService";
-import { LanguageFilter } from "../tourist/components/itineraries/language-filter";
+import { SelectFilter } from '../tourist/components/filters/select-filter';
 import { SortSelection } from "../tourist/components/filters/sort-selection";
 import axios from "axios";
 const getDeletionRequests = async () => {
@@ -726,7 +726,7 @@ function ItineraryManagement(){
                   onPriceChange={handlePriceChange}
                 />
                 <Separator className="mt-7" />
-                <LanguageFilter />
+                <SelectFilter name="Languages" paramName="language" getOptions={async () => ['Arabic', 'English', 'German']} />
               </div>
       
               <div className="w-full md:w-3/4">
