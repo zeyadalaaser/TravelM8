@@ -10,9 +10,7 @@ import Header from "@/components/navbarDashboard.jsx";
 
 const TourGuideProfilePage = () => {
 
-  const amount = 45231.89,
-  percentageChange = 20.1,
-  timeframe = "from last month";
+  const  percentageChange = 20.1;
   const isPositive = percentageChange > 0;
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
@@ -127,10 +125,7 @@ const TourGuideProfilePage = () => {
   }, [token]);
   const handleYesClick = async () => {
     console.log("Yes button clicked");
-     
-      try {
-          
-          const token = localStorage.getItem('token');   
+      try { 
           
           if (!token) {
               console.error("Authorization token is required");

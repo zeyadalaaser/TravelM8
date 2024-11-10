@@ -12,8 +12,7 @@ export const createTourGuide = async(req,res) => {
             return res.status(400).json({ message: 'Username or email is already in use.' });
         }
    try{
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const tourGuide = await TourGuide.create({username, email, password: hashedPassword});
+      const tourGuide = await TourGuide.create({username, email, password});
       await tourGuide.save();
       res.status(200).json(tourGuide);
    }catch(error){

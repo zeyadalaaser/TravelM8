@@ -72,7 +72,7 @@ export const changePasswordTourGuide = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.userId; 
     try {
-      const result = await changeAccountPassword(userId, currentPassword, newPassword, confirmNewPassword, TourGuide);
+      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, TourGuide);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
