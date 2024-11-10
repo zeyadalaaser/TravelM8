@@ -25,7 +25,7 @@ export default function Login() {
         password
       });
 
-      const { token, role } = response.data;
+      const { token, role, needsPreferences } = response.data;
       localStorage.setItem('token', token);
 
       const decodedToken = jwtDecode(token);
@@ -36,28 +36,35 @@ export default function Login() {
 
       console.log("Login successful. Role:", role);
       console.log("token:", token);
+      console.log("pref: ", needsPreferences);
 
-      switch (role) {
-        case 'Tourist':
-          navigate('/tourist-page');
-          break;
-        case 'Seller':
-          navigate('/Sellerdashboard');
-          break;
-        case 'TourGuide':
-          navigate('/tourGuideDashboard');
-          break;
-        case 'TourismGovernor':
-          navigate('/TourismGovernorDashboard');
-          break;
-        case 'Admin':
-          navigate('/dashboard');
-          break;
-        case 'Advertiser':
-          navigate('/advertiserDashboard');
-          break;
-        default:
-          navigate('/default-page');
+
+      if (needsPreferences && role === 'Tourist') {
+        navigate(`/preferences-page/${userId}`);
+      } else {
+        switch (role) {
+          case 'Tourist':
+            navigate('/tourist-page');
+            break;
+          case 'Seller':
+            navigate('/Sellerdashboard');
+            break;
+          case 'TourGuide':
+            navigate('/tourGuideDashboard');
+            break;
+          case 'TourismGovernor':
+            navigate('/TourismGovernorDashboard');
+            break;
+          case 'Admin':
+            navigate('/AdminDashboard');
+            break;
+          case 'Advertiser':
+            navigate('/advertiserDashboard');
+            break;
+          default:
+            navigate('/default-page');
+        }
+
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
@@ -65,29 +72,28 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2073&q=80')"}}>
-      <div className="absolute inset-0 bg-black opacity-50"></div>
-      <Card className="w-full max-w-md relative z-10 bg-white/80 backdrop-blur-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Welcome to Your Journey</CardTitle>
-          <CardDescription className="text-center">Sign in to explore amazing destinations</CardDescription>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-300">
+      <Card className="w-full max-w-md bg-white shadow-2xl rounded-lg p-6 transform transition duration-300 ease-in-out hover:shadow-lg">
+        <CardHeader className="text-center pb-4">
+          <CardTitle className="text-4xl font-extrabold text-gray-800">Sign In</CardTitle>
+          <CardDescription className="text-gray-600">Access your account to explore</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input 
-                id="username" 
-                type="text" 
-                placeholder="Enter your username" 
-                value={username} 
-                onChange={(e) => setUsername(e.target.value)} 
-                required 
-                className="bg-white/50 backdrop-blur-sm"
+          <CardContent className="space-y-6">
+            <div className="space-y-1">
+              <Label htmlFor="username" className="text-gray-700 font-medium">Username</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className="bg-gray-100 text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-black"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-1">
+              <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -96,28 +102,29 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="bg-white/50 backdrop-blur-sm"
+                  className="bg-gray-100 text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-black"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? (
-                    <EyeOffIcon className="h-4 w-4" />
-                  ) : (
-                    <EyeIcon className="h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                 </Button>
               </div>
             </div>
-            {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
+            {errorMessage && <p className="text-red-500 text-center font-semibold">{errorMessage}</p>}
           </CardContent>
-          <CardFooter>
-            <Button type="submit" className="w-full bg-primary hover:bg-primary/90">Start Your Adventure</Button>
+          <CardFooter className="pt-6">
+            <Button
+              type="submit"
+              className="w-full bg-black text-white font-semibold py-2 rounded-md transition duration-300 hover:bg-gray-800"
+            >
+              Login
+            </Button>
           </CardFooter>
         </form>
       </Card>

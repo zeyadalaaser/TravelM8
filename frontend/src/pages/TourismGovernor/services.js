@@ -30,6 +30,17 @@ export async function updatePlace(token,id,place) {
       });
 } 
 
+export async function changePassword(passwordData, token) {
+    return (
+      await apiClient.post("tourism-governors/changepassword", passwordData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    ).data;
+  }
+
 export async function placeDetails(id) {
     return (await apiClient.get(`/getPlace/${id}`)).data;
 } 

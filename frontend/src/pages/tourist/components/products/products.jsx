@@ -2,14 +2,11 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "@/components/Stars";
-import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
-import { Share2 } from 'lucide-react'
 import axios from 'axios';
+import { ShareButton } from "@/components/ui/share-button";
 
 export default function Products({ products, currency, exchangeRate, touristId }) {
-  const navigate = useNavigate();
-
   const handlePurchase = async (product) => {
     if (!touristId) {
       alert("Tourist ID is required.");
@@ -53,13 +50,7 @@ export default function Products({ products, currency, exchangeRate, touristId }
                 <div>
                   <div className="flex justify-between items-center">
                     <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Share product"
-                    >
-                      <Share2 className="h-6 w-6" />
-                    </Button>
+                    <ShareButton id={product._id} name="product" />
                   </div>
                   <div className="flex items-center mb-2">
                     <Stars rating={product.averageRating || 0} />

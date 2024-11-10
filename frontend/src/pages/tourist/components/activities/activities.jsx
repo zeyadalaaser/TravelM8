@@ -1,10 +1,11 @@
-import { Clock, Tag, Share2 } from "lucide-react";
+import { Clock, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button"
 import { Stars } from "@/components/Stars";
+import { ShareButton } from "@/components/ui/share-button";
 
 function Activities({ activities, currency, exchangeRate }) {
+  console.log(activities)
   return (
     <div className="space-y-4">
       {activities.map((activity, index) => (
@@ -21,13 +22,7 @@ function Activities({ activities, currency, exchangeRate }) {
 
                 <div className="flex justify-between items-center">
                   <h3 className="text-xl font-semibold mb-1">{activity.title}</h3>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Share activity"
-                  >
-                    <Share2 className="h-6 w-6" />
-                  </Button>
+                  <ShareButton id={activity._id} name="activity" />
                 </div>
                 <div className="flex items-center mb-2">
                   <Stars rating={activity.averageRating} />

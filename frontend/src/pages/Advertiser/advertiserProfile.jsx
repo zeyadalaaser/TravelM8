@@ -45,10 +45,6 @@ import React, { useState, useEffect } from 'react'
       }));
     };
   
-    const handleCountryCodeChange = (value) => {
-      setCountryCode(value);
-    };
-  
     const handleFormSubmit = async () => {
       try {
       
@@ -63,30 +59,7 @@ import React, { useState, useEffect } from 'react'
         console.error('Error updating:', error);
       }
     };
-  
-    const handleChangePassword = (e) => {
-      e.preventDefault()
-      setError('')
-      if (!currentPassword || !newPassword || !confirmPassword) {
-        setError('All fields are required')
-        return
-      }
-      if (newPassword !== confirmPassword) {
-        setError('New password and confirm password do not match')
-        return
-      }
-      if (newPassword.length < 8) {
-        setError('New password must be at least 8 characters long')
-        return
-      }
-      console.log('Password change requested')
-      
-      // Close the modal and reset fields
-      setIsPasswordModalOpen(false)
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmPassword('')
-    }
+
     const handlePasswordChange= async (e) => {
       e.preventDefault();
       setError('');
@@ -142,8 +115,6 @@ import React, { useState, useEffect } from 'react'
       console.log("Yes button clicked");
        
         try {
-            
-            const token = localStorage.getItem('token');   
             
             if (!token) {
                 console.error("Authorization token is required");
@@ -347,23 +318,6 @@ import React, { useState, useEffect } from 'react'
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
           <aside className="w-64 bg-gray-100 ">
-          {/* <Card className="bg-background border-border">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <div className="flex items-center space-x-2">
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-            <h3 className="text-sm font-medium text-muted-foreground">Amount in Wallet</h3>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">${profile ? profile.wallet : '0'}</div>
-          <p className="text-xs text-muted-foreground mt-1">
-            <span className={isPositive ? "text-green-500" : "text-red-500"}>
-              {isPositive ? '+' : ''}{percentageChange}%
-            </span>
-            {' '}{timeframe}
-          </p>
-        </CardContent>
-      </Card> */}
         <nav className="mt-6">
   
               <button

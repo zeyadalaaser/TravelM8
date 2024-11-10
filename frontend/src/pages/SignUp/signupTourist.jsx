@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './signupTourist.css';
 import backgroundImage from '@/assets/backgroundtourist.jpg';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
+import axios from 'axios'; 
 
 
 export default function TouristRegistration() {
@@ -14,7 +14,7 @@ export default function TouristRegistration() {
     mobileNumber: '',
     nationality: '',
     dob: '',
-    occupation: 'student', // Default to student
+    occupation: 'student', 
   });
 
   const Footer = () => {
@@ -77,36 +77,50 @@ export default function TouristRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      try {
-        const response = await axios.post('http://localhost:5001/api/tourists', formData);
-        console.log('Form submitted successfully:', response.data);
-        setMessage('Registration Successful! Thank you for registering, ' + formData.username);
-        setIsSubmitted(true);
-        navigate('/tourist-page');
-      } catch (error) {
-        if (error.response) {
-          setErrors({ submit: error.response.data.message || 'An error occurred' });
-        } else if (error.request) {
-          setErrors({ submit: 'No response from server' });
-        } else {
-          setErrors({ submit: 'Error: ' + error.message });
-        }
-      }
-    }
-    else
-    {
-      console.log("failed to validate");
-    }
-  };
+        try {
+            const response = await axios.post('http://localhost:5001/api/tourists', formData);
+            console.log('Form submitted successfully:', response.data);
 
-  if (isSubmitted) {
-    return (
-      <div className="registration-success">
-        <h2>Registration Successful!</h2>
-        <p>Thank you for registering, {formData.username}.</p>
-      </div>
-    );
-  }
+            const touristId = response.data.id; 
+
+            localStorage.setItem('touristId', touristId);
+
+            setMessage('Registration Successful! Thank you for registering, ' + formData.username);
+            setIsSubmitted(true);
+
+            console.log("Tourist ID before navigation:", touristId);
+            //navigate('/login');
+            
+        } catch (error) {
+            if (error.response) {
+                setErrors({ submit: error.response.data.message || 'An error occurred' });
+            } else if (error.request) {
+                setErrors({ submit: 'No response from server' });
+            } else {
+                setErrors({ submit: 'Error: ' + error.message });
+            }
+        }
+    } else {
+        console.log("failed to validate");
+    }
+};
+
+
+if (isSubmitted) {
+  return (
+    <div className="registration-success">
+      <h2>Registration Successful!</h2>
+      <p>Thank you for registering, {formData.username}.</p>
+      <p>To begin your adventure, please <strong>Login</strong>.</p>
+      <button 
+        className="login-button" 
+        onClick={() => navigate('/login')}  
+      >
+        Login
+      </button>
+    </div>
+  );
+}
 
   const nationalities = [
     'Afghan', 'Albanian', 'Algerian', 'American', 'Andorran', 'Angolan', // Add more nationalities...

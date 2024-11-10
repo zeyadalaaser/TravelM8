@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import LogoutAlertDialog from "@/hooks/logoutAlert";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -22,9 +23,23 @@ import {
 } from "@/components/ui/alert-dialog";  
 import * as services from "@/pages/TourismGovernor/services.js";
 import Logout from "@/hooks/logOut.jsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import ChangePasswordDialog from '@/pages/TourismGovernor/components/changePasswordDialog.jsx';
 
 
 const TourismGovernorDashboard = () => {
+    const [isAlertOpen, setAlertOpen] = useState(false);
+    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
+    const handleLogoutClick = () => {
+      setAlertOpen(true); // Open the alert dialog when "Logout" is clicked
+    };
     const [historicalPlaces, setHistoricalPlaces] = useState([]);
     const [open, setOpen] = useState(false)
     const token = localStorage.getItem('token');
@@ -95,13 +110,12 @@ const TourismGovernorDashboard = () => {
      });;
 
      useEffect(() => {
-      // Fetch tags when the component mounts
       const fetchTags = async () => {
         try {
-          const fetchedTags = await services.getTags(); // Call the function to fetch the tags
-          setTags(fetchedTags); // Set the fetched tags in the state
+          const fetchedTags = await services.getTags(); 
+          setTags(fetchedTags); 
         } catch (error) {
-          setError("Error fetching place tags."); // Handle error if the API call fails
+          setError("Error fetching place tags."); 
         }
       };
       fetchTags();
@@ -119,23 +133,19 @@ const TourismGovernorDashboard = () => {
         event.preventDefault();
         const newPlace = { ...newLocation };
         const filteredLocation = Object.entries(editableLocation).reduce((acc, [key, value]) => {
-            // Check if value is not empty
             if (value) {
                 if (typeof value === 'object') {
-                    // If the value is an array, filter out empty items
                     if (Array.isArray(value)) {
-                        // Only keep the items in the array that have a non-empty price
                         const filteredArray = value.filter(item => item.price);
                         if (filteredArray.length > 0) {
-                            acc[key] = filteredArray; // Add non-empty array to the result
+                            acc[key] = filteredArray; 
                         }
                     } else {
-                        // If it's a nested object, check if it has any non-empty properties
                         const nonEmptyObject = Object.fromEntries(
-                            Object.entries(value).filter(([_, v]) => v) // Filter out empty values
+                            Object.entries(value).filter(([_, v]) => v) 
                         );
                         if (Object.keys(nonEmptyObject).length > 0) {
-                            acc[key] = nonEmptyObject; // Add non-empty object to the result
+                            acc[key] = nonEmptyObject;
                         }
                     }
                 } else {
@@ -232,7 +242,6 @@ const TourismGovernorDashboard = () => {
       setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
       setType("");
       setHistoricalPeriod("");
-      setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
     } catch (error) {
       setMessage(error.response ? error.response.data.message : "Error occurred");
     }
@@ -242,63 +251,88 @@ const TourismGovernorDashboard = () => {
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <aside className="w-64 h-full bg-white drop-shadow-xl flex flex-col justify-between">
-  <div>
-    <div className="p-4">
-      <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
-    </div>
-    <nav className="mt-6">
-      <a href="#" className="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
-        <Layout className="mr-3" />
-        Dashboard
-      </a>
-      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-        <Map className="mr-3" />
-        Locations
-      </a>
-      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-        <Tag className="mr-3" />
-        Tags
-      </a>
-      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-        <List className="mr-3" />
-        Itineraries
-      </a>
-      <a href="#" className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-        <Settings className="mr-3" />
-        Settings
-      </a>
-    </nav>
-  </div>
-
-  {/* Logout Link */}
-    <div className="p-4">
-      <Logout />
-    </div>
-    </aside>
-
+        <div>
+          <div className="p-4">
+            <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
+          </div>
+          <nav className="mt-6">
+            <button className="flex items-center w-full px-4 py-2 text-gray-700 bg-gray-100">
+              <Layout className="mr-3" />
+              Dashboard
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+              <Map className="mr-3" />
+              Locations
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+              <Tag className="mr-3" />
+              Tags
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+              <List className="mr-3" />
+              Itineraries
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
+              <Settings className="mr-3" />
+              Settings
+            </button>
+          </nav>
+        </div>
+        <div className="p-4">
+          <Logout />
+        </div>
+      </aside>
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
         <header className="bg-white shadow-sm">
-          <div className="flex items-center justify-between px-8 py-4">
-            <h1 className="text-2xl font-semibold text-gray-800">Tourism Governor Dashboard</h1>
-            <div className="flex items-center">
-              <Button variant="outline" size="icon" className="mr-4">
-                <Bell className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center">
-                <img
-                  className="w-8 h-8 rounded-full mr-2"
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="User avatar"
-                />
-                <span className="text-gray-700 mr-2">John Doe</span>
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              </div>
-            </div>
-          </div>
-        </header>
+      <div className="flex items-center justify-between px-7 py-3">
+        {/* Title and Notifications */}
+        <h1 className="text-2xl font-semibold text-gray-800">Tour Guide Dashboard</h1>
 
+        <div className="flex items-center">
+          {/* Borderless Notification Button */}
+          <Button
+            variant="link" // Borderless button style
+            size="icon"
+            className="p-0 mr-4 flex items-center"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="sr-only">Notifications</span>
+          </Button>
+
+          {/* "Hi, {name}" Greeting */}
+          <span className="text-gray-700 mr-2">Settings</span>
+
+          {/* Dropdown Menu at the right */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button
+                variant="link" // Borderless button style
+                className="p-0 flex items-center"
+              >
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>Options</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => setIsChangePasswordOpen(true)}>Change password</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogoutClick} >Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <LogoutAlertDialog
+        isOpen={isAlertOpen}
+        onClose={() => setAlertOpen(false)}
+      />
+        <ChangePasswordDialog 
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
+    </header>
         {/* Dashboard Content */}
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">

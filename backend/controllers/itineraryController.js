@@ -5,6 +5,7 @@ import HistoricalPlaces from "../models/historicalPlacesModel.js";
 import PreferenceTag from "../models/preferenceTagModel.js";
 import ActivityCategory from "../models/activityCategoryModel.js";
 import mongoose from "mongoose";
+import { createPopulationStage, createRatingStage } from "../helpers/aggregationHelper.js";
 
 export const createItinerary = async (req, res) => {
   try {
@@ -170,13 +171,14 @@ async function getExchangeRates(base = "USD") {
 export const filterItineraries = async (req, res) => {
   try {
     const {
-      minPrice = 0,
-      maxPrice = Infinity,
-      tags,
+      id,
+      price,
       language,
       startDate,
       endDate,
+      searchBy,
       search,
+      tag,
       sortBy,
       order,
       currency = "USD",
@@ -186,7 +188,20 @@ export const filterItineraries = async (req, res) => {
     const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
     const filters = {};
-    if (search) filters.name = { $regex: search, $options: "i" };
+
+    if (id)
+      filters["_id"] = new mongoose.Types.ObjectId(`${id}`);
+
+    if (search) {
+      if (searchBy === 'tag') {
+        filters['tags.name'] = { $regex: search, $options: 'i' };
+      } else if (searchBy === 'name') {
+        filters['name'] = { $regex: search, $options: 'i' };
+      }
+    };
+
+    if (tag)
+      filters['tags.name'] = searchBy !== 'tag' ? tag : { $in: [tag, filters['tags.name']] };
 
     if (startDate && endDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };
@@ -199,28 +214,31 @@ export const filterItineraries = async (req, res) => {
         $lte: new Date(endDate),
       };
 
-    const minConvertedPrice = parseFloat(minPrice) / exchangeRate;
-    const maxConvertedPrice = parseFloat(maxPrice) / exchangeRate;
-    filters.price = { $gte: minConvertedPrice, $lte: maxConvertedPrice };
-
-    if (tags) {
-      const tagsArray = tags.split(",").map((tag) => tag.trim());
-      const tagIds = await PreferenceTag.find({
-        name: { $in: tagsArray },
-      }).select("_id");
-      filters.tags = { $in: tagIds.map((tag) => tag._id) };
+    if (price) {
+      const [minPrice, maxPrice] = price.split("-").map(Number);
+      filters.price = { $gte: minPrice, $lte: maxPrice };
     }
+
     if (language) filters.tourLanguage = language;
 
-    const sortCondition = sortBy ? { [sortBy]: order === "desc" ? -1 : 1 } : {};
+    const sortCondition = sortBy ? [{ $sort: { [sortBy]: order === "desc" ? -1 : 1 } }] : [];
+    const addRatingStage = createRatingStage("Itinerary", true, 0);
+    const advertiserStage = createPopulationStage("advertisers", "advertiserId", "advertiser", true);
+    const tagsStage = createPopulationStage("preferencetags", "tags", "tags", false, true);
+    const tourGuideStage = createPopulationStage("activitycategories", "tourGuideId", "tourGuideId", true);
 
-    let itineraries = await Itinerary.find(filters)
-      .populate("tags")
-      .populate("tourGuideId")
-      .sort(sortCondition);
+    const aggregationPipeline = [
+      ...tagsStage,
+      ...tourGuideStage,
+      { $match: filters },
+      ...addRatingStage,
+      ...sortCondition,
+      ...advertiserStage
+    ];
 
+    let itineraries = await Itinerary.aggregate(aggregationPipeline);
     itineraries = itineraries.map((itinerary) => ({
-      ...itinerary.toObject(),
+      ...itinerary,
       price: (itinerary.price * exchangeRate).toFixed(2),
     }));
 

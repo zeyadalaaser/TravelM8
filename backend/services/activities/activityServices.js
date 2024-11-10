@@ -1,6 +1,7 @@
 import axios from "axios";
-import { createRatingStage } from "../../helpers/aggregationHelper.js";
+import { createPopulationStage, createRatingStage } from "../../helpers/aggregationHelper.js";
 import Activity from "../../models/activityModel.js";
+import mongoose from "mongoose";
 
 async function getExchangeRates(base = "USD") {
   const response = await axios.get(
@@ -11,8 +12,8 @@ async function getExchangeRates(base = "USD") {
 
 // Function to handle filtering stages
 function createFilterStage({
-  minPrice,
-  maxPrice,
+  id,
+  price,
   startDate,
   endDate,
   upcoming = true,
@@ -23,6 +24,9 @@ function createFilterStage({
   rates,
 }) {
   const filters = {};
+
+  if (id)
+    filters["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
   if (search) {
     if (searchBy === 'categoryName') {
@@ -47,19 +51,15 @@ function createFilterStage({
   if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
   const conversionRate = rates[currency] || 1;
-  if ((minPrice !== undefined || maxPrice !== undefined) && conversionRate) {
-    const minConvertedPrice =
-      minPrice !== undefined ? parseFloat(minPrice) / conversionRate : null;
-    const maxConvertedPrice =
-      maxPrice !== undefined ? parseFloat(maxPrice) / conversionRate : null;
-
+  if (price) {
+    const [minPrice, maxPrice] = price.split("-").map(Number);
     filters.price = {};
-    if (minConvertedPrice !== null) filters.price.$gte = minConvertedPrice;
-    if (maxConvertedPrice !== null) filters.price.$lte = maxConvertedPrice;
+    filters.price.$gte = minPrice;
+    filters.price.$lte = maxPrice;
   }
 
   if (categoryName) {
-    filters.category.name = categoryName;
+    filters["category.name"] = categoryName;
   }
 
   return filters;
@@ -72,58 +72,11 @@ function createSortStage(sortBy, order) {
   return [{ $sort: { [sortBy]: sortOrder } }];
 }
 
-// Function to add advertiser details
-function createAdvertiserStage() {
-  return [
-    {
-      $lookup: {
-        from: "advertisers",
-        localField: "advertiserId",
-        foreignField: "_id",
-        as: "advertiser",
-      },
-    },
-    {
-      $unwind: { path: "$advertiser", preserveNullAndEmptyArrays: true },
-    },
-  ];
-}
-
-function createCategoryStage() {
-  return [
-    {
-      $lookup: {
-        from: "activitycategories",
-        localField: "category",
-        foreignField: "_id",
-        as: "category",
-      },
-    },
-    {
-      $unwind: { path: "$category", preserveNullAndEmptyArrays: true },
-    },
-  ];
-}
-
-// Function to add tag details
-function createTagsStage() {
-  return [
-    {
-      $lookup: {
-        from: "preferencetags",
-        localField: "tags",
-        foreignField: "_id",
-        as: "tags",
-      },
-    },
-  ];
-}
-
 // Main function to get activities with all stages
 export async function getActivities({
+  id,
   includeRatings,
-  minPrice,
-  maxPrice,
+  price,
   startDate,
   endDate,
   upcoming,
@@ -137,8 +90,8 @@ export async function getActivities({
 }) {
   const rates = await getExchangeRates("USD");
   const filters = createFilterStage({
-    minPrice,
-    maxPrice,
+    id,
+    price,
     startDate,
     endDate,
     upcoming,
@@ -155,9 +108,10 @@ export async function getActivities({
     includeRatings,
     minRating
   );
-  const advertiserStage = createAdvertiserStage();
-  const tagsStage = createTagsStage();
-  const categoryStage = createCategoryStage();
+  
+  const advertiserStage = createPopulationStage("advertisers", "advertiserId", "advertiser", true);
+  const tagsStage = createPopulationStage("preferencetags", "tags", "tags", false, true);
+  const categoryStage = createPopulationStage("activitycategories", "category", "category", true);
 
   const aggregationPipeline = [
     ...tagsStage,

@@ -115,6 +115,7 @@ const TouristProfilePage = () => {
   }
 
   useEffect(() => {
+    const token = localStorage.getItem('token');   
     if (!token) {
       navigate("/login");
       return;
@@ -137,13 +138,12 @@ const TouristProfilePage = () => {
      
       try {
           
-          const token = localStorage.getItem('token');   
-          
+        const token = localStorage.getItem('token');   
           if (!token) {
               console.error("Authorization token is required");
               return;
           }
-  
+       
           const response = await fetch('http://localhost:5001/api/deleteRequests', {
               method: 'POST',
               headers: {
@@ -151,7 +151,8 @@ const TouristProfilePage = () => {
                   'Content-Type': 'application/json',
               },
           });
-  
+         console.log(token);
+         
           const data = await response.json();
   
           if (response.ok) {
