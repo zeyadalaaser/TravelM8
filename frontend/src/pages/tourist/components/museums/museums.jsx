@@ -1,7 +1,7 @@
-import { CircleDollarSign, Clock, MapPin, Tag, Share2 } from "lucide-react";
+import { CircleDollarSign, Clock, MapPin, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button"
+import { ShareButton } from "@/components/ui/share-button";
 import { Fragment } from "react";
 
 export function Museums({ museums, currency, exchangeRate }) {
@@ -20,13 +20,7 @@ export function Museums({ museums, currency, exchangeRate }) {
             <div className="w-full md:w-2/3 p-4">
               <div className="flex flex-row justify-between items-center">
                 <h3 className="text-xl font-semibold mb-2">{museum.name}</h3>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Share product"
-                >
-                  <Share2 className="h-6 w-6" />
-                </Button>
+                <ShareButton id={museum._id} name="place" />
               </div>
               <p className="text-sm text-gray-600 mb-2">{museum.description}</p>
               <div className="flex items-center text-sm text-gray-600 mb-2">

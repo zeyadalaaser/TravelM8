@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createPopulationStage, createRatingStage } from "../../helpers/aggregationHelper.js";
 import Activity from "../../models/activityModel.js";
+import mongoose from "mongoose";
 
 async function getExchangeRates(base = "USD") {
   const response = await axios.get(
@@ -11,6 +12,7 @@ async function getExchangeRates(base = "USD") {
 
 // Function to handle filtering stages
 function createFilterStage({
+  id,
   price,
   startDate,
   endDate,
@@ -22,6 +24,9 @@ function createFilterStage({
   rates,
 }) {
   const filters = {};
+
+  if (id)
+    filters["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
   if (search) {
     if (searchBy === 'categoryName') {
@@ -69,6 +74,7 @@ function createSortStage(sortBy, order) {
 
 // Main function to get activities with all stages
 export async function getActivities({
+  id,
   includeRatings,
   price,
   startDate,
@@ -84,6 +90,7 @@ export async function getActivities({
 }) {
   const rates = await getExchangeRates("USD");
   const filters = createFilterStage({
+    id,
     price,
     startDate,
     endDate,

@@ -38,6 +38,8 @@ import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
 import AccountDelete from "./pages/admin/accountDelete.jsx"
 
+import { Toaster } from "@/components/ui/toaster"
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -86,5 +88,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
       </Routes>
     </BrowserRouter>
+    <Toaster />
   </StrictMode>
 );

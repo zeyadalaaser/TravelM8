@@ -207,10 +207,13 @@ export const createTags = async (req, res) => {
 export const filterbyTags = async (req, res) => {
   try {
     // const { type, historicalPeriod } = req.query;
-    const { tag, searchBy, search, price, currency = "USD", exchangeRate = 1} = req.query;
+    const { id, tag, searchBy, search, price, currency = "USD", exchangeRate = 1} = req.query;
 
     // Build the query object dynamically
     const filter = {};
+
+    if (id)
+      filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
     if (price)
     {
