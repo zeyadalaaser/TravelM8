@@ -8,6 +8,7 @@ import {
 import { viewPendingUserDocuments } from "../controllers/viewPendingUserDocuments.js";
 import { changePasswordAdmin } from "../controllers/changePassword.js";
 import verifyToken from "../services/tokenDecodingService.js";
+import {getAllDeletionRequests} from "../controllers/deleteRequestController.js";
 
 const router = expresss.Router();
 
@@ -19,5 +20,6 @@ router.get("/getallusers", getUsers);
 router.get("/admins", getAllAdmins);
 router.post("/admins/changepassword", verifyToken, changePasswordAdmin);
 router.get("/pending-user-documents", viewPendingUserDocuments);
+router.get("/Allrequests", getAllDeletionRequests);
 
 export default router;
