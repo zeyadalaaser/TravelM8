@@ -8,6 +8,7 @@ import { useToast } from "./components/useToast";
 import { SearchBar } from './components/filters/search';
 import { PriceFilter } from "./components/filters/price-filter";
 import { getProducts } from './api/apiService'; 
+import { getMyProducts } from '../../../../backend/controllers/productController';
 import useRouter from '../../hooks/useRouter';
 
 const token = localStorage.getItem('token');

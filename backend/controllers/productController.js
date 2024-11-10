@@ -163,9 +163,13 @@ export const getAllProducts = async (req, res) => {
 
     // Prepare filter for price range, converting values from the selected currency to USD
     let filter = {};
-    if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
+    
+    if(userRole === 'Tourist'){ //kda admins and sellers see all products archived or not
       filter.archived = false; // toursits only see unarchived products
-   }
+    }
+    console.log('User Role is ', req.user.role);
+    console.log('User id is ', req.user.userId)
+    console.log('Applied Filter: ', filter)
     if (minPrice || maxPrice) {
       filter.price = {};
       if (minPrice) filter.price.$gte = parseFloat(minPrice) / exchangeRate;
@@ -212,12 +216,23 @@ export const getAllProducts = async (req, res) => {
 
 // Function to get products belonging to the authenticated user
 export const getMyProducts = async (req, res) => {
-  const userId = req.user?.userId;
-  try {
-    const products = await Product.find({ sellerId: userId });
-    if (products.length === 0) res.status(204).send();
-    else res.status(200).json({ products });
-  } catch (error) {
-    res.status(400).json({ message: "Enter a valid ID" });
+  const sellerId = req.user.userId;
+  console.log(sellerId);
+  if (mongoose.Types.ObjectId.isValid(sellerId)){
+    try{
+      const products = await Product.find({sellerId: sellerId})
+      .populate("sellerId","username name email")
+      .exec();
+      if(products.length === 0){
+        res.status(204).send() //no products founnd
+      }else{
+        res.status(200).json({products}); //success return products
+      }
+    }catch(error){
+      console.error("Error fetching products :", error);
+      res.status(500).json({messege: "An error occured while fetching products"})
+    }
+  } else{
+    res.status(400).json({messege: "Invalid seller ID"})
   }
 };

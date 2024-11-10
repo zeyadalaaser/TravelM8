@@ -21,7 +21,7 @@ const upload = multer({ storage: storage });
 
 router.post('/', verifyToken, upload.single('image'), createProduct);
 router.delete('/:id', deleteProduct);
-router.get('/', getAllProducts); 
+router.get('/',verifyToken ,getAllProducts); 
 router.put('/:id',upload.single('image'), updateProduct);
 router.put('/:id/archive', archiveProduct);
 router.put('/:id/unarchive', unarchiveProduct);
