@@ -4,9 +4,9 @@ import useRouter from "@/hooks/useRouter";
 import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { PriceFilter } from "../filters/price-filter";
-import { TagFilter } from "../filters/tag-filter";
+import { SelectFilter } from "../filters/select-filter";
 import { Museums } from "./museums";
-import { getMuseums } from "../../api/apiService";
+import { getMuseums, getPlaceTags } from "../../api/apiService";
 import { SearchBar } from "../filters/search";
 import axios from "axios";
 
@@ -75,7 +75,7 @@ export function MuseumsPage() {
             exchangeRate={exchangeRates[currency] || 1}
           />
           <Separator className="mt-5" />
-          <TagFilter />
+          <SelectFilter name="Tags" paramName="tag" getOptions={getPlaceTags} />
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">

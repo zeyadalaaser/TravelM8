@@ -10,7 +10,6 @@ export function ShareButton({ id, name }) {
     const { location, searchParams } = useRouter();
 
     const url = window.location.origin + location.pathname + "?type=" + searchParams.get("type") + "&id=" + id;
-    console.log(url)
     const { toast } = useToast();
     return (
         <Popover>

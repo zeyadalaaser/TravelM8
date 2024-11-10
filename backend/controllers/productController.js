@@ -167,7 +167,7 @@ export const getAllProducts = async (req, res) => {
     if (id)
       filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
-    if (userRole !== 'admin' && userRole !== 'seller') { //kda admins and sellers see all products archived or not
+    if(userRole === 'Tourist') { //kda admins and sellers see all products archived or not
       filter.archived = false; // toursits only see unarchived products
     }
     if (price) {
@@ -217,11 +217,12 @@ export const getAllProducts = async (req, res) => {
 
 // Function to get products belonging to the authenticated user
 export const getMyProducts = async (req, res) => {
-  const userId = req.user?.userId;
+  const userId = req.user.userId;
+  console.log("this is the user id", userId)
   try {
     const products = await Product.find({ sellerId: userId });
     if (products.length === 0) res.status(204).send();
-    else res.status(200).json({ products });
+    else res.status(200).json( {products} );
   } catch (error) {
     res.status(400).json({ message: "Enter a valid ID" });
   }

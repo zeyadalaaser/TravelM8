@@ -178,6 +178,7 @@ export const filterItineraries = async (req, res) => {
       endDate,
       searchBy,
       search,
+      tag,
       sortBy,
       order,
       currency = "USD",
@@ -195,9 +196,12 @@ export const filterItineraries = async (req, res) => {
       if (searchBy === 'tag') {
         filters['tags.name'] = { $regex: search, $options: 'i' };
       } else if (searchBy === 'name') {
-        filters['title'] = { $regex: search, $options: 'i' };
+        filters['name'] = { $regex: search, $options: 'i' };
       }
     };
+
+    if (tag)
+      filters['tags.name'] = searchBy !== 'tag' ? tag : { $in: [tag, filters['tags.name']] };
 
     if (startDate && endDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };

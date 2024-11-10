@@ -34,7 +34,7 @@ const AdvertiserDashboard = () => {
                 <Plus className="mr-2 h-4 w-4" /> Create Activity
               </Button>
             </div>
-            <ActivityCard activities={activities} isAdvertiser={true} />
+           {/*  <ActivityCard activities={activities} isAdvertiser={true} /> */}
           </div>
         </div>
       </div>

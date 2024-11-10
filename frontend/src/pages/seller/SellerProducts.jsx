@@ -8,7 +8,9 @@ import { useToast } from "./components/useToast";
 import { SearchBar } from './components/filters/search';
 import { PriceFilter } from "./components/filters/price-filter";
 import { getProducts } from './api/apiService'; 
+import { getMyProducts } from '../../../../backend/controllers/productController';
 import useRouter from '../../hooks/useRouter';
+import axios from "axios";
 
 const token = localStorage.getItem('token');
 
@@ -47,10 +49,16 @@ export default function SellerProducts() {
   // Fetch products for the seller using getProducts
   useEffect(() => {
     const fetchProducts = async () => {
+      const token = localStorage.getItem('token');
       setLoading(true); // Set loading state
       try {
-        const response = await getProducts(location.search); // Fetch products from the API
-        setProducts(response.data); // Update products state
+        const response = await axios.get(`http://localhost:5001/api/products/myProducts`,
+          {headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }});
+         // Fetch products from the API
+        setProducts(response.data.products); // Update products state
       } catch (error) {
         console.error('Error fetching products:', error);
         setError(error.message); // Handle error state
