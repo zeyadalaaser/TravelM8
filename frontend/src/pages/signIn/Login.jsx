@@ -25,7 +25,7 @@ export default function Login() {
         password
       });
 
-      const { token, role } = response.data;
+      const { token, role, needsPreferences } = response.data;
       localStorage.setItem('token', token);
 
       const decodedToken = jwtDecode(token);
@@ -36,28 +36,36 @@ export default function Login() {
 
       console.log("Login successful. Role:", role);
       console.log("token:", token);
+      console.log("pref: ", needsPreferences);
 
-      switch (role) {
-        case 'Tourist':
-          navigate('/tourist-page');
-          break;
-        case 'Seller':
-          navigate('/Sellerdashboard');
-          break;
-        case 'TourGuide':
-          navigate('/tourGuideDashboard');
-          break;
-        case 'TourismGovernor':
-          navigate('/TourismGovernorDashboard');
-          break;
-        case 'Admin':
-          navigate('/AdminDashboard');
-          break;
-        case 'Advertiser':
-          navigate('/advertiserDashboard');
-          break;
-        default:
-          navigate('/default-page');
+
+      if (needsPreferences && role === 'Tourist') {
+        navigate(`/preferences-page/${userId}`);
+      } else {
+        // Redirect based on role as usual
+        switch (role) {
+          case 'Tourist':
+            navigate('/tourist-page');
+            break;
+          case 'Seller':
+            navigate('/Sellerdashboard');
+            break;
+          case 'TourGuide':
+            navigate('/tourGuideDashboard');
+            break;
+          case 'TourismGovernor':
+            navigate('/TourismGovernorDashboard');
+            break;
+          case 'Admin':
+            navigate('/dashboard');
+            break;
+          case 'Advertiser':
+            navigate('/advertiserDashboard');
+            break;
+          default:
+            navigate('/default-page');
+        }
+
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
