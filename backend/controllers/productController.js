@@ -146,6 +146,7 @@ async function getExchangeRates(base = "USD") {
 export const getAllProducts = async (req, res) => {
   try {
     const {
+      id,
       price,
       sortByRating,
       search,
@@ -162,6 +163,10 @@ export const getAllProducts = async (req, res) => {
 
     // Prepare filter for price range, converting values from the selected currency to USD
     let filter = {};
+
+    if (id)
+      filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
+
     if (userRole !== 'admin' && userRole !== 'seller') { //kda admins and sellers see all products archived or not
       filter.archived = false; // toursits only see unarchived products
     }

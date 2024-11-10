@@ -36,7 +36,10 @@ import { ProductsPage } from "./pages/tourist/components/products/products-page.
 import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
-import AccountDelete from "./pages/admin/accountDelete.jsx"
+import AccountDelete from "./pages/admin/accountDelete.jsx";
+import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
+
+import { Toaster } from "@/components/ui/toaster"
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -78,13 +81,15 @@ createRoot(document.getElementById("root")).render(
         <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
         <Route path="/activityForm" element={<ActivityForm />} />
         <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
-
         <Route path="/tourGuideProfile" element={<TourGuideProfile />} />
         <Route path="/tourGuideDashboard" element={<TourGuideDashboard />} />
         <Route path="/itineraryForm" element={<ItineraryForm />} />
         <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
         <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
+        <Route path="/preferences-page/:touristId" element={<PreferencesPage />} />
+
       </Routes>
     </BrowserRouter>
+    <Toaster />
   </StrictMode>
 );

@@ -171,6 +171,7 @@ async function getExchangeRates(base = "USD") {
 export const filterItineraries = async (req, res) => {
   try {
     const {
+      id,
       price,
       language,
       startDate,
@@ -186,6 +187,9 @@ export const filterItineraries = async (req, res) => {
     const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
     const filters = {};
+
+    if (id)
+      filters["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
     if (search) {
       if (searchBy === 'tag') {

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Clock, Globe, Tag, Share2 } from "lucide-react";
+import { Clock, Globe, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ShareButton } from "@/components/ui/share-button";
 import {
 
   Dialog,
@@ -76,13 +77,7 @@ export default function ItineraryCard({
                   <h3 className="text-xl font-semibold mb-2">
                     {itinerary.name}
                   </h3>
-                  {isTourist && <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Share activity"
-                  >
-                    <Share2 className="h-6 w-6" />
-                  </Button>}
+                  {isTourist && <ShareButton id={itinerary._id} name="itinerary" />}
                 </div>
                 <div className="flex items-center mb-2">
                   <Stars rating={itinerary.averageRating} />
