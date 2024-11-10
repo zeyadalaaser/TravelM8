@@ -39,6 +39,8 @@ import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
 import AccountDelete from "./pages/admin/accountDelete.jsx";
 import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
 
+import { Toaster } from "@/components/ui/toaster"
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -88,5 +90,6 @@ createRoot(document.getElementById("root")).render(
 
       </Routes>
     </BrowserRouter>
+    <Toaster />
   </StrictMode>
 );
