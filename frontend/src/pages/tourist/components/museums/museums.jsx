@@ -55,7 +55,7 @@ export function Museums({ museums, currency, exchangeRate }) {
                 <CircleDollarSign className="w-4 h-4 mr-1" />
                 {museum.price.map(({ type, price }, index) => (
                   <Badge key={index} variant="secondary">
-                    {`${type}: ${(price * exchangeRate).toFixed(
+                    {`${type}: ${Number(price).toFixed(
                       2
                     )} ${currency}`}
                   </Badge>

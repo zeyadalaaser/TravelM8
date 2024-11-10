@@ -150,7 +150,6 @@ export const createManualActivity = async (req, res) => {
   }
 };
 
-
 const getAllActivities = async (req, res) => {
   res.status(200).json(await getActivities(req.query, {}));
 };
