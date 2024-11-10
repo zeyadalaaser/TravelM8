@@ -2,7 +2,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from  "@/components/ui/dialog"; 
-import { Bell, Calendar, ChevronDown, DollarSign, Layout, List, Map, Plus, Settings, Tag, User, Users, PlusCircle, MinusCircle } from 'lucide-react';
+import { EditIcon, Plus, PlusCircle, MinusCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { useNavigate } from "react-router-dom";
 
 
-const CreateItineraryDialog = ({}) => {
+const CreateItineraryDialog = ({itineraryData, isEditing, onRefresh}) => {
 
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -32,6 +32,35 @@ const CreateItineraryDialog = ({}) => {
     images:[''],
     tags: [''],
   });
+  useEffect(() => {
+    if (isEditing && itineraryData) {
+      setFormData({
+        name: itineraryData.name || '',
+        description: itineraryData.description || '',
+        activities: itineraryData.activities || [''],
+        historicalSites: itineraryData.historicalSites || [''],
+        tourLanguage: itineraryData.tourLanguage || '',
+        price: itineraryData.price || 0,
+        timeline: itineraryData.timeline?.map(item => ({
+          event: item.event || '',
+          startTime: item.startTime || '',
+          endTime: item.endTime || ''
+        })) || [{ event: '', startTime: '', endTime: '' }],
+        availableSlots: itineraryData.availableSlots?.map(slot => ({
+          date: slot.date || '',
+          numberOfBookings: slot.numberOfBookings || 0
+        })) || [{ date: '', numberOfBookings: 0 }],
+        accessibility: itineraryData.accessibility || '',
+        pickUpLocation: itineraryData.pickUpLocation || '',
+        dropOffLocation: itineraryData.dropOffLocation || '',
+        images: itineraryData.images || [''],
+        tags: itineraryData.tags || ['']
+      });
+      setSelectedActivities(itineraryData.activities);
+      setSelectedPlaces(itineraryData.historicalSites);
+      setSelectedTags(itineraryData.tags);
+    }
+  }, [isEditing, itineraryData]);
   const [itinerary, setItinerary] = useState(null);
   const token = localStorage.getItem('token');
   const [combinedArray, setCombinedArray] = useState([]);
@@ -52,6 +81,9 @@ const CreateItineraryDialog = ({}) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
+
+  
+
 
   const handleTimelineChange = (index, key, value) => {
     setFormData(prev => ({
@@ -209,8 +241,8 @@ const CreateItineraryDialog = ({}) => {
       e.preventDefault();
       let response;
       try {
-        if(itinerary){
-           const id = itinerary._id;
+        if(isEditing){
+           const id = itineraryData._id;
             response = await fetch(`http://localhost:5001/api/itineraries/${id}`, {
             method: 'PUT',
             headers: {
@@ -218,6 +250,8 @@ const CreateItineraryDialog = ({}) => {
             },
             body: JSON.stringify(formData),
           });
+          alert("place updated succesfully");
+          setDialogOpen(false); 
         }
         else{
           try{
@@ -233,6 +267,7 @@ const CreateItineraryDialog = ({}) => {
         console.log('Error:', error.message);
       }
       console.log(formData)
+      onRefresh();
     }
     
     
@@ -251,12 +286,25 @@ const CreateItineraryDialog = ({}) => {
       } catch (error) {
         console.error('Error fetching itineraries:', error);
       }
-    }; 
+    };       
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button><Plus className="mr-2 h-4 w-4" /> Create Itinerary</Button>
+                <Button
+                  className={isEditing ? "border border-gray-200 text-gray-600" : ""}
+                  variant={isEditing ? "outline" : "primary"}
+                >
+                  {isEditing ? (
+                    <>
+                      <EditIcon className="mr-2 h-4 w-4" /> Edit Itinerary
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="mr-2 h-4 w-4" /> Create Itinerary
+                    </>
+                  )}
+                </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
                   <DialogHeader>

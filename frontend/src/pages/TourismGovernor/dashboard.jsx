@@ -227,7 +227,6 @@ const TourismGovernorDashboard = () => {
       setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
       setType("");
       setHistoricalPeriod("");
-      setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
     } catch (error) {
       setMessage(error.response ? error.response.data.message : "Error occurred");
     }
