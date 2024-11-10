@@ -1,5 +1,7 @@
-import { Bell, ChevronDown, Filter, Search,X, Settings, ShoppingBag, Users } from 'lucide-react'
+import { Bell, ChevronDown, Filter, Search,X, Settings, ShoppingBag,LogOut, Users } from 'lucide-react'
 import { useDebouncedCallback } from "use-debounce";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -122,7 +124,7 @@ export default function AdminDashboard() {
       >
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
         <nav className="mt-4">
-          {['Users', 'Accounts', 'Categories', 'Tags', 'Sales', 'Events', 'Documents', 'Complaints','Itinerary', 'Products'].map((item) => (
+          {['Users', 'Accounts',  'Tags', 'Sales', 'Events', 'Documents', 'Complaints','Itinerary', 'Products','Categories'].map((item) => (
             <button
               key={item}
               className={`w-full text-left p-4 hover:bg-gray-200 ${
@@ -644,7 +646,7 @@ function AccountManagement() {
 
 function CategoryManagement() {
   return (
-    <div className="space-y-4">
+    <div className=" w-full">
       <h3 className="text-lg font-semibold">Category Management</h3>
       <div className="flex space-x-2">
         <Input placeholder="New category name" />
