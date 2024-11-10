@@ -5,26 +5,46 @@ import { motion } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Palmtree, ShoppingBag, Landmark, Users } from 'lucide-react';
+import { Palmtree, ShoppingBag, Landmark, Users, Globe, Tag } from 'lucide-react';
 
 export default function PreferencesPage() {
   const { touristId } = useParams(); // Get the touristId from the URL
   const navigate = useNavigate(); // Initialize the navigate function
-  const [preferences, setPreferences] = useState({
-    historic: false,
-    beaches: false,
-    familyFriendly: false,
-    shopping: false,
-    budget: 50,
-  });
-
+  const [preferences, setPreferences] = useState({ budget: 50 }); // Ensure budget has a default value
+  const [allPreferences, setAllPreferences] = useState([]); // Store fetched preferences
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);  // Track loading state
+  const [loadingPreferences, setLoadingPreferences] = useState(true); 
 
   useEffect(() => {
-    const selectedCount = Object.values(preferences).filter(Boolean).length - 1; // Subtract 1 to exclude budget
-    setProgress((selectedCount / 4) * 100);
-  }, [preferences]);
+    // Fetch preferences from the backend
+    const fetchPreferences = async () => {
+      setLoadingPreferences(true); // Start loading
+      try {
+        const response = await axios.get('http://localhost:5001/api/preference-tags'); // Get all preferences
+        setAllPreferences(response.data); // Set the fetched preferences
+        const initialPreferences = response.data.reduce((acc, pref) => {
+          acc[pref.name] = false; // Initialize with all preferences set to false
+          return acc;
+        }, { budget: 50 }); // Include budget in the initialization
+        setPreferences(initialPreferences); // Set initial preferences state
+      } catch (error) {
+        console.error('Failed to fetch preferences', error);
+        // Optionally, set a state to show an error message on the UI
+      } finally {
+        setLoadingPreferences(false); // Stop loading after data fetching
+      }
+    };
+
+    fetchPreferences();
+  }, []); // Only run on component mount
+
+  useEffect(() => {
+    if (allPreferences.length > 0) {
+      const selectedCount = Object.values(preferences).filter(Boolean).length - 1; // Subtract 1 to exclude budget
+      setProgress((selectedCount / (allPreferences.length)) * 100); // Adjust progress based on fetched preferences
+    }
+  }, [preferences, allPreferences]);
 
   const handleToggle = (name) => {
     setPreferences((prev) => ({ ...prev, [name]: !prev[name] }));
@@ -47,16 +67,17 @@ export default function PreferencesPage() {
         return;
       }
 
+      const preferencesArray = Object.entries(preferences)
+      .filter(([name, value]) => value && name !== 'budget')  // Filter out 'budget' or any unchecked preferences
+      .map(([name]) => name);  // Map to an array of selected preference names
+
       const response = await axios.put(
         `http://localhost:5001/api/tourists/${touristId}/updatePreferences`, 
-        { preferences }, // Wrap preferences in an object
+        { preferences: preferencesArray },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
       alert('Preferences saved!');
-      console.log("the pref: ", preferenceItems);
-
-      // Redirect to tourist page after saving preferences
       navigate('/tourist-page');  // Navigate to tourist page
     } catch (error) {
       console.error('Failed to save preferences', error);
@@ -70,17 +91,11 @@ export default function PreferencesPage() {
     }
   };
 
-  useEffect(() => {
-    console.log("Current URL:", window.location.href); // Check the current URL
-    console.log("Tourist ID:", touristId); // Check the touristId
-  }, [touristId]);
-
-  const preferenceItems = [
-    { name: 'historic', icon: Landmark, label: 'Historic Areas' },
-    { name: 'beaches', icon: Palmtree, label: 'Beaches' },
-    { name: 'familyFriendly', icon: Users, label: 'Family-Friendly' },
-    { name: 'shopping', icon: ShoppingBag, label: 'Shopping' },
-  ];
+  const preferenceItems = allPreferences.map((pref) => ({
+    name: pref.name,
+    label: pref.label,
+    icon: pref.icon || Tag, // Fallback to Palmtree if icon is missing
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-green-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -91,7 +106,7 @@ export default function PreferencesPage() {
           transition={{ duration: 0.5 }}
           className="text-4xl font-bold text-center text-gray-900 mb-8"
         >
-          Customize Your Dream Vacation
+          Choose your preferences!
         </motion.h1>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -107,7 +122,7 @@ export default function PreferencesPage() {
                       <input
                         type="checkbox"
                         id={name}
-                        checked={preferences[name]}
+                        checked={preferences[name] || false}
                         onChange={() => handleToggle(name)}
                         className="sr-only"
                       />
@@ -121,6 +136,7 @@ export default function PreferencesPage() {
                       >
                         <Icon className="w-6 h-6 mr-3" />
                         <span className="text-lg font-medium">{label}</span>
+                        <span className="ml-2 text-sm text-gray-600">{name}</span> {/* Display the name */}
                         <div
                           className={`absolute right-3 w-10 h-6 rounded-full transition-all ${
                             preferences[name] ? 'bg-blue-300' : 'bg-gray-300'
@@ -129,25 +145,12 @@ export default function PreferencesPage() {
                           <div
                             className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${
                               preferences[name] ? 'right-1' : 'left-1'
-                            }`}/>
+                            }`}
+                          />
                         </div>
                       </label>
                     </div>
                   ))}
-                </div>
-                <div className="mb-8">
-                  <label htmlFor="budget" className="block text-lg font-medium text-gray-700 mb-2">
-                    Budget: ${preferences.budget * 20}
-                  </label>
-                  <Slider
-                    id="budget"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={[preferences.budget]}
-                    onValueChange={handleBudgetChange}
-                    className="w-full"
-                  />
                 </div>
                 <div className="flex items-center justify-between mb-8">
                   <div className="text-sm text-gray-600">Preferences selected: {Math.round(progress)}%</div>

@@ -20,6 +20,7 @@ export const createTourist = async(req,res) => {
 }
 
 
+
 export const updateTouristProfile = async (req, res) => {
    const userId = req.user.userId;
    try{
@@ -49,12 +50,13 @@ export const updatePreferences = async (req, res) => {
     if (!tourist) {
       return res.status(404).json({ message: 'Tourist not found' });
     }
+    if (preferences && Array.isArray(preferences)) {
+      tourist.preferences = preferences;
+    } else {
+      return res.status(400).json({ message: 'Invalid preferences data' });
+    }
 
-    // Update preferences here
-    tourist.preferences = preferences;
-    console.log("tourist prefs :", tourist.preferences);
     await tourist.save();
-
     res.status(200).json(tourist);
   } catch (error) {
     res.status(500).json({ message: error.message });
