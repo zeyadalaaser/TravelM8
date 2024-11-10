@@ -89,6 +89,14 @@ const touristSchema = new Schema(
       enum: ['Level 1', 'Level 2', 'Level 3'],
       default: 'Level 1',
     },
+    preferences: {
+      historic: { type: Boolean, default: false },
+      beaches: { type: Boolean, default: false },
+      familyFriendly: { type: Boolean, default: false },
+      shopping: { type: Boolean, default: false },
+      budget: { type: String, default: "medium" }, // could be "low", "medium", or "high"
+    },
+    
   },
   { timestamps: true }
 );
