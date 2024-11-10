@@ -116,8 +116,7 @@ async function getExchangeRates(base = "USD") {
 export const getAllProducts = async (req, res) => {
   try {
     const {
-      minPrice,
-      maxPrice,
+      price,
       sortByRating,
       search,
       minRating,
@@ -136,10 +135,11 @@ export const getAllProducts = async (req, res) => {
     //if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
       //filter.archived = false; // toursits only see unarchived products
    // }
-    if (minPrice || maxPrice) {
+    if (price) {
+      const [minPrice, maxPrice] = price.split("-").map(Number);
       filter.price = {};
-      if (minPrice) filter.price.$gte = parseFloat(minPrice) / exchangeRate;
-      if (maxPrice) filter.price.$lte = parseFloat(maxPrice) / exchangeRate;
+      if (minPrice) filter.price.$gte = minPrice;
+      if (maxPrice) filter.price.$lte = maxPrice;
     }
 
     // Search logic
