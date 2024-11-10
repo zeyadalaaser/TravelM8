@@ -15,7 +15,7 @@ import Admin from "@/pages/admin/services/Admin"; // Import the Admin component
 import TourismGovernor1 from "@/pages/admin/services/TourismGovernor.jsx";
 import DeleteUser from "./pages/admin/deleteUser-page.jsx";
 import PreferenceTag from "./pages/admin/preferenceTag-page.jsx";
-import Dashboard from "./pages/admin/dashboard.jsx";
+import AdminDashboard from "./pages/admin/dashboard.jsx";
 import AdvertiserProfile from "./pages/Advertiser/advertiserProfile";
 import Product from "./pages/admin/product.jsx";
 import TourGuideProfile from "./pages/TourGuide/TourguideProfile.jsx";
@@ -51,7 +51,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/viewComplaints" element={<ComplaintsPage />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/Admindashboard" element={<AdminDashboard />} />
         <Route path="/product" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/deleteAccount" element={<AccountDelete />} />
