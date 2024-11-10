@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import LogoutAlertDialog from "@/hooks/logoutAlert";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -22,9 +23,23 @@ import {
 } from "@/components/ui/alert-dialog";  
 import * as services from "@/pages/TourismGovernor/services.js";
 import Logout from "@/hooks/logOut.jsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import ChangePasswordDialog from '@/pages/TourismGovernor/components/changePasswordDialog.jsx';
 
 
 const TourismGovernorDashboard = () => {
+    const [isAlertOpen, setAlertOpen] = useState(false);
+    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
+    const handleLogoutClick = () => {
+      setAlertOpen(true); // Open the alert dialog when "Logout" is clicked
+    };
     const [historicalPlaces, setHistoricalPlaces] = useState([]);
     const [open, setOpen] = useState(false)
     const token = localStorage.getItem('token');
@@ -271,25 +286,53 @@ const TourismGovernorDashboard = () => {
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
         <header className="bg-white shadow-sm">
-          <div className="flex items-center justify-between px-8 py-4">
-            <h1 className="text-2xl font-semibold text-gray-800">Tourism Governor Dashboard</h1>
-            <div className="flex items-center">
-              <Button variant="outline" size="icon" className="mr-4">
-                <Bell className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center">
-                <img
-                  className="w-8 h-8 rounded-full mr-2"
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="User avatar"
-                />
-                <span className="text-gray-700 mr-2">John Doe</span>
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              </div>
-            </div>
-          </div>
-        </header>
+      <div className="flex items-center justify-between px-7 py-3">
+        {/* Title and Notifications */}
+        <h1 className="text-2xl font-semibold text-gray-800">Tour Guide Dashboard</h1>
 
+        <div className="flex items-center">
+          {/* Borderless Notification Button */}
+          <Button
+            variant="link" // Borderless button style
+            size="icon"
+            className="p-0 mr-4 flex items-center"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="sr-only">Notifications</span>
+          </Button>
+
+          {/* "Hi, {name}" Greeting */}
+          <span className="text-gray-700 mr-2">Settings</span>
+
+          {/* Dropdown Menu at the right */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button
+                variant="link" // Borderless button style
+                className="p-0 flex items-center"
+              >
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>Options</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => setIsChangePasswordOpen(true)}>Change password</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogoutClick} >Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <LogoutAlertDialog
+        isOpen={isAlertOpen}
+        onClose={() => setAlertOpen(false)}
+      />
+        <ChangePasswordDialog 
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
+    </header>
         {/* Dashboard Content */}
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
