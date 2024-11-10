@@ -44,6 +44,6 @@ export function createPopulationStage(from, localField, as, unwind, sort = false
         as: as,
       },
     },
-    ...(unwind ? [{ $unwind: { path: "$advertiser", preserveNullAndEmptyArrays: true } }] : [])
+    ...(unwind ? [{ $unwind: { path: `$${as}`, preserveNullAndEmptyArrays: true } }] : [])
   ];
 }

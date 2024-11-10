@@ -5,6 +5,7 @@ import { Stars } from "@/components/Stars";
 import { ShareButton } from "@/components/ui/share-button";
 
 function Activities({ activities, currency, exchangeRate }) {
+  console.log(activities)
   return (
     <div className="space-y-4">
       {activities.map((activity, index) => (
