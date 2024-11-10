@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { RatingFilter } from "../filters/rating-filter";
-import { PriceFilterTwo } from "../filters/PriceFilterTwo";
+import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
 import Products from "./products";
 import { SearchBar } from "../filters/search";
@@ -43,11 +43,6 @@ export function ProductsPage({ touristId }) {
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
 
-
-    // Apply price filtering
-    //if (priceRange.min) queryParams.set("minPrice", priceRange.min);
-    //if (priceRange.max) queryParams.set("maxPrice", priceRange.max);
-
     try {
       const fetchedProducts = await getProducts(`?${queryParams.toString()}`);
       console.log("Fetched products:", fetchedProducts); // Log for debugging
@@ -74,15 +69,6 @@ export function ProductsPage({ touristId }) {
     });
   };
 
-  const handlePriceChange = (minPrice, maxPrice) => {
-    const queryParams = new URLSearchParams(location.search);
-    if (minPrice) queryParams.set("minPrice", minPrice);
-    if (maxPrice) queryParams.set("maxPrice", maxPrice);
-    navigate(`${location.pathname}?${queryParams.toString()}`, {
-      replace: true,
-    });
-  };
-
   return (
     <>
       <SearchBar categories={[{ name: "Name", value: "name" }]} />
@@ -100,10 +86,9 @@ export function ProductsPage({ touristId }) {
       </div>
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-1/4">
-          <PriceFilterTwo
+          <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
-            onPriceChange={handlePriceChange}
           />
           <Separator className="mt-5" />
           <RatingFilter />

@@ -19,14 +19,7 @@ export async function getProducts(query) {
 
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
-
-  if (searchParams.has("price")) {
-    const price = searchParams.get("price").split("-");
-    searchParams.set("minPrice", price[0]);
-    searchParams.set("maxPrice", price[1]);
-    searchParams.delete("price");
-  }
-
+  
   return (await apiClient.get("products?" + searchParams.toString())).data.data;
 }
 

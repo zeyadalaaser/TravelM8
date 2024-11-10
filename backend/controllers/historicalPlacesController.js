@@ -207,10 +207,16 @@ export const createTags = async (req, res) => {
 export const filterbyTags = async (req, res) => {
   try {
     // const { type, historicalPeriod } = req.query;
-    const { tag, searchBy, search } = req.query;
+    const { tag, searchBy, search, price, currency = "USD", exchangeRate = 1} = req.query;
 
     // Build the query object dynamically
     const filter = {};
+
+    if (price)
+    {
+      const [minPrice, maxPrice] = price.split("-").map(Number);
+      filter["price.price"] = { $gte: minPrice, $lte: maxPrice };
+    }
 
     // Add filters to the query object based on the presence of query parameters
     if (tag) {
@@ -238,7 +244,14 @@ export const filterbyTags = async (req, res) => {
       { $match: filter }
     ];
 
-    const filteredPlaces = await HistoricalPlace.aggregate(aggregationPipeline);
+    let filteredPlaces = await HistoricalPlace.aggregate(aggregationPipeline);
+    filteredPlaces = filteredPlaces.map((place) => ({
+      ...place,
+      price: place.price.map(({ type, price }) => ({
+        type,
+        price: (price * exchangeRate).toFixed(2),
+      })),
+    }));
     // Send response
     res.status(200).json(filteredPlaces);
   } catch (error) {

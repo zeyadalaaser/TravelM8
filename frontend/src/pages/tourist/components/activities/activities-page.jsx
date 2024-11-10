@@ -18,8 +18,7 @@ export function ActivitiesPage() {
   const [activities, setActivities] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
-  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-
+  
   // Fetch the latest exchange rates from the API
   useEffect(() => {
     async function fetchExchangeRates() {
@@ -40,23 +39,16 @@ export function ActivitiesPage() {
     queryParams.set("currency", currency);
     queryParams.set("exchangeRate", exchangeRates[currency] || 1);
 
-    if (priceRange.min) queryParams.set("minPrice", priceRange.min);
-    if (priceRange.max) queryParams.set("maxPrice", priceRange.max);
-
     const fetchedActivities = (await getActivities(`?${queryParams.toString()}`)).filter(a => a.isBookingOpen);
     setActivities(fetchedActivities);
   }, 200);
 
   useEffect(() => {
     fetchActivities();
-  }, [location.search, currency, priceRange]);
+  }, [location.search, currency]);
 
   const handleCurrencyChange = (e) => {
     setCurrency(e.target.value);
-  };
-
-  const handlePriceChange = (min, max) => {
-    setPriceRange({ min, max });
   };
 
   const searchCategories = [
@@ -85,7 +77,6 @@ export function ActivitiesPage() {
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
-            onPriceChange={handlePriceChange}
           />
           <Separator className="mt-5" />
           <RatingFilter />
@@ -96,9 +87,7 @@ export function ActivitiesPage() {
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
               <div>{activities.length} results</div>
-              <ClearFilters
-                onClick={() => setPriceRange({ min: "", max: "" })}
-              />
+              <ClearFilters />
             </div>
             <SortSelection />
           </div>
