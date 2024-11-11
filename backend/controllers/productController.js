@@ -167,7 +167,7 @@ export const getAllProducts = async (req, res) => {
     if (id)
       filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
-    if (userRole !== 'admin' && userRole !== 'seller') { //kda admins and sellers see all products archived or not
+    if(userRole === 'Tourist') { //kda admins and sellers see all products archived or not
       filter.archived = false; // toursits only see unarchived products
     }
     if (price) {
@@ -217,12 +217,75 @@ export const getAllProducts = async (req, res) => {
 
 // Function to get products belonging to the authenticated user
 export const getMyProducts = async (req, res) => {
-  const userId = req.user?.userId;
+  const userId = req.user.userId;
+  console.log("this is the user id", userId)
   try {
     const products = await Product.find({ sellerId: userId });
-    if (products.length === 0) res.status(204).send();
-    else res.status(200).json({ products });
+    if (products.length === 0) res.status(200).json({products});
+    else res.status(200).json( {products} );
   } catch (error) {
     res.status(400).json({ message: "Enter a valid ID" });
   }
 };
+
+
+/* export const getMyProducts = async (req, res) => {
+  const userId = req.user.userId;
+  console.log("this is the user id", userId);
+  try {
+    const {
+      id,
+      price,
+      sortByRating,
+      search,
+      minRating,
+      sortBy,
+      order,
+      currency = "USD",
+    } = req.query;
+    
+     // Prepare filter for price range, converting values from the selected currency to USD
+     let filter = {sellerId : userId};
+     if (id)
+      filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
+
+    if (price) {
+      const [minPrice, maxPrice] = price.split("-").map(Number);
+      filter.price = {};
+      if (minPrice) filter.price.$gte = minPrice;
+      if (maxPrice) filter.price.$lte = maxPrice;
+    }
+
+    // Search logic
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+
+    // Sorting logic
+    let sortCondition = {};
+    if (sortByRating) {
+      sortCondition.averageRating = sortByRating === "desc" ? -1 : 1;
+    }
+    if (sortBy) {
+      sortCondition[sortBy] = order === "desc" ? -1 : 1;
+    }
+    const aggregationPipeline = [
+      { $match: filter },
+      ...createPopulateStage(minRating),
+      ...(sortBy ? [{ $sort: sortCondition }] : []),
+    ];
+
+    // Execute the aggregation pipeline
+    let products = await Product.aggregate(aggregationPipeline);
+    products.filter((product)=>product.sellerId === userId);
+
+
+
+
+    /* const products = await Product.find({ sellerId: userId }); */
+/*     if (products.length === 0) res.status(200).json({products});
+    else res.status(200).json( {products} );
+  } catch (error) {
+    res.status(400).json({ message: "Enter a valid ID" });
+  }
+}; */

@@ -113,7 +113,7 @@ export const createDeletionRequest = async (req, res) => {
          
         const deletionRequest = new DeletionRequest({
             user: userId,
-            name: user.name,   
+            username: user.username,   
             userType,
             requestDate: Date.now(),
         });
@@ -137,3 +137,27 @@ export const getAllDeletionRequests = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch deletion requests', error });
   }
 };
+ 
+
+export const deleteDeletionRequest  = async (req, res) => {
+    const { username } = req.body; // Extract the username from the request body
+
+    if (!username) {
+        return res.status(400).json({ message: 'Username is required' });
+    }
+
+    try {
+        // Find and delete the deletion request by username
+        const result = await DeletionRequest.findOneAndDelete({ username });
+
+        if (!result) {
+            return res.status(404).json({ message: 'Deletion request not found' });
+        }
+
+        res.status(200).json({ message: 'Deletion request removed successfully' });
+    } catch (error) {
+        console.error('Error deleting deletion request:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+

@@ -191,6 +191,22 @@ const TouristProfilePage = () => {
                   </div>
                 </div>
               </section>
+               {/* Display User Preferences */}
+          <section className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Preferences</h2>
+            <div>
+              {profile && profile.preferences && profile.preferences.length > 0 ? (
+                <ul className="list-disc pl-6">
+                  {profile.preferences.map((pref, index) => (
+                    <li key={index} className="text-lg text-gray-700">{pref}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No preferences available.</p>
+              )}
+            </div>
+          </section>
+
               <section className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">Personal info</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,7 +216,7 @@ const TouristProfilePage = () => {
                     name="name"
                     onChange={handleInputChange}
                     type="text" 
-                    value={profile ? profile.name : ''}
+                    value={profile ? profile.username : ''}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
                   </div>
                   <div>

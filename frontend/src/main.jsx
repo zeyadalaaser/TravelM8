@@ -15,7 +15,7 @@ import Admin from "@/pages/admin/services/Admin"; // Import the Admin component
 import TourismGovernor1 from "@/pages/admin/services/TourismGovernor.jsx";
 import DeleteUser from "./pages/admin/deleteUser-page.jsx";
 import PreferenceTag from "./pages/admin/preferenceTag-page.jsx";
-import AdminDashboard from "./pages/admin/admindash.jsx";
+import AdminDashboard from "./pages/admin/dashboard.jsx";
 import AdvertiserProfile from "./pages/Advertiser/advertiserProfile";
 import Product from "./pages/admin/product.jsx";
 import TourGuideProfile from "./pages/TourGuide/TourguideProfile.jsx";

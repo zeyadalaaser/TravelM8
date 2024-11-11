@@ -16,6 +16,35 @@ export async function getProducts(query = '') {
     return (await apiClient.get(`products${query}`)).data;
 }
 
+
+/* export async function getProducts(query) {
+  const token = localStorage.getItem('token');
+
+  const searchParams = new URLSearchParams(query);
+  searchParams.delete("type");
+  
+  const response = await apiClient.get("products?" + searchParams.toString(), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
+  }); */
+
+
+
+export async function getMyProducts(query = '') {
+  const token = localStorage.getItem('token');
+  const searchParams = new URLSearchParams(query);
+  searchParams.delete("type");
+  return (await apiClient.get(`products/myProducts?${searchParams.toString()}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })).data;
+}
+
+
 // Fetch all product categories
 export async function getCategories() {
     return (await apiClient.get('activity-categories')).data;

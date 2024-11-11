@@ -20,6 +20,7 @@ export const createTourist = async(req,res) => {
 }
 
 
+
 export const updateTouristProfile = async (req, res) => {
    const userId = req.user.userId;
    try{
@@ -49,12 +50,13 @@ export const updatePreferences = async (req, res) => {
     if (!tourist) {
       return res.status(404).json({ message: 'Tourist not found' });
     }
+    if (preferences && Array.isArray(preferences)) {
+      tourist.preferences = preferences;
+    } else {
+      return res.status(400).json({ message: 'Invalid preferences data' });
+    }
 
-    // Update preferences here
-    tourist.preferences = preferences;
-    console.log("tourist prefs :", tourist.preferences);
     await tourist.save();
-
     res.status(200).json(tourist);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -124,25 +126,25 @@ export const updatePoints = async (req, res) => {
 
 
 
-export const redeemPoints = async (req, res) => {
-  //const { id } = req.params;  
-  const userId = req.user.userId;
+/*export const redeemPoints = async (req, res) => {
+  const { id } = req.params;  
+  //const userId = req.user.userId;
   try {
-    const tourist = await Tourist.findById(userId);
+    const tourist = await Tourist.findById(id);
     if (!tourist) {
       return res.status(404).json({ success: false, message: 'Tourist not found' });
     }
 
-    if (tourist.loyaltyPoints < 10000) {
+    if (tourist.loyaltyPoints < 100) {
       return res.status(400).json({ success: false, message: 'Not enough points to redeem' });
     }
-
-    const cashEarned = Math.floor(tourist.loyaltyPoints / 10000) * 100;
+let cashEarned=0;
+      cashEarned = Math.floor(tourist.loyaltyPoints / 10000) * 100;
     const pointsRedeemed = Math.floor(tourist.loyaltyPoints / 10000) * 10000;
 
     // Update tourist's wallet and points
     const updatedTourist = await Tourist.findByIdAndUpdate(
-      userId,
+      id,
       { 
         $inc: { wallet: cashEarned } ,  
         $set: { loyaltyPoints:0 }    
@@ -155,5 +157,40 @@ export const redeemPoints = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: `Error redeeming points: ${error.message}` });
   }
+};*/
+export const redeemPoints = async (req, res) => {
+  //const { id } = req.params;
+  const userId = req.user.userId;
+  try {
+    const tourist = await Tourist.findById(userId);
+    if (!tourist) {
+      return res.status(404).json({ success: false, message: 'Tourist not found' });
+    }
+
+    if (tourist.loyaltyPoints < 100) {
+      return res.status(400).json({ success: false, message: 'Not enough points to redeem' });
+    }
+
+    const cashEarned = Math.floor(tourist.loyaltyPoints / 10000) * 100;
+    const pointsRedeemed = Math.floor(tourist.loyaltyPoints / 10000) * 10000;
+
+    // Calculate the new wallet balance by adding cashEarned to current wallet value
+    const newWalletBalance = tourist.wallet + cashEarned;
+
+    // Update wallet and loyalty points directly in a single update call
+    const updatedTourist = await Tourist.findByIdAndUpdate(
+      userId,
+      {
+        wallet: tourist.wallet + ((tourist.loyaltyPoints / 10000) * 100),
+        loyaltyPoints: 0
+      },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json(updatedTourist);
+  } catch (error) {
+    res.status(500).json({ success: false, message: `Error redeeming points: ${error.message}` });
+  }
 };
+
 
