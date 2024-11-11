@@ -185,7 +185,12 @@ const FormPage = () => {
                     <div className="terms-modal">
                         <div className="terms-content">
                             <h2>Terms and Conditions</h2>
-                            <p>Here are the terms and conditions for using this service...</p>
+                            <p>Welcome to TravelMate! By accessing or using our website and services, 
+                            you agree to be bound by the following Terms and Conditions. 
+                            Please read them carefully. By registering on or using TravelMate, you agree to these 
+                            Terms and Conditions and any future updates. If you do not 
+                            agree, you may not use our services. By signing up, you agree 
+                            to TravelMate’s Terms and Conditions and Privacy Policy....</p>
                             <button className="close-button" onClick={closeModal}>Close</button>
                         </div>
                     </div>

@@ -115,7 +115,7 @@ const FormPage = () => {
                 </div>
             </nav>
             <div className="form-container">
-                <h1 className="form-title">Get started advertising on TravelM8</h1>
+                <h1 className="form-title">Get started on TravelM8</h1>
                 <form onSubmit={handleSubmit} className="contact-form">
                     <label className="form-label" htmlFor="username">Username</label>
                     <input
@@ -195,8 +195,12 @@ const FormPage = () => {
                     <div className="terms-modal">
                         <div className="terms-content">
                             <h2>Terms and Conditions</h2>
-                            <p>Here are the terms and conditions for using this service...</p>
-                            <button className="close-button" onClick={closeModal}>Close</button>
+                            <p>Welcome to TravelMate! By accessing or using our website and services, 
+                            you agree to be bound by the following Terms and Conditions. 
+                            Please read them carefully. By registering on or using TravelMate, you agree to these 
+                            Terms and Conditions and any future updates. If you do not 
+                            agree, you may not use our services. By signing up, you agree 
+                            to TravelMate’s Terms and Conditions and Privacy Policy....</p>                            <button className="close-button" onClick={closeModal}>Close</button>
                         </div>
                     </div>
                 )}
