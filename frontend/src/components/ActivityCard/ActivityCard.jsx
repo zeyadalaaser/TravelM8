@@ -38,9 +38,13 @@ export default function ActivityCard({
 
       console.log("Success:", response);
       onRefresh();
+      alert("Successfully deleted the activity");
     } catch (error) {
       console.error("Error:", error);
+      alert("Failed to delete the activity");
+
     }
+
   };
   return (
     <>

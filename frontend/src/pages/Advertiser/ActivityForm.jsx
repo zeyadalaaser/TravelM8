@@ -64,7 +64,13 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
   }, []);
 
     useEffect(() => {
-    if (dialogArgs) setFormData(dialogArgs);
+      if (dialogArgs) {
+        setFormData({
+          ...dialogArgs,
+          category: dialogArgs.category._id,
+          tags: dialogArgs.tags.map((tag)=>tag._id)
+        });
+      }
     else setFormData({ title: "",
       description: "",
       date: "",
@@ -145,9 +151,12 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
       const result = await response.json();
       console.log("Success:", result.message);
       onRefresh();
+      alert(result.message);
+      onClose();
     } catch (error) {
       console.error("Error:", error);
       alert('Failed to modify activities');
+      onClose();
       // isSuccess = false;
     }
     console.log(formData);
@@ -241,14 +250,14 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
                     name="min"
                     type="number"
                     value={formData.price.min}
-                    // placeholder="Min"
+                    placeholder="Min"
                     onChange={handlePriceChange}
                   />
                   <Input
                     name="max"
                     type="number"
                     value={formData.price.min}
-                    // placeholder="Max"
+                    placeholder="Max"
                     onChange={handlePriceChange}
                   />
                 </div>
@@ -260,10 +269,9 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
               <Select
                 name="category"
                 onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, category: value }))
+                  setFormData((prev) => ({ ...prev, category: value }))               
                 }
-                value={formData.category._id}
-              >
+                value={formData.category}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
@@ -294,18 +302,21 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
               <div className="flex flex-wrap gap-2 mt-2">
                 {formData.tags.map((tagId) => {
                   const tag = tags.find((t) => t._id === tagId);
+                  // Only render if tag is found
                   return (
-                    <Badge key={tagId} variant="secondary">
-                      {tag?.name}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="ml-1 h-auto p-0"
-                        onClick={() => handleRemoveTag(tagId)}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
+                    tag && (
+                      <Badge key={tagId} variant="secondary">
+                        {tag.name}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="ml-1 h-auto p-0"
+                          onClick={() => handleRemoveTag(tagId)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </Badge>
+                    )
                   );
                 })}
               </div>

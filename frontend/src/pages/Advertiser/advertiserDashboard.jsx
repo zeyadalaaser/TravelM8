@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 const AdvertiserDashboard = () => {
+  const token = localStorage.getItem('token'); 
   const [activities, setActivities] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogArgs, setDialogArgs] = useState(null);
@@ -36,26 +37,51 @@ const AdvertiserDashboard = () => {
   //   getActivities();
   // }, []);
 
-  const getActivities = useDebouncedCallback(async () => {
+  const fetchActivities = async () => {
+    if (!token) {
+      console.error("No token available");
+      return;
+    }
+  
+    console.log("Token:", token);
+  
     try {
-      const response = await fetch("http://localhost:5001/api/activities");
+      const response = await fetch("http://localhost:5001/api/activities", {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      console.log("Response Status:", response.status);
+      console.log("Response Headers:", response.headers);
+  
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        const errorText = await response.text();
+        console.error("Response Error Text:", errorText);
+        throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
       }
+  
       const data = await response.json();
+      console.log("Fetched Data:", data);
       setActivities(data);
     } catch (error) {
-      console.error("Failed to fetch activities:", error);
+      console.error("Failed to fetch activities:", error.message || error);
     }
-  }, 200);
+  };
+  
+  // Debounced version (only for subsequent use if needed)
+  const getActivities = useDebouncedCallback(fetchActivities, 200);
   
   useEffect(() => {
-    getActivities();
-    // Clean up to prevent memory leaks if the component unmounts
-    return () => getActivities.cancel();
-  }, [getActivities]);
+    // Initial fetch without debounce
+    fetchActivities();
   
-
+    // Cleanup if using debounce
+    return () => getActivities.cancel();
+  }, []);
+  
   return (
     <>
       <div className="container w-full mx-auto p-4 overflow-y: scroll min-h-[101vh]">

@@ -229,26 +229,42 @@ const updateActivity = async (req, res) => {
   }
 };
 
-//advertiser only
 const getMyActivities = async (req, res) => {
-  const advertiserId = req.user.userId; // logic of "my"
-  console.log(advertiserId);
-  if (mongoose.Types.ObjectId.isValid(advertiserId)) {
-    try {
-      const activities = await activityModel
-        .find({ advertiserId: advertiserId })
-        .populate("advertiserId", "username")
-        .populate("category", "name")
-        .populate("tags", "name");
+  const userId = req.user.userId;
+  console.log("Advertiser ID:", advertiserId);
 
-      res.status(200).json({ activities });
-    } catch (error) {
-      res.status(406).json({ message: error.message });
+  // Validate advertiserId
+  if (!mongoose.Types.ObjectId.isValid(advertiserId)) {
+    return res.status(400).json({ message: "Invalid advertiser ID" });
+  }
+
+  try {
+    // Log the advertiserId being used to fetch activities
+    console.log("Searching for activities with advertiserId:", advertiserId);
+
+    // Fetch activities and populate related fields
+    const activities = await activityModel
+      .find({ advertiserId : userId })
+      .populate("advertiserId", "username")
+      .populate("category", "name")
+      .populate("tags", "name");
+
+    // Check if activities exist
+    if (activities.length === 0) {
+      return res.status(404).json({ message: "No activities found for this advertiser." });
     }
-  } else {
-    res.status(408).json({ message: "enter a valid id" });
+
+    // Log the fetched activities (for debugging)
+    console.log("Fetched Activities:", activities);
+
+    // Successful response
+    return res.status(200).json({ activities });
+  } catch (error) {
+    console.error("Error fetching activities:", error.message || error);
+    return res.status(500).json({ message: "Server error, please try again later." });
   }
 };
+
 
 const deleteActivity = async (req, res) => {
   const activityId = req.params.id;
