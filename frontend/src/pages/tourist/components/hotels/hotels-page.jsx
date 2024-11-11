@@ -102,7 +102,7 @@ export function HotelsPage() {
         </div>
         <div className="mt-6 flex flex-col md:flex-row gap-8">
             <div className="w-full md:w-1/4">
-                <PriceFilter />
+                {/* <PriceFilter /> */}
             </div>
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">

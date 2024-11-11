@@ -129,11 +129,11 @@ export const createDeletionRequest = async (req, res) => {
 
 // Get all deletion requests
 export const getAllDeletionRequests = async (req, res) => {
-    try {
-        const deletionRequests = await DeletionRequest.find().populate('user');
-        res.status(200).json(deletionRequests);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Failed to fetch deletion requests', error });
-    }
+  try {
+    const deletionRequests = await DeletionRequest.find().populate('user');
+    res.status(200).json(deletionRequests);
+  } catch (error) {
+    console.error("Error fetching deletion requests:", error);
+    res.status(500).json({ message: 'Failed to fetch deletion requests', error });
+  }
 };

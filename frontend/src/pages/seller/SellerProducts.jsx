@@ -235,7 +235,7 @@ export default function SellerProducts() {
 <p className="mb-2">{product.description}</p>
                 <p className='mb-2'>{`Sold: ${product.sales} `}</p>
                 <p className='mb-2'>{`Remaining stock: ${product.quantity}`}</p>
-                <p className="font-semibold">{`Seller ID: ${product.sellerId}`}</p>
+                <p className="font-semibold">{`Seller ID: ${product.sellerID}`}</p>
                 <Button className="mt-2 ml-2" onClick={() => handleEdit(product)}>
                   Edit
                 </Button>

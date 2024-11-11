@@ -7,10 +7,10 @@ import axios from "axios";
 export const createProduct = async (req, res) => {
   try {
     const { name, price, quantity, description } = req.body;
-    if (!req.file) { 
+    if (!req.file) {
       return res.status(400).json({ status: 'error', message: 'No files uploaded' });
-  }
- const image = req.file;
+    }
+    const image = req.file;
     const newProduct = new Product({
       name,
       image: image.path,
@@ -38,13 +38,13 @@ export const updateProduct = async (req, res) => {
         .json({ success: false, message: "Product not found; invalid" });
     }
     if (req.file) {
-      const imagePath = req.file.path; 
-      updateData.image = imagePath; 
+      const imagePath = req.file.path;
+      updateData.image = imagePath;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
-      new: true, 
-      runValidators: true, 
+      new: true,
+      runValidators: true,
     });
     if (!updatedProduct) {
       return res.status(404).json({ success: false, message: "Product not found" });
@@ -58,35 +58,35 @@ export const updateProduct = async (req, res) => {
 
 export const archiveProduct = async (req, res) => {
   try {
-    const{id}= req.params;
+    const { id } = req.params;
     console.log(`Archiving product with ID: ${id}`);
 
     const ArchivedProduct = await Product.findByIdAndUpdate(
       id,
-      {archived: true}, 
-      {new: true}
+      { archived: true },
+      { new: true }
     );
 
-    if(!ArchivedProduct){
-      return res.status(404).json({ message: 'Product not found'});
+    if (!ArchivedProduct) {
+      return res.status(404).json({ message: 'Product not found' });
     }
-    res.status(200).json({ message: 'Product archived successfully'});
-  } catch(error){
-    res.status(500).json({message: 'error occured ...'});
+    res.status(200).json({ message: 'Product archived successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'error occured ...' });
   }
-  }
+}
 
-export const unarchiveProduct = async (req, res) =>{
-  try{
-    const {id} = req.params;
-    const unArchivedProduct = await Product.findByIdAndUpdate(id, {archived: false}, {new: true});
+export const unarchiveProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const unArchivedProduct = await Product.findByIdAndUpdate(id, { archived: false }, { new: true });
 
-    if(!unArchivedProduct){
-      return res.status(404).json({messege: "Product not found"});
+    if (!unArchivedProduct) {
+      return res.status(404).json({ messege: "Product not found" });
     }
-    res.status(200).json({messege: 'Product unarchived successfully'});
-  } catch (error){
-    res.status(500).json({messege: 'Error occured'});
+    res.status(200).json({ messege: 'Product unarchived successfully' });
+  } catch (error) {
+    res.status(500).json({ messege: 'Error occured' });
   }
 }
 
@@ -146,8 +146,8 @@ async function getExchangeRates(base = "USD") {
 export const getAllProducts = async (req, res) => {
   try {
     const {
-      minPrice,
-      maxPrice,
+      id,
+      price,
       sortByRating,
       search,
       minRating,
@@ -163,13 +163,18 @@ export const getAllProducts = async (req, res) => {
 
     // Prepare filter for price range, converting values from the selected currency to USD
     let filter = {};
-    if(userRole !== 'admin' && userRole !== 'seller'){ //kda admins and sellers see all products archived or not
+
+    if (id)
+      filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
+
+    if (userRole !== 'admin' && userRole !== 'seller') { //kda admins and sellers see all products archived or not
       filter.archived = false; // toursits only see unarchived products
-   }
-    if (minPrice || maxPrice) {
+    }
+    if (price) {
+      const [minPrice, maxPrice] = price.split("-").map(Number);
       filter.price = {};
-      if (minPrice) filter.price.$gte = parseFloat(minPrice) / exchangeRate;
-      if (maxPrice) filter.price.$lte = parseFloat(maxPrice) / exchangeRate;
+      if (minPrice) filter.price.$gte = minPrice;
+      if (maxPrice) filter.price.$lte = maxPrice;
     }
 
     // Search logic

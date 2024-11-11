@@ -5,13 +5,7 @@ import TourGuide from "../models/tourguideModel.js";
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js";
 import PdfDetailsTourGuide from "../models/pdfDetailsTourGuideModel.js";
 import PdfDetailsSellerAdvertiser from "../models/pdfsDetailsSeller&AdvModel.js";
-import bcrypt from "bcryptjs";
 
-// Function to hash password
-const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
-};
 
 export const createPendingUser = async (req, res) => {
   const { username, email, password, type } = req.body;
@@ -23,11 +17,10 @@ export const createPendingUser = async (req, res) => {
       .json({ message: "Username or email is already in use." });
   }
   try {
-    const hashedPassword = await hashPassword(password);
     const pending = await PendingUser.create({
       username,
       email,
-      password: hashedPassword,
+      password,
       type,
     });
     res.status(200).json(pending);
@@ -50,13 +43,12 @@ export const acceptPendingUser = async (req, res) => {
     }
 
     const type = pending.type;
-    const hashedPassword = await hashPassword(password);
 
     // Prepare the new user data to be added
     const newUser = {
       username: pending.username,
       email: pending.email,
-      password: pending.hashedPassword,
+      password: pending.password,
     };
 
     let result;
@@ -173,7 +165,6 @@ export const approvePendingUser = async (req, res) => {
 
     // Prepare new user data
     const { username, email, password, type } = pendingUser;
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     let newUser;
     // Move user to respective collection
@@ -182,21 +173,21 @@ export const approvePendingUser = async (req, res) => {
         newUser = await TourGuide.create({
           username,
           email,
-          password: hashedPassword,
+          password,
         });
         break;
       case "Seller":
         newUser = await Seller.create({
           username,
           email,
-          password: hashedPassword,
+          password,
         });
         break;
       case "Advertiser":
         newUser = await Advertiser.create({
           username,
           email,
-          password: hashedPassword,
+          password,
         });
         break;
       default:

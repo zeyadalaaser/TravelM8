@@ -9,14 +9,10 @@ import Admin from '../models/adminModel.js';
 const changeUserPassword = async (userId, currentPassword, newPassword, confirmNewPassword, UserModel) => {
     const user = await UserModel.findById(userId);
     if (!user) {
-        console.log(userId);
         throw new Error('User not found.');
     }
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      // const tempPassword = "Password16";
-      // const hashedPassword = await bcrypt.hash(tempPassword, 10);
-      // console.log(hashedPassword);
          throw new Error('Current password is incorrect.');
     }
     if (newPassword==confirmNewPassword) {
@@ -33,13 +29,10 @@ const changeUserPassword = async (userId, currentPassword, newPassword, confirmN
 const changeAccountPassword = async (userId, currentPassword, newPassword, confirmNewPassword, UserModel) => {
   const user = await UserModel.findById(userId);
   if (!user) {
-      console.log(userId);
       throw new Error('User not found.');
   }
   const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) {
-    // const tempPassword = "Password16";
-    // console.log(hashedPassword);
        throw new Error('Current password is incorrect.');
   }
   if (newPassword==confirmNewPassword) {
@@ -79,7 +72,7 @@ export const changePasswordTourGuide = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.userId; 
     try {
-      const result = await changeAccountPassword(userId, currentPassword, newPassword, confirmNewPassword, TourGuide);
+      const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, TourGuide);
       return res.status(200).json(result);
     } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -90,7 +83,6 @@ export const changePasswordTourGuide = async (req,res) => {
 export const changePasswordSeller = async (req,res) => {
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
     const userId = req.user.userId; 
-    console.log("hello",userId);
     try {
       const result = await changeUserPassword(userId, currentPassword, newPassword, confirmNewPassword, Seller);
       return res.status(200).json(result);

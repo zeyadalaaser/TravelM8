@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ShareButton } from "@/components/ui/share-button";
 
 import {
   Dialog,
@@ -113,6 +114,7 @@ export default function ItineraryCard({
                   <h3 className="text-xl font-semibold mb-2">
                     {itinerary.name}
                   </h3>
+                  {isTourist && <ShareButton id={itinerary._id} name="itinerary" />}
                   <div className="flex items-center gap-2 ">
                     {isTourGuide && itinerary.isBookingOpen && (
                       <Button
@@ -211,10 +213,14 @@ export default function ItineraryCard({
                     </Badge>
                   ))}
                 </div>
-                <div className="text-xl font-bold">
-                  {`${(itinerary.price * 1).toFixed(2)} ${currency}`}
-                </div>{" "}
-                <div className="flex justify-end items-center">
+                <div className="flex justify-end items-center space-x-2">
+                  <span className="text-xl font-bold mr-auto">{`${(itinerary.price * 1).toFixed(2)} ${currency}`}</span>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleViewTimeline(itinerary)}
+                  >
+                    View Timeline
+                  </Button>
                   {isTourist && (
                     <div className="flex justify-end items-center">
                       {/* <Button onClick={modalOpen(true)}>

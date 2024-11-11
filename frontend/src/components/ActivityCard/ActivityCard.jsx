@@ -72,7 +72,7 @@ export default function ActivityCard({
                 </div>
                 <div className="flex items-center flex-wrap gap-2 mb-2">
                   <Tag className="w-4 h-4 mr-1" />
-                  {activity.tags.map((tag, tagIndex) => (
+                  {activity.tags?.map((tag, tagIndex) => (
                     <Badge key={tagIndex} variant="secondary">
                       {tag}
                     </Badge>

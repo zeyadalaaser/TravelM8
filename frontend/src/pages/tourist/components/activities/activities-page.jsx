@@ -7,12 +7,11 @@ import { ClearFilters } from "../filters/clear-filters";
 import { DateFilter } from "../filters/date-filter";
 import { RatingFilter } from "../filters/rating-filter";
 import { PriceFilter } from "../filters/price-filter";
-import { CategoryFilter } from "../filters/category-filter";
+import { SelectFilter } from "../filters/select-filter";
 import { SortSelection } from "../filters/sort-selection";
 import Activities from "./activities";
 import { SearchBar } from "../filters/search";
-import { getActivities } from "../../api/apiService";
-import { createActivityBooking } from "../../api/apiService";
+import { getActivities, getCategories, createActivityBooking } from "../../api/apiService";
 
 
 export function ActivitiesPage() {
@@ -23,8 +22,7 @@ export function ActivitiesPage() {
   const [activities, setActivities] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
-  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-
+  
   // Fetch the latest exchange rates from the API
   useEffect(() => {
     async function fetchExchangeRates() {
@@ -45,23 +43,16 @@ export function ActivitiesPage() {
     queryParams.set("currency", currency);
     queryParams.set("exchangeRate", exchangeRates[currency] || 1);
 
-    if (priceRange.min) queryParams.set("minPrice", priceRange.min);
-    if (priceRange.max) queryParams.set("maxPrice", priceRange.max);
-
-    const fetchedActivities = await getActivities(`?${queryParams.toString()}`);
+    const fetchedActivities = (await getActivities(`?${queryParams.toString()}`)).filter(a => a.isBookingOpen);
     setActivities(fetchedActivities);
   }, 200);
 
   useEffect(() => {
     fetchActivities();
-  }, [location.search, currency, priceRange]);
+  }, [location.search, currency]);
 
   const handleCurrencyChange = (e) => {
     setCurrency(e.target.value);
-  };
-
-  const handlePriceChange = (min, max) => {
-    setPriceRange({ min, max });
   };
 
   const searchCategories = [
@@ -90,20 +81,17 @@ export function ActivitiesPage() {
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
-            onPriceChange={handlePriceChange}
           />
           <Separator className="mt-5" />
           <RatingFilter />
           <Separator className="mt-7" />
-          <CategoryFilter />
+          <SelectFilter name="Categories" paramName="categoryName" getOptions={getCategories} />
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
               <div>{activities.length} results</div>
-              <ClearFilters
-                onClick={() => setPriceRange({ min: "", max: "" })}
-              />
+              <ClearFilters />
             </div>
             <SortSelection />
           </div>

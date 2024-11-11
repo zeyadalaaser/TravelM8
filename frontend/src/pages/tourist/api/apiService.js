@@ -21,14 +21,7 @@ export async function getProducts(query) {
 
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
-
-  if (searchParams.has("price")) {
-    const price = searchParams.get("price").split("-");
-    searchParams.set("minPrice", price[0]);
-    searchParams.set("maxPrice", price[1]);
-    searchParams.delete("price");
-  }
-
+  
   return (await apiClient.get("products?" + searchParams.toString())).data.data;
 }
 
@@ -61,11 +54,17 @@ export async function fetchProfileInfo(token) {
 }
 
 export async function getCategories() {
-  return (await apiClient.get("activity-categories")).data;
+  return (await apiClient.get("activity-categories")).data.map((c) => c.name);
 }
 
-export async function getTags() {
-  return (await apiClient.get("preference-tags")).data;
+export async function getPreferenceTags() {
+  return (await apiClient.get("preference-tags")).data.map((t) => t.name);
+}
+
+export async function getPlaceTags() {
+  const response = (await apiClient.get("placetag")).data;
+  const tags = response.map((t) => [t.type, t.historicalPeriod]).flat();
+  return [...new Set(tags)];
 }
 
 export async function getMyComplaints(token) {

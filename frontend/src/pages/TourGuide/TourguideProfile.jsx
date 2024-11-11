@@ -6,12 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { fetchProfileInfo, updateProfile, changePassword } from '../TourGuide/api/apiService.js';
 import Logout from "@/hooks/logOut.jsx";
 import { Textarea } from "@/components/ui/textarea";
+import Header from "@/components/navbarDashboard.jsx";
 
 const TourGuideProfilePage = () => {
 
-  const amount = 45231.89,
-  percentageChange = 20.1,
-  timeframe = "from last month";
+  const  percentageChange = 20.1;
   const isPositive = percentageChange > 0;
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
@@ -126,10 +125,7 @@ const TourGuideProfilePage = () => {
   }, [token]);
   const handleYesClick = async () => {
     console.log("Yes button clicked");
-     
-      try {
-          
-          const token = localStorage.getItem('token');   
+      try { 
           
           if (!token) {
               console.error("Authorization token is required");
@@ -361,21 +357,7 @@ const TourGuideProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <header className="bg-white shadow">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-blue-600">TravelM8</div>
-          <div className="flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-gray-800">
-              <Bell className="h-6 w-6" />
-            </button>
-            <button className="flex items-center text-gray-600 hover:text-gray-800">
-              <User className="h-6 w-6 mr-2" />
-              <span>John Doe</span>
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </button>
-          </div>
-        </div>
-      </header>
+    <Header/>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

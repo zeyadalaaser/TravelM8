@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import LogoutAlertDialog from "@/hooks/logoutAlert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,87 +58,104 @@ import {
 } from "@/components/ui/alert-dialog";
 import * as services from "@/pages/TourismGovernor/services.js";
 import Logout from "@/hooks/logOut.jsx";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import ChangePasswordDialog from '@/pages/TourismGovernor/components/changePasswordDialog.jsx';
+
 
 const TourismGovernorDashboard = () => {
-  const [historicalPlaces, setHistoricalPlaces] = useState([]);
-  const [open, setOpen] = useState(false);
-  const token = localStorage.getItem("token");
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const [type, setType] = useState("");
-  const [historicalPeriod, setHistoricalPeriod] = useState("");
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [tags, setTags] = useState([]); // State to hold the tags
-  const [error, setError] = useState(""); // State to hold error message
-  const [message, setMessage] = useState("");
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [newLocation, setNewLocation] = useState({
-    name: "",
-    description: "",
-    location: { lat: "", lng: "" },
-    image: "",
-    openingHours: { open: "", close: "" },
-    price: [
-      { type: "Regular", price: "" },
-      { type: "Student", price: "" },
-      { type: "Foreigner", price: "" },
-    ],
-    tags: "",
-  });
-  const [isEditing, setIsEditing] = useState({
-    image: false,
-    name: false,
-    description: false,
-    openingHours: false,
-    priceRegular: false,
-    priceStudent: false,
-    priceForeigner: false,
-    locationLng: false,
-    locationLat: false,
-  });
-
-  const handleDialogClose = () => {
-    setIsEditing({
-      image: false,
-      name: false,
-      description: false,
-      openingHours: false,
-      priceRegular: false,
-      priceStudent: false,
-      priceForeigner: false,
-      locationLng: false,
-      locationLat: false,
-    });
-  };
-  const handleEditClick = (field) => {
-    setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
-  };
-  const [editableLocation, setEditableLocation] = useState({
-    name: "",
-    description: "",
-    location: { lat: "", lng: "" },
-    image: "",
-    openingHours: { open: "", close: "" },
-    price: [
-      { type: "Regular", price: "" },
-      { type: "Student", price: "" },
-      { type: "Foreigner", price: "" },
-    ],
-    tags: "",
-  });
-
-  useEffect(() => {
-    // Fetch tags when the component mounts
-    const fetchTags = async () => {
-      try {
-        const fetchedTags = await services.getTags(); // Call the function to fetch the tags
-        setTags(fetchedTags); // Set the fetched tags in the state
-      } catch (error) {
-        setError("Error fetching place tags."); // Handle error if the API call fails
-      }
+    const [isAlertOpen, setAlertOpen] = useState(false);
+    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
+    const handleLogoutClick = () => {
+      setAlertOpen(true); // Open the alert dialog when "Logout" is clicked
     };
-    fetchTags();
-  }, []);
+    const [historicalPlaces, setHistoricalPlaces] = useState([]);
+    const [open, setOpen] = useState(false)
+    const token = localStorage.getItem('token');
+    const navigate = useNavigate();
+    const { id } = useParams();
+    const [type, setType] = useState("");
+    const [historicalPeriod, setHistoricalPeriod] = useState("");
+    const [selectedPlace, setSelectedPlace] = useState(null);
+    const [tags, setTags] = useState([]); // State to hold the tags
+    const [error, setError] = useState(""); // State to hold error message
+    const [message, setMessage] = useState("")
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [newLocation, setNewLocation] = useState({
+        name: '',
+        description: '',
+        location: { lat: '', lng: '' },
+        image: '',
+        openingHours: { open: '', close: '' },
+        price: [
+            { type: 'Regular', price: '' },
+            { type: 'Student', price: '' },
+            { type: 'Foreigner', price: '' },
+        ],
+        tags: "",
+     });
+     const [isEditing, setIsEditing] = useState({
+        image: false,
+        name: false,
+        description: false,
+        openingHours: false,
+        priceRegular: false,
+        priceStudent: false,
+        priceForeigner: false,
+        locationLng:false,
+        locationLat:false,
+    });
+
+    const handleDialogClose = () => {
+      setSelectedPlace(null);
+        setIsEditing({
+            image: false,
+            name: false,
+            description: false,
+            openingHours: false,
+            priceRegular: false,
+            priceStudent: false,
+            priceForeigner: false,
+            locationLng:false,
+            locationLat:false
+
+        });
+      };
+    const handleEditClick = (field) => {
+        setIsEditing((prev) => ({ ...prev, [field]: !prev[field] }));
+    };
+    const [editableLocation, setEditableLocation] = useState({
+        name: '',
+        description: '',
+        location: { lat: '', lng: '' },
+        image: '',
+        openingHours: { open: '', close: '' },
+        price: [
+            { type: 'Regular', price: '' },
+            { type: 'Student', price: '' },
+            { type: 'Foreigner', price: '' },
+        ],
+        tags: '',
+     });;
+
+     useEffect(() => {
+      const fetchTags = async () => {
+        try {
+          const fetchedTags = await services.getTags(); 
+          setTags(fetchedTags); 
+        } catch (error) {
+          setError("Error fetching place tags."); 
+        }
+      };
+      fetchTags();
+    }, []);
+
 
   const handleInputChange = (e, field) => {
     setEditableLocation({
@@ -146,52 +164,45 @@ const TourismGovernorDashboard = () => {
     });
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const newPlace = { ...newLocation };
-    const filteredLocation = Object.entries(editableLocation).reduce(
-      (acc, [key, value]) => {
-        // Check if value is not empty
-        if (value) {
-          if (typeof value === "object") {
-            // If the value is an array, filter out empty items
-            if (Array.isArray(value)) {
-              // Only keep the items in the array that have a non-empty price
-              const filteredArray = value.filter((item) => item.price);
-              if (filteredArray.length > 0) {
-                acc[key] = filteredArray; // Add non-empty array to the result
-              }
-            } else {
-              // If it's a nested object, check if it has any non-empty properties
-              const nonEmptyObject = Object.fromEntries(
-                Object.entries(value).filter(([_, v]) => v) // Filter out empty values
-              );
-              if (Object.keys(nonEmptyObject).length > 0) {
-                acc[key] = nonEmptyObject; // Add non-empty object to the result
-              }
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const newPlace = { ...newLocation };
+        const filteredLocation = Object.entries(editableLocation).reduce((acc, [key, value]) => {
+            if (value) {
+                if (typeof value === 'object') {
+                    if (Array.isArray(value)) {
+                        const filteredArray = value.filter(item => item.price);
+                        if (filteredArray.length > 0) {
+                            acc[key] = filteredArray; 
+                        }
+                    } else {
+                        const nonEmptyObject = Object.fromEntries(
+                            Object.entries(value).filter(([_, v]) => v) 
+                        );
+                        if (Object.keys(nonEmptyObject).length > 0) {
+                            acc[key] = nonEmptyObject;
+                        }
+                    }
+                } else {
+                    acc[key] = value; // Add non-empty primitive value to the result
+                }
             }
-          } else {
-            acc[key] = value; // Add non-empty primitive value to the result
-          }
-        }
-        return acc;
-      },
-      {}
-    );
-    console.log(filteredLocation);
-    //        setEditableLocation(filteredLocation);
-    const updatedPlace = { ...filteredLocation };
-    const missingFields = [];
-    Object.entries(newLocation).forEach(([key, value]) => {
-      if (typeof value === "object") {
-        Object.entries(value).forEach(([subKey, subValue]) => {
-          if (subValue === "") {
+            return acc;
+        }, {});
+        console.log(filteredLocation);
+//        setEditableLocation(filteredLocation);
+        const updatedPlace = {...filteredLocation};
+        const missingFields = [];
+        Object.entries(newLocation).forEach(([key, value]) => {
+        if (typeof value === 'object') {
+            Object.entries(value).forEach(([subKey, subValue]) => {
+            if (subValue === '') {
+                missingFields.push(key);
+            }
+            });
+        } else if (value === '') {
             missingFields.push(key);
-          }
-        });
-      } else if (value === "") {
-        missingFields.push(key);
-      }
+        }
     });
     try {
       if (selectedPlace) {
@@ -238,10 +249,8 @@ const TourismGovernorDashboard = () => {
   async function fetchHistoricalPlaces() {
     try {
       const response = await services.getMyPlaces(token);
-      console.log(historicalPlaces);
-      setHistoricalPlaces(
-        Array.isArray(response.Places) ? response.Places : []
-      );
+      console.log(response);
+      setHistoricalPlaces(Array.isArray(response.Places) ? response.Places : []);
     } catch (error) {
       console.error("Error fetching historical places:", error);
     }
@@ -273,7 +282,6 @@ const TourismGovernorDashboard = () => {
       setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
       setType("");
       setHistoricalPeriod("");
-      setTags((prevTags) => [...prevTags, { type, historicalPeriod }]);
     } catch (error) {
       setMessage(
         error.response ? error.response.data.message : "Error occurred"
@@ -290,75 +298,83 @@ const TourismGovernorDashboard = () => {
             <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
           </div>
           <nav className="mt-6">
-            <a
-              href="#"
-              className="flex items-center px-4 py-2 text-gray-700 bg-gray-100"
-            >
+            <button className="flex items-center w-full px-4 py-2 text-gray-700 bg-gray-100">
               <Layout className="mr-3" />
               Dashboard
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100"
-            >
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
               <Map className="mr-3" />
               Locations
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100"
-            >
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
               <Tag className="mr-3" />
               Tags
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100"
-            >
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
               <List className="mr-3" />
               Itineraries
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100"
-            >
+            </button>
+            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
               <Settings className="mr-3" />
               Settings
-            </a>
+            </button>
           </nav>
         </div>
-
-        {/* Logout Link */}
         <div className="p-4">
           <Logout />
         </div>
       </aside>
-
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
         <header className="bg-white shadow-sm">
-          <div className="flex items-center justify-between px-8 py-4">
-            <h1 className="text-2xl font-semibold text-gray-800">
-              Tourism Governor Dashboard
-            </h1>
-            <div className="flex items-center">
-              <Button variant="outline" size="icon" className="mr-4">
-                <Bell className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center">
-                <img
-                  className="w-8 h-8 rounded-full mr-2"
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="User avatar"
-                />
-                <span className="text-gray-700 mr-2">John Doe</span>
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              </div>
-            </div>
-          </div>
-        </header>
+      <div className="flex items-center justify-between px-7 py-3">
+        {/* Title and Notifications */}
+        <h1 className="text-2xl font-semibold text-gray-800">Tour Guide Dashboard</h1>
 
+        <div className="flex items-center">
+          {/* Borderless Notification Button */}
+          <Button
+            variant="link" // Borderless button style
+            size="icon"
+            className="p-0 mr-4 flex items-center"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="sr-only">Notifications</span>
+          </Button>
+
+          {/* "Hi, {name}" Greeting */}
+          <span className="text-gray-700 mr-2">Settings</span>
+
+          {/* Dropdown Menu at the right */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button
+                variant="link" // Borderless button style
+                className="p-0 flex items-center"
+              >
+                <ChevronDown className="h-4 w-4 text-gray-500" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>Options</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => setIsChangePasswordOpen(true)}>Change password</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogoutClick} >Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <LogoutAlertDialog
+        isOpen={isAlertOpen}
+        onClose={() => setAlertOpen(false)}
+      />
+        <ChangePasswordDialog 
+        isOpen={isChangePasswordOpen}
+        onClose={() => setIsChangePasswordOpen(false)}
+      />
+    </header>
         {/* Dashboard Content */}
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
@@ -694,49 +710,27 @@ const TourismGovernorDashboard = () => {
                         </DialogClose>
                       </DialogContent>
                     </Dialog>
-                  </div>
-                  <TabsContent value="all" className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {historicalPlaces.map((location) => (
-                        <Card key={location.id}>
-                          <CardHeader>
-                            <img
-                              src={location.image}
-                              alt={location.name}
-                              className="w-full h-48 object-cover rounded-t-lg"
-                            />
-                            <CardTitle>{location.name}</CardTitle>
-                            <CardDescription>
-                              {location.description}
-                            </CardDescription>
-
-                            {location.tags && (
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                {location.tags.split(",").map((tag, index) => (
-                                  <span
-                                    key={index}
-                                    className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700"
-                                  >
-                                    {tag.trim()}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </CardHeader>
-                          <CardFooter className="flex justify-end space-x-2">
-                            <Dialog
-                              onOpenChange={(open) =>
-                                !open && handleDialogClose()
-                              }
-                            >
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setSelectedPlace(location)}
-                                >
-                                  <Eye className="h-4 w-4 mr-2" />
-                                  View Details
+              </div>
+              <TabsContent value="all" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {historicalPlaces.map((location) => (
+                    <Card key={location.id}>
+                      <CardHeader>
+                        <img src={location.image} alt={location.name} className="w-full h-48 object-cover rounded-t-lg" />
+                        <CardTitle >{location.name}</CardTitle>
+                        <CardDescription >{location.description}</CardDescription>
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <span className="inline-flex items-center bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+                            <Tag className="w-4 h-4 mr-1" /> {location.tags?.type}
+                          </span>
+                        </div>
+                      </CardHeader>
+                      <CardFooter className="flex justify-end space-x-2">
+                        <Dialog onOpenChange={(open) => !open && handleDialogClose()}>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" onClick = {()=>setSelectedPlace(location)}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                    View Details
                                 </Button>
                               </DialogTrigger>
                               <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">

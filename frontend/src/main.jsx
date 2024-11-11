@@ -15,7 +15,7 @@ import Admin from "@/pages/admin/services/Admin"; // Import the Admin component
 import TourismGovernor1 from "@/pages/admin/services/TourismGovernor.jsx";
 import DeleteUser from "./pages/admin/deleteUser-page.jsx";
 import PreferenceTag from "./pages/admin/preferenceTag-page.jsx";
-import Dashboard from "./pages/admin/dashboard.jsx";
+import AdminDashboard from "./pages/admin/admindash.jsx";
 import AdvertiserProfile from "./pages/Advertiser/advertiserProfile";
 import Product from "./pages/admin/product.jsx";
 import TourGuideProfile from "./pages/TourGuide/TourguideProfile.jsx";
@@ -28,7 +28,7 @@ import ComplaintsPage from "@/pages/admin/complaints.jsx";
 //import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
 //import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import AdminItinerariesPage from "./pages/admin/AdminItineraryPage.jsx";
-import TourGuideDashboard from "./pages/TourGuide/TourGuideDashboard.jsx";
+import TourGuideDashboard from "./pages/TourGuide/tourguideDashboardDemo.jsx";
 import ItineraryForm from "./pages/TourGuide/ItineraryForm.jsx";
 import ActivityForm from "./pages/Advertiser/ActivityForm.jsx";
 import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
@@ -36,7 +36,10 @@ import { ProductsPage } from "./pages/tourist/components/products/products-page.
 import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
-import AccountDelete from "./pages/admin/accountDelete.jsx"
+import AccountDelete from "./pages/admin/accountDelete.jsx";
+import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
+import SignupsRoles from "./pages/SignUp/signupRoles.jsx";
+import { Toaster } from "@/components/ui/toaster"
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -51,7 +54,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/deleteUser" element={<DeleteUser />} />
         <Route path="/viewComplaints" element={<ComplaintsPage />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/Admindashboard" element={<AdminDashboard />} />
         <Route path="/product" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/deleteAccount" element={<AccountDelete />} />
@@ -64,7 +67,7 @@ createRoot(document.getElementById("root")).render(
           element={<TourismGovernor1 />}
         />
         <Route path="login" element={<Login />} />
-        <Route path="/signup" element={<SignupGeneral />} />
+        <Route path="/signup" element={<SignupsRoles />} />
         <Route path="/signup/signupTourist" element={<TouristRegistration />} />
         <Route
           path="/signup/signupAdvertiser"
@@ -83,7 +86,10 @@ createRoot(document.getElementById("root")).render(
         <Route path="/itineraryForm" element={<ItineraryForm />} />
         <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
         <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
+        <Route path="/preferences-page/:touristId" element={<PreferencesPage />} />
+
       </Routes>
     </BrowserRouter>
+    <Toaster />
   </StrictMode>
 );

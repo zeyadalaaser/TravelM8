@@ -4,13 +4,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { DateFilter } from "../filters/date-filter";
-import { PriceFilterTwo } from "../filters/PriceFilterTwo";
+import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
 import ItineraryCard from "@/components/ItineraryCard/ItineraryCard";
 import { SearchBar } from "../filters/search";
-import { getItineraries } from "../../api/apiService";
-import { LanguageFilter } from "./language-filter";
+import { getItineraries, getPreferenceTags } from "../../api/apiService";
 import axios from "axios";
+import { SelectFilter } from "../filters/select-filter";
 
 export function ItinerariesPage() {
   const location = useLocation();
@@ -41,21 +41,12 @@ export function ItinerariesPage() {
   const fetchItineraries = useDebouncedCallback(async () => {
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("isAdmin", isAdmin);
-    const minPriceUSD = priceRange.min
-      ? priceRange.min / (exchangeRates[currency] || 1)
-      : "";
-    const maxPriceUSD = priceRange.max
-      ? priceRange.max / (exchangeRates[currency] || 1)
-      : "";
-
-    if (minPriceUSD) queryParams.set("minPrice", minPriceUSD);
-    if (maxPriceUSD) queryParams.set("maxPrice", maxPriceUSD);
     queryParams.set("currency", currency);
 
     try {
-      let fetchedItineraries = await getItineraries(
+      let fetchedItineraries = (await getItineraries(
         `?${queryParams.toString()}`
-      );
+      )).filter(i => i.isBookingOpen);
 
       // Filter out flagged itineraries if the user is a tourist
       if (!isAdmin) {
@@ -86,12 +77,7 @@ export function ItinerariesPage() {
     fetchItineraries();
   };
 
-  const handlePriceChange = (min, max) => {
-    setPriceRange({ min, max });
-  };
-
   const resetFilters = () => {
-    setPriceRange({ min: "", max: "" });
     setCurrency("USD");
     setItineraries([]);
     navigate(location.pathname, { replace: true });
@@ -101,7 +87,7 @@ export function ItinerariesPage() {
   const searchCategories = [
     { name: 'Name', value: 'name' },
     { name: 'Tag', value: 'tag' },
-];
+  ];
 
   return (
     <>
@@ -122,13 +108,14 @@ export function ItinerariesPage() {
         <div className="w-full md:w-1/4">
           <DateFilter />
           <Separator className="mt-7" />
-          <PriceFilterTwo
+          <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
-            onPriceChange={handlePriceChange}
           />
           <Separator className="mt-7" />
-          <LanguageFilter />
+          <SelectFilter name="Languages" paramName="language" getOptions={async () => ['Arabic', 'English', 'German']} />
+          <Separator className="mt-7" />
+          <SelectFilter name="Tags" paramName="tag" getOptions={getPreferenceTags} />
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
