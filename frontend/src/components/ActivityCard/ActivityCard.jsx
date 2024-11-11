@@ -46,7 +46,7 @@ export default function ActivityCard({
     <>
       <div className="space-y-4">
         {activities?.map((activity) => (
-          <Card key={activity._id}>
+          <Card key={activity._id} activity={activity}>
             <div className="flex flex-col md:flex-row">
               <div className="w-full md:w-1/3">
                 <img
@@ -74,20 +74,20 @@ export default function ActivityCard({
                   <Tag className="w-4 h-4 mr-1" />
                   {activity.tags?.map((tag, tagIndex) => (
                     <Badge key={tagIndex} variant="secondary">
-                      {tag}
+                      {tag.name}
                     </Badge>
                   ))}
                 </div>
                 <div className="flex items-center mb-2">
                   <span className="text-sm font-semibold mr-2">Category:</span>
                   <Badge variant="outline">
-                    {activity.category}
+                    {activity.category.name}
                   </Badge>
                 </div>
                 <div className="text-xl font-bold">
                   {Array.isArray(activity.price) && activity.price.length === 2
                     ? activity.price[0]
-                    : activity.price}
+                    : activity.price} USD
                 </div>
                 <div className="flex justify-end items-center">
                   {isAdvertiser && (

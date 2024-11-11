@@ -25,8 +25,9 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X } from "lucide-react";
 
-const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
-  const token = localStorage.getItem("token");
+
+const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
+  const token = localStorage.getItem('token');
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
   const [latlng, setLatLng] = useState({ name: "", lat: 0, lng: 0 });
@@ -62,22 +63,18 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (dialogArgs) {
-      setFormData(dialogArgs);
-    }else
-      setFormData({
-        title: "",
-        description: "",
-        date: "",
-        location: { name: latlng.name, lat: latlng.lat, lng: latlng.lng },
-        price: priceType === "single" ? 0 : [0, 1],
-        category: "",
-        tags: [],
-        discount: 0,
-        isBookingOpen: false,
-        image: "",
-      });
+    useEffect(() => {
+    if (dialogArgs) setFormData(dialogArgs);
+    else setFormData({ title: "",
+      description: "",
+      date: "",
+      location: { name: latlng.name, lat: latlng.lat, lng: latlng.lng },
+      price: priceType === "single" ? 0 : [0, 1],
+      category: "",
+      tags: [],
+      discount: 0,
+      isBookingOpen: false,
+      image: ""})
   }, [dialogArgs]);
 
   const handleInputChange = (e) => {
@@ -115,6 +112,8 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
     }));
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let response;
@@ -125,7 +124,7 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify(formData),
         });
@@ -134,7 +133,7 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify(formData),
         });
@@ -144,29 +143,32 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
         throw new Error("Network response was not ok");
       }
       const result = await response.json();
-      console.log("Success:", result);
+      console.log("Success:", result.message);
       onRefresh();
     } catch (error) {
       console.error("Error:", error);
+      alert('Failed to modify activities');
       // isSuccess = false;
     }
     console.log(formData);
   };
 
-  const formatDateForInput = (dateString) => {
+    const formatDateForInput = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-11
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-11
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+  
     return `${year}-${month}-${day}T${hours}:${minutes}`; // Format: yyyy-MM-ddThh:mm
   };
 
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose} className="w-auto">
-      <DialogTrigger asChild></DialogTrigger>
+      <DialogTrigger asChild>
+      </DialogTrigger>
       <DialogContent className="max-w-[800px]">
         <DialogHeader>
           <DialogTitle>Activity Form</DialogTitle>
@@ -216,10 +218,7 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
 
             <div>
               <Label>Price</Label>
-              <Select
-                defaultValue="single"
-                onValueChange={(value) => setPriceType(value)}
-              >
+              <Select defaultValue="single" onValueChange={(value) => setPriceType(value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select price type" />
                 </SelectTrigger>
@@ -263,14 +262,14 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
                 onValueChange={(value) =>
                   setFormData((prev) => ({ ...prev, category: value }))
                 }
-                value={formData.category}
+                value={formData.category._id}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category._id} value={category._id} selected={formData.tags.includes(category._id)}>
+                    <SelectItem key={category._id} value={category._id}>
                       {category.name}
                     </SelectItem>
                   ))}
@@ -280,27 +279,18 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
 
             <div>
               <Label htmlFor="tags">Tags</Label>
-              <Select
-                onValueChange={handleTagSelect}
-                value={formData.tags} // Pass array of selected tag IDs
-                multiple 
-              >
+              <Select onValueChange={handleTagSelect}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select tags" />
                 </SelectTrigger>
                 <SelectContent>
                   {tags.map((tag) => (
-                    <SelectItem
-                      key={tag._id}
-                      value={tag._id}
-                    >
+                    <SelectItem key={tag._id} value={tag._id}>
                       {tag.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-
-              {/* Display Selected Tags as Badges */}
               <div className="flex flex-wrap gap-2 mt-2">
                 {formData.tags.map((tagId) => {
                   const tag = tags.find((t) => t._id === tagId);
@@ -362,6 +352,6 @@ const ActivityFormDialog = ({ isOpen, onClose, onRefresh, dialogArgs }) => {
       </DialogContent>
     </Dialog>
   );
-};
+}
 
 export default ActivityFormDialog;
