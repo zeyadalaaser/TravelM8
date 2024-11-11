@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 
 const deletionRequestSchema = new Schema({
   
-    name: {
+    username: {
         type: String,
         required: true,
       },

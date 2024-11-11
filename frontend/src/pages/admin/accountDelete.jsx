@@ -74,33 +74,52 @@ const DeletionRequestsAdmin = () => {
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
   };
+ 
+  // Function to delete both the user and their deletion request
+const handleDelete = async (username, type) => {
+  try {
+    // Step 1: Delete the user
+    const userResponse = await fetch('http://localhost:5001/api/users', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ username, type }),
+    });
 
-  // Handle delete account - call the existing deleteAccount API
-  const handleDelete = async (username, type) => {
-    try {
-      const response = await fetch('http://localhost:5001/api/users', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ username, type }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to delete the user');
-      }
-  
-      const data = await response.json();
-      alert(data.message);  // Show success or error message from backend
-  
-      // Remove the deleted request from the list after successful deletion
-      setRequests(requests.filter((request) => request.username !== username));
-    } catch (error) {
-      console.error('Error deleting the user:', error);
-      alert('Failed to delete the user');
+    // Check if the user deletion was successful
+    if (!userResponse.ok) {
+      const errorData = await userResponse.json();
+      throw new Error(errorData.message || 'Failed to delete the user');
     }
-  };
+
+    // Step 2: Delete the deletion request
+    const requestResponse = await fetch('http://localhost:5001/api/delete-request', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ username }),
+    });
+ 
+    if (!requestResponse.ok) {
+      const errorData = await requestResponse.json();
+      throw new Error(errorData.message || 'Failed to delete the deletion request');
+    }
+
+    // Update UI: remove the request from the displayed list
+    setRequests(requests.filter((request) => request.username !== username));
+
+    alert('User  deleted successfully');
+
+  } catch (error) {
+    console.error('Error deleting the user and/or deletion request:', error);
+    alert('Failed to delete the user and/or deletion request');
+  }
+};
+
 
   const handleReject = (id) => {
     console.log(`Rejecting request for ID: ${id}`);
@@ -133,7 +152,7 @@ const DeletionRequestsAdmin = () => {
               <TableBody>
                 {requests.map((request) => (
                   <TableRow key={request._id} className="border-t">
-                    <TableCell className="font-medium">{request.name}</TableCell>
+                    <TableCell className="font-medium">{request.username}</TableCell>
                     <TableCell>{request.userType}</TableCell>
                     <TableCell>{new Date(request.requestDate).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right space-x-2">
@@ -172,7 +191,7 @@ const DeletionRequestsAdmin = () => {
                               variant="destructive"
                               onClick={() => {
                                 if (selectedRequest) {
-                                  handleDelete(selectedRequest.name, selectedRequest.userType); // Use selectedRequest's data
+                                  handleDelete(selectedRequest.username, selectedRequest.userType); // Use selectedRequest's data
                                   // setIsDeleteDialogOpen(false); // Close dialog after deletion
                                 }
                                 closeDeleteDialog();  // Close the dialog after deletion
@@ -184,14 +203,7 @@ const DeletionRequestsAdmin = () => {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleReject(request._id)}
-                      >
-                        <X className="h-4 w-4" />
-                        <span className="sr-only">Reject deletion request</span>
-                      </Button>
+                   
                     </TableCell>
                   </TableRow>
                 ))}

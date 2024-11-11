@@ -79,18 +79,18 @@ export const deleteAccount = async (req, res) => {
                 break;
 
             default:
-                return res.status(400).send('Invalid user type');
+                return res.status(400).json({message:'Invalid user type'});
         }
 
         // If no user was found, return 404
         if (!result) {
-            return res.status(404).send('User not found');
+            return res.status(404).json({ message: 'User not found' });
         }
 
-        res.status(200).send('User deleted successfully');
+        res.status(200).json({message:'User deleted successfully'});
     } catch (error) {
         console.error(error);
-        res.status(500).send('Server error');
+        res.status(500).json({message:'Server error'});
     }
 };
 
