@@ -36,11 +36,12 @@ export async function getMyProducts(query = '') {
   const token = localStorage.getItem('token');
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
-  return (await apiClient.get("products?"+searchParams.toString(),
-          {headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        }})).data;
+  return (await apiClient.get(`products/myProducts?${searchParams.toString()}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })).data;
 }
 
 

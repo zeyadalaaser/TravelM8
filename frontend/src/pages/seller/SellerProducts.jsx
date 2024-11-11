@@ -55,7 +55,7 @@ export default function SellerProducts() {
       try {
         const response = await getMyProducts(queryParams);
          // Fetch products from the API
-        setProducts(response.data); // Update products state
+        setProducts(response.products); // Update products state
       } catch (error) {
         console.error('Error fetching products:', error);
         setError(error.message); // Handle error state
