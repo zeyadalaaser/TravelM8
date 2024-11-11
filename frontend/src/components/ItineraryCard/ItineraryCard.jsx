@@ -114,7 +114,6 @@ export default function ItineraryCard({
                   <h3 className="text-xl font-semibold mb-2">
                     {itinerary.name}
                   </h3>
-                  {isTourist && <ShareButton id={itinerary._id} name="itinerary" />}
                   <div className="flex items-center gap-2 ">
                     {isTourGuide && itinerary.isBookingOpen && (
                       <Button
@@ -139,7 +138,7 @@ export default function ItineraryCard({
                         Activate Itinerary
                       </Button>
                     )}
-                    <Timeline selectedItinerary={itinerary}/>
+                  {isTourist && <ShareButton id={itinerary._id} name="itinerary" />}
                   </div>
                 </div>
                 <div className="flex items-center mb-2">
@@ -215,12 +214,7 @@ export default function ItineraryCard({
                 </div>
                 <div className="flex justify-end items-center space-x-2">
                   <span className="text-xl font-bold mr-auto">{`${(itinerary.price * 1).toFixed(2)} ${currency}`}</span>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleViewTimeline(itinerary)}
-                  >
-                    View Timeline
-                  </Button>
+                  <Timeline selectedItinerary={itinerary}/>
                   {isTourist && (
                     <div className="flex justify-end items-center">
                       {/* <Button onClick={modalOpen(true)}>
@@ -315,13 +309,17 @@ const ChooseDate = ({itinerary}) => {
     try {
       const response = await createItineraryBooking(
         itinerary._id,
-        itinerary.tourGuideId._id,
+        itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
         selectedDate,
         token
       );
       message = response.message.message;
-      setSubmitStatus({ success: response.message.success, message: message });
+      setIsOpen(false);
+      alert(response.message.success + " " + message )
+      // setSubmitStatus({ success: response.message.success, message: message });
     } catch (error) {
+      setIsOpen(false);
+      alert("Failed to Book itinerary");
       setSubmitStatus({ success: false, message: "failed" });
     }
   };

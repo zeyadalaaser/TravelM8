@@ -1,7 +1,8 @@
 import Booking from '../models/bookingsModel.js';
 import Rating from '../models/ratingModel.js';
 import { updateItineraryUponBookingModification } from "./itineraryController.js";
-
+import {updatePoints} from "./touristController.js"
+import { getItineraryPrice } from './itineraryController.js';
 
 export const createBooking2 = async (req, res) => {
   try {
@@ -17,10 +18,13 @@ export const createBooking2 = async (req, res) => {
     const result = await updateItineraryUponBookingModification(itinerary, tourDate, "book");
     console.log(result.success);
     console.log(result);
-    if (result.success)
-      res.status(201).json({ savedBooking, message: "Successful Booking of Itinerary!" });
-    else
-      res.status(203).json({ message: result });
+    const itineraryPrice = await getItineraryPrice(itinerary);
+    if (result.success && itineraryPrice){
+      console.log(itineraryPrice);
+      const {points, current} = await updatePoints(tourist,itineraryPrice);
+      res.status(201).json({ savedBooking, message: `Successful Booking of Itinerary! You gained ${points} points and currently have ${current} loyality points` });
+    }else
+      res.status(203).json({ message: "Error Occurred" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -32,6 +36,7 @@ export const getAllTourBookings = async (req, res) => {
     const allBookings = await Booking.find({ tourist: tourist })
       .populate('itinerary'); // Populating the itinerary field
 
+    
     res.status(200).json({ allBookings, message: "Successful Retrieval of Itineraries!" });
   } catch (error) {
     res.status(400).json({ message: error.message });

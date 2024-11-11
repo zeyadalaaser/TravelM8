@@ -158,6 +158,15 @@ export const updateItineraryUponBookingModification = async (id, slotDate, actio
   }
 };
 
+export const getItineraryPrice = async (itineraryId) =>{
+  try{
+    const itinerary = await Itinerary.findById(itineraryId);
+    return itinerary.price;
+  }catch(error){
+    return null;
+  }
+};
+
 // update an itinerary in the database
 export const updateItinerary = async (req, res) => {
   try {

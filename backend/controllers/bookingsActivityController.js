@@ -1,5 +1,7 @@
 import BookingActivity from "../models/bookingsActivityModel.js";
 import Activity from "../models/activityModel.js";
+import {updatePoints} from "./touristController.js"
+import {getActivityPrice} from "./activityController.js"
 
 // Booking an activity
 export const createBooking = async (req, res) => {
@@ -32,8 +34,13 @@ export const createBooking = async (req, res) => {
         });
 
         await newBooking.save();
+        const activityPrice = await getActivityPrice(activityId);
+        if(activityPrice){
+            const {points, current} = await updatePoints(touristId,activityPrice);
+            return res.status(201).json({ message: `Activity booked successfully. You gained ${points} points and currently have ${current} loyality points`, booking: newBooking });
+        }else
+        return res.status(400).json({ message: "Error reading the activity price."});
 
-        return res.status(201).json({ message: "Activity booked successfully.", booking: newBooking });
     } catch (error) {
         console.error("Error booking activity:", error);
         return res.status(500).json({ message: "Internal server error." });

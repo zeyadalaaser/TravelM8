@@ -128,7 +128,7 @@ export function ItinerariesPage() {
           {itineraries.length > 0 ? (
             <ItineraryCard
               itineraries={itineraries}
-              isTourist={!isAdmin}
+              isTourist={true}
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />

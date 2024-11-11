@@ -173,6 +173,18 @@ const getActivityById = async (req, res) => {
   }
 };
 
+export const getActivityPrice = async (activityId) =>{
+  try{
+    const activity = await activityModel.findById(activityId);
+    if(Array.isArray(activity.price))
+      return activity.price[0];
+    else
+    return activity.price;
+  }catch(error){
+    return null;
+  }
+};
+
 const updateActivity = async (req, res) => {
   const activityId = req.params.id;
 
