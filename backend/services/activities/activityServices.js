@@ -30,7 +30,7 @@ function createFilterStage({
 
   if (search) {
     if (searchBy === 'categoryName') {
-      filters['categoryName'] = { $regex: search, $options: 'i' };
+      filters['category.name'] = { $regex: search, $options: 'i' };
     } else if (searchBy === 'tag') {
       filters['tags.name'] = { $regex: search, $options: 'i' }; // Match tag name case-insensitively
     } else if (searchBy === 'name') {
