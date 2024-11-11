@@ -57,7 +57,7 @@ export function HotelsPage() {
 
         const currentRequestId = ++requestCounter.current;
         const hotels = await getHotels(location.search);
-        
+
         const mapped = hotels.map((hotel) => {
             if (!("providers" in hotel))
                 return null;
@@ -65,7 +65,7 @@ export function HotelsPage() {
             const name = hotel.localizedHotelName;
             const nearby = "Nearby: " + hotel.localizedNearbyLandmarkNames.join(', ');
             const location = hotel.geolocation.localizedCity;
-            const price = hotel.providers[0].totalPrice.localizedPrice;
+            const price = hotel.providers[0].totalPrice.price;
             const rating = hotel.rating.scoreDisplay;
             const ratingCount = hotel.rating.reviewCountDisplay;
             const ratingCategory = hotel.rating.localizedRatingCategory;
@@ -94,6 +94,26 @@ export function HotelsPage() {
         { value: 'rating-userrating_b', description: 'Rating' },
     ];
 
+    const [currency, setCurrency] = useState("USD");
+    const [exchangeRates, setExchangeRates] = useState({});
+    useEffect(() => {
+        async function fetchExchangeRates() {
+            try {
+                const response = await axios.get(
+                    "https://api.exchangerate-api.com/v4/latest/USD"
+                );
+                setExchangeRates(response.data.rates);
+                console.log(exchangeRates);
+            } catch (error) {
+                console.error("Error fetching exchange rates:", error);
+            }
+        }
+        fetchExchangeRates();
+    }, []);
+    const handleCurrencyChange = (e) => {
+        setCurrency(e.target.value);
+    };
+
     return <>
         <div className="flex justify-between space-x-6">
             <CityFilter className="flex-1" name="Where" getData={fetchLocations} />
@@ -101,8 +121,18 @@ export function HotelsPage() {
             <SingleDateFilter className="flex-1" name="Check out" param="checkout" />
         </div>
         <div className="mt-6 flex flex-col md:flex-row gap-8">
-            <div className="w-full md:w-1/4">
+            <div className="flex w-1/4 h-10 items-center">
                 {/* <PriceFilter /> */}
+                <label className="text-sm">
+                    Currency:
+                    <select value={currency} onChange={handleCurrencyChange}>
+                        {Object.keys(exchangeRates).map((cur) => (
+                            <option key={cur} value={cur}>
+                                {`${cur}`}
+                            </option>
+                        ))}
+                    </select>
+                </label>
             </div>
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">
@@ -112,7 +142,7 @@ export function HotelsPage() {
                     </div>
                     <SortSelection options={sortOptions} />
                 </div>
-                <Hotels hotels={hotels} />
+                <Hotels hotels={hotels} currency={currency} exchangeRate={exchangeRates[currency]} />
             </div>
         </div>
     </>

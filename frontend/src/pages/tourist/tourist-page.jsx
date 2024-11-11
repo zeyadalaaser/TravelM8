@@ -80,7 +80,7 @@ export default function TouristPage() {
     setTouristId(id);
     // Fetch badge information once the token is verified
     fetchBadgeInfo();
- 
+
   }, [navigate]);
 
 
@@ -116,25 +116,24 @@ export default function TouristPage() {
 </div>
       </div>
 
-  
-  { page === "activities" && <ActivitiesPage /> }
-  { page === "itineraries" && <ItinerariesPage /> }
-  { page === "museums" && <MuseumsPage /> }
-  { page === "flights" && <FlightsPage /> }
-  { page === "hotels" && <HotelsPage /> }
-  { page === "products" && touristId && (<ProductsPage touristId={touristId} />)}
-  { page === "complaints" && <MyComplaintsPage /> }
-  { page === "completed-tours" && touristId && (<CompletedToursPage touristId={touristId} /> )}
-  { page === "past-activities" && touristId && (<PastActivitiesPage touristId={touristId} /> )}
-  { page === "products-purchased" && touristId && (<PurchasedProductsPage touristId={touristId} />)}
-  { page === "booking-history" && <BookingHistory/> }
 
-  { showComplaintForm && ( <ComplaintForm onClose={() => setShowComplaintForm(false)} />) }
-  { showRedeemPoints && (<RedeemPoints onClose={() => setShowRedeemPoints(false)} />)}
+      {page === "activities" && <ActivitiesPage />}
+      {page === "itineraries" && <ItinerariesPage />}
+      {page === "museums" && <MuseumsPage />}
+      {page === "flights" && <FlightsPage />}
+      {page === "hotels" && <HotelsPage />}
+      {page === "products" && touristId && (<ProductsPage touristId={touristId} />)}
+      {page === "complaints" && <MyComplaintsPage />}
+      {page === "completed-tours" && touristId && (<CompletedToursPage touristId={touristId} />)}
+      {page === "past-activities" && touristId && (<PastActivitiesPage touristId={touristId} />)}
+      {page === "products-purchased" && touristId && (<PurchasedProductsPage touristId={touristId} />)}
+      { page === "booking-history" && <BookingHistory/> }
+      {showComplaintForm && (<ComplaintForm onClose={() => setShowComplaintForm(false)} />)}
+      {showRedeemPoints && (<RedeemPoints onClose={() => setShowRedeemPoints(false)} />)}
 
 
-</div >
-    
+    </div >
+
   );
 
 }

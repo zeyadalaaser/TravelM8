@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import useRouter from "@/hooks/useRouter";
 import { cn } from "@/lib/utils.ts";
+import { BookTransportation } from "./bookings/book-transportation";
 
 const pages = [
     { label: "Activities", value: "activities" },
@@ -13,10 +14,11 @@ const pages = [
     { label: "Completed Tours", value: "completed-tours" },
     { label: "Past Activities", value: "past-activities" },
     {label: "Purchased Products", value: "products-purchased"},
-    {label: "My Bookings & History", value: "booking-history"},
+    {label: "My Bookings & History", value: "booking-history"}
+
 ];
 
-export function NavBar({onComplaintClick,onRedeemClick}) { // Accept onComplaintClick as a prop
+export function NavBar({ onComplaintClick, onRedeemClick }) { // Accept onComplaintClick as a prop
     const { location, searchParams, navigate } = useRouter();
     const currentPage = searchParams.get("type");
 
@@ -45,12 +47,13 @@ export function NavBar({onComplaintClick,onRedeemClick}) { // Accept onComplaint
             </Button>
 
             <Button
-                variant="ghost"  
+                variant="ghost"
                 className="rounded-full py-2 px-4 border-[1px] border-transparent"
-                onClick={onRedeemClick}  
+                onClick={onRedeemClick}
             >
                 Redeem Points
             </Button>
+            <BookTransportation />
         </div>
     );
 }

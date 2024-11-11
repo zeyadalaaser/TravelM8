@@ -9,6 +9,7 @@ import { SingleDateFilter } from '../filters/single-date-filter';
 import { Flights } from '../flights/flights';
 import { getFlights } from "../../api/apiService";
 import { CityFilter } from '../filters/city-filter';
+import axios from "axios";
 
 const query = encodeURIComponent("query UmbrellaPlacesQuery( $search: PlacesSearchInput $filter: PlacesFilterInput $options: PlacesOptionsInput ) { places(search: $search, filter: $filter, options: $options, first: 20) { __typename ... on AppError { error: message } ... on PlaceConnection { edges { rank distance { __typename distance } isAmbiguous node { __typename __isPlace: __typename id legacyId name slug slugEn gps { lat lng } rank ... on City { code autonomousTerritory { legacyId id } subdivision { legacyId name id } country { legacyId name slugEn region { legacyId continent { legacyId id } id } id } airportsCount groundStationsCount } ... on Station { type code gps { lat lng } city { legacyId name slug autonomousTerritory { legacyId id } subdivision { legacyId name id } country { legacyId name region { legacyId continent { legacyId id } id } id } id } } ... on Region { continent { legacyId id } } ... on Country { code region { legacyId continent { legacyId id } id } } ... on AutonomousTerritory { country { legacyId name region { legacyId continent { legacyId id } id } id } } ... on Subdivision { country { legacyId name region { legacyId continent { legacyId id } id } id } } } } } } }");
 const variables = (cityName) => encodeURIComponent(`{"search":{"term":"${cityName}"},"filter":{"onlyTypes":["CITY"]},"options":{"locale":"en"}}`);
@@ -38,10 +39,10 @@ export function FlightsPage() {
 
     const fetchFlights = useDebouncedCallback(async () => {
         setLoading(true);
-        
+
         const currentRequestId = ++requestCounter.current;
         const flights = await getFlights(location.search);
-        
+
         if (currentRequestId === requestCounter.current)
             setFlights(flights);
 
@@ -57,6 +58,26 @@ export function FlightsPage() {
         { value: 'duration-fastest', description: 'Fastest' },
     ];
 
+    const [currency, setCurrency] = useState("USD");
+    const [exchangeRates, setExchangeRates] = useState({});
+    useEffect(() => {
+        async function fetchExchangeRates() {
+            try {
+                const response = await axios.get(
+                    "https://api.exchangerate-api.com/v4/latest/USD"
+                );
+                setExchangeRates(response.data.rates);
+                console.log(exchangeRates);
+            } catch (error) {
+                console.error("Error fetching exchange rates:", error);
+            }
+        }
+        fetchExchangeRates();
+    }, []);
+    const handleCurrencyChange = (e) => {
+        setCurrency(e.target.value);
+    };
+
     return <>
         <div className="flex justify-between space-x-6">
             <CityFilter className="flex-1" name="From" getData={fetchCities} />
@@ -65,8 +86,18 @@ export function FlightsPage() {
             <SingleDateFilter className="flex-1" name="Return" param="return" />
         </div>
         <div className="mt-6 flex flex-col md:flex-row gap-8">
-            <div className="w-full md:w-1/4">
-                <PriceFilter />
+            <div className="flex w-1/4 h-10 items-center">
+                {/* <PriceFilter /> */}
+                <label className="text-sm">
+                    Currency:
+                    <select value={currency} onChange={handleCurrencyChange}>
+                        {Object.keys(exchangeRates).map((cur) => (
+                            <option key={cur} value={cur}>
+                                {`${cur}`}
+                            </option>
+                        ))}
+                    </select>
+                </label>
             </div>
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">
@@ -76,7 +107,7 @@ export function FlightsPage() {
                     </div>
                     <SortSelection options={sortOptions} />
                 </div>
-                <Flights flights={flights} />
+                <Flights flights={flights} currency={currency} exchangeRate={exchangeRates[currency]} />
             </div>
         </div>
     </>
