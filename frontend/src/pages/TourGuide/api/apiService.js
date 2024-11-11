@@ -72,18 +72,29 @@ export async function deleteItinerary(id){
 }
 
 // Update profile info
-export async function updateProfile(updatedData) {
+export async function updateProfile(updatedData,token) {
   try {
-      const response = await apiClient.put("tourguides/updateMyProfile", updatedData);
+      const response = await apiClient.put("tourguides/updateMyProfile", updatedData ,
+        {headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        }} 
+      );
       return response.data;
   } catch (error) {
       console.error('Error updating profile info:', error);
       throw error;
   }
 }
-export async function changePassword(passwordData) {
+
+export async function changePassword(passwordData,token) {
   return (
-    await apiClient.post("tourguides/changepassword", passwordData)
+    await apiClient.post("tourguides/changepassword", passwordData,
+      {headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      }} 
+    )
   ).data;
 }
 

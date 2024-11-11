@@ -171,12 +171,14 @@ async function getExchangeRates(base = "USD") {
 export const filterItineraries = async (req, res) => {
   try {
     const {
+      id,
       price,
       language,
       startDate,
       endDate,
       searchBy,
       search,
+      tag,
       sortBy,
       order,
       currency = "USD",
@@ -187,13 +189,19 @@ export const filterItineraries = async (req, res) => {
     const exchangeRate = rates[currency] || 1;
     const filters = {};
 
+    if (id)
+      filters["_id"] = new mongoose.Types.ObjectId(`${id}`);
+
     if (search) {
       if (searchBy === 'tag') {
         filters['tags.name'] = { $regex: search, $options: 'i' };
       } else if (searchBy === 'name') {
-        filters['title'] = { $regex: search, $options: 'i' };
+        filters['name'] = { $regex: search, $options: 'i' };
       }
     };
+
+    if (tag)
+      filters['tags.name'] = searchBy !== 'tag' ? tag : { $in: [tag, filters['tags.name']] };
 
     if (startDate && endDate)
       filters["availableSlots.date"] = { $gte: new Date(startDate) };

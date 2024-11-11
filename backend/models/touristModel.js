@@ -89,12 +89,15 @@ const touristSchema = new Schema(
       enum: ['Level 1', 'Level 2', 'Level 3'],
       default: 'Level 1',
     },
+    preferences: {
+      type: [String],
+      default: [],
+    },
+    
   },
   { timestamps: true }
 );
  
-
-
 
 // Prevent dob from being updated after it's initially set
 touristSchema.pre('save', function(next) {

@@ -82,8 +82,16 @@ export const login = async (req, res) => {
     if (!isMatch) {
         return res.status(400).json({ msg: "Invalid credentials" });
     }
+    console.log("User role:", user.role);
+    console.log("User preferences:", user.preferences);
+    const needsPreferences =  
+                         (!user.preferences || 
+                          Object.entries(user.preferences)
+                                .filter(([key]) => key !== 'budget') 
+                                .every(([, value]) => value === false));
 
-    // Create a JWT
+   console.log("needsPreferences evaluated to:", needsPreferences);
+// Create a JWT
     const payload = {
         userId: user._id,
         role // Use the determined role
@@ -91,5 +99,5 @@ export const login = async (req, res) => {
 
     const token = jwt.sign(payload, secret, { expiresIn: '1h' });
 
-    res.json({ token, role });
+    res.json({ token, role, needsPreferences });
 };

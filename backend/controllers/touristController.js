@@ -2,9 +2,6 @@ import Tourist from '../models/touristModel.js';
 import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
 
 
-
-
-
 export const createTourist = async(req,res) => {
    //add a new Tourist to the database with 
    const {username, name, email, password, mobileNumber, nationality, dob, occupation} = req.body;
@@ -16,11 +13,12 @@ export const createTourist = async(req,res) => {
    try{
   
       const tourist = await Tourist.create({username, email, password, mobileNumber, nationality, dob, occupation});
-      res.status(200).json(tourist);
-   }catch(error){
+      res.status(200).json({ id: tourist.id, ...tourist.toObject() });
+         }catch(error){
       res.status(400).json({error:error.message});
    }
 }
+
 
 
 export const updateTouristProfile = async (req, res) => {
@@ -42,6 +40,29 @@ export const updateTouristProfile = async (req, res) => {
       res.status(400).json({error:error.message});
    }
 };
+
+export const updatePreferences = async (req, res) => {
+  const touristId = req.params.touristId;  // This gets the touristId from the URL
+  const { preferences } = req.body;
+
+  try {
+    const tourist = await Tourist.findById(touristId);
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+    if (preferences && Array.isArray(preferences)) {
+      tourist.preferences = preferences;
+    } else {
+      return res.status(400).json({ message: 'Invalid preferences data' });
+    }
+
+    await tourist.save();
+    res.status(200).json(tourist);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 
   export const getTourists = async (req, res) => {

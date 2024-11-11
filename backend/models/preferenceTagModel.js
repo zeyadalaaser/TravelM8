@@ -4,7 +4,9 @@ const preferenceTagSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: true,  // Ensure uniqueness
   },
+
 });
 
 preferenceTagSchema.index({ name: 1 }, { unique: true, collation: { locale: 'en', strength: 2 } });

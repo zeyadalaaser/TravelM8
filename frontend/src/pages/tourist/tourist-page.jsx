@@ -28,6 +28,7 @@ export default function TouristPage() {
   const [totalPoints, setTotalPoints] = useState(0);
   const [level, setLevel] = useState("");
   const [touristId, setTouristId] = useState(null);
+  //navigate(`/preferences-page/${touristId}`);
 
 
   // Function to decode JWT and get user role and id

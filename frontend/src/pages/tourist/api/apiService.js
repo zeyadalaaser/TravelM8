@@ -12,15 +12,26 @@ export async function getActivities(query) {
   return (await apiClient.get("activities?" + searchParams.toString())).data;
 }
 
-
+/* const response = await axios.get(`http://localhost:5001/api/products`,
+  {headers: {
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${token}`,
+}}); */
 
 export async function getProducts(query) {
-
+  const token = localStorage.getItem('token');
 
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
   
-  return (await apiClient.get("products?" + searchParams.toString())).data.data;
+  const response = await apiClient.get("products?" + searchParams.toString(), {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    }
+  });
+
+  return response.data.data;
 }
 
 export async function getMuseums(query) {
@@ -52,11 +63,17 @@ export async function fetchProfileInfo(token) {
 }
 
 export async function getCategories() {
-  return (await apiClient.get("activity-categories")).data;
+  return (await apiClient.get("activity-categories")).data.map((c) => c.name);
 }
 
-export async function getTags() {
-  return (await apiClient.get("preference-tags")).data;
+export async function getPreferenceTags() {
+  return (await apiClient.get("preference-tags")).data.map((t) => t.name);
+}
+
+export async function getPlaceTags() {
+  const response = (await apiClient.get("placetag")).data;
+  const tags = response.map((t) => [t.type, t.historicalPeriod]).flat();
+  return [...new Set(tags)];
 }
 
 export async function getMyComplaints(token) {

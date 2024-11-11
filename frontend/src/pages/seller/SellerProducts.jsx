@@ -7,13 +7,16 @@ import { Input } from '../../components/ui/input';
 import { useToast } from "./components/useToast";
 import { SearchBar } from './components/filters/search';
 import { PriceFilter } from "./components/filters/price-filter";
-import { getProducts } from './api/apiService'; 
+import { getMyProducts, getProducts } from './api/apiService'; 
 import useRouter from '../../hooks/useRouter';
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 
 const token = localStorage.getItem('token');
 
 export default function SellerProducts() {
   const { location } = useRouter();
+  const location2 = useLocation();
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,10 +50,12 @@ export default function SellerProducts() {
   // Fetch products for the seller using getProducts
   useEffect(() => {
     const fetchProducts = async () => {
+      const queryParams = new URLSearchParams(location2.search);
       setLoading(true); // Set loading state
       try {
-        const response = await getProducts(location.search); // Fetch products from the API
-        setProducts(response.data); // Update products state
+        const response = await getMyProducts(queryParams);
+         // Fetch products from the API
+        setProducts(response.products); // Update products state
       } catch (error) {
         console.error('Error fetching products:', error);
         setError(error.message); // Handle error state
@@ -60,7 +65,7 @@ export default function SellerProducts() {
     };
 
     fetchProducts();
-  }, []);
+  }, [location.search]);
 
   // Handle product deletion
   const handleDelete = async (productId) => {
@@ -231,7 +236,7 @@ export default function SellerProducts() {
                   alt={product.name}
                   className="w-full h-40 object-cover mb-2"
                 />
-<p className="font-bold">{`Price: EGP ${parseFloat(product.price).toFixed(2)}`}</p>
+<p className="font-bold">{`Price: USD ${parseFloat(product.price).toFixed(2)}`}</p>
 <p className="mb-2">{product.description}</p>
                 <p className='mb-2'>{`Sold: ${product.sales} `}</p>
                 <p className='mb-2'>{`Remaining stock: ${product.quantity}`}</p>
@@ -360,7 +365,7 @@ function AddProductForm({ onSubmit, initialData }) {
         />
       </div>
       <div>
-        <Label htmlFor="price">Price (EGP)</Label>
+        <Label htmlFor="price">Price (USD)</Label>
         <Input
           id="price"
           name="price"

@@ -10,6 +10,18 @@ body {
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
 }
+.form-container {
+  background-color: #ffffff; /* Non-transparent background color */
+  padding: 30px; /* Add padding */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow for depth */
+  max-width: 500px; /* Set a maximum width */
+  width: 90%; /* Set width to 90% of the container */
+  margin: 80px auto; /* Center horizontally and add top margin */
+  position: relative;
+  z-index: 1; /* Keep above background image */
+}
+
 
 .background-image {
   position: absolute; /* Position the image absolutely */
