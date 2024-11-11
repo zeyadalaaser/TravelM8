@@ -86,17 +86,55 @@ export const updatePreferences = async (req, res) => {
 }
 
 
-export const updatePoints = async (req, res) => {
- // const { id } = req.params;
-    const userId = req.user.userId;
-  const { amountPaid } = req.body;
+// export const updatePoints = async (req, res) => {
+//  // const { id } = req.params;
+//     const userId = req.user.userId;
+//   const { amountPaid } = req.body;
 
+//   try {
+//     const tourist = await Tourist.findById(userId);
+//     if (!tourist) {
+//       return res.status(404).json({ success: false, message: 'Tourist not found' });
+//     }   
+//     let pointsEarned;
+//     if (tourist.loyaltyPoints <= 100000) {
+//       pointsEarned = amountPaid * 0.5;
+//     } else if (tourist.loyaltyPoints <= 500000) {
+//       pointsEarned = amountPaid * 1;
+//     } else {
+//       pointsEarned = amountPaid * 1.5;
+//     }
+
+//     // Update loyalty points
+//     tourist.loyaltyPoints += pointsEarned;
+
+    
+//     if (tourist.loyaltyPoints <= 100000) {
+//       tourist.badgeLevel = 'Level 1';
+//     } else if (tourist.loyaltyPoints <= 500000) {
+//       tourist.badgeLevel = 'Level 2';
+//     } else {
+//       tourist.badgeLevel = 'Level 3';
+//     }
+
+//     await tourist.save();
+//     res.status(200).json(tourist);
+//   } catch (error) {
+//     res.status(500).json({ success: false, message: `Error processing payment: ${error.message}` });
+//   }
+// };
+
+
+export const updatePoints = async (userId, amountPaid) => {
   try {
+    // Find the tourist by userId
     const tourist = await Tourist.findById(userId);
     if (!tourist) {
-      return res.status(404).json({ success: false, message: 'Tourist not found' });
-    }   
+      throw new Error('Tourist not found');
+    }
+
     let pointsEarned;
+    // Calculate points based on loyalty points and amount paid
     if (tourist.loyaltyPoints <= 100000) {
       pointsEarned = amountPaid * 0.5;
     } else if (tourist.loyaltyPoints <= 500000) {
@@ -108,7 +146,7 @@ export const updatePoints = async (req, res) => {
     // Update loyalty points
     tourist.loyaltyPoints += pointsEarned;
 
-    
+    // Update badge level based on new loyalty points
     if (tourist.loyaltyPoints <= 100000) {
       tourist.badgeLevel = 'Level 1';
     } else if (tourist.loyaltyPoints <= 500000) {
@@ -117,13 +155,13 @@ export const updatePoints = async (req, res) => {
       tourist.badgeLevel = 'Level 3';
     }
 
+    // Save the tourist with the updated points and badge level
     await tourist.save();
-    res.status(200).json(tourist);
+    return {"points":pointsEarned, "current":tourist.loyaltyPoints};  // Return the updated tourist object
   } catch (error) {
-    res.status(500).json({ success: false, message: `Error processing payment: ${error.message}` });
+    throw new Error(`Error processing payment: ${error.message}`); // Rethrow error for further handling
   }
 };
-
 
 
 /*export const redeemPoints = async (req, res) => {

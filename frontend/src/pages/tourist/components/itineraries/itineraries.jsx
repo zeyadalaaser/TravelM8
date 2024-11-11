@@ -2,6 +2,23 @@ import { Clock, Globe, Tag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "../stars";
+import {createItineraryBooking} from "../../api/apiService";
+import { useState } from "react";
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+
+
+const token = localStorage.getItem('token');
 
 export function Itineraries({ itineraries, currency, exchangeRate }) {
   return (
@@ -58,11 +75,58 @@ export function Itineraries({ itineraries, currency, exchangeRate }) {
                         2
                       )} ${currency}`}
                 </div>
+                <div className="flex justify-end items-center">
+                  {/* <Button onClick={modalOpen(true)}>
+                    Book Activity!
+                  </Button> */}
+                  <ChooseDate itinerary ={itinerary}/>
+                </div>
               </div>
             </div>
           </Card>
         ))
       )}
     </div>
+  );
+}
+
+
+const ChooseDate = ({itinerary}) => {
+  let remainingSpots;
+  const [selectedDate, setSelectedDate] = useState();
+  const handleSubmit = async () => {
+    e.preventDefault();
+      console.log(token);
+      const response = await createItineraryBooking(itinerary._id, itinerary.tourGuideId, selectedDate, token);
+      console.log(response.message);
+      alert(response.message);
+
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Book Now</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Choose Date</DialogTitle>
+        </DialogHeader>
+        <RadioGroup onValueChange={setSelectedDate(e.target.value)} defaultValue="comfortable">
+          {itinerary.availableSlots.map((slot,index) => {
+            remainingSpots = slot.maxNumberOfBookings - slot.numberOfBookings;
+            if (remainingSpots == 0) {
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value={slot.date} id= {index} />
+                <Label htmlFor={index}>{slot.date}</Label>
+              </div>;
+            }
+          })}
+        </RadioGroup>
+        <DialogFooter>
+          <Button type="submit" onSubmit={handleSubmit}>Submit</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

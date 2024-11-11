@@ -40,11 +40,25 @@ const TourGuideDashboard = () => {
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [itineraries, setItineraries] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
+  const refreshItineraries = () => {
+      setRefresh((prev) => !prev); // Toggles to trigger a refresh
+  };
+  
+
+
+
+
+  const getItineraries = useDebouncedCallback(async () => {
+    const response = await fetch('http://localhost:5001/api/itineraries')
+    setItineraries(await response.json());
+  }, 200);
 
   useEffect(() => {
-    if(itinerary)
-      setFormData(itinerary);
-  }, []); 
+    getItineraries();
+}, [refresh]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -518,7 +532,7 @@ async function fetchItineraries() {
 
 
             </div>
-            <ItineraryCard itineraries={itineraries} isTourGuide={true} />
+            <ItineraryCard itineraries={itineraries} currency= {"USD"} onRefresh={refreshItineraries} isTourGuide={true} />
           </div>
         </div>
       </div>

@@ -19,6 +19,8 @@ import { FlightsPage } from "./components/flights/flights-page";
 import { HotelsPage } from "./components/hotels/hotels-page";
 import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
 import { RedeemPoints } from "./components/Points/redeemPoints"
+import BookingHistory from "./components/bookings/BookingHistory.jsx";
+
 
 
 export default function TouristPage() {
@@ -45,12 +47,15 @@ export default function TouristPage() {
     if (!token) return;
 
     try {
-      const response = await axios.get("http://localhost:5001/api/tourists/myProfile", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        "http://localhost:5001/api/tourists/myProfile",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       const { loyaltyPoints, badgeLevel } = response.data; // Adjust according to your schema
       setTotalPoints(loyaltyPoints);
       setLevel(badgeLevel);
@@ -122,6 +127,7 @@ export default function TouristPage() {
       {page === "completed-tours" && touristId && (<CompletedToursPage touristId={touristId} />)}
       {page === "past-activities" && touristId && (<PastActivitiesPage touristId={touristId} />)}
       {page === "products-purchased" && touristId && (<PurchasedProductsPage touristId={touristId} />)}
+      { page === "booking-history" && <BookingHistory/> }
       {showComplaintForm && (<ComplaintForm onClose={() => setShowComplaintForm(false)} />)}
       {showRedeemPoints && (<RedeemPoints onClose={() => setShowRedeemPoints(false)} />)}
 

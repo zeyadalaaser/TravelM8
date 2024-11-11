@@ -5,14 +5,15 @@ import { Stars } from "@/components/Stars";
 import { ShareButton } from "@/components/ui/share-button";
 import { Button } from "@/components/ui/button";
 
-function Activities({ activities, currency, exchangeRate }) {
-  console.log(activities)
-  const handleBook = async (activityId) =>{
-    console.log(token);
-      const response = await bookActivity(activityId, token);
-      console.log(response.message);
-      alert(response.message);
-  }
+
+function Activities({token, bookActivity, activities, currency, exchangeRate }) {
+  
+    const handleBook = async (activityId) =>{
+      console.log(token);
+        const response = await bookActivity(activityId, token);
+        console.log(response.message);
+        alert(response.message);
+    }
   return (
     <div className="space-y-4">
       {activities.map((activity, index) => (

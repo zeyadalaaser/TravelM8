@@ -17,7 +17,7 @@ const bookingActivitySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['booked', 'completed'],
+    enum: ['booked', 'completed', 'cancelled'],
     default: 'booked',
   },
  

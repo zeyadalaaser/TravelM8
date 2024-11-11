@@ -21,10 +21,9 @@ const activitySchema = new mongoose.Schema({
     },
 
     location: {
-        // name:{
-        //     type:String,
-        //     required: true
-        // },
+        name: {
+            type: String
+        },
         lat: {
             type: Number,
             required: true,

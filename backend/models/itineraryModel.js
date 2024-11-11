@@ -116,7 +116,9 @@ const itineraySchema = new mongoose.Schema({
     ref: "TourGuide",
     required: true,
   },
+
   flagged: { type: Boolean, default: false },
+  isBookingOpen: { type: Boolean, default: true } 
 
 });
 

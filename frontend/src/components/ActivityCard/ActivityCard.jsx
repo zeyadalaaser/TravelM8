@@ -1,15 +1,29 @@
 import React, { useState } from "react";
-import { Clock, Globe, Tag } from "lucide-react";
+import { Clock, Globe, Tag, Trash2, } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Stars } from "../Stars";
-import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-export default function ActivityCard({ activities, isTourist, isAdvertiser, isAdmin }) {
 
-  const navigate = useNavigate();
-
+export default function ActivityCard({
+  openDialog,
+  activities,
+  isAdvertiser,
+  isAdmin,
+  onRefresh,
+}) {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(
@@ -23,15 +37,20 @@ export default function ActivityCard({ activities, isTourist, isAdvertiser, isAd
       }
 
       console.log("Success:", response);
+      onRefresh();
+      alert("Successfully deleted the activity");
     } catch (error) {
       console.error("Error:", error);
+      alert("Failed to delete the activity");
+
     }
+
   };
   return (
     <>
       <div className="space-y-4">
         {activities?.map((activity) => (
-          <Card key={activity._id}>
+          <Card key={activity._id} activity={activity}>
             <div className="flex flex-col md:flex-row">
               <div className="w-full md:w-1/3">
                 <img
@@ -66,44 +85,61 @@ export default function ActivityCard({ activities, isTourist, isAdvertiser, isAd
                 <div className="flex items-center mb-2">
                   <span className="text-sm font-semibold mr-2">Category:</span>
                   <Badge variant="outline">
-                    {activity.categoryName}
+                    {activity.category.name}
                   </Badge>
                 </div>
                 <div className="text-xl font-bold">
-                  {/* {Array.isArray(activity.price) && activity.price.length === 2
-                    ? `${(activity.price[0] * exchangeRate).toFixed(2)} - ${(
-                        activity.price[1] * exchangeRate
-                      ).toFixed(2)} ${currency}`
-                    : `${(activity.price * exchangeRate).toFixed(
-                        2
-                      )} ${currency}`} */}
-                      {Array.isArray(activity.price) && activity.price.length === 2
+                  {Array.isArray(activity.price) && activity.price.length === 2
                     ? activity.price[0]
-                    : activity.price}
+                    : activity.price} USD
                 </div>
                 <div className="flex justify-end items-center">
-                  {isTourist && <Button onClick={()=>handleBook}>Book Activity!</Button>}
                   {isAdvertiser && (
                     <div className="flex items-center gap-2">
-                      <Button
-                        onClick={() => handleDelete(activity._id)}
-                        variant="destructive"
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          navigate("/ActivityForm", {
-                            state: { activity: activity },
-                          })
-                        }
-                      >
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you sure you want to delete this Activity?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete your created activity and remove
+                              it from our servers.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              variant="destructive"
+                              size="sm"
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => handleDelete(activity._id)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" /> Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                      <Button onClick={() => openDialog({ activity })}>
                         Update
                       </Button>
                     </div>
                   )}
-                  {isAdmin && <Button onClick={()=>handleFlag(activity._id)} variant="destructive">Flag Inappropriate</Button>}
-
+                  {isAdmin && (
+                    <Button
+                      onClick={() => handleFalg(activity._id)}
+                      variant="destructive"
+                    >
+                      Flag Inappropriate
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

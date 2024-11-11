@@ -13,7 +13,9 @@ const pages = [
     { label: "View My Complaints", value: "complaints" },
     { label: "Completed Tours", value: "completed-tours" },
     { label: "Past Activities", value: "past-activities" },
-    { label: "Purchased Products", value: "products-purchased" },
+    {label: "Purchased Products", value: "products-purchased"},
+    {label: "My Bookings & History", value: "booking-history"}
+
 ];
 
 export function NavBar({ onComplaintClick, onRedeemClick }) { // Accept onComplaintClick as a prop

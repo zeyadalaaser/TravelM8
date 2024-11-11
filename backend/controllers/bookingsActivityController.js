@@ -1,7 +1,89 @@
 import BookingActivity from "../models/bookingsActivityModel.js";
 import Activity from "../models/activityModel.js";
+import {updatePoints} from "./touristController.js"
+import {getActivityPrice} from "./activityController.js"
 
 // Booking an activity
+export const createBooking = async (req, res) => {
+    const { activityId } = req.body;
+    const  touristId  = req.user.userId;
+    console.log(activityId, touristId);
+
+    if (!touristId || !activityId) {
+        return res.status(400).json({ message: "Tourist ID and Activity ID are required." });
+    }
+
+    try {
+        // Find the activity and check if it exists
+        const activity = await Activity.findById(activityId);
+        if (!activity) {
+            return res.status(404).json({ message: "Activity not found." });
+        }
+
+        // Check if booking is open for this activity
+        if (!activity.isBookingOpen) {
+            return res.status(400).json({ message: "Booking is not open for this activity." });
+        }
+
+        // Create a new booking
+        const newBooking = new BookingActivity({
+            touristId,
+            activityId,
+            bookingDate: new Date(),
+            status: "booked" // Set initial status to "booked"
+        });
+
+        await newBooking.save();
+        const activityPrice = await getActivityPrice(activityId);
+        if(activityPrice){
+            const {points, current} = await updatePoints(touristId,activityPrice);
+            return res.status(201).json({ message: `Activity booked successfully. You gained ${points} points and currently have ${current} loyality points`, booking: newBooking });
+        }else
+        return res.status(400).json({ message: "Error reading the activity price."});
+
+    } catch (error) {
+        console.error("Error booking activity:", error);
+        return res.status(500).json({ message: "Internal server error." });
+    }
+}
+
+export const getAllActivityBookings = async (req, res) => {
+    try {
+        const touristId = req.user.userId;
+        const allBookings = await BookingActivity.find({ touristId: touristId })
+            .populate('activityId');
+        res.status(201).json({ allBookings, message: "Successfully fetched all your activity bookings!" });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
+export const cancelBooking = async (req, res) => {
+    try {
+        // const touristId = req.user.userId;
+        const bookingId = req.params.id;
+        const bookingToCancel = await BookingActivity.findById(bookingId)
+            .populate('activityId');
+
+        const currentDate = new Date();
+        const slotDateObj = new Date(bookingToCancel.activityId.date);
+
+        const hoursDifference = (slotDateObj - currentDate) / (1000 * 60 * 60);
+
+        if (hoursDifference < 48) {
+            return res.status(400).json({
+                message: "Cancellations are only allowed 48 hours before the activity date",
+            });
+        }
+
+        bookingToCancel.status = 'cancelled';
+        await bookingToCancel.save();
+        res.status(201).json({ bookingToCancel, message: "Successfully cancelled your booking!" });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+}
+
 export const bookActivity = async (req, res) => {
     const { touristId, activityId } = req.body;
 
@@ -73,7 +155,6 @@ export const getCompletedActivities = async (req, res) => {
     }
 };
 
-
 export const addReview = async (req, res) => {
     const { touristId, activityId, rating, comment } = req.body;
 
@@ -109,7 +190,7 @@ export const addRatingAndComment = async (req, res) => {
             { rating, comment },
             { new: true }
         ).populate('activityId');
-        
+
         if (!booking) {
             return res.status(404).json({ message: "Booking not found." });
         }

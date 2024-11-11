@@ -5,18 +5,29 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
-import {
 
+import {
   Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   DialogOverlay,
   DialogClose,
-  DialogContent,
-  DialogTitle,
+} from "@/components/ui/dialog"
+import { AlertCircle, CheckCircle2 } from "lucide-react"
 
-} from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
 import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
+import { createItineraryBooking } from "../../pages/tourist/api/apiService";
+
+const token = localStorage.getItem('token');
+
 
 export default function ItineraryCard({
   itineraries,
@@ -24,15 +35,10 @@ export default function ItineraryCard({
   isTourist,
   currency,
   exchangeRate,
+  onRefresh,
   isTourGuide,
 }) {
-  const [isDialogOpen, setDialogOpen] = useState(false);
-  const [selectedItinerary, setSelectedItinerary] = useState(null);
-
-  const handleViewTimeline = (itinerary) => {
-    setSelectedItinerary(itinerary);
-    setDialogOpen(true);
-  };
+   
   const navigate = useNavigate();
 
 
@@ -45,16 +51,47 @@ export default function ItineraryCard({
         }
       );
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const data = await response.json();
+        alert(data.message); 
+        return;       
       }
-
+      await onRefresh();
+      alert("Itinerary Deleted successfully");
       console.log("Success:", response);
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
-  const handleBook = async (id) => { };
+  const handleActivationToggle = async (id, isBookingOpen) => {
+    const state = isBookingOpen?"Deactivated":"Activated";
+    try {
+      const response = await fetch(`http://localhost:5001/api/itineraries/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json", // Add the Content-Type header
+          },
+          body: JSON.stringify({ isBookingOpen: !isBookingOpen }),
+        }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.message); 
+        return;       
+      }
+      onRefresh();
+      alert(`Itinerary ${state} successfully`);
+      console.log("Success:", response);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  // const handleBook = async (itineraryId, tourGuideId) => {
+    
+
+  // }; 
 
   const handleFlagItinerary = async (itineraryId) => {
     try {
@@ -77,7 +114,32 @@ export default function ItineraryCard({
                   <h3 className="text-xl font-semibold mb-2">
                     {itinerary.name}
                   </h3>
+                  <div className="flex items-center gap-2 ">
+                    {isTourGuide && itinerary.isBookingOpen && (
+                      <Button
+                        className="w-[150px] h-[38px] bg-sky-800 hover:bg-sky-900"
+                        onClick={() =>
+                          handleActivationToggle(
+                            itinerary._id,
+                            itinerary.isBookingOpen
+                          )
+                        }
+                      >
+                        Deactivate Itinerary
+                      </Button>
+                    )}
+                    {isTourGuide && !itinerary.isBookingOpen && (
+                      <Button
+                        className="w-[150px] h-[38px] bg-sky-500 hover:bg-sky-600"
+                        onClick={() =>
+                          handleActivationToggle(itinerary._id, false)
+                        }
+                      >
+                        Activate Itinerary
+                      </Button>
+                    )}
                   {isTourist && <ShareButton id={itinerary._id} name="itinerary" />}
+                  </div>
                 </div>
                 <div className="flex items-center mb-2">
                   <Stars rating={itinerary.averageRating} />
@@ -102,7 +164,6 @@ export default function ItineraryCard({
                           {activity} -
                         </div>
                       ))}
-
                     </div>
                   </div>
                 )}
@@ -153,24 +214,27 @@ export default function ItineraryCard({
                 </div>
                 <div className="flex justify-end items-center space-x-2">
                   <span className="text-xl font-bold mr-auto">{`${(itinerary.price * 1).toFixed(2)} ${currency}`}</span>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleViewTimeline(itinerary)}
-                  >
-                    View Timeline
-                  </Button>
+                  <Timeline selectedItinerary={itinerary}/>
                   {isTourist && (
-                    <Button onClick={() => handleBook}>Book Tour!</Button>
+                    <div className="flex justify-end items-center">
+                      {/* <Button onClick={modalOpen(true)}>
+                            Book Activity!
+                          </Button> */}
+                      <ChooseDate itinerary={itinerary} />
+                    </div>
                   )}
                   {isTourGuide && (
                     <div className="flex items-center gap-2">
                       <Button
+                        className="hover:bg-red-700"
                         onClick={() => handleDelete(itinerary._id)}
                         variant="destructive"
                       >
                         Delete
                       </Button>
                       <Button
+                        variant="secondary"
+                        className="hover:bg-gray-300"
                         onClick={() =>
                           navigate("/itineraryForm", {
                             state: { itinerary: itinerary },
@@ -183,6 +247,7 @@ export default function ItineraryCard({
                   )}
                   {isAdmin && (
                     <Button
+                      className="hover:bg-red-700"
                       variant="destructive"
                       onClick={() => handleFlagItinerary(itinerary._id)}
                     >
@@ -195,8 +260,17 @@ export default function ItineraryCard({
           </Card>
         ))}
       </div>
-      <Dialog open={isDialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogOverlay />
+    </>
+  );
+}
+
+
+const Timeline = ({selectedItinerary}) => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">View Timeline</Button>
+      </DialogTrigger>
         <DialogContent>
           <DialogTitle>Itinerary Timeline</DialogTitle>
           <div className="flex flex-col mt-4">
@@ -213,11 +287,86 @@ export default function ItineraryCard({
               </div>
             ))}
           </div>
-          <DialogClose asChild>
-            <Button onClick={() => setDialogOpen(false)}>Close</Button>
-          </DialogClose>
         </DialogContent>
       </Dialog>
-    </>
+  );
+}
+
+const ChooseDate = ({itinerary}) => {
+  let remainingSpots;
+  const [selectedDate, setSelectedDate] = useState();
+  const [submitStatus, setSubmitStatus] = useState();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSubmit = async (e) => {
+    let message;
+    e.preventDefault();
+    if (!selectedDate) {
+      setSubmitStatus({ success: false, message: "Please select a date." });
+      return;
+    }
+
+    try {
+      const response = await createItineraryBooking(
+        itinerary._id,
+        itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
+        selectedDate,
+        token
+      );
+      message = response.message.message;
+      setIsOpen(false);
+      alert(response.message.success + " " + message )
+      // setSubmitStatus({ success: response.message.success, message: message });
+    } catch (error) {
+      setIsOpen(false);
+      alert("Failed to Book itinerary");
+      setSubmitStatus({ success: false, message: "failed" });
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button>Book Now</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Choose Date</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <RadioGroup
+            onValueChange={(value) => setSelectedDate(value)}
+            className="space-y-2"
+          >
+            {itinerary.availableSlots.map((slot, index) => {
+              const slotDate = new Date(slot.date).toLocaleDateString();
+              return (
+                <div className="flex items-center space-x-2" key={index}>
+                  <RadioGroupItem value={slot.date} id={`slot-${index}`} />
+                  <Label htmlFor={`slot-${index}`}>{slotDate}</Label>
+                </div>
+              );
+            })}
+          </RadioGroup>
+          <DialogFooter className="mt-4">
+            <Button type="submit">Submit</Button>
+          </DialogFooter>
+        </form>
+        {submitStatus && (
+          <div className={`mt-4 p-4 rounded-md ${submitStatus.success ? 'bg-green-100' : 'bg-red-100'}`}>
+            <div className="flex items-center">
+              {submitStatus.success ? (
+                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
+              ) : (
+                <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+              )}
+              <p className={submitStatus.success ? 'text-green-700' : 'text-red-700'}>
+                {submitStatus.message}
+              </p>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
