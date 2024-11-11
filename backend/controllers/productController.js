@@ -244,8 +244,7 @@ export const getMyProducts = async (req, res) => {
     } = req.query;
     
      // Prepare filter for price range, converting values from the selected currency to USD
-     let filter = {sellerId : userId};
-     if (id)
+     let filter = {sellerId: new mongoose.Types.ObjectId(`${userId}`)};     if (id)
       filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
     if (price) {
@@ -276,6 +275,7 @@ export const getMyProducts = async (req, res) => {
 
    //Execute the aggregation pipeline
     let products = await Product.aggregate(aggregationPipeline);
+
     res.status(200).json( {products} );
   } catch (error) {
     res.status(400).json({ message: "Enter a valid ID" });

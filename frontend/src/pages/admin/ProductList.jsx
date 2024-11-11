@@ -1,23 +1,27 @@
 // ProductList.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import { useLocation } from "react-router-dom";
+import { getProducts } from '../seller/api/apiService';
 
 const ProductList = ({ onEdit }) => {
   const [products, setProducts] = useState([]);
+  const location = useLocation();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const response = await axios.get('/api/products');
-      setProducts(response.data.data);
-    };
-    fetchProducts();
-  }, []);
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     const response = await axios.get('/api/products');
+  //     setProducts(response.data.data);
+  //   };
+  //   fetchProducts();
+  // }, []);
 
   const handleDelete = async (id) => {
     await axios.delete(`/api/products/${id}`);
     setProducts(products.filter((product) => product._id !== id));
   };
+
+
 
 //added archive and unarchive toggle to products 
 
@@ -52,8 +56,10 @@ const ProductList = ({ onEdit }) => {
 
 
   return (
-    <div>
-      <h2>Products</h2>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <h1 className="text-3xl font-bold mb-4">Your Products</h1>
+      <SearchBar />
+      <PriceFilter />
       <ul>
         {products.map((product) => (
           <li key={product._id}>

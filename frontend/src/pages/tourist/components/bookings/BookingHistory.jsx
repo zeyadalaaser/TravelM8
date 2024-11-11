@@ -254,11 +254,11 @@ const getIcon = (type) => {
 
 const renderCards = () => {
   if (mainTab === "activities" && showingActivities) {
-    return showingActivities.map((activityBooking) => (
+    return showingActivities.filter(a => a.activityId != null).map((activityBooking) => ( 
       <ActivitiesCard key={activityBooking.id} activityBooking={activityBooking} />
     ));
   } else {
-    return showingItineraries.map((itineraryBooking) => (
+    return showingItineraries.filter(a => a.itinerary != null).map((itineraryBooking) => (
       <ItinerariesCard key={itineraryBooking.id} itineraryBooking={itineraryBooking} />
     ));
   }
@@ -317,7 +317,7 @@ const renderCards = () => {
                     activityBooking.activityId.discount}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            {/* <div className="flex items-center gap-2 text-sm text-gray-600">
               <StarIcon className="w-4 h-4" />
               <span>
                 Average Rating: {activityBooking.activityId.averageRating}
@@ -343,7 +343,7 @@ const renderCards = () => {
                 <p className="font-semibold">Your Comment:</p>
                 <p className="italic">&quot;{activityBooking.comment}&quot;</p>
               </div>
-            )}
+            )} */}
           </div>
         </CardContent>
         <CardFooter className="p-6 flex flex-wrap gap-4">

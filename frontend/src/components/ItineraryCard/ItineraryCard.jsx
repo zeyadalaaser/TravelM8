@@ -313,14 +313,13 @@ const ChooseDate = ({itinerary}) => {
         selectedDate,
         token
       );
-      message = response.message.message;
       setIsOpen(false);
-      alert(response.message.success + " " + message )
+      alert(response.data.message)
       // setSubmitStatus({ success: response.message.success, message: message });
     } catch (error) {
       setIsOpen(false);
       alert("Failed to Book itinerary");
-      setSubmitStatus({ success: false, message: "failed" });
+      // setSubmitStatus({ success: false, message: "failed" });
     }
   };
 

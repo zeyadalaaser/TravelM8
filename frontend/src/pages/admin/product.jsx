@@ -30,8 +30,13 @@ import {
 } from "@/components/ui/dialog";
 import { ToggleLeft, ToggleRightIcon } from "lucide-react";
 import axios from "axios";
+import { getProducts } from '../seller/api/apiService';
+import { useLocation } from "react-router-dom";
+import { SearchBar } from "../seller/components/filters/search"
+import { PriceFilter } from "../seller/components/filters/price-filter";
 
 const ProductPage = () => {
+  const location = useLocation();
   const [sidebarState, setSidebarState] = useState(false);
   const [products, setProducts] = useState([]);
   const { toast } = useToast();
@@ -41,27 +46,46 @@ const ProductPage = () => {
   const [updatedProductData, setUpdatedProductData] = useState({});
   const [newProductData, setNewProductData] = useState({});
   const [image, setImage] = useState();
+  const [loading, setLoading] = useState(false);
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const response = await getAllProducts();
+  //       if (response && response.success && Array.isArray(response.data)) {
+  //         setProducts(response.data);
+  //       } else {
+  //         throw new Error("Fetched data is not valid.");
+  //       }
+  //     } catch (error) {
+  //       toast({
+  //         title: "Error",
+  //         description: "Failed to fetch products.",
+  //         duration: 3000,
+  //       });
+  //     }
+  //   };
+
+  //   fetchProducts();
+  // }, [toast]);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      const queryParams = new URLSearchParams(location.search);
+      setLoading(true); // Set loading state
       try {
-        const response = await getAllProducts();
-        if (response && response.success && Array.isArray(response.data)) {
-          setProducts(response.data);
-        } else {
-          throw new Error("Fetched data is not valid.");
-        }
+        const response = await getProducts(queryParams);
+        // Fetch products from the API
+        setProducts(response.data); // Update products state
       } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to fetch products.",
-          duration: 3000,
-        });
+        console.error("Error fetching products:", error);
+        setError(error.message); // Handle error state
+      } finally {
+        setLoading(false); // Clear loading state
       }
     };
 
     fetchProducts();
-  }, [toast]);
+  }, [location.search]);
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
@@ -193,6 +217,11 @@ const toggleArchive = async (productId, isArchived) => {
   
 
   return (
+    <>
+  
+    <h1 className="text-3xl font-bold mb-4">All Products</h1>
+    <SearchBar />
+    <PriceFilter />
     <div style={{ display: "flex" }}>
       <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
       <div
@@ -376,6 +405,7 @@ const toggleArchive = async (productId, isArchived) => {
         <Footer />
       </div>
     </div>
+    </>
   );
 };
 

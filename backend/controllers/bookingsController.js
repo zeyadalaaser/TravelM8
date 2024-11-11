@@ -24,7 +24,7 @@ export const createBooking2 = async (req, res) => {
       const {points, current} = await updatePoints(tourist,itineraryPrice);
       res.status(201).json({ savedBooking, message: `Successful Booking of Itinerary! You gained ${points} points and currently have ${current} loyality points` });
     }else
-      res.status(203).json({ message: "Error Occurred" });
+      res.status(203).json({ message: "Max Number of bookings reached! Failed to book itinerary!" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

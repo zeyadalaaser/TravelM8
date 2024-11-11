@@ -13,7 +13,7 @@ const apiClient = axios.create({
 
 // Fetch all products with optional query parameters
 export async function getProducts(query = '') {
-    return (await apiClient.get(`products${query}`)).data;
+    return (await apiClient.get(`products?${query}`)).data;
 }
 
 
