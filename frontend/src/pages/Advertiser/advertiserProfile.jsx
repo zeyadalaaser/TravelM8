@@ -45,13 +45,13 @@ import React, { useState, useEffect } from 'react'
       }));
     };
   
-    const handleFormSubmit = async () => {
+    const handleFormSubmit = async (e) => {
+      e.preventDefault();
       try {
       
           const response = await updateProfile(changes, token);
           console.log(changes);
           alert("Profile updated successfully", response);
-          window.location.reload();
         
       } catch (error) {
         console.log(changes);

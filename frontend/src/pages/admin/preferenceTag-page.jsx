@@ -120,7 +120,7 @@ const Preferencetag = () => {
           {/* Dashboard Button */}
           <div className="flex justify-end mb-4">
             <Button
-              onClick={() => (window.location.href = "/dashboard")} // Change '/dashboard' to your actual dashboard route
+              onClick={() => (window.location.href = "/AdminDashboard")} // Change '/dashboard' to your actual dashboard route
               variant="outline"
             >
               Go to Dashboard

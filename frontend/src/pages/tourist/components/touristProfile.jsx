@@ -216,7 +216,7 @@ const TouristProfilePage = () => {
                     name="name"
                     onChange={handleInputChange}
                     type="text" 
-                    value={profile ? profile.username : ''}
+                    value={profile ? profile.name : ''}
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
                   </div>
                   <div>
@@ -422,7 +422,7 @@ const TouristProfilePage = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">${profile ? profile.wallet : '0'}</div>
+        <div className="text-2xl font-bold">${profile ? profile.wallet.toFixed(2) : '0'}</div>
         <p className="text-xs text-muted-foreground mt-1">
           <span className={isPositive ? "text-green-500" : "text-red-500"}>
             {isPositive ? '+' : ''}{percentageChange}%

@@ -198,7 +198,7 @@ export default function ComplaintsPage() {
                                 </SelectContent>
                             </Select>
                             <Button
-                                onClick={() => (window.location.href = "/dashboard")}
+                                onClick={() => (window.location.href = "/AdminDashboard")}
                                 variant="outline"
                             >
                                 Go to Dashboard

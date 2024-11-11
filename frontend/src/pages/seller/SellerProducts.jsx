@@ -1,18 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'; 
-import { Button } from '../../components/ui/button'; 
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
-import { Label } from '../../components/ui/label'; 
-import { Input } from '../../components/ui/input'; 
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../components/ui/dialog";
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
 import { useToast } from "./components/useToast";
-import { SearchBar } from './components/filters/search';
+import { SearchBar } from "./components/filters/search";
 import { PriceFilter } from "./components/filters/price-filter";
-import { getMyProducts, getProducts } from './api/apiService'; 
-import useRouter from '../../hooks/useRouter';
+import { getMyProducts, getProducts } from "./api/apiService";
+import useRouter from "../../hooks/useRouter";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-const token = localStorage.getItem('token');
+const token = localStorage.getItem("token");
 
 export default function SellerProducts() {
   const { location } = useRouter();
@@ -27,23 +38,23 @@ export default function SellerProducts() {
 
   const handleAddProduct = async (newProduct) => {
     try {
-      const response = await fetch('http://localhost:5001/api/products', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/products", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newProduct),
       });
       if (!response.ok) {
-        throw new Error('Failed to add product');
+        throw new Error("Failed to add product");
       }
 
       const savedProduct = await response.json();
       setProducts((prevProducts) => [...prevProducts, savedProduct]);
       setIsAddProductModalOpen(false);
     } catch (error) {
-      console.error('Error adding new product:', error);
+      console.error("Error adding new product:", error);
     }
   };
 
@@ -54,10 +65,10 @@ export default function SellerProducts() {
       setLoading(true); // Set loading state
       try {
         const response = await getMyProducts(queryParams);
-         // Fetch products from the API
+        // Fetch products from the API
         setProducts(response.products); // Update products state
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
         setError(error.message); // Handle error state
       } finally {
         setLoading(false); // Clear loading state
@@ -70,15 +81,18 @@ export default function SellerProducts() {
   // Handle product deletion
   const handleDelete = async (productId) => {
     try {
-      const response = await fetch(`http://localhost:5001/api/products/${productId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:5001/api/products/${productId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Error deleting product');
+        throw new Error("Error deleting product");
       }
 
       setProducts(products.filter((product) => product._id !== productId));
@@ -102,36 +116,48 @@ export default function SellerProducts() {
     setIsEditProductModalOpen(true);
   };
 
-
-
   const toggleArchive = async (productId, isArchived) => {
-    try{
-      await fetch(`http://localhost:5001/api/products/${productId}/${isArchived? 'unarchive' : 'archive'}`,{
-        method: 'PUT',
-        headers:{
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      setProducts((prev) => prev.map((product) => product._id === productId ? {...product, archived: !isArchived}: product));
-    }catch (error){
-      console.error(`Error ${isArchived? 'unarchive' : 'archive'} product:` , error);
+    try {
+      await fetch(
+        `http://localhost:5001/api/products/${productId}/${
+          isArchived ? "unarchive" : "archive"
+        }`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setProducts((prev) =>
+        prev.map((product) =>
+          product._id === productId
+            ? { ...product, archived: !isArchived }
+            : product
+        )
+      );
+    } catch (error) {
+      console.error(
+        `Error ${isArchived ? "unarchive" : "archive"} product:`,
+        error
+      );
     }
   };
 
   const handleCreateProduct = async (formData) => {
     try {
-      const response = await fetch('http://localhost:5001/api/products', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/products", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: formData, // pass FormData here
       });
-  
+
       if (!response.ok) {
-        throw new Error('Failed to create product');
+        throw new Error("Failed to create product");
       }
-  
+
       const savedProduct = await response.json();
       setProducts((prevProducts) => [...prevProducts, savedProduct]);
       setIsAddProductModalOpen(false);
@@ -149,22 +175,25 @@ export default function SellerProducts() {
       });
     }
   };
-  
+
   const handleUpdateProduct = async (formData) => {
     if (editProductData) {
       try {
-        const response = await fetch(`http://localhost:5001/api/products/${editProductData._id}`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: formData, // pass FormData here
-        });
-  
+        const response = await fetch(
+          `http://localhost:5001/api/products/${editProductData._id}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: formData, // pass FormData here
+          }
+        );
+
         if (!response.ok) {
-          throw new Error('Failed to update product');
+          throw new Error("Failed to update product");
         }
-  
+
         const updatedProduct = await response.json();
         setProducts((prevProducts) =>
           prevProducts.map((product) =>
@@ -187,14 +216,16 @@ export default function SellerProducts() {
       }
     }
   };
-  
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <h1 className="text-3xl font-bold mb-4">Your Products</h1>
       <SearchBar />
       <PriceFilter />
-      <Dialog open={isAddProductModalOpen} onOpenChange={setIsAddProductModalOpen}>
+      <Dialog
+        open={isAddProductModalOpen}
+        onOpenChange={setIsAddProductModalOpen}
+      >
         <DialogTrigger asChild>
           <Button className="mt-4">Add Product</Button>
         </DialogTrigger>
@@ -207,15 +238,23 @@ export default function SellerProducts() {
       </Dialog>
 
       {/* Edit Product Modal */}
-      <Dialog open={isEditProductModalOpen} onOpenChange={setIsEditProductModalOpen}>
+      <Dialog
+        open={isEditProductModalOpen}
+        onOpenChange={setIsEditProductModalOpen}
+      >
         <DialogTrigger asChild>
-          <Button className="mt-4" style={{ display: 'none' }}>Edit Product</Button>
+          <Button className="mt-4" style={{ display: "none" }}>
+            Edit Product
+          </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Product</DialogTitle>
           </DialogHeader>
-          <AddProductForm onSubmit={handleUpdateProduct } initialData={editProductData} />
+          <AddProductForm
+            onSubmit={handleUpdateProduct}
+            initialData={editProductData}
+          />
         </DialogContent>
       </Dialog>
 
@@ -236,16 +275,24 @@ export default function SellerProducts() {
                   alt={product.name}
                   className="w-full h-40 object-cover mb-2"
                 />
-<p className="font-bold">{`Price: USD ${parseFloat(product.price).toFixed(2)}`}</p>
-<p className="mb-2">{product.description}</p>
-                <p className='mb-2'>{`Sold: ${product.sales} `}</p>
-                <p className='mb-2'>{`Remaining stock: ${product.quantity}`}</p>
+                <p className="font-bold">{`Price: USD ${parseFloat(
+                  product.price
+                ).toFixed(2)}`}</p>
+                <p className="mb-2">{product.description}</p>
+                <p className="mb-2">{`Sold: ${product.sales} `}</p>
+                <p className="mb-2">{`Remaining stock: ${product.quantity}`}</p>
                 <p className="font-semibold">{`Seller ID: ${product.sellerID}`}</p>
-                <Button className="mt-2 ml-2" onClick={() => handleEdit(product)}>
+                <Button
+                  className="mt-2 ml-2"
+                  onClick={() => handleEdit(product)}
+                >
                   Edit
                 </Button>
-                <Button className="mt-2 ml-2" onClick={() => toggleArchive(product._id, product.archived)}>
-                  {product.archived? 'Unarchive' : 'Archive'}
+                <Button
+                  className="mt-2 ml-2"
+                  onClick={() => toggleArchive(product._id, product.archived)}
+                >
+                  {product.archived ? "Unarchive" : "Archive"}
                 </Button>
                 <Button
                   className="mt-2 ml-2"
@@ -270,10 +317,10 @@ function AddProductForm({ onSubmit, initialData }) {
     description: initialData ? initialData.description : "",
     price: initialData ? initialData.price : "",
     quantity: initialData ? initialData.quantity : "",
-    image: initialData ? initialData.image : "" 
+    image: initialData ? initialData.image : "",
   });
   const [image, setImage] = useState(null); // to store image file
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
@@ -289,7 +336,7 @@ function AddProductForm({ onSubmit, initialData }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-  
+
     // Prepare form data for submission
     const productData = {
       name: formData.name,
@@ -297,22 +344,22 @@ function AddProductForm({ onSubmit, initialData }) {
       price: parseFloat(formData.price),
       quantity: parseInt(formData.quantity, 10),
     };
-  
+
     const formDataToSubmit = new FormData();
     formDataToSubmit.append("name", productData.name);
     formDataToSubmit.append("description", productData.description);
     formDataToSubmit.append("price", productData.price);
     formDataToSubmit.append("quantity", productData.quantity);
-  
+
     if (image) {
       formDataToSubmit.append("image", image); // append image file to form data
     }
-  
+
     // Pass formDataToSubmit to onSubmit function (handleCreateProduct or handleUpdateProduct)
     await onSubmit(formDataToSubmit);
-  
+
     setIsSubmitting(false);
-  
+
     if (!initialData) {
       setFormData({
         name: "",
@@ -337,9 +384,6 @@ function AddProductForm({ onSubmit, initialData }) {
     }
   }, [initialData]);
 
-
-
-  
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>

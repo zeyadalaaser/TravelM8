@@ -142,7 +142,7 @@ if (isSubmitted) {
             <button className="nav-button">About Us</button>
             <button className="nav-button">Our Services</button>
             <button className="nav-button">Contact Us</button>
-            <button className="nav-login-button">Login</button>
+            <button className="nav-login-button" onClick={()=>navigate('/login')}>Login</button>
           </div>
         </div>
       </nav>
