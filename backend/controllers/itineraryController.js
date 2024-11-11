@@ -225,7 +225,7 @@ export const filterItineraries = async (req, res) => {
     const addRatingStage = createRatingStage("Itinerary", true, 0);
     const advertiserStage = createPopulationStage("advertisers", "advertiserId", "advertiser", true);
     const tagsStage = createPopulationStage("preferencetags", "tags", "tags", false, true);
-    const tourGuideStage = createPopulationStage("activitycategories", "tourGuideId", "tourGuideId", true);
+    const tourGuideStage = createPopulationStage("tourguides", "tourGuideId", "tourGuideId", true);
 
     const aggregationPipeline = [
       ...tagsStage,
