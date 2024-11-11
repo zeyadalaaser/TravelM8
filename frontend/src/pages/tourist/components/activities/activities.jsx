@@ -3,9 +3,16 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "@/components/Stars";
 import { ShareButton } from "@/components/ui/share-button";
+import { Button } from "@/components/ui/button";
 
 function Activities({ activities, currency, exchangeRate }) {
   console.log(activities)
+  const handleBook = async (activityId) =>{
+    console.log(token);
+      const response = await bookActivity(activityId, token);
+      console.log(response.message);
+      alert(response.message);
+  }
   return (
     <div className="space-y-4">
       {activities.map((activity, index) => (
@@ -62,6 +69,9 @@ function Activities({ activities, currency, exchangeRate }) {
                     activity.price[1] * exchangeRate
                   ).toFixed(2)} ${currency}`
                   : `${(activity.price * exchangeRate).toFixed(2)} ${currency}`}
+              </div>
+              <div className="flex justify-end items-center">
+                <Button onClick={()=>handleBook(activity._id)}>Book Activity!</Button>
               </div>
             </div>
           </div>
