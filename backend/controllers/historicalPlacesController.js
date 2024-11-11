@@ -217,7 +217,7 @@ export const filterbyTags = async (req, res) => {
 
     if (price) {
       const [minPrice, maxPrice] = price.split("-").map(Number);
-      filter["price.price"] = { $gte: minPrice, $lte: maxPrice };
+      filter["price"] = { $elemMatch: { price: { $gte: minPrice, $lte: maxPrice } } };
     }
 
     const searchByTag =  [
