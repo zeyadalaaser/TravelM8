@@ -1,6 +1,8 @@
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 import { itineraryToFlight } from "./helpers";
+import { BookingToast } from "../bookings/booking-toast";
 
 function Trip({ trip, isOutbound }) {
     return (
@@ -30,7 +32,15 @@ function Trip({ trip, isOutbound }) {
     );
 }
 
-export function Flights({ flights }) {
+export function Flights({ flights, currency, exchangeRate }) {
+
+    const { toast } = useToast();
+
+    const bookFlight = () => {
+        const message = `Flight booked successfully!`;
+        BookingToast(toast, "flight", message, true);
+    }
+
     return flights.map((flight, index) => {
         const details = itineraryToFlight(flight);
         return (
@@ -48,10 +58,10 @@ export function Flights({ flights }) {
                     <Trip trip={details.inbound} isOutbound={false} />
                 </div>
 
-                <div className="border rounded bg-white flex flex-col justify-between items-center px-6 py-4">
+                <div className="border rounded bg-white flex flex-col justify-between items-center px-6 py-4 w-[250px]">
                     <div />
-                    <div className="text-4xl font-bold">${details.price}</div>
-                    <Button className="px-8">
+                    <span className="text-2xl font-bold text-center">{(details.price * exchangeRate).toFixed(2)} {currency}</span>
+                    <Button className="px-8" onClick={bookFlight}>
                         Select
                     </Button>
                 </div>
