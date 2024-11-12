@@ -282,14 +282,18 @@ export const filterItineraries = async (req, res) => {
     if (tag)
       filters['tags.name'] = searchBy !== 'tag' ? tag : { $in: [tag, filters['tags.name']] };
 
+    if (startDate || endDate) {
+      filters["availableSlots"] = { $elemMatch: {} };
+    }
+
     if (startDate && endDate)
-      filters["availableSlots.date"] = { $gte: new Date(startDate) };
+      filters["availableSlots"].$elemMatch.date = { $gte: new Date(startDate) };
     else if (startDate && !endDate)
-      filters["availableSlots.date"] = new Date(startDate);
+      filters["availableSlots"].$elemMatch.date = new Date(startDate);
 
     if (endDate)
-      filters["availableSlots.date"] = {
-        ...filters["availableSlots.date"],
+      filters["availableSlots"].$elemMatch.date = {
+        ...filters["availableSlots"].$elemMatch.date,
         $lte: new Date(endDate),
       };
 
