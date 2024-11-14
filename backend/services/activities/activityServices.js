@@ -43,10 +43,10 @@ function createFilterStage({
     startDate ? new Date(startDate) : null;
 
 
-  if (startDate && endDate)
-    filters.date = { $gte: start };
-  else if (startDate && !endDate)
+  if (startDate && !endDate)
     filters.date = start;
+  else if ((startDate && endDate) || upcoming)
+    filters.date = { $gte: start };
 
   if (endDate) filters.date = { ...filters.date, $lte: new Date(endDate) };
 
@@ -108,7 +108,7 @@ export async function getActivities({
     includeRatings,
     minRating
   );
-  
+
   const advertiserStage = createPopulationStage("advertisers", "advertiserId", "advertiser", true);
   const tagsStage = createPopulationStage("preferencetags", "tags", "tags", false, true);
   const categoryStage = createPopulationStage("activitycategories", "category", "category", true);
