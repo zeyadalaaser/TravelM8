@@ -50,6 +50,7 @@ import { SearchBar } from "../tourist/components/filters/search";
 import { getItineraries } from "../tourist/api/apiService";
 import { SelectFilter } from '../tourist/components/filters/select-filter';
 import { SortSelection } from "../tourist/components/filters/sort-selection";
+import { fetchSalesData, fetchFilteredSalesData } from "../services/SalesReport.jsx";
 import axios from "axios";
 const getDeletionRequests = async () => {
     // Simulated API call
@@ -847,58 +848,104 @@ function TagManagement() {
     );
 }
 
-function SalesReport() {
-    return (
-        <div className="space-y-4 h-screen w-full p-8 bg-gray-100">
-          <h3 className="text-lg font-semibold">Sales Report</h3>
-          
-          {/* Filter and Search Section */}
-          <div className="flex space-x-2 ">
-            <Select>
-              <SelectTrigger className="w-[980px]">
-                <SelectValue placeholder="Filter by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="product">Product</SelectItem>
-                <SelectItem value="date">Date</SelectItem>
-                <SelectItem value="month">Month</SelectItem>
-              </SelectContent>
-            </Select>
-            <Input placeholder="Search..." />
-            <Button>Apply Filter</Button>
-          </div>
-      
-          {/* Sales Chart Section */}
-          <div className="bg-white p-4 rounded shadow">
-            <div className="h-64 bg-gray-200 flex items-center justify-center">
-              Sales Chart Placeholder
-            </div>
-          </div>
-      
-          {/* Sales Table Section */}
-          <div className="bg-white rounded shadow overflow-y-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="p-2 text-left">Product/Event</th>
-                  <th className="p-2 text-left">Date</th>
-                  <th className="p-2 text-left">Revenue</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b">
-                  <td className="p-2">City Tour</td>
-                  <td className="p-2">2023-06-01</td>
-                  <td className="p-2">$500</td>
-                </tr>
-                {/* More sales data */}
-              </tbody>
-            </table>
-          </div>
+export default function SalesReport() {
+  const [salesData, setSalesData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const getSalesData = async () => {
+      try {
+        const data = await fetchSalesData();
+        setSalesData(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getSalesData();
+  }, []);
+
+  const applyFilter = async () => {
+    try {
+      const data = await fetchFilteredSalesData(filter, searchTerm);
+      setSalesData(data);
+    } catch (error) {
+      console.error("Error applying filter:", error);
+    }
+  };
+
+  return (
+    <div className="space-y-4 h-screen w-full p-8 bg-gray-100">
+      <h3 className="text-lg font-semibold">Sales Report</h3>
+
+      {/* Filter and Search Section */}
+      <div className="flex space-x-2">
+        <Select onValueChange={setFilter}>
+          <SelectTrigger className="w-[300px]">
+            <SelectValue placeholder="Filter by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="product">Product</SelectItem>
+            <SelectItem value="date">Date</SelectItem>
+            <SelectItem value="month">Month</SelectItem>
+          </SelectContent>
+        </Select>
+        <Input
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Button onClick={applyFilter}>Apply Filter</Button>
+      </div>
+
+      {/* Sales Chart Section */}
+      <div className="bg-white p-4 rounded shadow">
+        <div className="h-64 bg-gray-200 flex items-center justify-center">
+          Sales Chart Placeholder
         </div>
-      );
-      
+      </div>
+
+      {/* Sales Table Section */}
+      <div className="bg-white rounded shadow overflow-y-auto">
+        {loading ? (
+          <div className="p-4 text-center">Loading...</div>
+        ) : (
+          <table className="w-full">
+            <thead>
+              <tr className="border-b">
+                <th className="p-2 text-left">Product/Event</th>
+                <th className="p-2 text-left">Date</th>
+                <th className="p-2 text-left">Revenue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {salesData.length > 0 ? (
+                salesData.map((sale) => (
+                  <tr key={sale._id} className="border-b">
+                    <td className="p-2">{sale.product || sale.event}</td>
+                    <td className="p-2">{new Date(sale.date).toLocaleDateString()}</td>
+                    <td className="p-2">${sale.revenue.toFixed(2)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="p-2 text-center" colSpan="3">
+                    No sales data available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
 }
+
+
 
 function EventManagement() {
   return (

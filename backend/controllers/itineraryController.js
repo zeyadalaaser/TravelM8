@@ -480,3 +480,46 @@ export const flagItinerary = async (req, res) => {
 };
 
 
+export const getSalesReport = async (req, res) => {
+  try {
+    const tourGuideId = req.user.userId;
+
+    // Ensure the user is authenticated and a valid ID is provided
+    if (!mongoose.Types.ObjectId.isValid(tourGuideId)) {
+      return res.status(400).json({ message: "Invalid Tour Guide ID" });
+    }
+
+    // Fetch itineraries associated with the current tour guide
+    const itineraries = await Itinerary.find({ tourGuideId });
+
+    if (!itineraries.length) {
+      return res.status(404).json({ message: "No itineraries found for this tour guide" });
+    }
+
+    // Calculate revenue for each itinerary
+    const salesReport = itineraries.map((itinerary) => {
+      const revenue = itinerary.availableSlots.reduce((total, slot) => {
+        return total + slot.numberOfBookings * itinerary.price;
+      }, 0);
+
+      return {
+        itineraryName: itinerary.name,
+        itineraryId: itinerary._id,
+        totalBookings: itinerary.availableSlots.reduce((sum, slot) => sum + slot.numberOfBookings, 0),
+        revenue,
+      };
+    });
+
+    // Calculate overall revenue
+    const totalRevenue = salesReport.reduce((sum, item) => sum + item.revenue, 0);
+
+    res.status(200).json({
+      message: "Sales report generated successfully",
+      totalRevenue,
+      salesReport,
+    });
+  } catch (error) {
+    console.error("Error generating sales report:", error.message);
+    res.status(500).json({ message: "Error generating sales report", error: error.message });
+  }
+};
