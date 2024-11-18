@@ -5,15 +5,15 @@ import backgroundImage from '@/assets/background.jpeg';
 import { useNavigate } from 'react-router-dom';
 
 const FormPage = () => {
-    const [formData, setFormData] = useState({
+    const [formDataSeller, setFormDataSeller] = useState({
         username: '',
         email: '',
         password: '',
         type: 'Seller'
     });
     const [documentData, setDocumentData] = useState({
-        username: formData.username,
-        type:formData.type
+        username: formDataSeller.username,
+        type:formDataSeller.type
     });
 
     const [message, setMessage] = useState('');
@@ -27,7 +27,7 @@ const FormPage = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormDataSeller((prev) => ({ ...prev, [name]: value }));
         
         // Ensure username in documentData is synced
         if (name === 'username') {
@@ -51,7 +51,7 @@ const FormPage = () => {
         setMessage('');
 
         try {
-            const response = await axios.post('http://localhost:5001/api/pending-users', formData);
+            const response = await axios.post('http://localhost:5001/api/pending-users', formDataSeller);
 
             if (response.status === 200) {
 
@@ -111,7 +111,7 @@ const FormPage = () => {
                         className="form-input"
                         type="text"
                         name="username"
-                        value={formData.username}
+                        value={formDataSeller.username}
                         onChange={handleChange}
                         required
                         placeholder="Enter your username"
@@ -121,7 +121,7 @@ const FormPage = () => {
                         className="form-input"
                         type="email"
                         name="email"
-                        value={formData.email}
+                        value={formDataSeller.email}
                         onChange={handleChange}
                         required
                         placeholder="Enter your email"
@@ -131,7 +131,7 @@ const FormPage = () => {
                         className="form-input"
                         type="password"
                         name="password"
-                        value={formData.password}
+                        value={formDataSeller.password}
                         onChange={handleChange}
                         required
                         placeholder="Enter your password"

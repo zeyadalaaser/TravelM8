@@ -72,7 +72,7 @@ export const login = async (req, res) => {
 
     // If no user found, return error
     if (!foundUser) {
-        return res.status(400).json({ msg: "User not found" });
+        return res.status(400).json({ msg: "Invalid username" });
     }
 
     const { user, role } = foundUser;
@@ -80,7 +80,7 @@ export const login = async (req, res) => {
     // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-        return res.status(400).json({ msg: "Invalid credentials" });
+        return res.status(400).json({ msg: "Incorrect password" });
     }
     console.log("User role:", user.role);
     console.log("User preferences:", user.preferences);

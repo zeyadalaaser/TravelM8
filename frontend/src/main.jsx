@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import TouristPage from "@/pages/tourist/tourist-page.jsx";
-import Login from "@/pages/SignIn/Login.jsx";
+import Login from "@/pages/signIn/signin.jsx";
 import SignupGeneral from "@/pages/SignUp/SignupGeneral.jsx";
 import TouristRegistration from "@/pages/SignUp/signupTourist.jsx";
 import FormPage from "@/pages/SignUp/signupTourguide.jsx";

@@ -6,7 +6,7 @@ import axios from 'axios';
 
 
 export default function TouristRegistration() {
-  const [formData, setFormData] = useState({
+  const [formDataTourist, setFormDataTourist] = useState({
     name: '',
     username: '',
     email: '',
@@ -36,7 +36,7 @@ export default function TouristRegistration() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
+    setFormDataTourist((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -46,25 +46,25 @@ export default function TouristRegistration() {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const today = new Date();
-    const birthDate = new Date(formData.dob);
+    const birthDate = new Date(formDataTourist.dob);
     const age = today.getFullYear() - birthDate.getFullYear();
 
-    if (!emailRegex.test(formData.email)) {
+    if (!emailRegex.test(formDataTourist.email)) {
       newErrors.email = 'Invalid email address';
     }
-    if (formData.username.length < 3) {
+    if (formDataTourist.username.length < 3) {
       newErrors.username = 'Username must be at least 3 characters long';
     }
-    if (formData.password.length < 8) {
+    if (formDataTourist.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters long';
     }
-    if (formData.mobileNumber.length < 10) {
+    if (formDataTourist.mobileNumber.length < 10) {
       newErrors.mobileNumber = 'Invalid mobile number';
     }
-    if (!formData.nationality) {
+    if (!formDataTourist.nationality) {
       newErrors.nationality = 'Nationality is required';
     }
-    if (!formData.dob) {
+    if (!formDataTourist.dob) {
       newErrors.dob = 'Date of Birth is required';
     } else if (age < 18) {
       newErrors.dob = 'You must be at least 18 years old to register';
@@ -78,14 +78,14 @@ export default function TouristRegistration() {
     e.preventDefault();
     if (validateForm()) {
         try {
-            const response = await axios.post('http://localhost:5001/api/tourists', formData);
+            const response = await axios.post('http://localhost:5001/api/tourists', formDataTourist);
             console.log('Form submitted successfully:', response.data);
 
             const touristId = response.data.id; 
 
             localStorage.setItem('touristId', touristId);
 
-            setMessage('Registration Successful! Thank you for registering, ' + formData.username);
+            setMessage('Registration Successful! Thank you for registering, ' + formDataTourist.username);
             setIsSubmitted(true);
 
             console.log("Tourist ID before navigation:", touristId);
@@ -110,7 +110,7 @@ if (isSubmitted) {
   return (
     <div className="registration-success">
       <h2>Registration Successful!</h2>
-      <p>Thank you for registering, {formData.username}.</p>
+      <p>Thank you for registering, {formDataTourist.username}.</p>
       <p>To begin your adventure, please <strong>Login</strong>.</p>
       <button 
         className="login-button" 
@@ -156,7 +156,7 @@ if (isSubmitted) {
               type="text"
               id="name"
               name="name"
-              value={formData.name}
+              value={formDataTourist.name}
               onChange={handleChange}
               placeholder="Enter your Name"
               required
@@ -172,7 +172,7 @@ if (isSubmitted) {
                 type={field === 'password' ? 'password' : 'text'}
                 id={field}
                 name={field}
-                value={formData[field]}
+                value={formDataTourist[field]}
                 onChange={handleChange}
                 placeholder={`Enter your ${field}`}
                 required
@@ -187,7 +187,7 @@ if (isSubmitted) {
               type="date"
               id="dob"
               name="dob"
-              value={formData.dob}
+              value={formDataTourist.dob}
               onChange={handleChange}
               required
             />
@@ -199,7 +199,7 @@ if (isSubmitted) {
               type="text"
               id="mobileNumber"
               name="mobileNumber"
-              value={formData.mobileNumber}
+              value={formDataTourist.mobileNumber}
               onChange={handleChange}
               placeholder="Enter your Mobile Number"
               required
@@ -211,7 +211,7 @@ if (isSubmitted) {
             <select
               id="nationality"
               name="nationality"
-              value={formData.nationality}
+              value={formDataTourist.nationality}
               onChange={handleChange}
               required
             >
@@ -229,7 +229,7 @@ if (isSubmitted) {
             <select
               id="occupation"
               name="occupation"
-              value={formData.occupation}
+              value={formDataTourist.occupation}
               onChange={handleChange}
               required
             >
