@@ -2,6 +2,14 @@ import { getMyComplaints } from "../../api/apiService";
 import useRouter from "@/hooks/useRouter";
 import { useState, useEffect } from "react";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator";
+import {
     Table,
     TableBody,
     TableCell,
@@ -9,13 +17,26 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+
 
 export function MyComplaintsPage() {
-
+    const [reply, setReply] = useState("");
     const token = localStorage.getItem('token');
     const [complaints, setComplaints] = useState([]);
     const { toast } = useToast();
+    const [selectedComplaint, setSelectedComplaint] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState(""); 
     useEffect(() => {
         const fetchComplaints = async () => {
             try {
@@ -47,6 +68,7 @@ export function MyComplaintsPage() {
                     <TableHead>Complaint Details</TableHead>
                     <TableHead>Date Issued</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Reply</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -59,7 +81,45 @@ export function MyComplaintsPage() {
                         <span className={` ${complaint.status === 'Pending' ? 'text-red-500' : 'text-green-500'}`}>
                           {complaint.status}
                         </span>
-                      </TableCell>
+                        </TableCell>
+                        <TableCell>
+                      <Dialog>
+      <DialogTrigger asChild>
+      <Button onClick={() => { setSelectedComplaint(complaint);setSelectedStatus(complaint.status); }} variant="outline">
+          View Details
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle style={{ fontSize: "1.5rem", fontWeight: "bold", textAlign: "center" }}>
+            Complaint : {selectedComplaint?.title}
+          </DialogTitle>
+          <p></p>
+          <Separator/>
+          <p></p>
+          <p><strong>Complaint Details : </strong></p>{selectedComplaint?.body}
+          <p></p>
+          <p><strong>Date Issued :</strong> {selectedComplaint ? new Date(selectedComplaint.date).toLocaleDateString() : ''}</p>
+          <p></p>
+          <p><strong>Reply to Complaint : </strong></p>{selectedComplaint?.reply}
+          
+          <p></p>
+          <p></p>
+          
+        </DialogHeader>
+      <DialogClose asChild>
+       
+     
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
+
+
+
+
+
+
+    </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

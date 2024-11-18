@@ -16,6 +16,8 @@ import {
 
 import verifyToken from "../services/tokenDecodingService.js";
 import { adminOnly } from "../middlewares/adminOnlyMiddleware.js";
+import { getSalesReport } from "../controllers/itineraryController.js";
+//import { protect } from "../middleware/adminOnlyMiddleware.js"; // Assuming you have a middleware for authentication
 const router = express.Router();
 
 // router.post("/itineraries", verifyToken, createItinerary); // Create a new itinerary
@@ -41,6 +43,6 @@ router.get("/itineraries/:id", fetchItinerary)
  router.get("/searchItineraries",searchItems2);
  router.post("/itineraries/rate", rateItinerary);
  //router.filter("/itineraries/:id",filterItineraries);
-
+ router.get("/sales-report", verifyToken, getSalesReport);
 
 export default router;

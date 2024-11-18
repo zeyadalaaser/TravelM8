@@ -1,4 +1,4 @@
-import { getAllComplaints, updateComplaintStatusAndReply } from "@/pages/admin/services/complaintService.js";
+import { getAllComplaints, updateComplaintStatusAndReply } from "@/pages/admin/services/complaintService.js"; 
 import { useState, useEffect } from "react";
 import useRouter from "@/hooks/useRouter"
 import Sidebar from "@/components/Sidebar";
@@ -40,13 +40,8 @@ export default function ComplaintsPage() {
   }
 
   try {
-    // Split the token to get the payload
-    const payload = token.split('.')[1]; // Get the second part of the token (the payload)
-    
-    // Decode the Base64 payload
+    const payload = token.split('.')[1];
     const decodedPayload = JSON.parse(atob(payload));
-    
-    // Access the role
     const role = decodedPayload.role;
     if (role) {
         console.log('User Role:', role);
@@ -55,6 +50,7 @@ export default function ComplaintsPage() {
     console.error('Error decoding token:', error);
     return null;
   }
+  
   const [sidebarState, setSidebarState] = useState(false);
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
@@ -62,6 +58,7 @@ export default function ComplaintsPage() {
   const [selectedStatus, setSelectedStatus] = useState(""); 
   const [reply, setReply] = useState("");
   const { searchParams, navigate, location } = useRouter();
+  const [selectedDate, setSelectedDate] = useState("");
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
@@ -69,23 +66,26 @@ export default function ComplaintsPage() {
 
   useEffect(() => {
     fetchComplaints();
-  }, [token, toast,searchParams]);
-
-
+  }, [token, toast, searchParams, selectedDate]);  // Added selectedDate here
 
   const fetchComplaints = async () => {
     try {
         const data = await getAllComplaints(token);
         let filteredAndSortedComplaints = [...data];
 
-        // Apply filtering
         const status = searchParams.get('status');
         if (status && status !== 'All') {
             filteredAndSortedComplaints = filteredAndSortedComplaints.filter(
                 complaint => complaint.status === status
             );
         }
-        // Apply sorting
+
+        if (selectedDate) {
+          filteredAndSortedComplaints = filteredAndSortedComplaints.filter(
+              complaint => new Date(complaint.date).toLocaleDateString() === new Date(selectedDate).toLocaleDateString()
+          );
+        }
+
         const sortBy = searchParams.get('sortBy') || 'date';
         const order = searchParams.get('order') || 'desc';
         filteredAndSortedComplaints.sort((a, b) => {
@@ -110,29 +110,28 @@ export default function ComplaintsPage() {
             duration: 3000,
         });
     }
-};
+  };
 
+  const handleFilter = (status) => {
+      searchParams.set('status', status);
+      if (selectedDate) searchParams.set('date', selectedDate); // Update date in search params
+      navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+  };
 
-    const handleFilter = (status) => {
-        searchParams.set('status', status);
-        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
-    };
+  const handleSort = (value) => {
+      const [sortBy, order] = value.split('-');
+      searchParams.set('sortBy', sortBy);
+      searchParams.set('order', order);
+      navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+  };
 
-    const handleSort = (value) => {
-        const [sortBy, order] = value.split('-');
-        searchParams.set('sortBy', sortBy);
-        searchParams.set('order', order);
-        navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
-    };
+  const getSortBy = () => {
+      const sortBy = searchParams.get('sortBy') || 'date';
+      const order = searchParams.get('order') || 'desc';
+      return `${sortBy}-${order}`;
+  };
 
-    const getSortBy = () => {
-        const sortBy = searchParams.get('sortBy') || 'date';
-        const order = searchParams.get('order') || 'desc';
-        return `${sortBy}-${order}`;
-    };
-
-    const getActiveFilter = () => searchParams.get('status') || 'All';
-
+  const getActiveFilter = () => searchParams.get('status') || 'All';
 
   const handleSubmit = async () => {
     if (selectedComplaint && selectedStatus) {
@@ -197,6 +196,18 @@ export default function ComplaintsPage() {
                                     <SelectItem value="date-asc">Date: Oldest First</SelectItem>
                                 </SelectContent>
                             </Select>
+                              {/* Date filter */}
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => {
+                  setSelectedDate(e.target.value);
+                  handleFilter(getActiveFilter());
+                }}
+                className="border px-2 py-1 rounded"
+                placeholder="Filter by date"
+              />
+            
                             <Button
                                 onClick={() => (window.location.href = "/AdminDashboard")}
                                 variant="outline"
@@ -234,6 +245,7 @@ export default function ComplaintsPage() {
       <DialogTrigger asChild>
       <Button onClick={() => { setSelectedComplaint(complaint);setSelectedStatus(complaint.status); }} variant="outline">
           View Details
+
         </Button>
       </DialogTrigger>
       <DialogContent>
