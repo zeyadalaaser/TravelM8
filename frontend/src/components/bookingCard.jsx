@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -20,11 +21,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 function MyTabs() {
   const [value, setValue] = useState("flights");
-  const [flightType, setFlightType] = useState("roundtrip")
+  const [flightType, setFlightType] = useState("roundtrip");
+  const [time, setTime] = useState('');
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
   const [date, setDate] = useState();
+  const transportOptions = [
+    { id: 'uber', name: 'Uber', size: 20, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Uber_logo_2018.svg/2560px-Uber_logo_2018.svg.png' },
+    { id: 'didi', name: 'DiDi', size: 20, image: 'https://logodownload.org/wp-content/uploads/2019/08/didi-logo.png' },
+    { id: 'indrive', name: 'InDrive', size: 20, image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/InDrive_Logo.svg/2560px-InDrive_Logo.svg.png' },
+    { id: 'careem', name: 'Careem', size: 20, image: 'https://cdn.worldvectorlogo.com/logos/careem.svg' },
+];
 
   return (
     <Box sx={{ width: "100%", 
@@ -286,32 +294,13 @@ function MyTabs() {
                 />
             </div>
             <div className="flex-1 min-w-[200px]">
-            <Label htmlFor="drop-off" className="mb-2 block text-s">Drop-off date</Label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={`w-full justify-start text-left font-normal ${!date && "text-muted-foreground"}`}
-                    >
-                        <CalendarIcon className="mr-2 h-6 w-6" />
-                        {date ? format(date, "PPP") : "Select date"}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        initialFocus
-                    />
-                    </PopoverContent>
-                </Popover>
-                <Input
-                    type="date"
-                    value={date ? format(date, "yyyy-MM-dd") : ""}
-                    onChange={(e) => setDate(new Date(e.target.value))}
-                    className="sr-only"
-                />
+                 <Label htmlFor="drop-off" className="mb-2 block text-s">Pick-up time</Label>
+                        <Input
+                            className="w-[170px] block"
+                            type="time"
+                            value={time}
+                            onChange={(e) => setTime(e.target.value)}
+                        />
             </div>
             <Button className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">Search</Button>
           </div>

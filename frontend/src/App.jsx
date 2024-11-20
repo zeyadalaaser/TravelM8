@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useDebouncedCallback } from "use-debounce";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { CalendarIcon, ChevronDown, Search, Users, Star, Facebook, Instagram, Youtube } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import useRouter from "@/hooks/useRouter";
+import { Star, Facebook, Instagram, Youtube } from "lucide-react";
 import { RefreshCcw, Ticket, Zap, Map } from 'lucide-react';
 import {
   Select,
@@ -21,6 +16,7 @@ import Navbar from "@/components/Navbar.jsx";
 import Footer from "@/components/Footer.jsx"
 import BookingComponent from "@/components/bookingCard.jsx";
 import { motion, AnimatePresence } from 'framer-motion'
+import * as services from "@/pages/tourist/api/apiService.js";
 const images = [
   "https://wallpapercave.com/wp/wp2481186.jpg",
   // "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=2073&ixlib=rb-4.0.3",
@@ -29,11 +25,45 @@ const images = [
   "https://wallpaper.forfun.com/fetch/d5/d5c3e417f3b7121700fcb33d337c44ba.jpeg"
 ]
 
-
-
-
-
 export default function HeroSection() {
+
+  const { location } = useRouter();
+  const [museums, setMuseums] = useState([]);
+  const [currency, setCurrency] = useState("USD");
+  const [exchangeRates, setExchangeRates] = useState({});
+
+  // Fetch latest exchange rates on mount
+  useEffect(() => {
+    async function fetchExchangeRates() {
+      try {
+        const response = await axios.get(
+          "https://api.exchangerate-api.com/v4/latest/USD"
+        );
+        setExchangeRates(response.data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    }
+    fetchExchangeRates();
+  }, []);
+
+  const fetchMuseums = useDebouncedCallback(async () => {
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("currency", currency);
+    queryParams.set("exchangeRate", exchangeRates[currency] || 1);
+
+    const fetchedMuseums = await services.getMuseums(`?${queryParams.toString()}`);
+    setMuseums(fetchedMuseums);
+  }, 200);
+  const topFourMuseums = museums.slice(0, 4);
+
+  useEffect(() => {
+    fetchMuseums();
+  }, [location.search, currency]);
+
+  const handleCurrencyChange = (e) => {
+    setCurrency(e.target.value);
+  };
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   useEffect(() => {
@@ -136,7 +166,7 @@ export default function HeroSection() {
           exit={{ opacity: 0 }}
           transition={{ duration: 1 }}
         >
-          <div className="absolute inset-0 bg-black bg-opacity-30" />
+          <div className="absolute inset-0 bg-black bg-opacity-20" />
         </motion.div>
       </AnimatePresence>
 
@@ -162,72 +192,81 @@ export default function HeroSection() {
   </div>
 
   <div className="max-w-7xl mx-auto p-6 ">
-    <div className="mb-2 text-sm font-medium text-gray-500">Best location</div>
+    <div className="mb-2 text-xl font-medium text-gray-500">Discover</div>
     <div className="flex justify-between items-start mb-8">
-      <h2 className="text-5xl font-medium max-w-xl">Indonesian tourism</h2>
+      <h2 className="text-5xl font-medium max-w-xl">Popular places </h2>
       <p className="text-gray-500 font-medium max-w-md text-sm">
-        Extraordinary natural beauty, enjoy the rich culture, and experience the friendliness of the local people.
+        Extraordinary natural and cultural beauty, enjoy the rich culture, and experience the friendliness of the local people.
       </p>
     </div>
 
     <div className="grid grid-cols-3 gap-4">
-      {/* Top row - wider first image, smaller second image */}
-      <div className="col-span-2 relative h-96 rounded-2xl overflow-hidden">
-        <img
-          src="https://vl-prod-static.b-cdn.net/system/images/000/245/807/5afac395eb7db6dec84310176b5a1ba9/original/shutterstock_279422480.jpg?1691942778"
-          alt="Bromo East Java"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
-        <div className="absolute bottom-4 left-4 text-white">
-          <div className="font-medium">Bromo East Java</div>
-          <div className="text-sm text-white/80">Bromo Tengger Tour</div>
-        </div>
-      </div>
+      {topFourMuseums.length > 0 && (
+        <>
+          {/* Top row - wider first image, smaller second image */}
+          <div className="col-span-2 relative h-96 rounded-2xl overflow-hidden">
+            <img
+              src={topFourMuseums[0].image} // First museum image
+              alt={topFourMuseums[0].name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+            <div className="absolute bottom-4 left-4 text-white">
+              <div className="font-medium">{topFourMuseums[0].name}</div>
+              <div className="text-sm text-white/80">{topFourMuseums[0].description}</div>
+            </div>
+          </div>
 
-      <div className="relative h-96 rounded-2xl overflow-hidden">
-        <img
-          src="https://urbanpixxels.com/wp-content/uploads/2018/10/Mount-Bromo-Tour-Volcano-East-Java-Indonesia-Mount-Batok-1.jpg"
-          alt="Denpasar Bali"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
-        <div className="absolute bottom-4 left-4 text-white">
-          <div className="font-medium">Denpasar Bali</div>
-          <div className="text-sm text-white/80">Bali Beach Tourism</div>
-        </div>
-      </div>
+          <div className="relative h-96 rounded-2xl overflow-hidden">
+            <img
+              src={topFourMuseums[1].image} // Second museum image
+              alt={topFourMuseums[1].name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+            <div className="absolute bottom-4 left-4 text-white">
+              <div className="font-medium">{topFourMuseums[1].name}</div>
+              <div className="text-sm text-white/80">{topFourMuseums[1].description}</div>
+            </div>
+          </div>
 
-      {/* Bottom row - smaller first image, wider second image */}
-      <div className="relative h-96 rounded-2xl overflow-hidden">
-        <img
-          src="https://as1.ftcdn.net/v2/jpg/02/85/57/30/1000_F_285573044_xbj5B3nM2Yn8gQtYTi1f4lO8qEckyual.jpg"
-          alt="Lampung South Sumatra"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
-        <div className="absolute bottom-4 left-4 text-white">
-          <div className="font-medium">Lampung South Sumatra</div>
-          <div className="text-sm text-white/80">Sumatra Tourism</div>
-        </div>
-      </div>
+          {/* Bottom row - smaller first image, wider second image */}
+          <div className="relative h-96 rounded-2xl overflow-hidden">
+            <img
+              src={topFourMuseums[2].image} // Third museum image
+              alt={topFourMuseums[2].name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+            <div className="absolute bottom-4 left-4 text-white">
+              <div className="font-medium">{topFourMuseums[2].name}</div>
+              <div className="text-sm text-white/80">{topFourMuseums[2].description}</div>
+            </div>
+          </div>
 
-      <div className="col-span-2 relative h-96 rounded-2xl overflow-hidden">
-        <img
-          src="https://wallpapers.com/images/featured/hd-nature-ngdfb9h966h4z3le.jpg"
-          alt="Jogjakarta Central Java"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
-        <div className="absolute bottom-4 left-4 text-white">
-          <div className="font-medium">Jogjakarta Central Java</div>
-          <div className="text-sm text-white/80">Borobudur Temple Tour</div>
-        </div>
-      </div>
+          <div className="col-span-2 relative h-96 rounded-2xl overflow-hidden">
+            <img
+              src={topFourMuseums[3].image} // Fourth museum image
+              alt={topFourMuseums[3].image}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
+            <div className="absolute bottom-4 left-4 text-white">
+              <div className="font-medium">{topFourMuseums[3].name}</div>
+              <div className="text-sm text-white/80">{topFourMuseums[3].description}</div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
+    <div className="flex justify-center">
+        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white mt-12 ">
+          View more
+        </Button>
+      </div>
   </div>
 
-  <div className="flex flex-col lg:flex-row gap-12 max-w-7xl mx-auto p-6 mt-32">
+  <div className="flex flex-col lg:flex-row gap-12 max-w-7xl mx-auto p-6 mt-12">
     {/* Left side - Image and Search */}
     <div className="lg:w-2/5">
       <div className="relative rounded-3xl overflow-hidden">
@@ -396,16 +435,13 @@ export default function HeroSection() {
           </div>
         ))}
       </div>
-
       <div className="text-center">
         <button className="bg-gray-800 hover:bg-gray-700 font-medium text-white  py-3 px-8 rounded-full transition-colors">
           View more
         </button>
       </div>
     </section>
-
     <Footer/>
-    
     </div>
     
   );

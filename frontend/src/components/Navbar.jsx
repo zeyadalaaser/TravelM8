@@ -10,6 +10,14 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+
+  const handleLogout = () => {
+    // Clear authentication token or session data
+    localStorage.removeItem("token"); // Example: Removing a token
+    setIsLoggedIn(false); // Update login status
+    navigate("/"); // Optionally redirect to home or login page
+  };
 
   const openSignup = () => {
     setIsSignupOpen(true);
@@ -26,6 +34,11 @@ export default function Navbar() {
       setIsScrolled(window.scrollY > 0);
     };
 
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+
     window.addEventListener("scroll", handleScroll);
 
     return () => {
@@ -34,42 +47,62 @@ export default function Navbar() {
   }, []);
 
   return (
-
     <nav
       className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3 transition-all duration-300 ${
-        isScrolled ? "bg-gray-600/50 backdrop-blur-md" : "bg-transparent"}`}
-      style={{ height: "56px" }} >
-      
+        isScrolled ? "bg-gray-600/50 backdrop-blur-md" : "bg-transparent"
+      }`}
+      style={{ height: "56px" }}
+    >
       <div className="text-2xl font-semibold text-white">TRAVELM8</div>
-      
+
       {/* Center the middle section */}
       <div className="hidden md:flex items-center justify-start ml-20 space-x-8">
-      <button className="text-white hover:text-white/80">Home</button>
+        <button className="text-white hover:text-white/80">Home</button>
         <button className="text-white hover:text-white/80">Activities</button>
         <button className="text-white hover:text-white/80">Itineraries</button>
         <button className="text-white hover:text-white/80">Historical Places</button>
         <button className="text-white hover:text-white/80">Shop</button>
       </div>
-      
+
       <div className="flex items-center space-x-4">
-        {/* Login Button */}
-        <LoginPage isOpen={isLoginOpen} onOpenChange={setIsLoginOpen} onSignupClick={openSignup}>
-          <Button
-            variant="outline"
-            className="bg-transparent text-white hover:bg-white/10 hover:text-white rounded-full px-8 py-2" >
-            Login
-          </Button>
-        </LoginPage>
-        
-        {/* Signup Button */}
-        <SignupDialog isOpen={isSignupOpen} onOpenChange={setIsSignupOpen} onLoginClick={openLogin}>
-          <Button
-            variant="outline"
-            className="bg-white font-medium text-black hover:bg-white/90 rounded-full px-8 py-2">
-            Register
-          </Button>
-        </SignupDialog>
-      </div>            
+        {isLoggedIn ? (
+          // Render when logged in
+          <>
+            <button
+              className="bg-transparent text-white hover:bg-white/10 rounded-full px-6 py-2"
+              onClick={() => navigate("/tourist-profile")}
+            >
+              Profile
+            </button>
+            <button
+              className="bg-white text-black hover:bg-white/90 rounded-full px-6 py-2"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          // Render when logged out
+          <>
+            <LoginPage isOpen={isLoginOpen} onOpenChange={setIsLoginOpen} onSignupClick={openSignup}>
+              <Button
+                variant="outline"
+                className="bg-transparent text-white hover:bg-white/10 hover:text-white rounded-full px-8 py-2"
+              >
+                Login
+              </Button>
+            </LoginPage>
+            <SignupDialog isOpen={isSignupOpen} onOpenChange={setIsSignupOpen} onLoginClick={openLogin}>
+              <Button
+                variant="outline"
+                className="bg-white font-medium text-black hover:bg-white/90 rounded-full px-8 py-2"
+              >
+                Register
+              </Button>
+            </SignupDialog>
+          </>
+        )}
+      </div>
     </nav>
   );
 };
