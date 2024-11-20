@@ -130,7 +130,7 @@ export default function HeroSection() {
         <motion.div
           key={currentImageIndex}
           className="absolute inset-0 bg-cover bg-center "
-          style={{ backgroundImage: `url(${images[currentImageIndex]})`,height: "91vh",  }}
+          style={{ backgroundImage: `url(${images[currentImageIndex]})`,height: "83vh",  }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -144,8 +144,8 @@ export default function HeroSection() {
     {/* Hero Content */}
     <div className="relative z-10 flex flex-col min-h-screen">
       {/* Heading and Paragraph */}
-      <div className="p-6 md:p-10 max-w-2xl mt-48">
-        <h1 className="text-4xl font-medium tracking-tight text-white sm:text-6xl">
+      <div className="p-6 md:p-10 max-w-2xl mt-40">
+        <h1 className="font-medium tracking-tight text-white sm:text-5xl">
           Extraordinary natural and cultural charm
         </h1>
         <p className="mt-6 text-lg text-white/90">

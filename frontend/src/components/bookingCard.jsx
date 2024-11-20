@@ -27,7 +27,9 @@ function MyTabs() {
   const [date, setDate] = useState();
 
   return (
-    <Box sx={{ width: "100%", typography: "body1" }}>
+    <Box sx={{ width: "100%", 
+    typography: "body1" ,
+    }}>
     <TabContext value={value}>
       {/* Top Tabs, Centered, Rounded, and Shadowed */}
       <Box
@@ -52,7 +54,7 @@ function MyTabs() {
       {/* Tab Panels, Rounded Corners and Shadowed */}
     <Box
         sx={{
-          bgcolor: "white",
+          bgcolor: "#FFFFFF",
           p: 2,
           borderRadius: "0 0 16px 16px", // Rounded bottom corners
           boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Add shadow
