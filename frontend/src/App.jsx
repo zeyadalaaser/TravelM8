@@ -25,6 +25,7 @@ const images = [
   "https://images.unsplash.com/photo-1541628951107-a9af5346a3e4?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3", 
   "https://wallpaper.forfun.com/fetch/d5/d5c3e417f3b7121700fcb33d337c44ba.jpeg"
 ]
+import { CircularProgress} from '@mui/material';
 
 export default function HeroSection() {
 
