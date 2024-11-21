@@ -31,6 +31,11 @@ export default function HeroSection() {
   const [museums, setMuseums] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [itineraries, setItineraries] = useState([]);
+  const isAdmin = false;
+  const topFourMuseums = museums?.slice(0, 4);
+  const topItineraries = itineraries?.slice(0, 3);
 
   // Fetch latest exchange rates on mount
   useEffect(() => {
@@ -48,14 +53,13 @@ export default function HeroSection() {
   }, []);
 
   const fetchMuseums = useDebouncedCallback(async () => {
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set("currency", currency);
-    queryParams.set("exchangeRate", exchangeRates[currency] || 1);
+      const queryParams = new URLSearchParams(location.search);
+      queryParams.set("currency", currency);
+      queryParams.set("exchangeRate", exchangeRates[currency] || 1);
 
-    const fetchedMuseums = await services.getMuseums(`?${queryParams.toString()}`);
-    setMuseums(fetchedMuseums);
+      const fetchedMuseums = await services.getMuseums(`?${queryParams.toString()}`);
+      setMuseums(fetchedMuseums);
   }, 200);
-  const topFourMuseums = museums.slice(0, 4);
 
   useEffect(() => {
     fetchMuseums();
@@ -64,6 +68,32 @@ export default function HeroSection() {
   const handleCurrencyChange = (e) => {
     setCurrency(e.target.value);
   };
+
+  const fetchItineraries = useDebouncedCallback(async () => {
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("isAdmin", isAdmin);
+    queryParams.set("currency", currency);
+
+    try {
+      let fetchedItineraries = (await services.getItineraries(
+        `?${queryParams.toString()}`
+      )).filter(i => i.isBookingOpen);
+
+      if (!isAdmin) {
+        fetchedItineraries = fetchedItineraries.filter(
+          (itinerary) => !itinerary.flagged
+        );
+      }
+
+      setItineraries(fetchedItineraries);
+    } catch (error) {
+      console.error("Error fetching itineraries:", error);
+    }
+  }, 200);
+
+  useEffect(() => {
+    fetchItineraries();
+  }, [location.search, currency, priceRange]);
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   useEffect(() => {
@@ -266,7 +296,66 @@ export default function HeroSection() {
       </div>
   </div>
 
-  <div className="flex flex-col lg:flex-row gap-12 max-w-7xl mx-auto p-6 mt-12">
+
+  <div className="max-w-7xl mx-auto px-6 mt-8">
+      <div className="mb-16">
+        <p className="text-gray-500 text-xl mb-4">Tour packages</p>
+        <div className="flex justify-between items-start">
+          <h2 className="text-5xl font-medium max-w-xl">Explore our itineraries</h2>
+          <p className="text-gray-500 max-w-md">
+            Our tourist destinations offer an unrivaled blend of natural beauty and cultural richness
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {topItineraries.map((tour, index) => (
+          <div key={index} className="relative rounded-3xl overflow-hidden group cursor-pointer">
+            <div className="aspect-[3/4]">
+              <img
+                src={tour?.images?.[0]}
+                alt={tour.name}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+            </div>
+            
+            {/* Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+            
+            {/* Top badges */}
+            <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm">
+                {tour.tourLanguage}
+              </span>
+              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm flex items-center gap-1">
+                <Star className="w-4 h-4 fill-current" /> {tour.averageRating?.toFixed(2)}
+              </span>
+            </div>
+            
+            {/* Bottom content */}
+            <div className="absolute bottom-4 left-4 right-4">
+              <div className="text-white/80 text-sm mb-2">
+                {tour.timeline.startTime} - {tour.timeline.endTime}
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-white text-xl font-medium">{tour.name}</span>
+              </div>
+              <span className="text-white text-xl">
+                  <span >{currency} </span>{tour.price}
+                </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-center">
+        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">
+          View more
+        </Button>
+      </div>
+    </div>
+
+  <div className="flex flex-col lg:flex-row gap-12 max-w-7xl mx-auto p-6 mt-20">
     {/* Left side - Image and Search */}
     <div className="lg:w-2/5">
       <div className="relative rounded-3xl overflow-hidden">
@@ -349,64 +438,6 @@ export default function HeroSection() {
       </div>
     </div>
   </div>
-
-    <div className="max-w-7xl mx-auto px-6 mt-32">
-      <div className="mb-16">
-        <p className="text-gray-500 mb-4">Tour packages</p>
-        <div className="flex justify-between items-start">
-          <h2 className="text-5xl font-medium max-w-xl">Our tourist destination</h2>
-          <p className="text-gray-500 max-w-md">
-            Our tourist destinations offer an unrivaled blend of natural beauty and cultural richness
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        {tours.map((tour, index) => (
-          <div key={index} className="relative rounded-3xl overflow-hidden group cursor-pointer">
-            <div className="aspect-[3/4]">
-              <img
-                src={tour.image}
-                alt={tour.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-            </div>
-            
-            {/* Overlays */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-            
-            {/* Top badges */}
-            <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
-              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm">
-                {tour.days}
-              </span>
-              <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-sm flex items-center gap-1">
-                <Star className="w-4 h-4 fill-current" /> {tour.rating}
-              </span>
-            </div>
-            
-            {/* Bottom content */}
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="text-white/80 text-sm mb-2">
-                {tour.startDate} - {tour.endDate}
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-white text-xl font-medium">{tour.name}</span>
-                <span className="text-white text-xl">
-                  <span className="text-sm">$</span>{tour.price}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex justify-center">
-        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">
-          View more
-        </Button>
-      </div>
-    </div>
 
     <section className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
