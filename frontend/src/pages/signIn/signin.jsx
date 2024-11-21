@@ -16,6 +16,7 @@ import {
   import { EyeIcon, EyeOffIcon } from "lucide-react";
   import { useNavigate } from "react-router-dom";
   import { Link } from 'react-router-dom';
+  import { CircularProgress} from '@mui/material';
   
 
 const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick  }) => {
@@ -25,10 +26,12 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick  }) => {
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
-        event.preventDefault();
+      event.preventDefault();
+      setIsLoading(true); // Start loadin
         try {
           const response = await axios.post('http://localhost:5001/api/auth/login', {
             username,
@@ -36,7 +39,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick  }) => {
           });
           const { token, role, needsPreferences } = response.data;
           localStorage.setItem('token', token);
-    
+          navigate('/loading');
           const decodedToken = jwtDecode(token);
           const userId = decodedToken.id || decodedToken.userId;
     
@@ -47,7 +50,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick  }) => {
           console.log("token:", token);
           console.log("pref: ", needsPreferences);
     
-    
+        setTimeout(() => {
           if (needsPreferences && role === 'Tourist') {
             navigate(`/preferences-page/${userId}`);
           } else {
@@ -75,12 +78,14 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick  }) => {
             }
     
           }
+        }, 2000);
         } catch (error) {
           setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
         }
     };
 
   return (
+    <div>
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {children}
@@ -162,6 +167,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick  }) => {
         </div>
       </DialogContent>
     </Dialog>
+    </div>
   );
 };
 

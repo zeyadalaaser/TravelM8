@@ -40,6 +40,7 @@ import AccountDelete from "./pages/admin/accountDelete.jsx";
 import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
 import SignupsRoles from "./pages/SignUp/signupRoles.jsx";
 import { Toaster } from "@/components/ui/toaster"
+import LoadingPage from "./components/loading.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -47,6 +48,7 @@ createRoot(document.getElementById("root")).render(
       <Routes>
         <Route path="/" element={<App />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
+        <Route path="/loading" element={<LoadingPage />} />
         <Route path="/Sellerdashboard" element={<Sellerdashboard />} />
         <Route path="/SellerProducts" element={<SellerProducts />} />
         <Route path="/SellerProfile" element={<SellerProfile />} />

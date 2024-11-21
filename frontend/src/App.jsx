@@ -17,6 +17,7 @@ import Footer from "@/components/Footer.jsx"
 import BookingComponent from "@/components/bookingCard.jsx";
 import { motion, AnimatePresence } from 'framer-motion'
 import * as services from "@/pages/tourist/api/apiService.js";
+import axios from "axios";
 const images = [
   "https://wallpapercave.com/wp/wp2481186.jpg",
   // "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=2073&ixlib=rb-4.0.3",
@@ -33,9 +34,20 @@ export default function HeroSection() {
   const [exchangeRates, setExchangeRates] = useState({});
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [itineraries, setItineraries] = useState([]);
+  const [products, setProducts] = useState([]);
   const isAdmin = false;
   const topFourMuseums = museums?.slice(0, 4);
   const topItineraries = itineraries?.slice(0, 3);
+  const topProducts = products?.slice(0, 3);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
+    }, 5000) // Change image every 5 seconds
+
+    return () => clearInterval(timer)
+  }, [])
 
   // Fetch latest exchange rates on mount
   useEffect(() => {
@@ -94,17 +106,7 @@ export default function HeroSection() {
   useEffect(() => {
     fetchItineraries();
   }, [location.search, currency, priceRange]);
-
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
-    }, 5000) // Change image every 5 seconds
-
-    return () => clearInterval(timer)
-  }, [])
   
-
   const blogPosts = [
     {
       date: "Nov 14, 2022",
@@ -122,36 +124,27 @@ export default function HeroSection() {
     }
   ]
 
-  const tours = [
-    {
-      image: "https://cdn.create.vista.com/api/media/small/127814890/stock-photo-pura-ulun-danu-bratan-hindu-temple-on-bratan-lake-bali-indonesia",
-      days: "7 Days",
-      rating: "4.9",
-      startDate: "23 AUGUST",
-      endDate: "29 AUGUST",
-      name: "Bali Tour Package",
-      price: "285"
-    },
-    {
-      image: "https://c4.wallpaperflare.com/wallpaper/569/529/191/landscape-photo-of-rock-mountain-superstition-mountains-superstition-mountains-wallpaper-preview.jpg",
-      days: "5 Days",
-      rating: "4.9",
-      startDate: "23 AUGUST",
-      endDate: "27 AUGUST",
-      name: "Java Tour Package",
-      price: "218"
-    },
-    {
-      image: "https://i.pinimg.com/564x/84/a9/d1/84a9d1021978b02ce63a2a796ce17e70.jpg",
-      days: "3 Days",
-      rating: "4.9",
-      startDate: "23 AUGUST",
-      endDate: "25 AUGUST",
-      name: "Solo Tour Package",
-      price: "163"
-    }
-  ];
+  const fetchProducts = useDebouncedCallback(async () => {
+    setLoading(true); // Start loading
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("currency", currency);
 
+    try {
+      const fetchedProducts = await services.getProducts(`?${queryParams.toString()}`);
+      console.log("Fetched products:", fetchedProducts); // Log for debugging
+      setProducts(fetchedProducts);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      alert("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false); // End loading
+
+    }
+  }, 200);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [location.search, currency]);
   
 
 
@@ -177,8 +170,6 @@ export default function HeroSection() {
       description: "You'll be immersed in a captivating tapestry of sights, sounds and tastes, as you wind your way through the ancient streets",
     },
   ];
-
-  const [date, setDate] = useState(null);
 
   return (
 
@@ -347,6 +338,55 @@ export default function HeroSection() {
           </div>
         ))}
       </div>
+
+      
+
+      <div className="flex justify-center">
+        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">
+          View more
+        </Button>
+      </div>
+    </div>
+
+    <div className="max-w-7xl mx-auto px-6 mt-8">
+      <div className="mb-16">
+        <p className="text-gray-500 text-xl mb-4">Online store</p>
+        <div className="flex justify-between items-start">
+          <h2 className="text-5xl font-medium max-w-xl">Explore our Shop</h2>
+          <p className="text-gray-500 max-w-md">
+          All you need in one place! From travel essentials to unique finds, shop with ease and enjoy great deals and quick delivery.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {topProducts.map((product, index) => (
+          <div key={index} className="relative rounded-3xl overflow-hidden group cursor-pointer">
+            <div className="aspect-[1/1]">
+              <img
+                src={product?.image}
+                alt={product.name}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+            </div>
+            
+            {/* Overlays */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+            
+            {/* Bottom content */}
+            <div className="absolute bottom-4 left-4 right-4">
+              <div className="flex justify-between items-center">
+                <span className="text-white text-xl font-medium">{product.name}</span>
+              </div>
+              <span className="text-white text-xl">
+                  <span >{currency} </span>{product.price}
+                </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      
 
       <div className="flex justify-center">
         <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">

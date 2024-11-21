@@ -9,6 +9,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { Separator } from "@/components/ui/separator.tsx";
+import LogoutAlertDialog from "@/hooks/logoutAlert";
 
 export default function Navbar(count) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,8 +19,9 @@ export default function Navbar(count) {
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState(null);
-  const token = localStorage.getItem('token');
+  
   const open = Boolean(anchorEl);
+  const [isAlertOpen, setAlertOpen] = useState(false);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -27,25 +29,30 @@ export default function Navbar(count) {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    // Clear authentication token or session data
-    localStorage.removeItem("token"); // Example: Removing a token
-    setIsLoggedIn(false); // Update login status
-    navigate("/"); // Optionally redirect to home or login page
+  const handleLogoutClick = () => {
+    setAlertOpen(true); // Open the alert dialog when "Logout" is clicked
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
     if (token) {
       const decodedToken = decodeToken(token);
+      const expirationTime = decodedToken.exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+      if (currentTime > expirationTime) {
+        localStorage.removeItem("token");
+        return { valid: false, reason: 'Token has expired' };
+      }
       if (decodedToken && decodedToken.userId) {
         setUserName(decodedToken.username);
       }
     }
   }, []);
+
   const decodeToken = (token) => {
     try {
-      const payload = token.split('.')[1]; // JWT is in 'header.payload.signature' format
-      const decodedPayload = JSON.parse(atob(payload)); // atob decodes from base64
+      const payload = token.split('.')[1]; 
+      const decodedPayload = JSON.parse(atob(payload)); 
       return decodedPayload;
     } catch (e) {
       console.error('Failed to decode token:', e);
@@ -64,18 +71,15 @@ export default function Navbar(count) {
   };
 
   useEffect(() => {
-    
+    const token = localStorage.getItem('token');
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
 
-    const token = localStorage.getItem("token");
     if (token) {
       setIsLoggedIn(true);
     }
-
     window.addEventListener("scroll", handleScroll);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -119,8 +123,10 @@ export default function Navbar(count) {
             MenuListProps={{
               'aria-labelledby': 'basic-button',
             }}
-            sx={{
-              width: '500px', // Adjust the width as needed
+            PaperProps={{
+              sx: {
+                width: '200px',
+              },
             }}
           >
             <MenuItem onClick={handleClose}>My profile</MenuItem>
@@ -128,8 +134,12 @@ export default function Navbar(count) {
             <MenuItem onClick={handleClose}>Wallet</MenuItem>
             <MenuItem onClick={handleClose}>Settings</MenuItem>
             <Separator/>
-            <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+            <MenuItem onClick={handleLogoutClick} >Sign out</MenuItem>
           </Menu>
+          <LogoutAlertDialog
+            isOpen={isAlertOpen}
+            onClose={() => setAlertOpen(false)}
+          />
 
             {/* <button
               className="bg-white text-black hover:bg-white/90 rounded-full px-6 py-2"

@@ -21,6 +21,7 @@ const LogoutAlertDialog = ({ isOpen, onClose}) => {
       if (response.ok) {
         localStorage.removeItem('token'); 
         navigate("/"); 
+        window.location.reload();
       } else {
         console.error('Failed to logout');
       }

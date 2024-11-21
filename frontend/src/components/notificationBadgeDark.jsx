@@ -18,7 +18,7 @@ export default function NotificationBadge() {
   return (
     <IconButton aria-label={notificationsLabel(100)}>
       <Badge color="info">
-         <Bell className="h-6 w-6 text-white" />
+         <Bell className="h-6 w-6 text-black" />
       </Badge>
     </IconButton>
   );
