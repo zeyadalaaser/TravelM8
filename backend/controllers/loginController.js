@@ -61,7 +61,7 @@ export const login = async (req, res) => {
     // Execute all queries concurrently
     const userPromises = userQueries.map(async ({ model, role }) => {
         const user = await model.findOne({ username });
-        return user ? { user, role } : null; // Return user with role if found
+        return user ? { user, role, username } : null; // Return user with role if found
     });
 
     // Wait for all promises to resolve
@@ -75,7 +75,7 @@ export const login = async (req, res) => {
         return res.status(400).json({ msg: "Invalid username" });
     }
 
-    const { user, role } = foundUser;
+    const { user, role  } = foundUser;
 
     // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
@@ -94,9 +94,11 @@ export const login = async (req, res) => {
 // Create a JWT
     const payload = {
         userId: user._id,
-        role // Use the determined role
+        role, // Use the determined role
+        username
     };
 
+    console.log(payload);
     const token = jwt.sign(payload, secret, { expiresIn: '1h' });
 
     res.json({ token, role, needsPreferences });

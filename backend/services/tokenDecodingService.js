@@ -23,7 +23,8 @@ const verifyToken = (req, res, next) => {
     // Attach user info to the request object
     req.user = {
       userId: decoded.userId, // Extract userId from the payload
-      role: decoded.role       // Extract role from the payload
+      role: decoded.role ,      // Extract role from the payload
+      username: decoded.username
     };
     console.log('req.user:', req.user); 
 

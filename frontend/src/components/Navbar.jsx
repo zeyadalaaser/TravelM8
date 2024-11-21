@@ -4,19 +4,53 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import LoginPage from "../pages/signIn/signin";
 import SignupDialog from "../pages/SignUp/signup";
+import NotificationBadge from "@/components/notificationBadge.jsx";
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { Separator } from "@/components/ui/separator.tsx";
 
-export default function Navbar() {
+export default function Navbar(count) {
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const token = localStorage.getItem('token');
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = () => {
     // Clear authentication token or session data
     localStorage.removeItem("token"); // Example: Removing a token
     setIsLoggedIn(false); // Update login status
     navigate("/"); // Optionally redirect to home or login page
+  };
+
+  useEffect(() => {
+    if (token) {
+      const decodedToken = decodeToken(token);
+      if (decodedToken && decodedToken.userId) {
+        setUserName(decodedToken.username);
+      }
+    }
+  }, []);
+  const decodeToken = (token) => {
+    try {
+      const payload = token.split('.')[1]; // JWT is in 'header.payload.signature' format
+      const decodedPayload = JSON.parse(atob(payload)); // atob decodes from base64
+      return decodedPayload;
+    } catch (e) {
+      console.error('Failed to decode token:', e);
+      return null;
+    }
   };
 
   const openSignup = () => {
@@ -30,6 +64,7 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
@@ -68,18 +103,40 @@ export default function Navbar() {
         {isLoggedIn ? (
           // Render when logged in
           <>
-            <button
-              className="bg-transparent text-white hover:bg-white/10 rounded-full px-6 py-2"
-              onClick={() => navigate("/tourist-profile")}
-            >
-              Profile
-            </button>
-            <button
+          <NotificationBadge/>
+          <button
+            onClick={handleClick}
+            className="text-white hover:text-white/80 border border-transparent rounded-full px-4 py-1"
+          >
+            <span>Welcome, {userName}</span>
+            {/* <ArrowDropDownIcon /> */}
+          </button>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+            sx={{
+              width: '500px', // Adjust the width as needed
+            }}
+          >
+            <MenuItem onClick={handleClose}>My profile</MenuItem>
+            <MenuItem onClick={handleClose}>My bookings</MenuItem>
+            <MenuItem onClick={handleClose}>Wallet</MenuItem>
+            <MenuItem onClick={handleClose}>Settings</MenuItem>
+            <Separator/>
+            <MenuItem onClick={handleLogout}>Sign out</MenuItem>
+          </Menu>
+
+            {/* <button
               className="bg-white text-black hover:bg-white/90 rounded-full px-6 py-2"
               onClick={handleLogout}
             >
               Logout
-            </button>
+            </button> */}
           </>
         ) : (
           // Render when logged out
