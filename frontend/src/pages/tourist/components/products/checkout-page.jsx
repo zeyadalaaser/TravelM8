@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -8,8 +10,46 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
-function CheckoutPage() {
+const stripePromise = loadStripe('pk_test_51QNwSmLNUgOldllO51XLfeq4fZCMqG9jUXp4wVgY6uq9wpvjOAJ1XgKNyErFb6jf8rmH74Efclz55kWzG8UDxZ9J0064KdbDCb')
+
+function CheckoutForm({ handlePayment }) {
+  const stripe = useStripe()
+  const elements = useElements()
+  const [error, setError] = useState(null)
+  const [processing, setProcessing] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (!stripe || !elements) return
+
+    setProcessing(true)
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: elements.getElement(CardElement),
+    })
+
+    if (error) {
+      setError(error.message)
+      setProcessing(false)
+    } else {
+      handlePayment(paymentMethod.id)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <CardElement options={{style: {base: {fontSize: '16px'}}}} />
+      {error && <Alert variant="destructive" className="mt-2"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+      <Button type="submit" disabled={!stripe || processing} className="mt-4 w-full">
+        {processing ? 'Processing...' : 'Pay with Credit Card'}
+      </Button>
+    </form>
+  )
+}
+
+export default function CheckoutPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const { cart, currency } = location.state || { cart: [], currency: 'USD' }
@@ -17,15 +57,16 @@ function CheckoutPage() {
   const [newAddress, setNewAddress] = useState('')
   const [selectedAddress, setSelectedAddress] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('')
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    // Fetch user's addresses
     const fetchAddresses = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/user/addresses')
+        const response = await axios.get('http://localhost:5001/api/user/addresses')
         setAddresses(response.data)
       } catch (error) {
         console.error('Error fetching addresses:', error)
+        setError('Failed to fetch addresses. Please try again.')
       }
     }
     fetchAddresses()
@@ -33,17 +74,18 @@ function CheckoutPage() {
 
   const handleAddAddress = async () => {
     try {
-      const response = await axios.post('/api/user/addresses', { address: newAddress })
+      const response = await axios.post('http://localhost:5001/api/user/addresses', { address: newAddress })
       setAddresses([...addresses, response.data])
       setNewAddress('')
     } catch (error) {
       console.error('Error adding address:', error)
+      setError('Failed to add address. Please try again.')
     }
   }
 
-  const handleCheckout = async () => {
-    if (!selectedAddress || !paymentMethod) {
-      alert('Please select a delivery address and payment method')
+  const handlePayment = async (paymentMethodId = null) => {
+    if (!selectedAddress) {
+      setError('Please select a delivery address')
       return
     }
 
@@ -52,15 +94,27 @@ function CheckoutPage() {
         items: cart,
         deliveryAddress: selectedAddress,
         paymentMethod,
-        currency
+        currency,
+        paymentMethodId
       }
-      const response = await axios.post('/api/orders', order)
+
+      let response
+      if (paymentMethod === 'credit-card') {
+        response = await axios.post('http://localhost:5001/api/products/pay-with-stripe', order)
+      } else if (paymentMethod === 'cash') {
+        response = await axios.post('http://localhost:5001/api/products/pay-with-cash', order)
+      } else {
+        throw new Error('Invalid payment method')
+      }
+
       navigate('/order-confirmation', { state: { order: response.data } })
     } catch (error) {
       console.error('Error processing order:', error)
-      alert('There was an error processing your order. Please try again.')
+      setError('There was an error processing your order. Please try again.')
     }
   }
+
+  const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0)
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -71,6 +125,12 @@ function CheckoutPage() {
             <CardDescription>Complete your order</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            {error && (
+              <Alert variant="destructive">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             <div>
               <h3 className="text-lg font-medium">Order Summary</h3>
               <ul className="mt-2 divide-y divide-gray-200">
@@ -83,7 +143,7 @@ function CheckoutPage() {
               </ul>
               <div className="mt-4 flex justify-between font-bold">
                 <span>Total</span>
-                <span>{currency} {cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</span>
+                <span>{currency} {totalAmount.toFixed(2)}</span>
               </div>
             </div>
             <Separator />
@@ -113,10 +173,6 @@ function CheckoutPage() {
               <h3 className="text-lg font-medium mb-2">Payment Method</h3>
               <RadioGroup onValueChange={setPaymentMethod}>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="wallet" id="wallet" />
-                  <Label htmlFor="wallet">Wallet</Label>
-                </div>
-                <div className="flex items-center space-x-2">
                   <RadioGroupItem value="credit-card" id="credit-card" />
                   <Label htmlFor="credit-card">Credit Card (Stripe)</Label>
                 </div>
@@ -126,13 +182,23 @@ function CheckoutPage() {
                 </div>
               </RadioGroup>
             </div>
+            {paymentMethod === 'credit-card' && (
+              <div className="mt-4">
+                <Elements stripe={stripePromise}>
+                  <CheckoutForm handlePayment={handlePayment} />
+                </Elements>
+              </div>
+            )}
           </CardContent>
           <CardFooter>
-            <Button className="w-full" onClick={handleCheckout}>Place Order</Button>
+            {paymentMethod === 'cash' && (
+              <Button className="w-full" onClick={() => handlePayment()}>
+                Place Order (Cash on Delivery)
+              </Button>
+            )}
           </CardFooter>
         </Card>
       </div>
     </div>
   )
 }
-export default CheckoutPage;
