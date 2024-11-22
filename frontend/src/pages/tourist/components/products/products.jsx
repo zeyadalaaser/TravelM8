@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button"
 import axios from 'axios';
 import { ShareButton } from "@/components/ui/share-button";
 
-export default function Products({ products, currency, exchangeRate, touristId }) {
+export default function Products({ products, currency, exchangeRate, touristId, addToCart }) {
   const handlePurchase = async (product) => {
     if (!touristId) {
-      alert("Tourist ID is required.");
-      return;
+      alert("Tourist ID is required.")
+      return
     }
+
 
     const quantity = 10;
 
@@ -32,18 +33,17 @@ export default function Products({ products, currency, exchangeRate, touristId }
   };
 
 
-
   return (
     <div className="space-y-4">
       {products.length > 0 ? (
-        products.map((product, index) => (
-          <Card key={index} className="overflow-hidden mx-auto">
+        products.map((product) => (
+          <Card key={product._id} className="overflow-hidden mx-auto">
             <div className="flex flex-col md:flex-row h-[230px]">
               <div className="w-full md:w-1/3">
                 <img
                   src={product.image || "https://via.placeholder.com/150"}
                   alt={product.name}
-                  className="w-full h-full"
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div className="w-full md:w-2/3 p-4 flex flex-col justify-between">
@@ -70,21 +70,25 @@ export default function Products({ products, currency, exchangeRate, touristId }
                 </div>
                 <div className="flex justify-between items-center mt-4">
                   <div className="text-xl font-bold">
-                    {(product.price * 1).toFixed(2)} {currency}
+                    {currency} {(product.price * 1).toFixed(2)}
                   </div>
-                  <Button variant="default" onClick={() => handlePurchase(product)}>
-                    Purchase
-                  </Button>
+                  <div className="space-x-2">
+                    <Button variant="outline" onClick={() => addToCart(product)}>
+                      Add to Cart
+                    </Button>
+                    <Button variant="default" onClick={() => handlePurchase(product)}>
+                      Purchase
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
           </Card>
         ))
       ) : (
-        <></>
+        <p>No products available.</p>
       )}
     </div>
-  );
+  )
 }
-
 

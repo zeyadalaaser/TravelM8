@@ -41,6 +41,8 @@ import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
 import SignupsRoles from "./pages/SignUp/signupRoles.jsx";
 import { Toaster } from "@/components/ui/toaster"
 import LoadingPage from "./components/loading.jsx";
+import CheckoutPage from './pages/tourist/components/products/checkout-page';
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -89,6 +91,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
         <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
         <Route path="/preferences-page/:touristId" element={<PreferencesPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
 
       </Routes>
     </BrowserRouter>
