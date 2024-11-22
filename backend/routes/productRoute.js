@@ -3,6 +3,8 @@ import express from 'express';
 import { createProduct, deleteProduct, getAllProducts, updateProduct, getMyProducts, unarchiveProduct, archiveProduct } from '../controllers/productController.js';
 import verifyToken from '../services/tokenDecodingService.js';
 import multer from 'multer';
+import { payWithStripe, payWithCash } from '../controllers/orderController.js';
+
 
 
 const router = express.Router();
@@ -26,5 +28,8 @@ router.put('/:id',upload.single('image'), updateProduct);
 router.put('/:id/archive', archiveProduct);
 router.put('/:id/unarchive', unarchiveProduct);
 router.get('/myProducts', verifyToken, getMyProducts);
+// New payment routes
+router.post('/pay-with-stripe', verifyToken, payWithStripe);
+router.post('/pay-with-cash', verifyToken, payWithCash);
 
 export default router;
