@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import useRouter from "@/hooks/useRouter";
 import { Star, Facebook, Instagram, Youtube } from "lucide-react";
 import { RefreshCcw, Ticket, Zap, Map } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -25,11 +26,12 @@ const images = [
   "https://images.unsplash.com/photo-1541628951107-a9af5346a3e4?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3", 
   "https://wallpaper.forfun.com/fetch/d5/d5c3e417f3b7121700fcb33d337c44ba.jpeg"
 ]
-import { CircularProgress} from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress'; 
 
 export default function HeroSection() {
 
   const { location } = useRouter();
+  const navigate = useNavigate();
   const [museums, setMuseums] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
@@ -49,6 +51,9 @@ export default function HeroSection() {
 
     return () => clearInterval(timer)
   }, [])
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  },[]);
 
   // Fetch latest exchange rates on mount
   useEffect(() => {
@@ -143,9 +148,43 @@ export default function HeroSection() {
     }
   }, 200);
 
+
   useEffect(() => {
     fetchProducts();
   }, [location.search, currency]);
+
+  function getUserFromToken(token) {
+    if (!token) return {};
+    const decoded = JSON.parse(atob(token.split(".")[1])); // Decode the token
+    console.log("User ID:", decoded.userId);
+    return { id: decoded.userId, role: decoded.role }; // Get the role and tourist ID from the token
+  }
+
+    useEffect(() => {
+    const token = localStorage.getItem("token");
+    const { role } = getUserFromToken(token);
+    if (role === "Seller") {
+      navigate("/Sellerdashboard"); // Redirect if the role is not 'tourist'
+      return;
+    }
+    if (role === "Admin") {
+      navigate("/Admindashboard"); // Redirect if the role is not 'tourist'
+      return;
+    }
+    if (role === "TourismGovernor") {
+      navigate("/TourismGovernorDashboard"); // Redirect if the role is not 'tourist'
+      return;
+    }
+    if (role === "TourGuide") {
+      navigate("/tourGuideDashboard"); // Redirect if the role is not 'tourist'
+      return;
+    }
+    if (role === "Advertiser") {
+      navigate("/advertiserDashboard"); // Redirect if the role is not 'tourist'
+      return;
+    }
+
+  }, [navigate]);
   
 
 
@@ -282,7 +321,10 @@ export default function HeroSection() {
       )}
     </div>
     <div className="flex justify-center">
-        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white mt-12 ">
+        <Button  
+        className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white mt-12 "
+        onClick={() => navigate(`/tourist-page?type=museums`)}
+        >
           View more
         </Button>
       </div>
@@ -343,7 +385,9 @@ export default function HeroSection() {
       
 
       <div className="flex justify-center">
-        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">
+        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+        onClick={() => navigate(`/tourist-page?type=itineraries`)}
+        >
           View more
         </Button>
       </div>
@@ -390,7 +434,9 @@ export default function HeroSection() {
       
 
       <div className="flex justify-center">
-        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">
+        <Button  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+        onClick={() => navigate(`/tourist-page?type=products`)}
+        >
           View more
         </Button>
       </div>
