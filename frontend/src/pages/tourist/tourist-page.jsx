@@ -105,15 +105,15 @@ export default function TouristPage() {
         <NavBar onComplaintClick={() => setShowComplaintForm(true)}
           onRedeemClick={() => setShowRedeemPoints(true)} />
           <div className="flex">
-  {/* Badge Display with Styling */}
-  <div className="-translate-y-1 badge-container flex items-center p-2 rounded-full shadow-md bg-gray-900 text-white text-sm mr-2">
-    <Award className="w-8 h-5 mr-1 text-white" />
-    <div className="text-center">
-      <p className="font-semibold">{level || "Loading..."}</p>
-      <p className="text-xs">{totalPoints || 0} Points</p>
-    </div>
-  </div>
-</div>
+          {/* Badge Display with Styling */}
+          <div className="-translate-y-1 badge-container flex items-center p-2 rounded-full shadow-md bg-gray-900 text-white text-sm mr-2">
+            <Award className="w-8 h-5 mr-1 text-white" />
+            <div className="text-center">
+              <p className="font-semibold">{level || "Loading..."}</p>
+              <p className="text-xs">{totalPoints || 0} Points</p>
+            </div>
+          </div>
+        </div>
       </div>
 
 

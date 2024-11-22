@@ -104,7 +104,7 @@ const TourGuideDashboard = () => {
     
     useEffect(() => {
       if (!token) {
-        navigate("/login");
+        navigate("/");
         return;
       }
       fetchItineraries();

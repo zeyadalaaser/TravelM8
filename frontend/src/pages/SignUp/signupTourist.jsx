@@ -114,7 +114,7 @@ if (isSubmitted) {
       <p>To begin your adventure, please <strong>Login</strong>.</p>
       <button 
         className="login-button" 
-        onClick={() => navigate('/login')}  
+        onClick={() => navigate('/')}  
       >
         Login
       </button>
@@ -142,7 +142,7 @@ if (isSubmitted) {
             <button className="nav-button">About Us</button>
             <button className="nav-button">Our Services</button>
             <button className="nav-button">Contact Us</button>
-            <button className="nav-login-button" onClick={()=>navigate('/login')}>Login</button>
+            <button className="nav-login-button" onClick={()=>navigate('/')}>Login</button>
           </div>
         </div>
       </nav>

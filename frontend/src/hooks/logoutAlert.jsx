@@ -17,14 +17,16 @@ const LogoutAlertDialog = ({ isOpen, onClose}) => {
           'Content-Type': 'application/json'
         }
       });
-  
+      navigate('/loading');
+      
+      setTimeout(() => {
       if (response.ok) {
         localStorage.removeItem('token'); 
         navigate("/"); 
-        window.location.reload();
       } else {
         console.error('Failed to logout');
       }
+    }, 2000);
     } catch (error) {
       console.error('Error logging out:', error);
     }

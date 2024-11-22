@@ -23,7 +23,7 @@ export default function TouristProfile() {
   useEffect(() => {
     // Redirect if no token is found
     if (!token)
-      navigate("/login");
+      navigate("/");
   }, [token]); // Include token in dependency array
 
 

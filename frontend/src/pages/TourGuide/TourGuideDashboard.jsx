@@ -257,7 +257,7 @@ const handleSubmit = async (e) => {
 
 useEffect(() => {
   if (!token) {
-    navigate("/login");
+    navigate("/");
     return;
   }
   fetchItineraries();

@@ -26,13 +26,15 @@ const Logout = () => {
           'Content-Type': 'application/json'
         }
       });
-  
+      navigate("/loading");
+    setTimeout(() => {
       if (response.ok) {
         localStorage.removeItem('token'); 
         navigate("/"); 
       } else {
         console.error('Failed to logout');
       }
+    }, 2000); 
     } catch (error) {
       console.error('Error logging out:', error);
     }
