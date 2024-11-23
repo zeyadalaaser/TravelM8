@@ -12,12 +12,12 @@ import { SortSelection } from "../filters/sort-selection";
 import Activities from "./activities";
 import { SearchBar } from "../filters/search";
 import { getActivities, getCategories, createActivityBooking } from "../../api/apiService";
-
+import CircularProgress from '@mui/material/CircularProgress'; 
 
 export function ActivitiesPage() {
   const token = localStorage.getItem('token');
   console.log(token);
-
+  const [loading, setLoading] = useState(false); 
   const { location } = useRouter();
   const [activities, setActivities] = useState([]);
   const [currency, setCurrency] = useState("USD");
@@ -39,12 +39,23 @@ export function ActivitiesPage() {
   }, []);
 
   const fetchActivities = useDebouncedCallback(async () => {
+    setLoading(true); // Set loading to true when starting the fetch
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
     queryParams.set("exchangeRate", exchangeRates[currency] || 1);
 
-    const fetchedActivities = (await getActivities(`?${queryParams.toString()}`)).filter(a => a.isBookingOpen);
-    setActivities(fetchedActivities);
+    try {
+      const fetchedActivities = (await getActivities(`?${queryParams.toString()}`)).filter(a => a.isBookingOpen);
+      
+      // Simulate a delay by adding a timeout before updating the loading state
+      setTimeout(() => {
+        setActivities(fetchedActivities);
+        setLoading(false); // Set loading to false after the simulated delay
+      }, 500); // Adjust this time to control how long the loading indicator stays
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+      setLoading(false); // Ensure loading is set to false if there’s an error
+    }
   }, 200);
 
   useEffect(() => {
@@ -62,7 +73,7 @@ export function ActivitiesPage() {
   ];
 
   return (
-    <>
+    <div className="mt-24">
       <SearchBar categories={searchCategories} />
       <div className="flex flex-row justify-between mb-4">
         <label>
@@ -95,16 +106,23 @@ export function ActivitiesPage() {
             </div>
             <SortSelection />
           </div>
-          <Activities
-            token ={token}
-            bookActivity={createActivityBooking}
-            activities={activities}
-            currency={currency}
-            exchangeRate={exchangeRates[currency] || 1}
-          />
+          {/* Show the CircularProgress if loading is true */}
+          {loading ? (
+            <div className="flex justify-center items-center mt-36">
+              <CircularProgress />
+            </div>
+          ) : (
+            <Activities
+              token={token}
+              bookActivity={createActivityBooking}
+              activities={activities}
+              currency={currency}
+              exchangeRate={exchangeRates[currency] || 1}
+            />
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

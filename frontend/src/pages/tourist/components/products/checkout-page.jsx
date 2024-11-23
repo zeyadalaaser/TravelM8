@@ -11,8 +11,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { toast, Toaster } from 'react-hot-toast'
 
 const stripePromise = loadStripe('pk_test_51QNwSmLNUgOldllO51XLfeq4fZCMqG9jUXp4wVgY6uq9wpvjOAJ1XgKNyErFb6jf8rmH74Efclz55kWzG8UDxZ9J0064KdbDCb')
+
 
 function CheckoutForm({ handlePayment }) {
   const stripe = useStripe()
@@ -50,87 +52,108 @@ function CheckoutForm({ handlePayment }) {
 }
 
 export default function CheckoutPage() {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { cart, currency } = location.state || { cart: [], currency: 'USD' }
-  const [addresses, setAddresses] = useState([])
-  const [newAddress, setNewAddress] = useState('')
-  const [selectedAddress, setSelectedAddress] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState('')
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    const fetchAddresses = async () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { cart, currency } = location.state || { cart: [], currency: 'USD' };
+    const [addresses, setAddresses] = useState([]);
+    const [newAddress, setNewAddress] = useState('');
+    const [selectedAddress, setSelectedAddress] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [error, setError] = useState('');
+  
+    useEffect(() => {
+      const fetchAddresses = async () => {
+        try {
+          const response = await axios.get('http://localhost:5001/api/user/addresses');
+          setAddresses(response.data);
+        } catch (error) {
+          console.error('Error fetching addresses:', error);
+          setError('Failed to fetch addresses. Please try again.');
+        }
+      };
+      fetchAddresses();
+    }, []);
+  
+    const handleAddAddress = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/api/user/addresses')
-        setAddresses(response.data)
+        const response = await axios.post('http://localhost:5001/api/user/addresses', { address: newAddress });
+        setAddresses([...addresses, response.data]);
+        setNewAddress('');
       } catch (error) {
-        console.error('Error fetching addresses:', error)
-        setError('Failed to fetch addresses. Please try again.')
+        console.error('Error adding address:', error);
+        setError('Failed to add address. Please try again.');
       }
-    }
-    fetchAddresses()
-  }, [])
-
-  const handleAddAddress = async () => {
-    try {
-      const response = await axios.post('http://localhost:5001/api/user/addresses', { address: newAddress })
-      setAddresses([...addresses, response.data])
-      setNewAddress('')
-    } catch (error) {
-      console.error('Error adding address:', error)
-      setError('Failed to add address. Please try again.')
-    }
-  }
-
-  const handlePayment = async (paymentMethodId = null) => {
-    if (!selectedAddress) {
-      setError('Please select a delivery address')
-      return
-    }
-
-    try {
-      const order = {
-        items: cart,
-        deliveryAddress: selectedAddress,
-        paymentMethod,
-        currency,
-        paymentMethodId
-      }
-
-      let response
-      if (paymentMethod === 'credit-card') {
-        response = await axios.post('http://localhost:5001/api/products/pay-with-stripe', order)
-      } else if (paymentMethod === 'cash') {
-        response = await axios.post('http://localhost:5001/api/products/pay-with-cash', order)
-      } else {
-        throw new Error('Invalid payment method')
-      }
-
-      navigate('/order-confirmation', { state: { order: response.data } })
-    } catch (error) {
-      console.error('Error processing order:', error)
-      setError('There was an error processing your order. Please try again.')
-    }
-  }
-
-  const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0)
-
-  return (
-    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle>Checkout</CardTitle>
-            <CardDescription>Complete your order</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {error && (
-              <Alert variant="destructive">
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+    };
+  
+    const handlePayment = async (paymentMethodId = null) => {
+        try {
+          const token = localStorage.getItem('token'); // Ensure token exists
+          if (!token) {
+            throw new Error('User is not authenticated');
+          }
+      
+          const order = {
+            items: cart,
+            deliveryAddress: selectedAddress || null,
+            paymentMethod,
+            currency,
+            ...(paymentMethod === 'credit-card' && { paymentMethodId }), // Add only if credit card
+          };
+      
+          console.log('Order payload:', order);
+      
+          let response;
+          if (paymentMethod === 'credit-card') {
+            response = await axios.post(
+              'http://localhost:5001/api/products/pay-with-stripe',
+              order,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+          } else if (paymentMethod === 'cash') {
+            response = await axios.post(
+              'http://localhost:5001/api/products/pay-with-cash',
+              order,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+          } else {
+            throw new Error('Invalid payment method');
+          }
+      
+          toast.success('Order placed successfully!');
+          navigate('/tourist-page', { state: { order: response.data.order } });
+        } catch (error) {
+          console.error('Error processing order:', error.response || error);
+          setError('There was an error processing your order. Please try again.');
+          toast.error('Failed to place order. Please try again.');
+        }
+      };
+      
+    const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  
+    return (
+        <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+          <Toaster position="top-right" />
+          <div className="max-w-3xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle>Checkout</CardTitle>
+                <CardDescription>Complete your order</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
             <div>
               <h3 className="text-lg font-medium">Order Summary</h3>
               <ul className="mt-2 divide-y divide-gray-200">
@@ -148,10 +171,10 @@ export default function CheckoutPage() {
             </div>
             <Separator />
             <div>
-              <h3 className="text-lg font-medium mb-2">Delivery Address</h3>
+              <h3 className="text-lg font-medium mb-2">Delivery Address (Optional)</h3>
               <Select onValueChange={setSelectedAddress}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Choose a delivery address" />
+                  <SelectValue placeholder="Choose a delivery address (optional)" />
                 </SelectTrigger>
                 <SelectContent>
                   {addresses.map((address, index) => (
@@ -189,7 +212,7 @@ export default function CheckoutPage() {
                 </Elements>
               </div>
             )}
-          </CardContent>
+           </CardContent>
           <CardFooter>
             {paymentMethod === 'cash' && (
               <Button className="w-full" onClick={() => handlePayment()}>
@@ -200,5 +223,10 @@ export default function CheckoutPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }
+
+
+
+
+

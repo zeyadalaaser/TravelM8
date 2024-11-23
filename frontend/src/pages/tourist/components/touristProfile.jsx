@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react'
 import { useNavigate} from 'react-router-dom';
-import { Bell, ChevronDown, Eye, EyeOff, User, X, CreditCard, Tag, Star, Shield, Layout, List, Settings, Map, TagsIcon, DollarSign, HeartCrack } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, User, X,ThumbsDown ,BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart } from 'lucide-react'
 import {Input} from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import Logout from "@/hooks/logOut.jsx";
 import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myComplaints.jsx";
 import Footer from "@/components/Footer.jsx";
 import BookingHistory from "@/pages/tourist/components/bookings/BookingHistory.jsx"; 
+import Navbar from "@/components/Navbar.jsx";
 
 const TouristProfilePage = () => {
 
@@ -326,7 +327,7 @@ const TouristProfilePage = () => {
               <div className="flex justify-end">
                 <button 
                   onClick={handleFormSubmit}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  className="rounded-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white">
                   Save changes
                 </button>
               </div>
@@ -378,7 +379,7 @@ const TouristProfilePage = () => {
               </section>
               <div className="flex justify-end">
                     <button 
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                     className="rounded-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white"
                       onClick={() => setIsPasswordModalOpen(true)}
                     >
                       Change Password
@@ -392,29 +393,16 @@ const TouristProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-[#FAF9F6]">
       {/* Header */}
-      <header className="bg-white shadow">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-blue-600">TravelM8</div>
-          <div className="flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-gray-800">
-              <Bell className="h-6 w-6" />
-            </button>
-            <button className="flex items-center text-gray-600 hover:text-gray-800">
-              <User className="h-6 w-6 mr-2" />
-              <span>John Doe</span>
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </button>
-          </div>
-        </div>
-      </header>
+      <Navbar profilePageString={"/tourist-profile"}/>
+
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container  mx-auto px-4 py-8 mt-12">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
-        <aside className="w-64 bg-gray-100 ">
+        <aside className="w-64 ">
         <Card className="bg-background border-border">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center space-x-2">
@@ -452,14 +440,14 @@ const TouristProfilePage = () => {
               className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
               onClick={() => setActiveView('complaints')}
             >
-              <Tag className="mr-3" />
+              <ThumbsDown className="mr-3" />
               My complaints
             </button>
             <button
               className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
               onClick={() => setActiveView('bookings')}
             >
-              <List className="mr-3" />
+              <BookCheck className="mr-3" />
               My bookings
             </button>
             <button
@@ -473,7 +461,7 @@ const TouristProfilePage = () => {
               className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
               onClick={() => setShowDialog(true)}
             >
-              <User className="mr-3" />
+              <HeartCrack className="mr-3" />
               Delete My account
             </button>
             {showDialog && (
@@ -519,8 +507,9 @@ const TouristProfilePage = () => {
     </main>
 
       {/* Footer */}
-      <Footer/>
-
+      <div className="mt-16">
+        <Footer/>
+      </div>
       {/* Password Change Modal */}
       {isPasswordModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">

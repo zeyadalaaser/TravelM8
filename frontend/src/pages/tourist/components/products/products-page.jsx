@@ -16,17 +16,19 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import axios from "axios";
 import Cart from "./cart"
+import CircularProgress from '@mui/material/CircularProgress'; 
 
 
-export function ProductsPage({ touristId }) {
-  console.log("Tourist ID in ProductsPage:", touristId);
+
+export function ProductsPage() {
+  // console.log("Tourist ID in ProductsPage:", touristId);
   //const { location } = useRouter();
   const location = useLocation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [currency, setCurrency] = useState("USD");
   //const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(false); // Add loading state
   const [exchangeRates, setExchangeRates] = useState({});
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -51,7 +53,10 @@ export function ProductsPage({ touristId }) {
 
     try {
       const response = await axios.get(`http://localhost:5001/api/products?${queryParams.toString()}`)
-      setProducts(response.data.data)
+      setTimeout(() => {
+        setProducts(response.data.data)
+        setLoading(false);
+     }, 500); 
     } catch (error) {
       console.error("Error fetching products:", error)
       alert("Failed to load products. Please try again.")
@@ -150,6 +155,7 @@ export function ProductsPage({ touristId }) {
 
 
 return (
+  <div className="mt-24">
   <div className="min-h-screen bg-gray-100">
     <header className="bg-white shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -223,21 +229,27 @@ return (
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
-              {loading ? <div>Loading...</div> : <div>{products.length} results</div>}
               <ClearFilters />
             </div>
             <SortSelection />
           </div>
+          {loading ? (
+            <div className="flex justify-center items-center mt-36">
+              <CircularProgress />
+            </div>
+          ) : (
           <Products
             products={products}
             currency={currency}
             exchangeRate={exchangeRates[currency]}
-            touristId={touristId}
+            // touristId={touristId}
             addToCart={addToCart}
           />
+        )}
         </div>
       </div>
     </main>
+  </div>
   </div>
 )
 }

@@ -1,7 +1,8 @@
 import Stripe from 'stripe';
 import Order from '../models/orderModel.js';
 
-const stripe = new Stripe('pk_test_51QNwSmLNUgOldllO51XLfeq4fZCMqG9jUXp4wVgY6uq9wpvjOAJ1XgKNyErFb6jf8rmH74Efclz55kWzG8UDxZ9J0064KdbDCb');
+
+const stripe = new Stripe('sk_test_51QNwSmLNUgOldllO81Gcdv4m60Pf04huhn0DcH2jm0NedAn6xh3krj5GyJ9PEojkKCJYmGJGojBK12S52FktB5Jc00dYqr1Ujo');
 
 // Helper function to calculate total amount
 const calculateTotalAmount = (items) => {
@@ -79,4 +80,4 @@ export const payWithCash = async (req, res) => {
     console.error('Error processing cash on delivery order:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-};
+};//4576 3802 0035 5065

@@ -9,8 +9,10 @@ import { Museums } from "./museums";
 import { getMuseums, getPlaceTags } from "../../api/apiService";
 import { SearchBar } from "../filters/search";
 import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress'; 
 
 export function MuseumsPage() {
+  const [loading, setLoading] = useState(false); 
   const { location } = useRouter();
   const [museums, setMuseums] = useState([]);
   const [currency, setCurrency] = useState("USD");
@@ -32,12 +34,16 @@ export function MuseumsPage() {
   }, []);
 
   const fetchMuseums = useDebouncedCallback(async () => {
+    setLoading(true); 
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
     queryParams.set("exchangeRate", exchangeRates[currency] || 1);
 
     const fetchedMuseums = await getMuseums(`?${queryParams.toString()}`);
-    setMuseums(fetchedMuseums);
+    setTimeout(() => {
+      setMuseums(fetchedMuseums);
+      setLoading(false);
+    }, 500); 
   }, 200);
 
   useEffect(() => {
@@ -54,7 +60,7 @@ export function MuseumsPage() {
   ];
 
   return (
-    <>
+    <div className="mt-24">
       <div className="flex flex-row justify-between mb-4">
         <label>
           Currency:
@@ -84,13 +90,19 @@ export function MuseumsPage() {
               <ClearFilters />
             </div>
           </div>
+          {loading ? (
+            <div className="flex justify-center items-center mt-36">
+              <CircularProgress />
+            </div>
+          ) : (
           <Museums
             museums={museums}
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
           />
+        )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

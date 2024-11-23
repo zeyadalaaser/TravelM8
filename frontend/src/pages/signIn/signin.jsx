@@ -39,7 +39,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick  }) => {
           });
           const { token, role, needsPreferences } = response.data;
           localStorage.setItem('token', token);
-          navigate('/loading');
+          // navigate('/loading');
           const decodedToken = jwtDecode(token);
           const userId = decodedToken.id || decodedToken.userId;
     
@@ -50,35 +50,41 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick  }) => {
           console.log("token:", token);
           console.log("pref: ", needsPreferences);
     
-        setTimeout(() => {
+        // setTimeout(() => {
           if (needsPreferences && role === 'Tourist') {
             navigate(`/preferences-page/${userId}`);
           } else {
             switch (role) {
               case 'Tourist':
-                navigate('/tourist-page');
+                navigate('/');
+                window.location.reload();
                 break;
               case 'Seller':
                 navigate('/Sellerdashboard');
+                window.location.reload();
                 break;
               case 'TourGuide':
                 navigate('/tourGuideDashboard');
+                window.location.reload();
                 break;
               case 'TourismGovernor':
                 navigate('/TourismGovernorDashboard');
+                window.location.reload();
                 break;
               case 'Admin':
                 navigate('/AdminDashboard');
+                window.location.reload();
                 break;
               case 'Advertiser':
                 navigate('/advertiserDashboard');
+                window.location.reload();
                 break;
               default:
                 navigate('/default-page');
             }
     
           }
-        }, 2000);
+        // }, 2000);
         } catch (error) {
           setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
         }
