@@ -27,8 +27,7 @@ import logoutRoute from "./routes/logoutRouter.js";
 import activityBookingsRoute from "./routes/bookingsActivityRoute.js";
 import itineraryBookingsRoute from "./routes/bookingsRoute.js";
 import deleteRequestRoute from "./routes/deleteRequestRoute.js";
-
-
+import notificationRoutes from "./routes/notificationsRoutes.js";
 
 dotenv.config({ path: "../.env" });
 
@@ -75,7 +74,7 @@ app.use("/api", activityBookingsRoute);
 app.use("/api", itineraryBookingsRoute);
 
 app.use("/api", deleteRequestRoute);
-
+app.use("/api", notificationRoutes);
 
 app.listen(PORT, () => {
   connectDB();

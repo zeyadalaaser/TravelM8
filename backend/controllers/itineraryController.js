@@ -5,7 +5,14 @@ import HistoricalPlaces from "../models/historicalPlacesModel.js";
 import PreferenceTag from "../models/preferenceTagModel.js";
 import ActivityCategory from "../models/activityCategoryModel.js";
 import mongoose from "mongoose";
-import { createPopulationStage, createRatingStage } from "../helpers/aggregationHelper.js";
+import {
+  createPopulationStage,
+  createRatingStage,
+} from "../helpers/aggregationHelper.js";
+import {
+  notifyTourGuide,
+  sendEmailNotification,
+} from "./notificationController.js";
 
 export const createItinerary = async (req, res) => {
   try {
@@ -24,7 +31,6 @@ export const createItinerary = async (req, res) => {
       message: "Error adding itinerary",
       error: error.message,
     });
-
   }
 };
 
@@ -90,7 +96,11 @@ export const getMyItineraries = async (req, res) => {
 };
 
 // update an itinerary in the database
-export const updateItineraryUponBookingModification = async (id, slotDate, action) => {
+export const updateItineraryUponBookingModification = async (
+  id,
+  slotDate,
+  action
+) => {
   try {
     // Fetch the itinerary by its ID
     const updatedItinerary = await Itinerary.findById(id);
@@ -102,12 +112,17 @@ export const updateItineraryUponBookingModification = async (id, slotDate, actio
     // Ensure slotDate is provided if action is specified
     if (slotDate) {
       if (!action) {
-        return { success: false, message: "Action is required when slot date is specified" };
+        return {
+          success: false,
+          message: "Action is required when slot date is specified",
+        };
       }
 
       // Find the slot matching the provided date
       const slotToUpdate = updatedItinerary.availableSlots.find(
-        (slot) => new Date(slot.date).toDateString() === new Date(slotDate).toDateString()
+        (slot) =>
+          new Date(slot.date).toDateString() ===
+          new Date(slotDate).toDateString()
       );
 
       if (!slotToUpdate) {
@@ -119,16 +134,22 @@ export const updateItineraryUponBookingModification = async (id, slotDate, actio
         if (slotToUpdate.numberOfBookings < slotToUpdate.maxNumberOfBookings) {
           slotToUpdate.numberOfBookings += 1;
         } else {
-          return { success: false, message: "Max bookings reached for this date" };
+          return {
+            success: false,
+            message: "Max bookings reached for this date",
+          };
         }
-      } 
+      }
       // Handle cancellation action
       else if (action === "cancel") {
         // Decrement bookings, ensuring it doesn't go below zero
         if (slotToUpdate.numberOfBookings > 0) {
           slotToUpdate.numberOfBookings -= 1;
         } else {
-          return { success: false, message: "No bookings to cancel for this slot" };
+          return {
+            success: false,
+            message: "No bookings to cancel for this slot",
+          };
         }
       } else {
         return { success: false, message: "Invalid action specified" };
@@ -147,7 +168,6 @@ export const updateItineraryUponBookingModification = async (id, slotDate, actio
 
     // If slotDate is not provided, there's nothing to update
     return { success: false, message: "Slot date not provided" };
-
   } catch (error) {
     // Return error response
     return {
@@ -158,11 +178,11 @@ export const updateItineraryUponBookingModification = async (id, slotDate, actio
   }
 };
 
-export const getItineraryPrice = async (itineraryId) =>{
-  try{
+export const getItineraryPrice = async (itineraryId) => {
+  try {
     const itinerary = await Itinerary.findById(itineraryId);
     return itinerary.price;
-  }catch(error){
+  } catch (error) {
     return null;
   }
 };
@@ -268,19 +288,19 @@ export const filterItineraries = async (req, res) => {
     const exchangeRate = rates[currency] || 1;
     const filters = {};
 
-    if (id)
-      filters["_id"] = new mongoose.Types.ObjectId(`${id}`);
+    if (id) filters["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
     if (search) {
-      if (searchBy === 'tag') {
-        filters['tags.name'] = { $regex: search, $options: 'i' };
-      } else if (searchBy === 'name') {
-        filters['name'] = { $regex: search, $options: 'i' };
+      if (searchBy === "tag") {
+        filters["tags.name"] = { $regex: search, $options: "i" };
+      } else if (searchBy === "name") {
+        filters["name"] = { $regex: search, $options: "i" };
       }
-    };
+    }
 
     if (tag)
-      filters['tags.name'] = searchBy !== 'tag' ? tag : { $in: [tag, filters['tags.name']] };
+      filters["tags.name"] =
+        searchBy !== "tag" ? tag : { $in: [tag, filters["tags.name"]] };
 
     if (startDate || endDate) {
       filters["availableSlots"] = { $elemMatch: {} };
@@ -304,11 +324,29 @@ export const filterItineraries = async (req, res) => {
 
     if (language) filters.tourLanguage = language;
 
-    const sortCondition = sortBy ? [{ $sort: { [sortBy]: order === "desc" ? -1 : 1 } }] : [];
+    const sortCondition = sortBy
+      ? [{ $sort: { [sortBy]: order === "desc" ? -1 : 1 } }]
+      : [];
     const addRatingStage = createRatingStage("Itinerary", true, 0);
-    const advertiserStage = createPopulationStage("advertisers", "advertiserId", "advertiser", true);
-    const tagsStage = createPopulationStage("preferencetags", "tags", "tags", false, true);
-    const tourGuideStage = createPopulationStage("tourguides", "tourGuideId", "tourGuideId", true);
+    const advertiserStage = createPopulationStage(
+      "advertisers",
+      "advertiserId",
+      "advertiser",
+      true
+    );
+    const tagsStage = createPopulationStage(
+      "preferencetags",
+      "tags",
+      "tags",
+      false,
+      true
+    );
+    const tourGuideStage = createPopulationStage(
+      "tourguides",
+      "tourGuideId",
+      "tourGuideId",
+      true
+    );
 
     const aggregationPipeline = [
       ...tagsStage,
@@ -316,7 +354,7 @@ export const filterItineraries = async (req, res) => {
       { $match: filters },
       ...addRatingStage,
       ...sortCondition,
-      ...advertiserStage
+      ...advertiserStage,
     ];
 
     let itineraries = await Itinerary.aggregate(aggregationPipeline);
@@ -399,8 +437,8 @@ export const searchItems2 = async (req, res) => {
     const itineraries =
       Object.keys(itineraryFilter).length > 0
         ? await Itinerary.find(itineraryFilter)
-          .populate("activities")
-          .populate("historicalSites")
+            .populate("activities")
+            .populate("historicalSites")
         : [];
 
     const results = { activities, historicalPlaces, itineraries };
@@ -432,16 +470,18 @@ export const searchItems2 = async (req, res) => {
   }
 };
 
-
 ////For rating the itineraries
 export const rateItinerary = async (req, res) => {
   const { itineraryId, touristId, rating, comment } = req.body;
   try {
     const itinerary = await Itinerary.findById(itineraryId);
-    if (!itinerary) return res.status(404).json({ message: "Itinerary not found" });
+    if (!itinerary)
+      return res.status(404).json({ message: "Itinerary not found" });
 
     // Add or update the rating for this tourist
-    const existingRating = itinerary.ratings.find(r => r.touristId.toString() === touristId);
+    const existingRating = itinerary.ratings.find(
+      (r) => r.touristId.toString() === touristId
+    );
     if (existingRating) {
       existingRating.rating = rating;
       existingRating.comment = comment;
@@ -469,6 +509,7 @@ export const flagItinerary = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ message: "Itinerary not found" });
     }
+    const notificationResult = await handleFlaggedItinerary(itinerary);
 
     res
       .status(200)
@@ -478,7 +519,6 @@ export const flagItinerary = async (req, res) => {
     res.status(500).json({ message: "Error flagging itinerary" });
   }
 };
-
 
 export const getSalesReport = async (req, res) => {
   try {
@@ -493,7 +533,9 @@ export const getSalesReport = async (req, res) => {
     const itineraries = await Itinerary.find({ tourGuideId });
 
     if (!itineraries.length) {
-      return res.status(404).json({ message: "No itineraries found for this tour guide" });
+      return res
+        .status(404)
+        .json({ message: "No itineraries found for this tour guide" });
     }
 
     // Calculate revenue for each itinerary
@@ -505,13 +547,19 @@ export const getSalesReport = async (req, res) => {
       return {
         itineraryName: itinerary.name,
         itineraryId: itinerary._id,
-        totalBookings: itinerary.availableSlots.reduce((sum, slot) => sum + slot.numberOfBookings, 0),
+        totalBookings: itinerary.availableSlots.reduce(
+          (sum, slot) => sum + slot.numberOfBookings,
+          0
+        ),
         revenue,
       };
     });
 
     // Calculate overall revenue
-    const totalRevenue = salesReport.reduce((sum, item) => sum + item.revenue, 0);
+    const totalRevenue = salesReport.reduce(
+      (sum, item) => sum + item.revenue,
+      0
+    );
 
     res.status(200).json({
       message: "Sales report generated successfully",
@@ -520,6 +568,51 @@ export const getSalesReport = async (req, res) => {
     });
   } catch (error) {
     console.error("Error generating sales report:", error.message);
-    res.status(500).json({ message: "Error generating sales report", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error generating sales report", error: error.message });
+  }
+};
+export const handleFlaggedItinerary = async (itinerary) => {
+  try {
+    if (!itinerary.flagged) {
+      console.log("Itinerary is not flagged."); // Debug log
+      return { success: false, message: "Itinerary is not flagged." };
+    }
+
+    console.log("Fetching TourGuide details...");
+    const populatedItinerary = await Itinerary.findById(itinerary._id).populate(
+      "tourGuideId",
+      "email username"
+    );
+
+    if (!populatedItinerary || !populatedItinerary.tourGuideId) {
+      console.error("Tour guide not found for itinerary");
+      return { success: false, message: "Tour guide not found." };
+    }
+
+    const { email, username } = populatedItinerary.tourGuideId;
+    console.log("TourGuide Details:", { email, username });
+
+    // Notify tour guide via system notification
+    const notificationResult = await notifyTourGuide(
+      populatedItinerary.tourGuideId._id,
+      itinerary.name
+    );
+
+    // Notify via email
+    const emailResult = await sendEmailNotification(
+      email,
+      username,
+      itinerary.name
+    );
+
+    console.log("Notification Result:", notificationResult);
+    console.log("Email Result:", emailResult);
+
+    return { success: true, notificationResult, emailResult };
+  } catch (error) {
+    console.error("Error handling flagged itinerary:", error.message);
+    return { success: false, error: error.message };
   }
 };

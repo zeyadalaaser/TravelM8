@@ -35,14 +35,14 @@ import AdvertiserDashboard from "./pages/Advertiser/advertiserDashboard.jsx";
 import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
 import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
 import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
-import Sellerdashboard from '@/pages/seller/Sellerdashboard.jsx';
+import Sellerdashboard from "@/pages/seller/Sellerdashboard.jsx";
 import AccountDelete from "./pages/admin/accountDelete.jsx";
 import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
 import SignupsRoles from "./pages/SignUp/signupRoles.jsx";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 import LoadingPage from "./components/loading.jsx";
-import CheckoutPage from './pages/tourist/components/products/checkout-page';
-
+import CheckoutPage from "./pages/tourist/components/products/checkout-page";
+import NotificationsPage from "./pages/TourGuide/NotificationsPage.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -90,9 +90,12 @@ createRoot(document.getElementById("root")).render(
         <Route path="/itineraryForm" element={<ItineraryForm />} />
         <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
         <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
-        <Route path="/preferences-page/:touristId" element={<PreferencesPage />} />
+        <Route
+          path="/preferences-page/:touristId"
+          element={<PreferencesPage />}
+        />
         <Route path="/checkout" element={<CheckoutPage />} />
-
+        <Route path="/notifications" element={<NotificationsPage />} />
       </Routes>
     </BrowserRouter>
     <Toaster />
