@@ -5,11 +5,11 @@ import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 
-const MapCard = ({ setLatLng }) => {
-  const [mapCenter, setMapCenter] = useState([51.505, -0.09]);
-  const [address, setAddress] = useState("");
+const MapCard = ({ initialLocation, setLatLng }) => {
+  const [mapCenter, setMapCenter] = useState(initialLocation ? [initialLocation.lat,initialLocation.lng] : [51.505, -0.09]);
+  const [address, setAddress] = useState(initialLocation ? initialLocation.name : "");
   const [suggestions, setSuggestions] = useState([]);
-  const [markerPosition, setMarkerPosition] = useState(null);
+  const [markerPosition, setMarkerPosition] = useState(initialLocation ? {lat: initialLocation.lat, lng:initialLocation.lng} : null);
 
   const handleAddressChange = async (e) => {
     const inputValue = e.target.value;

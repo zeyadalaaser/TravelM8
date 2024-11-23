@@ -27,6 +27,7 @@ import { X } from "lucide-react";
 
 
 const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
+
   const token = localStorage.getItem('token');
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
@@ -70,6 +71,7 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
           category: dialogArgs.category._id,
           tags: dialogArgs.tags.map((tag)=>tag._id)
         });
+        setLatLng(dialogArgs.location);
       }
     else setFormData({ title: "",
       description: "",
@@ -122,6 +124,9 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    formData.location = latlng;
+
     let response;
     try {
       if (dialogArgs) {
@@ -172,7 +177,7 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
   
     return `${year}-${month}-${day}T${hours}:${minutes}`; // Format: yyyy-MM-ddThh:mm
   };
-
+   
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose} className="w-auto">
@@ -222,7 +227,7 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
             </div>
 
             <div className="w-full h-400">
-              <MapCard setLatLng={setLatLng} />
+              <MapCard initialLocation={dialogArgs ? dialogArgs.location : null} setLatLng={setLatLng} />
             </div>
 
             <div>

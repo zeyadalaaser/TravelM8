@@ -185,61 +185,93 @@ export const getActivityPrice = async (activityId) =>{
   }
 };
 
-const updateActivity = async (req, res) => {
+// const updateActivity = async (req, res) => {
+//   const activityId = req.params.id;
+
+//   if (mongoose.Types.ObjectId.isValid(activityId)) {
+//     const updateFields = Object.fromEntries(
+//       Object.entries(req.body).filter(([key, value]) => value != null)
+//     );
+
+//     try {
+//       // Ensure category is a valid ObjectId (if you're updating it)
+//       if (
+//         updateFields.category &&
+//         !mongoose.Types.ObjectId.isValid(updateFields.category)
+//       ) {
+//         return res.status(400).json({ message: "Invalid category ID" });
+//       }
+
+//       // Update the activity
+//       // Ensure category is a valid ObjectId (if you're updating it)
+//       if (
+//         updateFields.category &&
+//         !mongoose.Types.ObjectId.isValid(updateFields.category)
+//       ) {
+//         return res.status(400).json({ message: "Invalid category ID" });
+//       }
+
+//       // Update the activity
+//       const newActivity = await activityModel
+//         .findByIdAndUpdate(
+//           activityId,
+//           { $set: updateFields },
+//           { new: true, runValidators: true } // Return updated document and apply validation
+//         )
+//         .populate("advertiserId", "username")
+//         .populate("category", "name")
+//         .populate("tags", "name");
+
+
+//       // Check if the activity was updated
+//       if (!newActivity) {
+//         return res.status(404).json({ message: "Activity not found" });
+//       }
+
+//       // Return success response
+//       res
+//         .status(200)
+//         .json({ message: "Successfully updated the activity", newActivity });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(400).json({ message: "Failed to update activity", error });
+//     }
+//   } else {
+//     res.status(400).json({ message: "Invalid activity ID" });
+//   }
+// };
+
+const updateActivity = async (req,res) => {
   const activityId = req.params.id;
+  const updatedFields = req.body;
 
   if (mongoose.Types.ObjectId.isValid(activityId)) {
-    const updateFields = Object.fromEntries(
-      Object.entries(req.body).filter(([key, value]) => value != null)
-    );
-
     try {
-      // Ensure category is a valid ObjectId (if you're updating it)
-      if (
-        updateFields.category &&
-        !mongoose.Types.ObjectId.isValid(updateFields.category)
-      ) {
-        return res.status(400).json({ message: "Invalid category ID" });
-      }
-
-      // Update the activity
-      // Ensure category is a valid ObjectId (if you're updating it)
-      if (
-        updateFields.category &&
-        !mongoose.Types.ObjectId.isValid(updateFields.category)
-      ) {
-        return res.status(400).json({ message: "Invalid category ID" });
-      }
-
-      // Update the activity
-      const newActivity = await activityModel
+      const updatedActivity = await activityModel
         .findByIdAndUpdate(
           activityId,
-          { $set: updateFields },
+          updatedFields,
           { new: true, runValidators: true } // Return updated document and apply validation
         )
         .populate("advertiserId", "username")
         .populate("category", "name")
         .populate("tags", "name");
-
-
-      // Check if the activity was updated
-      if (!newActivity) {
+      
+        // Check if the activity was updated
+      if (!updatedActivity) {
         return res.status(404).json({ message: "Activity not found" });
       }
-
       // Return success response
-      res
-        .status(200)
-        .json({ message: "Successfully updated the activity", newActivity });
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ message: "Failed to update activity", error });
+      res.status(200).json({ message: "Successfully updated the activity", updatedActivity });
+      }catch(error){
+        console.error(error);
+        res.status(400).json({ message: "Failed to update activity", error });
+      }
     }
-  } else {
-    res.status(400).json({ message: "Invalid activity ID" });
-  }
-};
+    else{
+      res.status(400).json({ message: "Invalid activity ID" });
+    }
+}
 
 const getMyActivities = async (req, res) => {
   const userId = req.user.userId;
