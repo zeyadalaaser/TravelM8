@@ -116,14 +116,14 @@ export default function Navbar({profilePageString}) {
       </div>
 
   {/* Center the middle section */}
-  <div className="hidden md:flex items-center justify-start ml-20 space-x-8">
+  <div className="hidden md:flex items-center justify-start ml-20 space-x-6">
     <button
       key="/"
       variant={currentPage === "/" ? "outline" : "ghost"}
       className={`${
         currentPage === "/" ? 
-        "text-white rounded-full py-2 px-4  hover:text-white/70" 
-        : "text-black hover:text-black/70"
+        "text-white hover:text-white/70 py-2 px-4" 
+        : "text-black hover:text-black/70 py-2 px-4"
       }`}
       onClick={() => navigate(`/`)}
     >
@@ -139,8 +139,8 @@ export default function Navbar({profilePageString}) {
             : "text-black hover:text-black/70"
         } ${
           currentPage === `/tourist-page?type=${page.value}` 
-            ? "rounded-full py-2 px-4 " 
-            : ""
+            ? "rounded-full py-2 px-4 border-[1px]" 
+            : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
         }`}
         onClick={() => navigate(`/tourist-page?type=${page.value}`)}
       >
