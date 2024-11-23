@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { CircleUserRound } from "lucide-react";
 import logo from "../assets/logo4.jpg";
+import LogoutAlert from "@/hooks/logOut.jsx";
 
 
 const DashboardsNavBar = ({profilePageString}) => {
@@ -15,6 +16,9 @@ const DashboardsNavBar = ({profilePageString}) => {
         </div>
       </div>
       <div className="flex items-center">
+        <button>
+          <LogoutAlert/>
+        </button>
         <CircleUserRound
           className="cursor-pointer h-10 w-10 m-4"
           onClick={() => navigate(profilePageString)}

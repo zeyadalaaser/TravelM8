@@ -11,8 +11,10 @@ import { SearchBar } from "../filters/search";
 import { getItineraries, getPreferenceTags } from "../../api/apiService";
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";
+import CircularProgress from '@mui/material/CircularProgress'; 
 
 export function ItinerariesPage() {
+  const [loading, setLoading] = useState(false); 
   const location = useLocation();
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
@@ -39,6 +41,7 @@ export function ItinerariesPage() {
   }, []);
 
   const fetchItineraries = useDebouncedCallback(async () => {
+    setLoading(true); 
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("isAdmin", isAdmin);
     queryParams.set("currency", currency);
@@ -54,8 +57,10 @@ export function ItinerariesPage() {
           (itinerary) => !itinerary.flagged
         );
       }
-
-      setItineraries(fetchedItineraries);
+      setTimeout(() => {
+        setItineraries(fetchedItineraries);
+        setLoading(false);
+    }, 500); 
     } catch (error) {
       console.error("Error fetching itineraries:", error);
     }
@@ -90,7 +95,7 @@ export function ItinerariesPage() {
   ];
 
   return (
-    <>
+    <div className="mt-24">
       <SearchBar categories={searchCategories} />
       <div className="flex justify-between items-center mb-4">
         <label>
@@ -125,18 +130,24 @@ export function ItinerariesPage() {
             </div>
             <SortSelection />
           </div>
-          {itineraries.length > 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center mt-36">
+              <CircularProgress />
+            </div>
+          ) : (
+          // {itineraries.length > 0 ? (
             <ItineraryCard
               itineraries={itineraries}
               isTourist={true}
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
-          ) : (
-            <p>No itineraries found. Try adjusting your filters.</p>
-          )}
+          // ) : (
+          //   <p>No itineraries found. Try adjusting your filters.</p>
+          // )}
+        )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

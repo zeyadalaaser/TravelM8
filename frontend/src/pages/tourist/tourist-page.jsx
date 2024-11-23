@@ -8,7 +8,7 @@ import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myCompla
 import { NavBar } from "./components/nav-bar";
 import { MuseumsPage } from "./components/museums/museums-page";
 import { CircleUserRound, Award } from "lucide-react";
-
+import Footer from "@/components/Footer.jsx"
 import { ItinerariesPage } from "./components/itineraries/itineraries-page";
 
 import { ComplaintForm } from "./components/complaints/complaint-form";
@@ -20,6 +20,7 @@ import { HotelsPage } from "./components/hotels/hotels-page";
 import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
 import { RedeemPoints } from "./components/Points/redeemPoints"
 import BookingHistory from "./components/bookings/BookingHistory.jsx";
+import Navbar from "../../components/Navbar.jsx";
 
 
 
@@ -41,6 +42,9 @@ export default function TouristPage() {
     return { id: decoded.userId, role: decoded.role }; // Get the role and tourist ID from the token
   }
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
   // Fetch tourist's badge information from the backend
   const fetchBadgeInfo = async () => {
     const token = localStorage.getItem("token"); // Get token within the function scope
@@ -64,24 +68,24 @@ export default function TouristPage() {
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
 
-    if (!token) {
-      navigate("/login"); // Redirect to login page if no token
-      return;
-    }
+  //   if (!token) {
+  //     navigate("/"); // Redirect to login page if no token
+  //     return;
+  //   }
 
-    const { role, id } = getUserFromToken(token);
-    if (role !== "Tourist") {
-      navigate("/login"); // Redirect if the role is not 'tourist'
-      return;
-    }
-    setTouristId(id);
-    // Fetch badge information once the token is verified
-    fetchBadgeInfo();
+  //   const { role, id } = getUserFromToken(token);
+  //   if (role !== "Tourist") {
+  //     navigate("/"); // Redirect if the role is not 'tourist'
+  //     return;
+  //   }
+  //   setTouristId(id);
+  //   // Fetch badge information once the token is verified
+  //   fetchBadgeInfo();
 
-  }, [navigate]);
+  // }, [navigate]);
 
 
 
@@ -98,41 +102,36 @@ export default function TouristPage() {
   return (
 
 
-    <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
+    <div className="bg-[#FAF9F6] min-h-screen">
+      <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
 
-      <DashboardsNavBar profilePageString="/tourist-profile" />
-      <div className="flex">
-        <NavBar onComplaintClick={() => setShowComplaintForm(true)}
-          onRedeemClick={() => setShowRedeemPoints(true)} />
-          <div className="flex">
-  {/* Badge Display with Styling */}
-  <div className="-translate-y-1 badge-container flex items-center p-2 rounded-full shadow-md bg-gray-900 text-white text-sm mr-2">
-    <Award className="w-8 h-5 mr-1 text-white" />
-    <div className="text-center">
-      <p className="font-semibold">{level || "Loading..."}</p>
-      <p className="text-xs">{totalPoints || 0} Points</p>
-    </div>
-  </div>
-</div>
+      <Navbar profilePageString={"/tourist-profile"} />
+      <div className="mt-24">
+      {/* <NavBar onComplaintClick={() => setShowComplaintForm(true)}
+          onRedeemClick={() => setShowRedeemPoints(true)} /> */}
+
       </div>
-
 
       {page === "activities" && <ActivitiesPage />}
       {page === "itineraries" && <ItinerariesPage />}
       {page === "museums" && <MuseumsPage />}
       {page === "flights" && <FlightsPage />}
       {page === "hotels" && <HotelsPage />}
-      {page === "products" && touristId && (<ProductsPage touristId={touristId} />)}
+      {page === "products" && (<ProductsPage />)}
       {page === "complaints" && <MyComplaintsPage />}
       {page === "completed-tours" && touristId && (<CompletedToursPage touristId={touristId} />)}
       {page === "past-activities" && touristId && (<PastActivitiesPage touristId={touristId} />)}
       {page === "products-purchased" && touristId && (<PurchasedProductsPage touristId={touristId} />)}
-      { page === "booking-history" && <BookingHistory/> }
+      {page === "booking-history" && <BookingHistory />}
       {showComplaintForm && (<ComplaintForm onClose={() => setShowComplaintForm(false)} />)}
       {showRedeemPoints && (<RedeemPoints onClose={() => setShowRedeemPoints(false)} />)}
 
 
-    </div >
+    </div>
+    <div className="mt-36">
+    <Footer />
+    </div>
+    </div>
 
   );
 

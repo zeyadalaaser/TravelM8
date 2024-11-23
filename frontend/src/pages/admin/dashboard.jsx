@@ -18,12 +18,14 @@ import {
   DollarSign,
 } from "lucide-react";
 import { Input } from "@/components/ui/input.tsx";
+import Navbar from "@/components/DashboardsNavBar.jsx";
+import LogoutAlertDialog from "../../hooks/logoutAlert.jsx";
 
 //import { useState } from "react";
 import useRouter from "@/hooks/useRouter";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/NavbarAdmin";
+// import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
 import {
   Card,

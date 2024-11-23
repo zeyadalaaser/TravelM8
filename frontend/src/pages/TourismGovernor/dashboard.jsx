@@ -240,7 +240,7 @@ const TourismGovernorDashboard = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate("/login");
+      navigate("/");
       return;
     }
     fetchHistoricalPlaces();
