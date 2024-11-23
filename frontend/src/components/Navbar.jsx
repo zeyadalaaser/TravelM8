@@ -116,7 +116,7 @@ export default function Navbar({profilePageString}) {
       </div>
 
   {/* Center the middle section */}
-  <div className="hidden md:flex items-center justify-start ml-20 space-x-6">
+  <div className="hidden md:flex items-center justify-start ml-20 space-x-1">
     <button
       key="/"
       variant={currentPage === "/" ? "outline" : "ghost"}
