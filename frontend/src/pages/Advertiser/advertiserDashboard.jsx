@@ -37,39 +37,157 @@ const AdvertiserDashboard = () => {
   //   getActivities();
   // }, []);
 
-  const fetchActivities = async () => {
-    if (!token) {
-      console.error("No token available");
-      return;
+  // const fetchActivities = async () => {
+  //   if (!token) {
+  //     console.error("No token available");
+  //     return;
+  //   }
+  
+  //   console.log("Token:", token);
+  
+  //   try {
+  //     const response = await fetch("http://localhost:5001/api/activities/myActivities", {
+  //       method: "GET",
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  
+  //     console.log("Response Status:", response.status);
+  //     console.log("Response Headers:", response.headers);
+  
+  //     if (!response.ok) {
+  //       const errorText = await response.text();
+  //       console.error("Response Error Text:", errorText);
+  //       throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
+  //     }
+  
+  //     const data = await response.json();
+  //     console.log("Fetched Data:", data);
+  //     setActivities(data);
+  //   } catch (error) {
+  //     console.error("Failed to fetch activities:", error.message || error);
+  //   }
+  // };
+
+//   const fetchActivities = async () => {
+//   if (!token) {
+//     console.error("No token available. Redirecting to login.");
+//     // Optionally, redirect to the login page
+//     // window.location.href = '/login';
+//     return;
+//   }
+
+//   try {
+//     // Log token only in development mode
+//     if (process.env.NODE_ENV === "development") {
+//       console.log("Token:", token);
+//     }
+
+//     const response = await fetch("http://localhost:5001/api/activities/myActivities", {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+
+//     // Log detailed response only in development
+//     if (process.env.NODE_ENV === "development") {
+//       console.log("Response Status:", response.status);
+//       console.log("Response Headers:", response.headers);
+//     }
+
+//     if (!response.ok) {
+//       let errorMessage = `HTTP error! Status: ${response.status}`;
+//       try {
+//         const errorText = await response.text();
+//         errorMessage += ` - ${errorText}`;
+//         if (process.env.NODE_ENV === "development") {
+//           console.error("Response Error Text:", errorText);
+//         }
+//       } catch (parseError) {
+//         if (process.env.NODE_ENV === "development") {
+//           console.error("Failed to parse error response:", parseError);
+//         }
+//       }
+//       throw new Error(errorMessage);
+//     }
+
+//     const data = await response.json();
+
+//     if (process.env.NODE_ENV === "development") {
+//       console.log("Fetched Data:", data);
+//     }
+
+//     setActivities(data);
+//   } catch (error) {
+//     console.error("Failed to fetch activities:", error.message || error);
+//     // Optionally, display error to the user
+//     // setError("Failed to load activities. Please try again later.");
+//   }
+// };
+
+const fetchActivities = async () => {
+  if (!token) {
+    console.error("No token available. Redirecting to login.");
+    // Optionally, redirect to the login page
+    // window.location.href = '/login';
+    return;
+  }
+
+  try {
+    // Log token only in development mode
+    if (process.env.NODE_ENV === "development") {
+      console.log("Token:", token);
     }
-  
-    console.log("Token:", token);
-  
-    try {
-      const response = await fetch("http://localhost:5001/api/activities", {
-        method: "GET",
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
+
+    const response = await fetch("http://localhost:5001/api/activities", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Log detailed response only in development
+    if (process.env.NODE_ENV === "development") {
       console.log("Response Status:", response.status);
       console.log("Response Headers:", response.headers);
-  
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Response Error Text:", errorText);
-        throw new Error(`HTTP error! Status: ${response.status} - ${errorText}`);
-      }
-  
-      const data = await response.json();
-      console.log("Fetched Data:", data);
-      setActivities(data);
-    } catch (error) {
-      console.error("Failed to fetch activities:", error.message || error);
     }
-  };
+
+    if (!response.ok) {
+      let errorMessage = `HTTP error! Status: ${response.status}`;
+      try {
+        const errorText = await response.text();
+        errorMessage += ` - ${errorText}`;
+        if (process.env.NODE_ENV === "development") {
+          console.error("Response Error Text:", errorText);
+        }
+      } catch (parseError) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to parse error response:", parseError);
+        }
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("Fetched Data:", data);
+    }
+
+    setActivities(data);
+  } catch (error) {
+    console.error("Failed to fetch activities:", error.message || error);
+    // Optionally, display error to the user
+    // setError("Failed to load activities. Please try again later.");
+  }
+};
+
+
   
   // Debounced version (only for subsequent use if needed)
   const getActivities = useDebouncedCallback(fetchActivities, 200);

@@ -73,7 +73,6 @@ const itineraySchema = new mongoose.Schema({
         type: Number,
         default: 0,
       },
-      //have remaining spots
     },
   ],
 

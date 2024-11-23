@@ -4,7 +4,7 @@ import { invalidatedTokens } from '../controllers/logoutController.js';
 
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1]; // Get the token from the Authorization header
-  console.log(token);
+  console.log("from verifyToken: ",token);
   if (!token) {
     console.log("where", token);
     return res.status(401).json({ message: 'No token provided' });

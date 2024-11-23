@@ -185,61 +185,6 @@ export const getActivityPrice = async (activityId) =>{
   }
 };
 
-// const updateActivity = async (req, res) => {
-//   const activityId = req.params.id;
-
-//   if (mongoose.Types.ObjectId.isValid(activityId)) {
-//     const updateFields = Object.fromEntries(
-//       Object.entries(req.body).filter(([key, value]) => value != null)
-//     );
-
-//     try {
-//       // Ensure category is a valid ObjectId (if you're updating it)
-//       if (
-//         updateFields.category &&
-//         !mongoose.Types.ObjectId.isValid(updateFields.category)
-//       ) {
-//         return res.status(400).json({ message: "Invalid category ID" });
-//       }
-
-//       // Update the activity
-//       // Ensure category is a valid ObjectId (if you're updating it)
-//       if (
-//         updateFields.category &&
-//         !mongoose.Types.ObjectId.isValid(updateFields.category)
-//       ) {
-//         return res.status(400).json({ message: "Invalid category ID" });
-//       }
-
-//       // Update the activity
-//       const newActivity = await activityModel
-//         .findByIdAndUpdate(
-//           activityId,
-//           { $set: updateFields },
-//           { new: true, runValidators: true } // Return updated document and apply validation
-//         )
-//         .populate("advertiserId", "username")
-//         .populate("category", "name")
-//         .populate("tags", "name");
-
-
-//       // Check if the activity was updated
-//       if (!newActivity) {
-//         return res.status(404).json({ message: "Activity not found" });
-//       }
-
-//       // Return success response
-//       res
-//         .status(200)
-//         .json({ message: "Successfully updated the activity", newActivity });
-//     } catch (error) {
-//       console.error(error);
-//       res.status(400).json({ message: "Failed to update activity", error });
-//     }
-//   } else {
-//     res.status(400).json({ message: "Invalid activity ID" });
-//   }
-// };
 
 const updateActivity = async (req,res) => {
   const activityId = req.params.id;
@@ -271,40 +216,42 @@ const updateActivity = async (req,res) => {
     else{
       res.status(400).json({ message: "Invalid activity ID" });
     }
-}
+};
 
 const getMyActivities = async (req, res) => {
-  const userId = req.user.userId;
-  console.log("Advertiser ID:", advertiserId);
+  // Ensure user is authenticated and has a valid userId
+  console.log(req.user);
 
-  // Validate advertiserId
-  if (!mongoose.Types.ObjectId.isValid(advertiserId)) {
-    return res.status(400).json({ message: "Invalid advertiser ID" });
+  if (!req.user || !req.user.userId) {
+    return res.status(401).json({ message: "Unauthorized: User ID missing." });
   }
+  const userId = req.user.userId;
+  console.log("Advertiser ID:", userId);
+
 
   try {
-    // Log the advertiserId being used to fetch activities
-    console.log("Searching for activities with advertiserId:", advertiserId);
+    console.log("Searching for activities with advertiserId:", userId);
 
     // Fetch activities and populate related fields
     const activities = await activityModel
-      .find({ advertiserId : userId })
+      .find({ advertiserId: userId })
       .populate("advertiserId", "username")
       .populate("category", "name")
       .populate("tags", "name");
 
-    // Check if activities exist
+    // Return empty array if no activities found
     if (activities.length === 0) {
-      return res.status(404).json({ message: "No activities found for this advertiser." });
+      return res
+        .status(200)
+        .json({ activities: [], message: "No activities found for this advertiser." });
     }
 
-    // Log the fetched activities (for debugging)
     console.log("Fetched Activities:", activities);
 
     // Successful response
     return res.status(200).json({ activities });
   } catch (error) {
-    console.error("Error fetching activities:", error.message || error);
+    console.error("Error fetching activities:", error);
     return res.status(500).json({ message: "Server error, please try again later." });
   }
 };
