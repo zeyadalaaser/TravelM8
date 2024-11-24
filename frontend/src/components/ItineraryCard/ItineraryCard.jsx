@@ -37,6 +37,7 @@ export default function ItineraryCard({
   onRefresh,
   isTourGuide,
 }) {
+
   const navigate = useNavigate();
 
   const handleDelete = async (id) => {
@@ -88,6 +89,7 @@ export default function ItineraryCard({
 
   // const handleBook = async (itineraryId, tourGuideId) => {
 
+
   // };
 
   const handleFlagItinerary = async (itineraryId) => {
@@ -104,21 +106,21 @@ export default function ItineraryCard({
     <>
       <div className="space-y-2">
         {itineraries?.map((itinerary) => (
-          <Card key={itinerary._id} className="overflow-hidden">
-            <div className="flex flex-col md:flex-row">
-              <div className="w-[800px]">
+          <Card key={itinerary._id}>
+            <div className="flex flex-row">
+              <div className="w-1/3">
                 <img
                   src={
                     itinerary.images[0] ||
                     "/placeholder.svg?height=200&width=300"
                   }
                   alt={itinerary.name}
-                  className="w-full h-full object-cover"
+                  className="w-full min-h-full"
                 />
               </div>
-              <div className="flex flex-row">
-                <div className="flex-1 w-full md:w-2/3 p-4">
-                  <div className="flex justify-between items-center">
+              <div className="flex flex-row w-2/3">
+                <div className="flex-1 w-full p-4">
+                  <div className="flex justify-between">
                     <h3 className="text-xl font-semibold mb-2">
                       {itinerary.name}
                     </h3>
@@ -146,9 +148,7 @@ export default function ItineraryCard({
                           Activate Itinerary
                         </Button>
                       )}
-                      {isTourist && (
-                        <ShareButton id={itinerary._id} name="itinerary" />
-                      )}
+                      {isTourist && <ShareButton id={itinerary._id} name="itinerary" />}
                     </div>
                   </div>
                   <div className="flex items-center mb-2">
@@ -210,20 +210,6 @@ export default function ItineraryCard({
                       ))}
                     </div>
                   </div>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2 gap-2">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-m font-semibold text-black">
-                      Pick Up Location:
-                    </span>{" "}
-                    {itinerary?.pickUpLocation}
-                  </div>
-                  <div className="flex items-center text-sm text-muted-foreground mb-2 gap-2">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span className="text-m font-semibold text-black">
-                      Drop Off Location:
-                    </span>{" "}
-                    {itinerary?.dropOffLocation}
-                  </div>
                   <div className="flex items-center flex-wrap gap-2 mb-2">
                     <Globe className="w-4 h-4 mr-1" />
                     <Badge variant="secondary">{itinerary.tourLanguage}</Badge>
@@ -237,9 +223,7 @@ export default function ItineraryCard({
                     ))}
                   </div>
                   <div className="flex justify-end items-center space-x-2">
-                    <span className="text-xl font-bold mr-auto">{`${(
-                      itinerary.price * 1
-                    ).toFixed(2)} ${currency}`}</span>
+                    <span className="text-xl font-bold mr-auto">{`${(itinerary.price * 1).toFixed(2)} ${currency}`}</span>
                     <Timeline selectedItinerary={itinerary} />
                     {isTourist && (
                       <div className="flex justify-end items-center">
@@ -290,6 +274,7 @@ export default function ItineraryCard({
     </>
   );
 }
+
 
 const Timeline = ({ selectedItinerary }) => {
   return (
