@@ -104,7 +104,7 @@ export default function Navbar({profilePageString}) {
     <nav
         className={`fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-3 transition-all duration-300 ${
           currentPage === "/" ? "bg-transparent" : "bg-white text-black shadow-md"
-        } ${isScrolled && currentPage === "/" ? "bg-gray-900/50 backdrop-blur-md" : "bg-gray-800"}`}
+        } ${isScrolled && currentPage === "/" ? "bg-gray-600/50 backdrop-blur-md" : "bg-transparent"}`}
         style={{ height: "56px" }}
   >
       <div
