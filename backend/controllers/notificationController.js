@@ -68,3 +68,37 @@ export const getNotifications = async (req, res) => {
     res.status(500).json({ message: "Error fetching notifications." });
   }
 };
+
+export const sendEmailReminder = async (
+  email,
+  username,
+  itineraryName,
+  tourDate
+) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "mennayehiahassan@gmail.com", // Replace with your email
+        pass: "dsbkyetgxkynwbpz", // Replace with app password
+      },
+    });
+
+    const formattedDate = new Date(tourDate).toLocaleString();
+
+    const mailOptions = {
+      from: "mennayehiahassan@gmail.com",
+      to: email,
+      subject: "Upcoming Event Reminder",
+      text: `Dear ${username},\n\nThis is a reminder for your upcoming event "${itineraryName}" scheduled on ${formattedDate}.\n\nWe look forward to seeing you there!\n\nRegards,\nYour System Team`,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent:", info.response);
+
+    return { success: true, message: "Email reminder sent successfully." };
+  } catch (error) {
+    console.error("Error sending email reminder:", error.message);
+    return { success: false, error: "Failed to send email reminder." };
+  }
+};

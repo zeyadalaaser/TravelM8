@@ -28,6 +28,7 @@ import activityBookingsRoute from "./routes/bookingsActivityRoute.js";
 import itineraryBookingsRoute from "./routes/bookingsRoute.js";
 import deleteRequestRoute from "./routes/deleteRequestRoute.js";
 import notificationRoutes from "./routes/notificationsRoutes.js";
+import "./services/Reminders/reminderjob.js";
 
 dotenv.config({ path: "../.env" });
 
