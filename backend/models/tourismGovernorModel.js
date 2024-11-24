@@ -24,7 +24,11 @@ const tourismGovernorSchema = new mongoose.Schema({
       message: "Password must contain numbers, letters and min length is 4",
     },
   }
+},
+{
+  timestamps: true
 });
+
 
 const TourismGovernor = mongoose.model(
   "TourismGovernor",

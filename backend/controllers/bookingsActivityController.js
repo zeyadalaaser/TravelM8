@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import BookingActivity from "../models/bookingsActivityModel.js";
 import Activity from "../models/activityModel.js";
 import { updatePoints } from "./touristController.js";
@@ -327,4 +328,69 @@ export const totalCancelledActivitiesAdvertiser = async (advertiserId) => {
     return -1;
   }
 };
+export const getActivitiesReport = async (req, res) => {
+  //const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user
+  const advertiserId =  req.body.id; 
+  const {year, month, day} = req.query;
 
+
+  try {
+  
+    const results = await BookingActivity.aggregate([
+      {
+        $lookup: {
+          from: 'activities', // Activity collection name
+          localField: 'activityId', // Field in BookingActivity
+          foreignField: '_id', // Match with Activity `_id`
+          as: 'activityDetails',
+        },
+      },
+      {
+        $unwind: '$activityDetails', // Flatten the activity details array
+      },
+      {
+        $match: {
+          'activityDetails.advertiserId': new mongoose.Types.ObjectId(advertiserId), // Filter by advertiser ID
+          status: { $in: ['booked', 'completed'] }, // Filter by status
+          $expr: {
+            $and: [
+              ...(year ? [{ $eq: [{ $year: '$bookingDate' }, parseInt(year)] }] : []),
+              ...(month ? [{ $eq: [{ $month: '$bookingDate' }, parseInt(month)] }] : []),
+              ...(day ? [{ $eq: [{ $dayOfMonth: '$bookingDate' }, parseInt(day)] }] : []),
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$activityId', // Group by the activity ID
+          activityTitle: { $first: '$activityDetails.title' },
+          bookingCount: { $sum: 1 }, // Count the number of bookings per activity
+          revenue: { $sum: '$activityDetails.price' }, // Sum up the price of bookings per activity
+          
+        },
+      },
+      {
+        $project: {
+          _id: 1, // Include activity ID
+          name: '$activityTitle', // Include activity title
+          bookingCount: 1, // Include the count of bookings
+          revenue: 1, // Include the total revenue
+        },
+      },
+    ]);
+
+    // Send the aggregated results as a response
+    if(results.length == 0)
+      return res.status(200).json({message: "No data to show"});
+    return res.status(200).json({
+      data: results,
+      message: "Successfully fetched the activities report"
+
+    });
+  } catch (error) {
+    console.error('Error fetching activities report:', error);
+
+    res.status(500).json({ message: 'Failed to fetch activity report', error: error.message });
+  }
+};
