@@ -573,6 +573,7 @@ export const getSalesReport = async (req, res) => {
       .json({ message: "Error generating sales report", error: error.message });
   }
 };
+
 export const handleFlaggedItinerary = async (itinerary) => {
   try {
     if (!itinerary.flagged) {

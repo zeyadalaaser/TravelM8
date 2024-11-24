@@ -5,6 +5,7 @@ import { updatePoints } from "./touristController.js";
 import { getItineraryPrice } from "./itineraryController.js";
 
 export const createBooking2 = async (req, res) => {
+  let msg;
   try {
     const { itinerary, tourGuide, tourDate } = req.body;
     const tourist = req.user.userId;
@@ -20,6 +21,7 @@ export const createBooking2 = async (req, res) => {
       tourDate,
       "book"
     );
+    msg = result.message;
     console.log(result.success);
     console.log(result);
     const itineraryPrice = await getItineraryPrice(itinerary);
@@ -32,7 +34,7 @@ export const createBooking2 = async (req, res) => {
       });
     } else
       res.status(203).json({
-        message: "Max Number of bookings reached! Failed to book itinerary!",
+        message: msg,
       });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -250,3 +252,5 @@ export const totalCancelledItineraiesTourguide = async (tourGuideId) => {
     return -1;
   }
 };
+
+
