@@ -20,13 +20,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import * as services from "@/pages/tourist/api/apiService.js";
 import axios from "axios";
 const images = [
+  "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=2020&ixlib=rb-4.0.3",
   "https://wallpapercave.com/wp/wp2481186.jpg",
   // "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=2073&ixlib=rb-4.0.3",
-  "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=2020&ixlib=rb-4.0.3",
   "https://images.unsplash.com/photo-1541628951107-a9af5346a3e4?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3", 
   "https://wallpaper.forfun.com/fetch/d5/d5c3e417f3b7121700fcb33d337c44ba.jpeg"
 ]
-import CircularProgress from '@mui/material/CircularProgress'; 
 
 export default function HeroSection() {
 

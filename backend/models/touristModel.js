@@ -93,13 +93,41 @@ const touristSchema = new Schema(
       type: [String],
       default: [],
     },
+    address: [ 
+      {
+        type:String,
+        
+      }
+    ],
+    cart: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Product",
+        },
+        quantity: {
+          type: Number,
+          default: 1,
+          min: 1, // Ensure at least 1 item
+        },
+        price: {
+          type: Number,
+        },
+
+      }
+    ]
     
   },
   { timestamps: true }
 );
  
+touristSchema.virtual("totalCartPrice").get(function () {
+  return this.cart.reduce((total, item) => total + item.price, 0);
+});
+touristSchema.set("toJSON", { virtuals: true });
+touristSchema.set("toObject", { virtuals: true });
 
-// Prevent dob from being updated after it's initially set
+
 touristSchema.pre('save', function(next) {
   if (this.isModified('dob') && !this.isNew) {
     return next(new Error('Date of Birth cannot be changed once set.'));
