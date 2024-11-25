@@ -20,6 +20,7 @@ function CheckoutForm({ clientSecret, handlePayment }) {
   const elements = useElements()
   const [error, setError] = useState(null)
   const [processing, setProcessing] = useState(false)
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -29,7 +30,7 @@ function CheckoutForm({ clientSecret, handlePayment }) {
     const result = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: 'http://localhost:5173/tourist-page?type=products',
+        return_url: 'http://localhost:5173/tourist-page?type=products&payment=success',
       },
     })
 
@@ -62,6 +63,11 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('')
   const [error, setError] = useState('')
   const [clientSecret, setClientSecret] = useState('')
+  const [walletBalance,  setWalletBalance] = useState(0)
+
+ 
+
+  
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -75,7 +81,29 @@ export default function CheckoutPage() {
     }
     fetchAddresses()
 
-    // Create PaymentIntent as soon as the page loads
+    const fetchWalletBalance = async () => {
+        try {
+          const token = localStorage.getItem('token'); // Retrieve user token from localStorage
+          if (!token) {
+            throw new Error('User not authenticated'); // Show error if no token is available
+          }
+      
+          const response = await axios.get('http://localhost:5001/wallet-balance', {
+            headers: {
+              Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
+            },
+          });
+      
+          setWalletBalance(response.data.balance); // Set wallet balance on successful response
+        } catch (error) {
+          console.error('Error fetching wallet balance:', error.response || error.message || error);
+          setError('Failed to fetch wallet balance. Please try again.'); // Display user-friendly error
+        }
+      };
+      
+      
+ 
+
     if (cart.length > 0) {
       createPaymentIntent()
     }
@@ -145,12 +173,23 @@ export default function CheckoutPage() {
             },
           }
         )
+    } else if (paymentMethod === 'wallet') {
+        response = await axios.post(
+          'http://localhost:5001/api/products/pay-with-wallet',
+          order,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+     
       } else {
         throw new Error('Invalid payment method')
       }
 
       toast.success('Order placed successfully!')
-      navigate('/tourist-page', { state: { order: response.data.order } })
+      navigate('/tourist-page?type=products&payment=success', { state: { order: response.data.order } })
     } catch (error) {
       console.error('Error processing order:', error.response || error)
       setError('There was an error processing your order. Please try again.')
@@ -225,6 +264,10 @@ export default function CheckoutPage() {
                   <RadioGroupItem value="cash" id="cash" />
                   <Label htmlFor="cash">Cash on Delivery</Label>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="wallet" id="wallet" />
+                  <Label htmlFor="wallet">Wallet (Balance: {currency} {walletBalance.toFixed(2)})</Label>
+                </div>
               </RadioGroup>
             </div>
             {paymentMethod === 'credit-card' && clientSecret && (
@@ -236,9 +279,9 @@ export default function CheckoutPage() {
             )}
           </CardContent>
           <CardFooter>
-            {paymentMethod === 'cash' && (
+            {(paymentMethod === 'cash' || paymentMethod === 'wallet') && (
               <Button className="w-full" onClick={() => handlePayment()}>
-                Place Order (Cash on Delivery)
+                Place Order ({paymentMethod === 'cash' ? 'Cash on Delivery' : 'Pay with Wallet'})
               </Button>
             )}
           </CardFooter>
