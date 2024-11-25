@@ -323,6 +323,8 @@ const ChooseDate = ({ itinerary }) => {
         itinerary._id,
         itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
         selectedDate,
+        itinerary.price,
+        "Card",
         token
       );
       setIsOpen(false);

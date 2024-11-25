@@ -1,7 +1,4 @@
 import mongoose from 'mongoose';
-import TourGuide from './tourguideModel.js'
-import Itinerary from './itineraryModel.js'
-import Tourist from './touristModel.js'
 const Schema = mongoose.Schema;
 
 const bookingsSchema = new Schema({
@@ -31,17 +28,25 @@ const bookingsSchema = new Schema({
     type: Date,
     required: true,
   },
+  price: {
+    type: Number,
+    required: true,
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['Wallet', 'Card'],
+  },
   completionStatus: {
     type: String,
-    enum: ['Pending', 'Completed', 'Cancelled'],
-    default: 'Pending',
+    enum: ['Paid', 'Cancelled'],
+    default: 'Paid',
   },
   ratingGiven: {
     type: Boolean,
     default: false,
   },
  
-}, { timestamps: true });
+});
 
 const Booking = mongoose.model('Booking', bookingsSchema);
 export default Booking;

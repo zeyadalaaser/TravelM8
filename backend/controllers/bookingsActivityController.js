@@ -5,7 +5,7 @@ import { getActivityPrice } from "./activityController.js";
 
 // Booking an activity
 export const createBooking = async (req, res) => {
-  const { activityId } = req.body;
+  const { activityId, price, paymentMethod } = req.body;
   const touristId = req.user.userId;
   console.log(activityId, touristId);
 
@@ -34,7 +34,9 @@ export const createBooking = async (req, res) => {
       touristId,
       activityId,
       bookingDate: new Date(),
-      status: "booked", // Set initial status to "booked"
+      status: "Paid",
+      price,
+      paymentMethod
     });
 
     await newBooking.save();
@@ -94,7 +96,7 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    bookingToCancel.status = "cancelled";
+    bookingToCancel.status = "Cancelled";
     await bookingToCancel.save();
     res
       .status(201)
@@ -108,45 +110,45 @@ export const cancelBooking = async (req, res) => {
 };
 
 export const bookActivity = async (req, res) => {
-  const { touristId, activityId } = req.body;
+  // const { touristId, activityId } = req.body;
 
-  if (!touristId || !activityId) {
-    return res
-      .status(400)
-      .json({ message: "Tourist ID and Activity ID are required." });
-  }
+  // if (!touristId || !activityId) {
+  //   return res
+  //     .status(400)
+  //     .json({ message: "Tourist ID and Activity ID are required." });
+  // }
 
-  try {
-    // Find the activity and check if it exists
-    const activity = await Activity.findById(activityId);
-    if (!activity) {
-      return res.status(404).json({ message: "Activity not found." });
-    }
+  // try {
+  //   // Find the activity and check if it exists
+  //   const activity = await Activity.findById(activityId);
+  //   if (!activity) {
+  //     return res.status(404).json({ message: "Activity not found." });
+  //   }
 
-    // Check if booking is open for this activity
-    if (!activity.isBookingOpen) {
-      return res
-        .status(400)
-        .json({ message: "Booking is not open for this activity." });
-    }
+  //   // Check if booking is open for this activity
+  //   if (!activity.isBookingOpen) {
+  //     return res
+  //       .status(400)
+  //       .json({ message: "Booking is not open for this activity." });
+  //   }
 
-    // Create a new booking
-    const newBooking = new BookingActivity({
-      touristId,
-      activityId,
-      bookingDate: new Date(),
-      status: "booked", // Set initial status to "booked"
-    });
+  //   // Create a new booking
+  //   const newBooking = new BookingActivity({
+  //     touristId,
+  //     activityId,
+  //     bookingDate: new Date(),
+  //     status: "booked", // Set initial status to "booked"
+  //   });
 
-    await newBooking.save();
+  //   await newBooking.save();
 
-    return res
-      .status(201)
-      .json({ message: "Activity booked successfully.", booking: newBooking });
-  } catch (error) {
-    console.error("Error booking activity:", error);
-    return res.status(500).json({ message: "Internal server error." });
-  }
+  //   return res
+  //     .status(201)
+  //     .json({ message: "Activity booked successfully.", booking: newBooking });
+  // } catch (error) {
+  //   console.error("Error booking activity:", error);
+  //   return res.status(500).json({ message: "Internal server error." });
+  // }
 };
 
 export const getCompletedActivities = async (req, res) => {
@@ -158,32 +160,16 @@ export const getCompletedActivities = async (req, res) => {
 
   try {
     // Retrieve bookings for the tourist and populate activity details
-    const bookings = await BookingActivity.find({ touristId }).populate(
+    const bookings = await BookingActivity.find({
+      touristId, 
+      status: "Paid",
+      bookingDate: { $lt: new Date() },
+    }).populate(
       "activityId"
     );
 
-    const completedActivities = [];
-    for (const booking of bookings) {
-      const activityDate = booking.activityId?.date;
-
-      // Check if the activity date is in the past and status is "booked"
-      if (
-        activityDate &&
-        new Date(activityDate) < new Date() &&
-        booking.status === "booked"
-      ) {
-        booking.status = "completed"; // Update status to "completed"
-        await booking.save(); // Save the updated booking
-      }
-
-      // Only add bookings with status "completed" to the response
-      if (booking.status === "completed") {
-        completedActivities.push(booking);
-      }
-    }
-
-    console.log("Completed Activities:", completedActivities);
-    return res.status(200).json(completedActivities);
+    console.log("Completed Activities:", bookings);
+    return res.status(200).json(bookings);
   } catch (error) {
     console.error("Error fetching completed activities:", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -191,79 +177,79 @@ export const getCompletedActivities = async (req, res) => {
 };
 
 export const addReview = async (req, res) => {
-  const { touristId, activityId, rating, comment } = req.body;
+  // const { touristId, activityId, rating, comment } = req.body;
 
-  if (!touristId || !activityId || !rating) {
-    return res
-      .status(400)
-      .json({ message: "Tourist ID, Activity ID, and rating are required." });
-  }
+  // if (!touristId || !activityId || !rating) {
+  //   return res
+  //     .status(400)
+  //     .json({ message: "Tourist ID, Activity ID, and rating are required." });
+  // }
 
-  try {
-    const booking = await BookingActivity.findOne({
-      touristId,
-      activityId,
-      status: "completed",
-    });
+  // try {
+  //   const booking = await BookingActivity.findOne({
+  //     touristId,
+  //     activityId,
+  //     status: "completed",
+  //   });
 
-    if (!booking) {
-      return res
-        .status(404)
-        .json({ message: "Booking not found or activity is not completed." });
-    }
+  //   if (!booking) {
+  //     return res
+  //       .status(404)
+  //       .json({ message: "Booking not found or activity is not completed." });
+  //   }
 
-    booking.rating = rating;
-    booking.comment = comment;
-    await booking.save();
+  //   booking.rating = rating;
+  //   booking.comment = comment;
+  //   await booking.save();
 
-    return res
-      .status(200)
-      .json({
-        message: "Review added successfully.",
-        review: { rating, comment },
-      });
-  } catch (error) {
-    console.error("Error adding review:", error);
-    return res.status(500).json({ message: "Internal server error." });
-  }
+  //   return res
+  //     .status(200)
+  //     .json({
+  //       message: "Review added successfully.",
+  //       review: { rating, comment },
+  //     });
+  // } catch (error) {
+  //   console.error("Error adding review:", error);
+  //   return res.status(500).json({ message: "Internal server error." });
+  // }
 };
 
 export const addRatingAndComment = async (req, res) => {
-  const { bookingId, rating, comment } = req.body;
+  // const { bookingId, rating, comment } = req.body;
 
-  try {
-    // Update the booking with rating and comment
-    const booking = await BookingActivity.findByIdAndUpdate(
-      bookingId,
-      { rating, comment },
-      { new: true }
-    ).populate("activityId");
+  // try {
+  //   // Update the booking with rating and comment
+  //   const booking = await BookingActivity.findByIdAndUpdate(
+  //     bookingId,
+  //     { rating, comment },
+  //     { new: true }
+  //   ).populate("activityId");
 
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found." });
-    }
+  //   if (!booking) {
+  //     return res.status(404).json({ message: "Booking not found." });
+  //   }
 
-    // Update average rating and review count in Activity
-    const activity = booking.activityId;
-    activity.reviewCount += 1;
-    activity.averageRating =
-      (activity.averageRating * (activity.reviewCount - 1) + rating) /
-      activity.reviewCount;
-    await activity.save();
+  //   // Update average rating and review count in Activity
+  //   const activity = booking.activityId;
+  //   activity.reviewCount += 1;
+  //   activity.averageRating =
+  //     (activity.averageRating * (activity.reviewCount - 1) + rating) /
+  //     activity.reviewCount;
+  //   await activity.save();
 
-    return res
-      .status(200)
-      .json({ message: "Rating and comment added successfully." });
-  } catch (error) {
-    console.error("Error adding rating and comment:", error);
-    return res.status(500).json({ message: "Internal server error." });
-  }
+  //   return res
+  //     .status(200)
+  //     .json({ message: "Rating and comment added successfully." });
+  // } catch (error) {
+  //   console.error("Error adding rating and comment:", error);
+  //   return res.status(500).json({ message: "Internal server error." });
+  // }
 };
 
 export const totalBookedActivitiesAdmin = async () => {
   try {
     const bookings = await BookingActivity.find({
-      status: { $in: ["booked", "completed"] },
+      status: "Paid",
     }).populate("activityId");
 
     let totalPrice = 0;
@@ -279,7 +265,7 @@ export const totalBookedActivitiesAdmin = async () => {
 export const totalCancelledActivitiesAdmin = async () => {
   try {
     const bookings = await BookingActivity.find({
-      status: "cancelled",
+      status: "Cancelled",
     }).populate("activityId");
 
     let totalPrice = 0;
@@ -295,7 +281,7 @@ export const totalCancelledActivitiesAdmin = async () => {
 export const totalBookedActivitiesAdvertiser = async (advertiserId) => {
   try {
     const bookings = await BookingActivity.find({
-      status: { $in: ["booked", "completed"] },
+      status: "Paid",
     }).populate("activityId");
 
     let totalPrice = 0;
@@ -314,7 +300,7 @@ export const totalBookedActivitiesAdvertiser = async (advertiserId) => {
 export const totalCancelledActivitiesAdvertiser = async (advertiserId) => {
   try {
     const bookings = await BookingActivity.find({
-      status: "cancelled",
+      status: "Cancelled",
     }).populate("activityId");
 
     let totalPrice = 0;

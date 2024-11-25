@@ -6,13 +6,15 @@ import { getItineraryPrice } from "./itineraryController.js";
 
 export const createBooking2 = async (req, res) => {
   try {
-    const { itinerary, tourGuide, tourDate } = req.body;
+    const { itinerary, tourGuide, tourDate, price, paymentMethod } = req.body;
     const tourist = req.user.userId;
     const newBooking = new Booking({
       tourist,
       itinerary,
       tourGuide,
       tourDate,
+      price,
+      paymentMethod
     });
     const savedBooking = await newBooking.save();
     const result = await updateItineraryUponBookingModification(
@@ -93,42 +95,14 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
-export const createBooking = async (req, res) => {
-  try {
-    const { tourist, itinerary, tourGuide, tourDate } = req.body;
-
-    const newBooking = new Booking({
-      tourist,
-      itinerary,
-      tourGuide,
-      tourDate,
-    });
-
-    await newBooking.save();
-    res
-      .status(201)
-      .json({ message: "Booking created successfully", newBooking });
-  } catch (error) {
-    res.status(500).json({ message: "Error creating booking", error });
-  }
-};
-
 export const getCompletedToursByTourist = async (req, res) => {
   try {
     const { touristId } = req.params;
 
-    await Booking.updateMany(
-      {
-        tourist: touristId,
-        tourDate: { $lt: new Date() },
-        completionStatus: "Pending",
-      },
-      { $set: { completionStatus: "Completed" } }
-    );
-
     const completedTours = await Booking.find({
       tourist: touristId,
-      completionStatus: "Completed",
+      tourDate: { $lt: new Date() },
+      completionStatus: "Paid",
     })
       .populate("itinerary", "name description")
       .populate("tourGuide", "name username");
@@ -150,7 +124,8 @@ export const rateTourGuide = async (req, res) => {
     const bookingMade = await Booking.findOne({
       _id: booking,
       tourist: tourist,
-      completionStatus: "Completed",
+      completionStatus: "Paid",
+      tourDate: { $lt: new Date() },
       ratingGiven: false,
     });
 
@@ -186,7 +161,7 @@ export const rateTourGuide = async (req, res) => {
 export const totalBookedItinerariesAdmin = async () => {
   try {
     const bookings = await Booking.find({
-      status: { $in: ["Completed", "Pending"] },
+      completionStatus: "Paid",
     }).populate("itinerary");
 
     let totalPrice = 0;
@@ -202,7 +177,7 @@ export const totalBookedItinerariesAdmin = async () => {
 export const totalCancelledItinerariesAdmin = async () => {
   try {
     const bookings = await Booking.find({
-      status: "Cancelled",
+      completionStatus: "Cancelled",
     }).populate("itinerary");
 
     let totalPrice = 0;
@@ -218,7 +193,7 @@ export const totalCancelledItinerariesAdmin = async () => {
 export const totalBookedItineraiesTourguide = async (tourGuideId) => {
   try {
     const bookings = await Booking.find({
-      status: { $in: ["Pending", "Completed"] },
+      completionStatus: "Paid"
     }).populate("itinerary");
 
     let totalPrice = 0;
@@ -236,7 +211,7 @@ export const totalBookedItineraiesTourguide = async (tourGuideId) => {
 export const totalCancelledItineraiesTourguide = async (tourGuideId) => {
   try {
     const bookings = await Booking.find({
-      status: "Cancelled",
+      completionStatus: "Cancelled",
     }).populate("itinerary");
 
     let totalPrice = 0;
