@@ -11,6 +11,7 @@ import {
   Tag,
   User,
   Users,
+  MapPin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+
 import {
   BarChart,
   Bar,
@@ -354,12 +357,19 @@ const TourGuideDashboard = () => {
                     key={itinerary._id}
                   >
                     <div className="flex-grow p-4">
+                      <div className="justify-self-end">
+                        {itinerary.flagged? 
+                          <Badge  className="bg-red-600">Flagged</Badge>
+                          : <Badge className="bg-green-600">Not flagged</Badge>
+                        }
+                      </div>
+
                       <CardHeader>
-                        <img
-                          src={itinerary.images?.[0]}
-                          alt={itinerary.name}
-                          className="w-full h-48 object-cover rounded-t-lg"
-                        />
+                          <img
+                            src={itinerary.images?.[0]}
+                            alt={itinerary.name}
+                            className="w-full h-48 object-cover rounded-t-lg"
+                          />
                         <CardTitle>{itinerary.name}</CardTitle>
                         <CardDescription>
                           {itinerary.description}
@@ -410,7 +420,7 @@ const TourGuideDashboard = () => {
                         />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button variant="destructive" size="sm">
+                            <Button className="bg-red-600 hover:bg-red-800" size="sm">
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
                             </Button>
@@ -429,9 +439,8 @@ const TourGuideDashboard = () => {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>
                               <AlertDialogAction
-                                variant="destructive"
                                 size="sm"
-                                className="bg-red-600 hover:bg-red-700 text-white"
+                                className="bg-red-600 hover:bg-red-800 text-white"
                                 onClick={() => deleteItinerary(itinerary._id)}
                               >
                                 <Trash2 className="h-4 w-4 mr-2" /> Delete

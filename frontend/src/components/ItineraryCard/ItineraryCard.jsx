@@ -16,18 +16,17 @@ import {
   DialogTrigger,
   DialogOverlay,
   DialogClose,
-} from "@/components/ui/dialog"
-import { AlertCircle, CheckCircle2 } from "lucide-react"
+} from "@/components/ui/dialog";
+import { AlertCircle, CheckCircle2, MapPin } from "lucide-react";
 
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
 import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
 import { createItineraryBooking } from "../../pages/tourist/api/apiService";
 
-const token = localStorage.getItem('token');
-
+const token = localStorage.getItem("token");
 
 export default function ItineraryCard({
   itineraries,
@@ -40,7 +39,6 @@ export default function ItineraryCard({
 }) {
 
   const navigate = useNavigate();
-
 
   const handleDelete = async (id) => {
     try {
@@ -66,7 +64,8 @@ export default function ItineraryCard({
   const handleActivationToggle = async (id, isBookingOpen) => {
     const state = isBookingOpen ? "Deactivated" : "Activated";
     try {
-      const response = await fetch(`http://localhost:5001/api/itineraries/${id}`,
+      const response = await fetch(
+        `http://localhost:5001/api/itineraries/${id}`,
         {
           method: "PUT",
           headers: {
@@ -86,12 +85,12 @@ export default function ItineraryCard({
     } catch (error) {
       console.error("Error:", error);
     }
-  }
+  };
 
   // const handleBook = async (itineraryId, tourGuideId) => {
 
 
-  // }; 
+  // };
 
   const handleFlagItinerary = async (itineraryId) => {
     try {
@@ -105,7 +104,7 @@ export default function ItineraryCard({
 
   return (
     <>
-      <div className="w-full mx-auto m-3 space-y-2">
+      <div className="space-y-2">
         {itineraries?.map((itinerary) => (
           <Card key={itinerary._id}>
             <div className="flex flex-row">
@@ -302,7 +301,7 @@ const Timeline = ({ selectedItinerary }) => {
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 const ChooseDate = ({ itinerary }) => {
   let remainingSpots;
@@ -328,7 +327,7 @@ const ChooseDate = ({ itinerary }) => {
         token
       );
       setIsOpen(false);
-      alert(response.data.message)
+      alert(response.data.message);
       // setSubmitStatus({ success: response.message.success, message: message });
     } catch (error) {
       setIsOpen(false);
@@ -362,18 +361,26 @@ const ChooseDate = ({ itinerary }) => {
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button type="submit">Submit</Button>
+            <Button type="submit">Book</Button>
           </DialogFooter>
         </form>
         {submitStatus && (
-          <div className={`mt-4 p-4 rounded-md ${submitStatus.success ? 'bg-green-100' : 'bg-red-100'}`}>
+          <div
+            className={`mt-4 p-4 rounded-md ${
+              submitStatus.success ? "bg-green-100" : "bg-red-100"
+            }`}
+          >
             <div className="flex items-center">
               {submitStatus.success ? (
                 <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
               ) : (
                 <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
               )}
-              <p className={submitStatus.success ? 'text-green-700' : 'text-red-700'}>
+              <p
+                className={
+                  submitStatus.success ? "text-green-700" : "text-red-700"
+                }
+              >
                 {submitStatus.message}
               </p>
             </div>
@@ -382,4 +389,4 @@ const ChooseDate = ({ itinerary }) => {
       </DialogContent>
     </Dialog>
   );
-}
+};

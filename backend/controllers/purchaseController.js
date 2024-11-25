@@ -1,13 +1,14 @@
+import mongoose from "mongoose";
 import Product from "../models/productModel.js";
 import Purchase from "../models/purchaseModel.js";
-import mongoose from "mongoose";
+ 
 
 export const purchaseProduct = async (req, res) => {
   const { productId, touristId, quantity } = req.body;
 
   try {
     const product = await Product.findById(productId);
-
+    const totalPrice = quantity * product.price
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -24,6 +25,7 @@ export const purchaseProduct = async (req, res) => {
       productId,
       touristId,
       quantity,
+      totalPrice
     });
     await purchase.save();
 
@@ -86,7 +88,7 @@ export const totalPurchasedProductsAdmin = async () => {
     return -1;
   }
   
-}
+};
 
 export const totalPurchasedProductsCancelledAdmin = async () => {
   
@@ -104,7 +106,7 @@ export const totalPurchasedProductsCancelledAdmin = async () => {
     return -1;
   }
   
-}
+};
 
 
 export const totalPurchasedProductsSeller = async (sellerId) => {
@@ -124,7 +126,7 @@ export const totalPurchasedProductsSeller = async (sellerId) => {
     return -1;
   }
   
-}
+};
 
 export const totalPurchasedProductsCancelledSeller = async (sellerId) => {
   
@@ -143,4 +145,74 @@ export const totalPurchasedProductsCancelledSeller = async (sellerId) => {
     return -1;
   }
   
-}
+};
+
+export const getProductsReport = async (req, res) => {
+  try {
+    // const  sellerId  = req.user.userId;
+    const sellerId =  req.body.id; 
+    const {year,day,month}=req.query; 
+
+    const results = await Purchase.aggregate([
+      {
+        $lookup: {
+          from: 'products', // Product collection name
+          localField: 'productId', // Field in Purchase to match
+          foreignField: '_id', // Field in Product to match
+          as: 'productDetails',
+        },
+      },
+      {
+        $unwind: '$productDetails', // Flatten the product details array
+      },
+      {
+        $match: {
+          'productDetails.sellerId': new mongoose.Types.ObjectId(sellerId), // Match by seller ID
+          status: { $in: ['completed', 'pending'] }, // Filter by status
+          $expr: {
+                $and: [
+                  ...(year ? [{ $eq: [{ $year: '$createdAt' }, parseInt(year)] }] : []),
+                  ...(month ? [{ $eq: [{ $month: '$createdAt' }, parseInt(month)] }] : []),
+                  ...(day ? [{ $eq: [{ $dayOfMonth: '$createdAt' }, parseInt(day)] }] : []),
+                ],
+              },
+        },
+      },
+      {
+        $group: {
+          _id: '$productId', // Group by product ID
+          productName: { $first: '$productDetails.name' },
+          purchaseCount: { $sum: '$quantity' }, // Sum up quantities purchased
+          productPrice: { $first: '$productDetails.price' }, // Sum up the total price
+        },
+      },
+      {
+        $addFields: {
+          revenue: { $multiply: ['$purchaseCount', '$productPrice'] }, // Calculate revenue
+        },
+      },
+      {
+        $project: {
+          _id: 1, // Include product ID
+          name: '$productName', // Include product name
+          purchaseCount: 1, // Include purchase count
+          revenue: 1 // Include revenue
+        },
+      },
+    ]);
+
+    console.log(results);
+    if(results.length == 0)
+      return res.status(200).json({message: "No data to show"});
+    return res.status(200).json({
+      data: results,
+      message: "Successfully fetched the products report"
+    });
+  } catch (error) {
+    console.error('Error fetching product report:', error);
+    res.status(500).json({ message: 'Failed to fetch product report', error: error.message });
+  }
+};
+
+
+

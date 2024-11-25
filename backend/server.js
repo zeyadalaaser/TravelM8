@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
 import dotenv from "dotenv";
+import path from "path";
 import { connectDB } from "./config/db.js";
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
@@ -29,6 +29,8 @@ import itineraryBookingsRoute from "./routes/bookingsRoute.js";
 import deleteRequestRoute from "./routes/deleteRequestRoute.js";
 import notificationRoutes from "./routes/notificationsRoutes.js";
 import "./services/Reminders/reminderjob.js";
+import authRoute from './routes/authRoute.js';
+
 
 dotenv.config({ path: "../.env" });
 
@@ -76,6 +78,8 @@ app.use("/api", itineraryBookingsRoute);
 
 app.use("/api", deleteRequestRoute);
 app.use("/api", notificationRoutes);
+app.use('/api/auth', authRoute);
+
 
 app.listen(PORT, () => {
   connectDB();

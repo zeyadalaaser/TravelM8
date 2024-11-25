@@ -1,9 +1,10 @@
-import { Clock, Tag } from "lucide-react";
+import { Clock, Tag, MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "@/components/Stars";
 import { ShareButton } from "@/components/ui/share-button";
 import { Button } from "@/components/ui/button";
+
 
 
 function Activities({token, bookActivity, activities, currency, exchangeRate }) {
@@ -44,6 +45,10 @@ function Activities({token, bookActivity, activities, currency, exchangeRate }) 
                 <div className="flex items-center text-sm text-muted-foreground mb-2 gap-2">
                   <Clock className="w-4 h-4 mr-1" />
                   {activity.date.slice(0, 10)}
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground mb-2 gap-2">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  {activity?.location?.name}
                 </div>
                 {activity.tags.length > 0 && (
                   <div className="flex items-center flex-wrap gap-2 mb-2">

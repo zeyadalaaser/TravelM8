@@ -1,10 +1,14 @@
+import mongoose from "mongoose";
 import Booking from "../models/bookingsModel.js";
 import Rating from "../models/ratingModel.js";
+import Itinerary from "../models/itineraryModel.js";
 import { updateItineraryUponBookingModification } from "./itineraryController.js";
 import { updatePoints } from "./touristController.js";
 import { getItineraryPrice } from "./itineraryController.js";
+ 
 
 export const createBooking2 = async (req, res) => {
+  let msg;
   try {
     const { itinerary, tourGuide, tourDate, price, paymentMethod } = req.body;
     const tourist = req.user.userId;
@@ -22,6 +26,7 @@ export const createBooking2 = async (req, res) => {
       tourDate,
       "book"
     );
+    msg = result.message;
     console.log(result.success);
     console.log(result);
     const itineraryPrice = await getItineraryPrice(itinerary);
@@ -34,7 +39,7 @@ export const createBooking2 = async (req, res) => {
       });
     } else
       res.status(203).json({
-        message: "Max Number of bookings reached! Failed to book itinerary!",
+        message: msg,
       });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -223,5 +228,76 @@ export const totalCancelledItineraiesTourguide = async (tourGuideId) => {
     return totalPrice;
   } catch (error) {
     return -1;
+  }
+};
+
+export const getItinerariesReport = async (req, res) => {
+  const  tourguideId=req.user.userId; 
+  const {year, month, day } = req.query;
+
+  try {
+    const matchConditions = {
+      tourGuide: new mongoose.Types.ObjectId(tourguideId), // Filter by specific Tour Guide ID
+      completionStatus: { $in: ['Pending', 'Completed'] }, // Match specific statuses
+    };
+
+    // Add date-based filtering if year, month, or day is provided
+    if (year || month || day) {
+      matchConditions.$expr = {
+        $and: [
+          ...(year ? [{ $eq: [{ $year: '$bookingDate' }, parseInt(year)] }] : []),
+          ...(month ? [{ $eq: [{ $month: '$bookingDate' }, parseInt(month)] }] : []),
+          ...(day ? [{ $eq: [{ $dayOfMonth: '$bookingDate' }, parseInt(day)] }] : []),
+        ],
+      };
+    }
+
+    const results = await Booking.aggregate([
+      {
+        $match: matchConditions,
+      },
+      {
+        $lookup: {
+          from: 'itineraries', // Itinerary collection name
+          localField: 'itinerary', // Grouped itinerary ID
+          foreignField: '_id', // Match with Itinerary `_id`
+          as: 'itineraryDetails',
+        },
+      },
+      {
+        $unwind: '$itineraryDetails', // Flatten the itinerary details array
+      },
+      {
+        $group: {
+          _id: '$itinerary', // Group by the itinerary ID
+          bookingCount: { $sum: 1 }, // Count the number of bookings per itinerary
+          revenue: { $sum: '$itineraryDetails.price' }, // Sum up the price of bookings per itinerary
+          itineraryTitle: { $first: '$itineraryDetails.name' },
+        },
+      },
+      {
+        $project: {
+          _id: 1, // Include itinerary ID
+          name: '$itineraryTitle', // Include itinerary name
+          bookingCount: 1, // Include the count of bookings
+          revenue: 1, // Include the total revenue
+        },
+      },
+    ]);
+
+    console.log(results);
+    if(results.length == 0)
+      return res.status(200).json({message: "No data to show"});
+    return res.status(200).json({
+      data: results,
+      message: 'Successfully fetched the itineraries report',
+    });
+  } catch (error) {
+    console.error('Error fetching itineraries report:', error);
+
+    res.status(500).json({
+      message: 'Failed to fetch itinerary report',
+      error: error.message,
+    });
   }
 };

@@ -23,6 +23,9 @@ const adminSchema = new mongoose.Schema({
       message: "Password must contain numbers, letters and min length is 4",
     },
   },
+},
+{
+  timestamps: true
 });
 
 const Admin = mongoose.model("Admin", adminSchema);
