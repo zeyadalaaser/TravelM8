@@ -4,6 +4,25 @@ import Order from '../models/orderModel.js';
 
 const stripe = new Stripe('sk_test_51QNwSmLNUgOldllO81Gcdv4m60Pf04huhn0DcH2jm0NedAn6xh3krj5GyJ9PEojkKCJYmGJGojBK12S52FktB5Jc00dYqr1Ujo');
 
+
+export const createPaymentIntent = async (req, res) => {
+    try {
+      const { amount, currency } = req.body;
+  
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount,
+        currency,
+        automatic_payment_methods: {
+          enabled: true,
+        },
+      });
+  
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
 // Helper function to calculate total amount
 const calculateTotalAmount = (items) => {
   return items.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -80,4 +99,4 @@ export const payWithCash = async (req, res) => {
     console.error('Error processing cash on delivery order:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-};//4576 3802 0035 5065
+};//4000056655665556
