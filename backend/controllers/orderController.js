@@ -108,21 +108,32 @@ export const payWithCash = async (req, res) => {
   };
   export const payWithWallet = async (req, res) => {
     try {
+      console.log('Received request body:', JSON.stringify(req.body, null, 2));
+      console.log('User object from request:', JSON.stringify(req.user, null, 2));
+  
       const { items, deliveryAddress } = req.body;
       const userId = req.user.userId;
   
+      console.log('User ID:', userId);
+  
       if (!items || !Array.isArray(items) || items.length === 0) {
+        console.log('Invalid items array');
         return res.status(400).json({ message: 'Invalid or empty items array' });
       }
   
       const totalAmount = calculateTotalAmount(items);
+      console.log('Total amount:', totalAmount);
   
       const user = await Tourist.findById(userId);
       if (!user) {
+        console.error('User not found for ID:', userId);
         return res.status(404).json({ message: 'User not found' });
       }
   
+      console.log('User wallet balance:', user.wallet);
+  
       if (user.wallet < totalAmount) {
+        console.log('Insufficient wallet balance');
         return res.status(400).json({ message: 'Insufficient wallet balance' });
       }
   
@@ -137,24 +148,28 @@ export const payWithCash = async (req, res) => {
         totalAmount,
         deliveryAddress: deliveryAddress || 'Not provided',
         paymentMethod: 'wallet',
-        status: 'paid',
+        status: 'placed',
         deliveryFee: 0 // You may want to calculate this based on your business logic
       });
   
+      console.log('New order created:', JSON.stringify(newOrder, null, 2));
+  
       // Save the order first
       await newOrder.save();
+      console.log('Order saved successfully');
   
       // Deduct the amount from the wallet
       user.wallet -= totalAmount;
       await user.save();
+      console.log('User wallet updated');
   
       res.status(200).json({ message: 'Payment successful', order: newOrder });
     } catch (error) {
       console.error('Error processing wallet payment:', error);
-      res.status(500).json({ message: 'Internal server error', error: error.message });
+      console.error('Error stack:', error.stack);
+      res.status(500).json({ message: 'Internal server error', error: error.message, stack: error.stack });
     }
   };
-  
 
   export const getWalletBalance = async (req, res) => {
     try {
