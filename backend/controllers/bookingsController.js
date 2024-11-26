@@ -5,18 +5,20 @@ import Itinerary from "../models/itineraryModel.js";
 import { updateItineraryUponBookingModification } from "./itineraryController.js";
 import { updatePoints } from "./touristController.js";
 import { getItineraryPrice } from "./itineraryController.js";
-
+ 
 
 export const createBooking2 = async (req, res) => {
   let msg;
   try {
-    const { itinerary, tourGuide, tourDate } = req.body;
+    const { itinerary, tourGuide, tourDate, price, paymentMethod } = req.body;
     const tourist = req.user.userId;
     const newBooking = new Booking({
       tourist,
       itinerary,
       tourGuide,
       tourDate,
+      price,
+      paymentMethod
     });
     const savedBooking = await newBooking.save();
     const result = await updateItineraryUponBookingModification(
@@ -98,42 +100,14 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
-export const createBooking = async (req, res) => {
-  try {
-    const { tourist, itinerary, tourGuide, tourDate } = req.body;
-
-    const newBooking = new Booking({
-      tourist,
-      itinerary,
-      tourGuide,
-      tourDate,
-    });
-
-    await newBooking.save();
-    res
-      .status(201)
-      .json({ message: "Booking created successfully", newBooking });
-  } catch (error) {
-    res.status(500).json({ message: "Error creating booking", error });
-  }
-};
-
 export const getCompletedToursByTourist = async (req, res) => {
   try {
     const { touristId } = req.params;
 
-    await Booking.updateMany(
-      {
-        tourist: touristId,
-        tourDate: { $lt: new Date() },
-        completionStatus: "Pending",
-      },
-      { $set: { completionStatus: "Completed" } }
-    );
-
     const completedTours = await Booking.find({
       tourist: touristId,
-      completionStatus: "Completed",
+      tourDate: { $lt: new Date() },
+      completionStatus: "Paid",
     })
       .populate("itinerary", "name description")
       .populate("tourGuide", "name username");
@@ -155,7 +129,8 @@ export const rateTourGuide = async (req, res) => {
     const bookingMade = await Booking.findOne({
       _id: booking,
       tourist: tourist,
-      completionStatus: "Completed",
+      completionStatus: "Paid",
+      tourDate: { $lt: new Date() },
       ratingGiven: false,
     });
 
@@ -185,6 +160,74 @@ export const rateTourGuide = async (req, res) => {
       .json({ message: "Tour guide rated successfully", newRating });
   } catch (error) {
     res.status(500).json({ message: "Error rating tour guide", error });
+  }
+};
+
+export const totalBookedItinerariesAdmin = async () => {
+  try {
+    const bookings = await Booking.find({
+      completionStatus: "Paid",
+    }).populate("itinerary");
+
+    let totalPrice = 0;
+    bookings.forEach((booking) => {
+      totalPrice += booking.itinerary.price || 0;
+    });
+    return totalPrice;
+  } catch (error) {
+    return -1;
+  }
+};
+
+export const totalCancelledItinerariesAdmin = async () => {
+  try {
+    const bookings = await Booking.find({
+      completionStatus: "Cancelled",
+    }).populate("itinerary");
+
+    let totalPrice = 0;
+    bookings.forEach((booking) => {
+      totalPrice += booking.itinerary.price || 0;
+    });
+    return totalPrice;
+  } catch (error) {
+    return -1;
+  }
+};
+
+export const totalBookedItineraiesTourguide = async (tourGuideId) => {
+  try {
+    const bookings = await Booking.find({
+      completionStatus: "Paid"
+    }).populate("itinerary");
+
+    let totalPrice = 0;
+    bookings.forEach((booking) => {
+      if (booking.tourGuide === tourGuideId) {
+        totalPrice += booking.itinerary.price || 0;
+      }
+    });
+    return totalPrice;
+  } catch (error) {
+    return -1;
+  }
+};
+
+export const totalCancelledItineraiesTourguide = async (tourGuideId) => {
+  try {
+    const bookings = await Booking.find({
+      completionStatus: "Cancelled",
+    }).populate("itinerary");
+
+    let totalPrice = 0;
+    bookings.forEach((booking) => {
+      if (booking.tourGuide === tourGuideId) {
+        totalPrice += booking.itinerary.price || 0;
+      }
+    });
+    return totalPrice;
+  } catch (error) {
+    return -1;
   }
 };
 

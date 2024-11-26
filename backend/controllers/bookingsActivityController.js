@@ -314,6 +314,7 @@ export const totalCancelledActivitiesAdvertiser = async (advertiserId) => {
     return -1;
   }
 };
+
 export const getActivitiesReport = async (req, res) => {
   //const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user
   const advertiserId =  req.body.id; 
