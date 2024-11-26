@@ -1,6 +1,5 @@
 import express from 'express';
 import {
-  createBooking,
   getCompletedToursByTourist, 
   createBooking2,
   getAllTourBookings,
@@ -10,8 +9,6 @@ import {
 import verifyToken from '../services/tokenDecodingService.js';
 
 const router = express.Router();
-
-router.post('/bookings', createBooking); 
 router.get('/bookings/completed/:touristId', getCompletedToursByTourist); 
 
 router.get('/itinerary-bookings', verifyToken, getAllTourBookings);

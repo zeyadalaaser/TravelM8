@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Tourist',
     required: true
   },
   items: [{
@@ -26,19 +26,23 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  deliveryFee: {
+    type:Number,
+    required:true
+  },
   deliveryAddress: {
     type: String,
     required: true
   },
   paymentMethod: {
     type: String,
-    enum: ['credit-card', 'cash'],
+    enum: ['credit-card', 'cash',"wallet"],
     required: true
   },
   status: {
     type: String,
-    enum: ['pending', 'paid', 'shipped', 'delivered', 'cancelled'],
-    default: 'pending'
+    enum: ['placed', 'shipped', 'delivered', 'cancelled'],
+    default: 'placed'
   },
   stripePaymentIntentId: {
     type: String

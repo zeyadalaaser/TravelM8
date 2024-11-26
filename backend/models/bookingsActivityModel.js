@@ -15,12 +15,19 @@ const bookingActivitySchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  status: {
+  completionStatus: {
     type: String,
-    enum: ['booked', 'completed', 'cancelled'],
-    default: 'booked',
+    enum: ['Paid', 'Cancelled'],
+    default: 'Paid',
   },
- 
+  price: {
+    type: Number,
+    required: true,
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['Wallet', 'Card'],
+  }
 });
 
 const BookingActivity = mongoose.model('BookingActivity', bookingActivitySchema);

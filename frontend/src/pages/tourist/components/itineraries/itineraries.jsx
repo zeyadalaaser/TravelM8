@@ -97,7 +97,12 @@ const ChooseDate = ({itinerary}) => {
   const handleSubmit = async () => {
     e.preventDefault();
       console.log(token);
-      const response = await createItineraryBooking(itinerary._id, itinerary.tourGuideId, selectedDate, token);
+      const response = await createItineraryBooking(itinerary._id, 
+        itinerary.tourGuideId, 
+        selectedDate, 
+        itinerary.price,
+        "Card",
+        token);
       console.log(response.message);
       alert(response.message);
 

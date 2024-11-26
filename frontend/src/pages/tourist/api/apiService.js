@@ -25,7 +25,7 @@ export async function getProducts(query) {
 
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
-  
+
   const response = await apiClient.get("products?" + searchParams.toString(), {
     headers: {
       "Content-Type": "application/json",
@@ -89,13 +89,13 @@ export async function getMyComplaints(token) {
   ).data;
 }
 
-export async function createActivityBooking(activityId, token){
+export async function createActivityBooking(activityId, price, paymentMethod, token) {
   // const token = localStorage.getItem('token');
   console.log(token);
   return (
     await apiClient.post(
       '/activity-bookings',
-      { activityId }, // Body payload goes here
+      { activityId, price, paymentMethod }, // Body payload goes here
       {
         headers: {
           "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export async function createActivityBooking(activityId, token){
   ).data
 }
 
-export async function getActivityBookings(){
+export async function getActivityBookings() {
   const token = localStorage.getItem('token');
   const response = await apiClient.get("/activity-bookings", {
     headers: {
@@ -120,12 +120,12 @@ export async function getActivityBookings(){
   );
 }
 
-export async function createItineraryBooking(itinerary, tourGuide, tourDate, token) {
+export async function createItineraryBooking(itinerary, tourGuide, tourDate, price, paymentMethod, token) {
   // const token = localStorage.getItem('token');
   return (
     await apiClient.post(
       "/itinerary-bookings",
-      { itinerary, tourGuide, tourDate }, // Body payload goes here
+      { itinerary, tourGuide, tourDate, price, paymentMethod }, // Body payload goes here
       {
         headers: {
           "Content-Type": "application/json",
@@ -136,7 +136,7 @@ export async function createItineraryBooking(itinerary, tourGuide, tourDate, tok
   )
 }
 
-export async function getItineraryBookings(){
+export async function getItineraryBookings() {
   const token = localStorage.getItem('token');
   const response = await apiClient.get("/itinerary-bookings", {
     headers: {
@@ -152,7 +152,7 @@ export async function getItineraryBookings(){
 
 export async function cancelActivityBooking(id) {
   const token = localStorage.getItem('token');
-  
+
   if (!token) {
     return { message: 'No token provided' };
   }
@@ -176,7 +176,7 @@ export async function cancelActivityBooking(id) {
 
 export async function cancelItineraryBooking(id) {
   const token = localStorage.getItem('token');
-  
+
   if (!token) {
     return { message: 'No token provided' };
   }

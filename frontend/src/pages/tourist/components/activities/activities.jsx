@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 
 function Activities({token, bookActivity, activities, currency, exchangeRate }) {
   
-    const handleBook = async (activityId) =>{
+    const handleBook = async (activity) =>{
       console.log(token);
-        const response = await bookActivity(activityId, token);
+        const response = await bookActivity(activity._id, activity.price, "Card", token);
         console.log(response.message);
         alert(response.message);
     }
@@ -77,7 +77,7 @@ function Activities({token, bookActivity, activities, currency, exchangeRate }) 
                   : `${(activity.price * exchangeRate).toFixed(2)} ${currency}`}
               </div>
               <div className="flex justify-end items-center">
-                <Button onClick={()=>handleBook(activity._id)}>Book Activity!</Button>
+                <Button onClick={()=>handleBook(activity)}>Book Activity!</Button>
               </div>
             </div>
           </div>
