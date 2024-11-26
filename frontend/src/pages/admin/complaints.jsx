@@ -1,6 +1,9 @@
-import { getAllComplaints, updateComplaintStatusAndReply } from "@/pages/admin/services/complaintService.js"; 
+import {
+  getAllComplaints,
+  updateComplaintStatusAndReply,
+} from "@/pages/admin/services/complaintService.js";
 import { useState, useEffect } from "react";
-import useRouter from "@/hooks/useRouter"
+import useRouter from "@/hooks/useRouter";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -16,12 +19,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -35,27 +38,27 @@ import { Textarea } from "@/components/ui/textarea";
 export default function ComplaintsPage() {
   const token = localStorage.getItem("token");
   if (!token) {
-    console.log('No token found in local storage');
+    console.log("No token found in local storage");
     return null;
   }
 
   try {
-    const payload = token.split('.')[1];
+    const payload = token.split(".")[1];
     const decodedPayload = JSON.parse(atob(payload));
     const role = decodedPayload.role;
     if (role) {
-        console.log('User Role:', role);
-      }
+      console.log("User Role:", role);
+    }
   } catch (error) {
-    console.error('Error decoding token:', error);
+    console.error("Error decoding token:", error);
     return null;
   }
-  
+
   const [sidebarState, setSidebarState] = useState(false);
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const { toast } = useToast();
-  const [selectedStatus, setSelectedStatus] = useState(""); 
+  const [selectedStatus, setSelectedStatus] = useState("");
   const [reply, setReply] = useState("");
   const { searchParams, navigate, location } = useRouter();
   const [selectedDate, setSelectedDate] = useState("");
@@ -66,79 +69,90 @@ export default function ComplaintsPage() {
 
   useEffect(() => {
     fetchComplaints();
-  }, [token, toast, searchParams, selectedDate]);  // Added selectedDate here
+  }, [token, toast, searchParams, selectedDate]); // Added selectedDate here
 
   const fetchComplaints = async () => {
     try {
-        const data = await getAllComplaints(token);
-        let filteredAndSortedComplaints = [...data];
+      const data = await getAllComplaints(token);
+      let filteredAndSortedComplaints = [...data];
 
-        const status = searchParams.get('status');
-        if (status && status !== 'All') {
-            filteredAndSortedComplaints = filteredAndSortedComplaints.filter(
-                complaint => complaint.status === status
-            );
+      const status = searchParams.get("status");
+      if (status && status !== "All") {
+        filteredAndSortedComplaints = filteredAndSortedComplaints.filter(
+          (complaint) => complaint.status === status
+        );
+      }
+
+      if (selectedDate) {
+        filteredAndSortedComplaints = filteredAndSortedComplaints.filter(
+          (complaint) =>
+            new Date(complaint.date).toLocaleDateString() ===
+            new Date(selectedDate).toLocaleDateString()
+        );
+      }
+
+      const sortBy = searchParams.get("sortBy") || "date";
+      const order = searchParams.get("order") || "desc";
+      filteredAndSortedComplaints.sort((a, b) => {
+        if (order === "asc") {
+          return new Date(a[sortBy]) - new Date(b[sortBy]);
+        } else {
+          return new Date(b[sortBy]) - new Date(a[sortBy]);
         }
+      });
 
-        if (selectedDate) {
-          filteredAndSortedComplaints = filteredAndSortedComplaints.filter(
-              complaint => new Date(complaint.date).toLocaleDateString() === new Date(selectedDate).toLocaleDateString()
-          );
-        }
-
-        const sortBy = searchParams.get('sortBy') || 'date';
-        const order = searchParams.get('order') || 'desc';
-        filteredAndSortedComplaints.sort((a, b) => {
-            if (order === 'asc') {
-                return new Date(a[sortBy]) - new Date(b[sortBy]);
-            } else {
-                return new Date(b[sortBy]) - new Date(a[sortBy]);
-            }
-        });
-
-        setComplaints(filteredAndSortedComplaints);
-        toast({
-          title: "Success",
-          description: "Success to load complaints.",
-          duration: 3000,
+      setComplaints(filteredAndSortedComplaints);
+      toast({
+        title: "Success",
+        description: "Success to load complaints.",
+        duration: 3000,
       });
     } catch (error) {
-        console.error("Error fetching complaints:", error);
-        toast({
-            title: "Error",
-            description: "Failed to load complaints.",
-            duration: 3000,
-        });
+      console.error("Error fetching complaints:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load complaints.",
+        duration: 3000,
+      });
     }
   };
 
   const handleFilter = (status) => {
-      searchParams.set('status', status);
-      if (selectedDate) searchParams.set('date', selectedDate); // Update date in search params
-      navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    searchParams.set("status", status);
+    if (selectedDate) searchParams.set("date", selectedDate); // Update date in search params
+    navigate(`${location.pathname}?${searchParams.toString()}`, {
+      replace: true,
+    });
   };
 
   const handleSort = (value) => {
-      const [sortBy, order] = value.split('-');
-      searchParams.set('sortBy', sortBy);
-      searchParams.set('order', order);
-      navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+    const [sortBy, order] = value.split("-");
+    searchParams.set("sortBy", sortBy);
+    searchParams.set("order", order);
+    navigate(`${location.pathname}?${searchParams.toString()}`, {
+      replace: true,
+    });
   };
 
   const getSortBy = () => {
-      const sortBy = searchParams.get('sortBy') || 'date';
-      const order = searchParams.get('order') || 'desc';
-      return `${sortBy}-${order}`;
+    const sortBy = searchParams.get("sortBy") || "date";
+    const order = searchParams.get("order") || "desc";
+    return `${sortBy}-${order}`;
   };
 
-  const getActiveFilter = () => searchParams.get('status') || 'All';
+  const getActiveFilter = () => searchParams.get("status") || "All";
 
   const handleSubmit = async () => {
     if (selectedComplaint && selectedStatus) {
       try {
-        updateComplaintStatusAndReply(token, selectedComplaint._id, reply, selectedStatus); 
-        setComplaints(prevComplaints =>
-          prevComplaints.map(complaint =>
+        updateComplaintStatusAndReply(
+          token,
+          selectedComplaint._id,
+          reply,
+          selectedStatus
+        );
+        setComplaints((prevComplaints) =>
+          prevComplaints.map((complaint) =>
             complaint._id === selectedComplaint._id
               ? { ...complaint, status: selectedStatus, reply: reply }
               : complaint
@@ -174,29 +188,29 @@ export default function ComplaintsPage() {
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">Complaints Management</h1>
           <div className="flex justify-start mb-4">
-          <div className="flex items-center space-x-4">
-                            <Select value={getActiveFilter()} onValueChange={handleFilter}>
-                                <SelectTrigger className="w-[200px] !ring-0">
-                                    <SelectValue placeholder="Filter by status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="All">Show All</SelectItem>
-                                    <SelectItem value="Pending">Pending</SelectItem>
-                                    <SelectItem value="Resolved">Resolved</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="flex items-center space-x-4 ml-4">
-                            <Select value={getSortBy()} onValueChange={handleSort}>
-                                <SelectTrigger className="w-[200px] !ring-0">
-                                    <SelectValue placeholder="Sort by" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="date-desc">Date: Newest First</SelectItem>
-                                    <SelectItem value="date-asc">Date: Oldest First</SelectItem>
-                                </SelectContent>
-                            </Select>
-                              {/* Date filter */}
+            <div className="flex items-center space-x-4">
+              <Select value={getActiveFilter()} onValueChange={handleFilter}>
+                <SelectTrigger className="w-[200px] !ring-0">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">Show All</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Resolved">Resolved</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center space-x-4 ml-4">
+              <Select value={getSortBy()} onValueChange={handleSort}>
+                <SelectTrigger className="w-[200px] !ring-0">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date-desc">Date: Newest First</SelectItem>
+                  <SelectItem value="date-asc">Date: Oldest First</SelectItem>
+                </SelectContent>
+              </Select>
+              {/* Date filter */}
               <input
                 type="date"
                 value={selectedDate}
@@ -207,14 +221,14 @@ export default function ComplaintsPage() {
                 className="border px-2 py-1 rounded"
                 placeholder="Filter by date"
               />
-            
-                            <Button
-                                onClick={() => (window.location.href = "/AdminDashboard")}
-                                variant="outline"
-                            >
-                                Go to Dashboard
-                            </Button>
-                        </div>
+
+              <Button
+                onClick={() => (window.location.href = "/AdminDashboard")}
+                variant="outline"
+              >
+                Go to Dashboard
+              </Button>
+            </div>
           </div>
 
           <Table className="w-full">
@@ -231,59 +245,98 @@ export default function ComplaintsPage() {
             <TableBody>
               {complaints.map((complaint) => (
                 <TableRow key={complaint._id}>
-                  <TableCell>{complaint.touristId?.username}</TableCell>  
+                  <TableCell>{complaint.touristId?.username}</TableCell>
                   <TableCell>{complaint.title}</TableCell>
                   <TableCell>
-                    <span className={`${complaint.status === "Pending" ? "text-red-500" : "text-green-500"}`}>
+                    <span
+                      className={`${
+                        complaint.status === "Pending"
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
                       {complaint.status}
                     </span>
                   </TableCell>
-                  <TableCell>{new Date(complaint.date).toLocaleDateString()}</TableCell>
-                  <TableCell>{new Date(complaint.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</TableCell>
                   <TableCell>
-                  <Dialog>
-      <DialogTrigger asChild>
-      <Button onClick={() => { setSelectedComplaint(complaint);setSelectedStatus(complaint.status); }} variant="outline">
-          View Details
-
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle style={{ fontSize: "1.5rem", fontWeight: "bold", textAlign: "center" }}>
-            Complaint : {selectedComplaint?.title}
-          </DialogTitle>
-          <p></p>
-          <Separator/>
-          <p></p>
-          <p><strong>Description : </strong></p>{selectedComplaint?.body}
-          <p></p>
-          <p><strong>Date Issued :</strong> {selectedComplaint ? new Date(selectedComplaint.date).toLocaleDateString() : ''}</p>
-          <p></p>
-          <p><strong>Reply to Complaint : </strong></p>
-          <Textarea 
-          value={reply} // Bind the Textarea value to reply state
-          onChange={(e) => setReply(e.target.value)} // Update reply state on change
-        />
-          <p></p>
-          <p></p>
-          <Select value={selectedStatus} onValueChange={(value) => setSelectedStatus(value)}>
-            <SelectTrigger>
-                <SelectValue placeholder="Theme" />
-            </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="Resolved">Resolved</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                </SelectContent>
-            </Select>
-        </DialogHeader>
-      <DialogClose asChild>
-        <Button onClick={handleSubmit} className="mt-4" >
-          Submit       
-        </Button>
-        </DialogClose>
-      </DialogContent>
-    </Dialog>
+                    {new Date(complaint.date).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(complaint.date).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </TableCell>
+                  <TableCell>
+                    <Dialog >
+                      <DialogTrigger asChild>
+                        <Button
+                          onClick={() => {
+                            setSelectedComplaint(complaint);
+                            setSelectedStatus(complaint.status);
+                          }}
+                          variant="outline"
+                        >
+                          View Details
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle
+                            style={{
+                              fontSize: "1.5rem",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                            }}
+                          >
+                            Complaint : {selectedComplaint?.title}
+                          </DialogTitle>
+                          <p></p>
+                          <Separator />
+                          <p></p>
+                          <p>
+                            <strong>Description : </strong>
+                          </p>
+                          {selectedComplaint?.body}
+                          <p></p>
+                          <p>
+                            <strong>Date Issued :</strong>{" "}
+                            {selectedComplaint
+                              ? new Date(
+                                  selectedComplaint.date
+                                ).toLocaleDateString()
+                              : ""}
+                          </p>
+                          <p></p>
+                          <p>
+                            <strong>Reply to Complaint : </strong>
+                          </p>
+                          <Textarea
+                            value={reply} // Bind the Textarea value to reply state
+                            onChange={(e) => setReply(e.target.value)} // Update reply state on change
+                          />
+                          <p></p>
+                          <p></p>
+                          <Select
+                            value={selectedStatus}
+                            onValueChange={(value) => setSelectedStatus(value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Theme" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Resolved">Resolved</SelectItem>
+                              <SelectItem value="Pending">Pending</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </DialogHeader>
+                        <DialogClose asChild>
+                          <Button onClick={handleSubmit} className="mt-4">
+                            Submit
+                          </Button>
+                        </DialogClose>
+                      </DialogContent>
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}
@@ -291,7 +344,9 @@ export default function ComplaintsPage() {
           </Table>
 
           {complaints.length === 0 && (
-            <p className="text-center text-muted-foreground mt-4">No complaints found.</p>
+            <p className="text-center text-muted-foreground mt-4">
+              No complaints found.
+            </p>
           )}
         </div>
         <Footer />
