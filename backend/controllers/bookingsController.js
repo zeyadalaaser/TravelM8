@@ -5,7 +5,7 @@ import Itinerary from "../models/itineraryModel.js";
 import { updateItineraryUponBookingModification } from "./itineraryController.js";
 import { updatePoints } from "./touristController.js";
 import { getItineraryPrice } from "./itineraryController.js";
- 
+
 
 export const createBooking2 = async (req, res) => {
   let msg;
@@ -188,83 +188,21 @@ export const rateTourGuide = async (req, res) => {
   }
 };
 
-export const totalBookedItinerariesAdmin = async () => {
-  try {
-    const bookings = await Booking.find({
-      status: { $in: ["Completed", "Pending"] },
-    }).populate("itinerary");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      totalPrice += booking.itinerary.price || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalCancelledItinerariesAdmin = async () => {
-  try {
-    const bookings = await Booking.find({
-      status: "Cancelled",
-    }).populate("itinerary");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      totalPrice += booking.itinerary.price || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalBookedItineraiesTourguide = async (tourGuideId) => {
-  try {
-    const bookings = await Booking.find({
-      status: { $in: ["Pending", "Completed"] },
-    }).populate("itinerary");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      if (booking.tourGuide === tourGuideId) {
-        totalPrice += booking.itinerary.price || 0;
-      }
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalCancelledItineraiesTourguide = async (tourGuideId) => {
-  try {
-    const bookings = await Booking.find({
-      status: "Cancelled",
-    }).populate("itinerary");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      if (booking.tourGuide === tourGuideId) {
-        totalPrice += booking.itinerary.price || 0;
-      }
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
 export const getItinerariesReport = async (req, res) => {
-  const  tourguideId=req.user.userId; 
-  const {year, month, day } = req.query;
+  //const tourguideId = req.user.userId;
+  const tourguideId = req.body.id;
+  const { year, month, day } = req.query;
+
 
   try {
     const matchConditions = {
-      tourGuide: new mongoose.Types.ObjectId(tourguideId), // Filter by specific Tour Guide ID
       completionStatus: { $in: ['Pending', 'Completed'] }, // Match specific statuses
     };
+
+    if (req.user?.role === 'TourGuide' && tourguideId) {
+      matchConditions['tourGuide'] = new mongoose.Types.ObjectId(tourguideId);
+
+    }
 
     // Add date-based filtering if year, month, or day is provided
     if (year || month || day) {
@@ -311,8 +249,8 @@ export const getItinerariesReport = async (req, res) => {
     ]);
 
     console.log(results);
-    if(results.length == 0)
-      return res.status(200).json({message: "No data to show"});
+    if (results.length == 0)
+      return res.status(200).json({ message: "No data to show" });
     return res.status(200).json({
       data: results,
       message: 'Successfully fetched the itineraries report',

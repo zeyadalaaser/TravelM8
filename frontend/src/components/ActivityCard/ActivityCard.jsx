@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { Clock, Globe, Tag, Trash2, } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Clock, EditIcon, Tag, Trash2, MapPin } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Stars } from "../Stars";
@@ -48,31 +55,42 @@ export default function ActivityCard({
   };
   return (
     <>
-      <div className="space-y-4">
-        {activities?.map((activity) => (
-          <Card key={activity._id} activity={activity}>
-            <div className="flex flex-col md:flex-row">
-              <div className="w-full md:w-1/3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activities?.map((activity) => (
+          <Card key={activity._id} activity={activity} className="mb-6 flex flex-col h-full">
+
+            <div className="flex-grow p-4">
+              <div className="justify-self-end">
+                {activity.flagged ?
+                  <Badge className="bg-red-600">Flagged</Badge>
+                  : <Badge className="bg-green-600">Not flagged</Badge>
+                }
+              </div>
+              <CardHeader>
                 <img
                   src={activity.image}
                   alt={activity.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-48 object-cover rounded-t-lg"
                 />
-              </div>
-              <div className="w-full md:w-2/3 p-4">
-                <h3 className="text-xl font-semibold mb-2">{activity.title}</h3>
+                <CardTitle className="overflow-hidden text-ellipsis">{activity.title}</CardTitle>
+                <CardDescription className="overflow-hidden text-ellipsis">
+                  {activity.description}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col justify-center align-center">
                 <div className="flex items-center mb-2">
                   <Stars rating={activity.averageRating} />
                   <span className="ml-2 text-sm text-gray-600">
                     {activity.totalRatings} reviews
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">
-                  {activity.description}
-                </p>
                 <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                   <Clock className="w-4 h-4 mr-1" />
                   {activity.date.slice(0, 10)}
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground mb-2 gap-2">
+                  <MapPin className="w-4 h-4 mr-1 shrink-0" />
+                  {activity?.location?.name}
                 </div>
                 <div className="flex items-center flex-wrap gap-2 mb-2">
                   <Tag className="w-4 h-4 mr-1" />
@@ -93,59 +111,67 @@ export default function ActivityCard({
                     ? activity.price[0]
                     : activity.price} USD
                 </div>
-                <div className="flex justify-end items-center">
-                  {isAdvertiser && (
-                    <div className="flex items-center gap-2">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you sure you want to delete this Activity?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will
-                              permanently delete your created activity and remove
-                              it from our servers.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              variant="destructive"
-                              size="sm"
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => handleDelete(activity._id)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" /> Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                      <Button onClick={() => openDialog({ activity })}>
-                        Update
-                      </Button>
-                    </div>
-                  )}
-                  {isAdmin && (
-                    <Button
-                      onClick={() => handleFalg(activity._id)}
-                      variant="destructive"
-                    >
-                      Flag Inappropriate
-                    </Button>
-                  )}
-                </div>
-              </div>
+              </CardContent>
             </div>
-          </Card>
-        ))}
-      </div>
+            <CardFooter className="flex flex-col mt-auto space-y-2 p-4">
+            <div className="flex justify-end items-center">
+              {isAdvertiser && (
+                <div className="flex items-center gap-2">
+                  <Button onClick={() => openDialog({ activity })} className="border border-gray-200 text-gray-600" variant="outline">
+                    <EditIcon className="mr-2 h-4 w-4" /> Edit Activity
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button className="bg-red-600 hover:bg-red-800" size="sm">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you sure you want to delete this Activity?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will
+                          permanently delete your created activity and remove
+                          it from our servers.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          variant="destructive"
+                          size="sm"
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                          onClick={() => handleDelete(activity._id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" /> Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              )}
+              {isAdmin && (
+                <Button
+                  onClick={() => handleFalg(activity._id)}
+                  variant="destructive"
+                >
+                  Flag Inappropriate
+                </Button>
+              )}
+              
+            </div>
+            </CardFooter>
+        </Card >
+        ))
+}
+    </div >
     </>
   );
 }
+
+
+
+

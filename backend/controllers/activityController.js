@@ -18,19 +18,27 @@ const createNewActivity = async (req, res) => {
   } = req.body;
 
   const advertiserId = req.user.userId;
+  console.log("Location:", location);
+    console.log("lat type:", typeof location.lat, "value:", location.lat);
+    console.log("lng type:", typeof location.lng, "value:", location.lng);
   // Validate the location field
-  const isLocationValid =
-    typeof location === "object" &&
-    location !== null &&
-    typeof location.lat === "number" &&
-    typeof location.lng === "number";
+  const isLocationValid = (location) => {
+    return (
+        location !== null &&
+        typeof location === "object" &&
+        !isNaN(parseFloat(location.lat)) &&
+        !isNaN(parseFloat(location.lng))
+    );
+};
 
-  if (
-    mongoose.Types.ObjectId.isValid(category) &&
-    Array.isArray(tags) &&
-    tags.every((tag) => mongoose.Types.ObjectId.isValid(tag)) && // Check each tag in the array
-    isLocationValid // Ensure advertiserId is valid
-  ) {
+    console.log(location);
+    const isCategoryValid = mongoose.Types.ObjectId.isValid(category);
+    const areTagsValid = Array.isArray(tags) && tags.every((tag) => mongoose.Types.ObjectId.isValid(tag));
+    const isInputValid = isCategoryValid && areTagsValid && isLocationValid;
+    
+    
+  if ( isInputValid ) // Ensure advertiserId is valid
+  {
     const newActivity = new activityModel({
       title,
       description,
@@ -57,98 +65,12 @@ const createNewActivity = async (req, res) => {
       res.status(400).json({ message: "unsuccessful creation of activity" });
     }
   } else {
+    console.error({ isCategoryValid, areTagsValid, isLocationValid });
+
     res.status(400).json({ message: "bad parameters" });
   }
 };
 
-export const createManualActivity = async (req, res) => {
-  const {
-    title,
-    description,
-    date,
-    location,
-    price,
-    category,
-    tags,
-    discount,
-    isBookingOpen,
-    image,
-    advertiserId,
-  } = req.body;
-
-  // Print the incoming request body
-  console.log("Incoming request body:", req.body);
-  console.log(location);
-  // Validate the location field
-  const isLocationValid = 
-    //typeof location === "object";  //&&
-    location !== null &&
-    typeof location.lat === "number" &&
-    typeof location.lng === "number" ;
-  //   // // typeof location.name === "string";
-
-  // console.log("Location valid:", isLocationValid);
-
-  // Validate other fields
-  const isCategoryValid = mongoose.Types.ObjectId.isValid(category);
-  console.log("Category valid:", isCategoryValid);
-
-  const areTagsValid = Array.isArray(tags) && tags.every((tag) => {
-    const isValid = mongoose.Types.ObjectId.isValid(tag);
-    console.log(`Tag "${tag}" valid:`, isValid);
-    return isValid;
-  });
-  
-  console.log("Tags valid:", areTagsValid);
-
-  const isAdvertiserIdValid = mongoose.Types.ObjectId.isValid(advertiserId);
-  console.log("Advertiser ID valid:", isAdvertiserIdValid);
-
-  if (isCategoryValid && areTagsValid && isAdvertiserIdValid && isLocationValid) {
-    const newActivity = new activityModel({
-      title,
-      description,
-      date,
-      location,
-      price,
-      category,
-      tags,
-      discount,
-      isBookingOpen,
-      image,
-      advertiserId,
-    });
-
-    try {
-      const createdActivity = await newActivity.save();
-      await createdActivity.populate("advertiserId", "username");
-
-      return res.status(201).json({
-        message: "Successfully created new activity",
-        createdActivity,
-      });
-    } catch (error) {
-      console.error("Error creating activity:", error); // Log the error for debugging
-      return res.status(400).json({ message: "Unsuccessful creation of activity" });
-    }
-  } else {
-    console.log("Validation failed:");
-    if (!isCategoryValid) {
-      console.log("Invalid category:", category);
-    }
-    if (!areTagsValid) {
-      console.log("Invalid tags:", tags);
-    }
-    if (!isAdvertiserIdValid) {
-      console.log("Invalid advertiser ID:", advertiserId);
-    }
-    if (!isLocationValid) {
-      console.log("Invalid location:", location);
-    }
-
-    return res.status(400).json({ message: "Bad parameters" });
-  }
-};
 
 const getAllActivities = async (req, res) => {
   res.status(200).json(await getActivities(req.query, {}));
@@ -218,44 +140,24 @@ const updateActivity = async (req,res) => {
     }
 };
 
-const getMyActivities = async (req, res) => {
-  // Ensure user is authenticated and has a valid userId
-  console.log(req.user);
-
-  if (!req.user || !req.user.userId) {
-    return res.status(401).json({ message: "Unauthorized: User ID missing." });
-  }
-  const userId = req.user.userId;
-  console.log("Advertiser ID:", userId);
-
+export const getMyActivities = async (req, res) => {
 
   try {
-    console.log("Searching for activities with advertiserId:", userId);
-
-    // Fetch activities and populate related fields
-    const activities = await activityModel
-      .find({ advertiserId: userId })
-      .populate("advertiserId", "username")
-      .populate("category", "name")
-      .populate("tags", "name");
-
-    // Return empty array if no activities found
-    if (activities.length === 0) {
-      return res
-        .status(200)
-        .json({ activities: [], message: "No activities found for this advertiser." });
+    const advertiserId = req.user.userId;
+    if (!mongoose.Types.ObjectId.isValid(advertiserId)) {
+      return res.status(404).json({ message: "Enter a valid id" });
     }
-
-    console.log("Fetched Activities:", activities);
-
-    // Successful response
-    return res.status(200).json({ activities });
+    const activities = await activityModel.find({ advertiserId })
+    .populate("advertiserId", "username")
+    .populate("category", "name")
+    .populate("tags", "name");
+    if (activities.length == 0)
+      return res.status(404).json({ message: "no activities found" });
+    else return res.status(200).json(activities);
   } catch (error) {
-    console.error("Error fetching activities:", error);
-    return res.status(500).json({ message: "Server error, please try again later." });
+    return res.status(400).json({ message: "Error", error: error.message });
   }
 };
-
 
 const deleteActivity = async (req, res) => {
   const activityId = req.params.id;
@@ -280,6 +182,5 @@ export {
   getAllActivities,
   getActivityById,
   updateActivity,
-  getMyActivities,
   deleteActivity,
 };

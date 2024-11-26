@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Product from "../models/productModel.js";
 import Purchase from "../models/purchaseModel.js";
- 
+
 
 export const purchaseProduct = async (req, res) => {
   const { productId, touristId, quantity } = req.body;
@@ -72,86 +72,29 @@ export const deletePurchase = async (req, res) => {
   }
 };
 
-export const totalPurchasedProductsAdmin = async () => {
-  
-  try {
-    const purchases = await Purchase.find({
-        status: { $in: ['completed', 'pending'] },
-  }).populate("productId");
-
-    let totalPrice = 0;
-    purchases.forEach((purchase) => {
-      totalPrice += purchase.totalPrice || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-  
-};
-
-export const totalPurchasedProductsCancelledAdmin = async () => {
-  
-  try {
-    const purchases = await Purchase.find({
-        status: 'cancelled'
-  }).populate("productId");
-
-    let totalPrice = 0;
-    purchases.forEach((purchase) => {
-      totalPrice += purchase.totalPrice || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-  
-};
-
-
-export const totalPurchasedProductsSeller = async (sellerId) => {
-  
-  try {
-    const purchases = await Purchase.find({
-        status: { $in: ['completed', 'pending'] },
-  }).populate("productId");
-
-    let totalPrice = 0;
-    purchases.forEach((purchase) => {
-      if(purchase.productId.sellerId=sellerId)
-      totalPrice += purchase.totalPrice || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-  
-};
-
-export const totalPurchasedProductsCancelledSeller = async (sellerId) => {
-  
-  try {
-    const purchases = await Purchase.find({
-        status: 'cancelled'
-  }).populate("productId");
-
-    let totalPrice = 0;
-    purchases.forEach((purchase) => {
-      if(purchase.productId.sellerId=sellerId)
-      totalPrice += purchase.totalPrice || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-  
-};
-
 export const getProductsReport = async (req, res) => {
   try {
     // const  sellerId  = req.user.userId;
-    const sellerId =  req.body.id; 
-    const {year,day,month}=req.query; 
+    const sellerId = req.body.id;
+    const { year, day, month } = req.query;
+
+    const matchConditions = {
+      status: { $in: ['completed', 'pending'] }, // Filter by status
+    };
+    
+    if (req.user.role === "Seller" && sellerId) {
+      matchConditions['productDetails.sellerId'] = new mongoose.Types.ObjectId(sellerId);
+    }
+    
+    if (year || month || day) {
+      matchConditions.$expr = {
+        $and: [
+          ...(year ? [{ $eq: [{ $year: '$createdAt' }, parseInt(year)] }] : []),
+          ...(month ? [{ $eq: [{ $month: '$createdAt' }, parseInt(month)] }] : []),
+          ...(day ? [{ $eq: [{ $dayOfMonth: '$createdAt' }, parseInt(day)] }] : []),
+        ],
+      };
+    }
 
     const results = await Purchase.aggregate([
       {
@@ -166,17 +109,7 @@ export const getProductsReport = async (req, res) => {
         $unwind: '$productDetails', // Flatten the product details array
       },
       {
-        $match: {
-          'productDetails.sellerId': new mongoose.Types.ObjectId(sellerId), // Match by seller ID
-          status: { $in: ['completed', 'pending'] }, // Filter by status
-          $expr: {
-                $and: [
-                  ...(year ? [{ $eq: [{ $year: '$createdAt' }, parseInt(year)] }] : []),
-                  ...(month ? [{ $eq: [{ $month: '$createdAt' }, parseInt(month)] }] : []),
-                  ...(day ? [{ $eq: [{ $dayOfMonth: '$createdAt' }, parseInt(day)] }] : []),
-                ],
-              },
-        },
+        $match: matchConditions,
       },
       {
         $group: {
@@ -202,8 +135,8 @@ export const getProductsReport = async (req, res) => {
     ]);
 
     console.log(results);
-    if(results.length == 0)
-      return res.status(200).json({message: "No data to show"});
+    if (results.length == 0)
+      return res.status(200).json({ message: "No data to show" });
     return res.status(200).json({
       data: results,
       message: "Successfully fetched the products report"

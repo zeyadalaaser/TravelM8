@@ -261,73 +261,6 @@ export const addRatingAndComment = async (req, res) => {
   }
 };
 
-export const totalBookedActivitiesAdmin = async () => {
-  try {
-    const bookings = await BookingActivity.find({
-      status: { $in: ["booked", "completed"] },
-    }).populate("activityId");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      totalPrice += booking.activityId.price || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalCancelledActivitiesAdmin = async () => {
-  try {
-    const bookings = await BookingActivity.find({
-      status: "cancelled",
-    }).populate("activityId");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      totalPrice += booking.activityId.price || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalBookedActivitiesAdvertiser = async (advertiserId) => {
-  try {
-    const bookings = await BookingActivity.find({
-      status: { $in: ["booked", "completed"] },
-    }).populate("activityId");
-
-    let totalPrice = 0;
-
-    bookings.forEach((booking) => {
-      if (booking.advertiserId === advertiserId) {
-        totalPrice += booking.activityId.price || 0;
-      }
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalCancelledActivitiesAdvertiser = async (advertiserId) => {
-  try {
-    const bookings = await BookingActivity.find({
-      status: "cancelled",
-    }).populate("activityId");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      if (booking.advertiserId === advertiserId)
-        totalPrice += booking.activityId.price || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
 export const getActivitiesReport = async (req, res) => {
   //const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user
   const advertiserId =  req.body.id; 
@@ -335,6 +268,25 @@ export const getActivitiesReport = async (req, res) => {
 
 
   try {
+    const matchConditions = {
+      status: { $in: ['booked', 'completed'] }, // Filter by status
+    };
+    
+    if (req.user?.role === 'Advertiser' && advertiserId) {
+      matchConditions['activityDetails.advertiserId'] = new mongoose.Types.ObjectId(advertiserId);
+
+    }
+
+    // Add date-based filtering if year, month, or day is provided
+    if (year || month || day) {
+      matchConditions.$expr = {
+        $and: [
+          ...(year ? [{ $eq: [{ $year: '$bookingDate' }, parseInt(year)] }] : []),
+          ...(month ? [{ $eq: [{ $month: '$bookingDate' }, parseInt(month)] }] : []),
+          ...(day ? [{ $eq: [{ $dayOfMonth: '$bookingDate' }, parseInt(day)] }] : []),
+        ],
+      };
+    }
   
     const results = await BookingActivity.aggregate([
       {
@@ -349,17 +301,7 @@ export const getActivitiesReport = async (req, res) => {
         $unwind: '$activityDetails', // Flatten the activity details array
       },
       {
-        $match: {
-          'activityDetails.advertiserId': new mongoose.Types.ObjectId(advertiserId), // Filter by advertiser ID
-          status: { $in: ['booked', 'completed'] }, // Filter by status
-          $expr: {
-            $and: [
-              ...(year ? [{ $eq: [{ $year: '$bookingDate' }, parseInt(year)] }] : []),
-              ...(month ? [{ $eq: [{ $month: '$bookingDate' }, parseInt(month)] }] : []),
-              ...(day ? [{ $eq: [{ $dayOfMonth: '$bookingDate' }, parseInt(day)] }] : []),
-            ],
-          },
-        },
+        $match: matchConditions,
       },
       {
         $group: {

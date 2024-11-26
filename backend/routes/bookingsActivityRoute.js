@@ -12,5 +12,5 @@ router.get('/bookedactivities/completed/:touristId', getCompletedActivities);
 router.post('/activity-bookings', verifyToken, createBooking);
 router.get('/activity-bookings', verifyToken, getAllActivityBookings);
 router.put('/activity-bookings/:id', verifyToken, cancelBooking);
-router.get('/activityReport',getActivitiesReport);
+router.get('/activitiesReport',getActivitiesReport);
 export default router;

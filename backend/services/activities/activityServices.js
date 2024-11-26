@@ -22,6 +22,7 @@ function createFilterStage({
   search,
   currency,
   rates,
+  flagged,
 }) {
   const filters = {};
 
@@ -61,7 +62,9 @@ function createFilterStage({
   if (categoryName) {
     filters["category.name"] = categoryName;
   }
-
+  
+  filters["flagged"] = flagged;
+  
   return filters;
 }
 
@@ -100,6 +103,7 @@ export async function getActivities({
     search,
     currency,
     rates,
+    flagged: false,
   });
 
   const sortStage = createSortStage(sortBy, order);
