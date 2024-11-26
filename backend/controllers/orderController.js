@@ -189,6 +189,50 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   };
+
   
+  export const chooseOrAddDeliveryAddress = async (req, res) => {
+    try {
+      const { addressId, newAddress } = req.body;
+      const userId = req.user.userId;
+  
+      const tourist = await Tourist.findById(userId);
+      if (!tourist) {
+        return res.status(404).json({ message: 'Tourist not found' });
+      }
+  
+      let chosenAddress;
+  
+      if (addressId) {
+        // Choose existing address
+        chosenAddress = tourist.address.id(addressId);
+        if (!chosenAddress) {
+          return res.status(404).json({ message: 'Address not found' });
+        }
+      } else if (newAddress) {
+        // Add new address
+        tourist.address.push(newAddress);
+        await tourist.save();
+        chosenAddress = tourist.address[tourist.address.length - 1];
+      } else {
+        return res.status(400).json({ message: 'Either addressId or newAddress must be provided' });
+      }
+  
+      // Update the most recent order with the chosen address
+      const latestOrder = await Order.findOne({ user: userId }).sort({ createdAt: -1 });
+      if (latestOrder) {
+        latestOrder.deliveryAddress = chosenAddress;
+        await latestOrder.save();
+      }
+  
+      res.status(200).json({ 
+        message: 'Delivery address updated successfully', 
+        address: chosenAddress 
+      });
+    } catch (error) {
+      console.error('Error in chooseOrAddDeliveryAddress:', error);
+      res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+  };
   
   //4000056655665556

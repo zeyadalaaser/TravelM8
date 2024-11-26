@@ -60,23 +60,26 @@ export default function CheckoutPage() {
   const { cart, currency } = location.state || { cart: [], currency: 'USD' }
   const [addresses, setAddresses] = useState([])
   const [newAddress, setNewAddress] = useState('')
-  const [selectedAddress, setSelectedAddress] = useState('')
+  const [selectedAddress, setSelectedAddress] = useState('')  // Address not automatically selected
   const [paymentMethod, setPaymentMethod] = useState('')
   const [error, setError] = useState('')
   const [clientSecret, setClientSecret] = useState('')
   const [walletBalance, setWalletBalance] = useState(0)
 
   useEffect(() => {
-    const fetchAddresses = async () => {
-      try {
-        const response = await axios.get('http://localhost:5001/api/user/addresses')
-        setAddresses(response.data)
-      } catch (error) {
-        console.error('Error fetching addresses:', error)
-        setError('Failed to fetch addresses. Please try again.')
-      }
-    }
-    fetchAddresses()
+    //const fetchAddresses = async () => {
+    //   try {
+    //     const token = localStorage.getItem('token')
+    //     const response = await axios.get('http://localhost:5001/api/user/addresses', {
+    //       headers: { Authorization: `Bearer ${token}` }
+    //     })
+    //     setAddresses(response.data)
+    //   } catch (error) {
+    //     console.error('Error fetching addresses:', error)
+    //     setError('Failed to fetch addresses. Please try again.')
+    //   }
+    // }
+    // fetchAddresses()
 
     const fetchWalletBalance = async () => {
       try {
@@ -87,8 +90,8 @@ export default function CheckoutPage() {
 
         const response = await axios.get('http://localhost:5001/api/user/wallet-balance', {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}` 
+          }
         })
 
         setWalletBalance(response.data.balance)
@@ -123,14 +126,51 @@ export default function CheckoutPage() {
 
   const handleAddAddress = async () => {
     try {
-      const response = await axios.post('http://localhost:5001/api/user/addresses', { address: newAddress })
-      setAddresses([...addresses, response.data])
-      setNewAddress('')
+      const token = localStorage.getItem('token')
+      const response = await axios.post('http://localhost:5001/api/choose-delivery-address',
+        { newAddress },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      // Add new address to the list but do not select it automatically
+      setAddresses([...addresses, response.data.address])
+      setNewAddress('')  // Reset the new address input field
+      toast.success('New address added successfully!')
     } catch (error) {
       console.error('Error adding address:', error)
       setError('Failed to add address. Please try again.')
+      toast.error('Failed to add address. Please try again.')
     }
   }
+
+  const handleSelectAddress = async (addressId) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      // We need to send either addressId or newAddress in the request body
+      let addressData = {};
+      if (addressId) {
+        addressData = { addressId };  // Send addressId if selecting an existing address
+      } else if (newAddress.trim()) {
+        addressData = { newAddress };  // Send newAddress if it's a new address
+      } else {
+        // If neither is provided, log an error or show a message
+        throw new Error('Please provide an addressId or a newAddress');
+      }
+  
+      const response = await axios.post('http://localhost:5001/api/choose-delivery-address', 
+        addressData, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      setSelectedAddress(response.data.address._id);
+      toast.success('Delivery address updated successfully!');
+    } catch (error) {
+      console.error('Error selecting address:', error);
+      setError('Failed to select address. Please try again.');
+      toast.error(error.message || 'Failed to select address. Please try again.');
+    }
+  };
+  
 
   const handlePayment = async (paymentIntentId = null) => {
     try {
@@ -141,7 +181,7 @@ export default function CheckoutPage() {
 
       const order = {
         items: cart,
-        deliveryAddress: selectedAddress || null,
+        deliveryAddress: selectedAddress,
         paymentMethod,
         currency,
         ...(paymentMethod === 'credit-card' && { paymentIntentId }),
@@ -226,17 +266,21 @@ export default function CheckoutPage() {
             </div>
             <Separator />
             <div>
-              <h3 className="text-lg font-medium mb-2">Delivery Address (Optional)</h3>
-              <Select onValueChange={setSelectedAddress}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a delivery address (optional)" />
-                </SelectTrigger>
-                <SelectContent>
-                  {addresses.map((address, index) => (
-                    <SelectItem key={index} value={address}>{address}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <h3 className="text-lg font-medium mb-2">Delivery Address</h3>
+              <Select onValueChange={handleSelectAddress} value={selectedAddress}>
+  <SelectTrigger>
+    <SelectValue placeholder="Choose a delivery address" />
+  </SelectTrigger>
+  <SelectContent>
+    {addresses.map((address) => (
+      <SelectItem key={address._id} value={address._id}>
+        {/* Displaying the address string */}
+        {address}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+
               <div className="mt-4 flex space-x-2">
                 <Input
                   placeholder="Add a new address"
@@ -274,8 +318,8 @@ export default function CheckoutPage() {
           </CardContent>
           <CardFooter>
             {(paymentMethod === 'cash' || paymentMethod === 'wallet') && (
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={() => handlePayment()}
                 disabled={paymentMethod === 'wallet' && walletBalance < totalAmount}
               >
