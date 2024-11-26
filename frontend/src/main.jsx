@@ -46,6 +46,7 @@ import LoadingPage from "./components/loading.jsx";
 import CheckoutPage from "./pages/tourist/components/products/checkout-page";
 import NotificationsPage from "./pages/TourGuide/NotificationsPage.jsx";
 import LoginPage from "./pages/signIn/signin.jsx";
+import ManageActivities from "./pages/admin/ManageActivities.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -103,7 +104,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/siginIn" element={<LoginPage />} />
-
+        <Route path="/admin/manage-activities" element={<ManageActivities />} />
       </Routes>
     </BrowserRouter>
     <Toaster />
