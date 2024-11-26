@@ -17,7 +17,7 @@ import {
   Tag,
   User,
   Users,
-  MapPin
+  MapPin,
 } from "lucide-react";
 
 import {
@@ -29,27 +29,23 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from "@/components/ui/card";
 import Logout from "@/hooks/logOut.jsx";
 import Header from "@/components/navbarDashboard.jsx";
 
-
-
 const AdvertiserDashboard = () => {
   const [activities, setActivities] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogArgs, setDialogArgs] = useState(null);
-  const [activeTab, setActiveTab] = useState("activities"); // Manage active tab
+  const [activeTab, setActiveTab] = useState("activities");
 
-  // Function to open the dialog, set the trigger source, and pass arguments
   const openDialog = (args) => {
     if (args) setDialogArgs(args.activity);
     else setDialogArgs(null);
@@ -66,14 +62,10 @@ const AdvertiserDashboard = () => {
 
     if (!token) {
       console.error("No token available. Redirecting to login.");
-      // Optionally redirect to the login page
-      // window.location.href = "/login";
       return;
     }
 
     try {
-      console.log("Token before fetch:", token); // Simple console log for debugging
-
       const response = await fetch("http://localhost:5001/api/myActivities", {
         method: "GET",
         headers: {
@@ -83,24 +75,13 @@ const AdvertiserDashboard = () => {
       });
 
       if (!response.ok) {
-        let errorMessage = `HTTP error! Status: ${response.status}`;
-        try {
-          const errorText = await response.text();
-          errorMessage += ` - ${errorText}`;
-        } catch (parseError) {
-          console.error("Error parsing response text:", parseError);
-        }
-        throw new Error(errorMessage);
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log("Fetched activities:", data); // Log fetched data
-
-      // Ensure data is an array before setting it
       if (Array.isArray(data)) {
         setActivities(data);
       } else {
-        console.error("Unexpected data format:", data);
         throw new Error("Invalid data format received from the server.");
       }
     } catch (error) {
@@ -108,20 +89,51 @@ const AdvertiserDashboard = () => {
     }
   };
 
-  // Debounced version (only for subsequent use if needed)
+  const fetchNotifications = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No token available. Redirecting to login.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5001/api/notifications", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setNotifications(data.notifications || []);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error.message || error);
+    }
+  };
+
   const getActivities = useDebouncedCallback(fetchActivities, 200);
 
   useEffect(() => {
-    // Initial fetch without debounce
     fetchActivities();
 
-    // Cleanup if using debounce
     return () => getActivities.cancel();
   }, []);
 
+  useEffect(() => {
+    if (activeTab === "notifications") {
+      fetchNotifications();
+    }
+  }, [activeTab]);
+
   return (
     <>
-      <div className="flex h-screen bg-gray-100 ">
+      <div className="flex h-screen bg-gray-100">
         {/* Sidebar */}
         <aside className="w-64 h-full bg-white drop-shadow-xl flex flex-col justify-between">
           <div>
@@ -129,24 +141,30 @@ const AdvertiserDashboard = () => {
               <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
             </div>
             <nav className="mt-6">
-              <button className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
+              <button
+                className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
                   activeTab === "activities" ? "bg-gray-200" : ""
                 }`}
-                onClick={() => setActiveTab("activities")}>
+                onClick={() => setActiveTab("activities")}
+              >
                 <Map className="mr-3" />
                 Activities
               </button>
-              <button className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
+              <button
+                className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
                   activeTab === "sales" ? "bg-gray-200" : ""
                 }`}
-                onClick={() => setActiveTab("sales")}>
+                onClick={() => setActiveTab("sales")}
+              >
                 <DollarSign className="mr-3" />
                 Sales Reports
               </button>
-              <button className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
+              <button
+                className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
                   activeTab === "tourists" ? "bg-gray-200" : ""
                 }`}
-                onClick={() => setActiveTab("tourists")}>
+                onClick={() => setActiveTab("tourists")}
+              >
                 <Users className="mr-3" />
                 Tourist Reports
               </button>
@@ -171,11 +189,12 @@ const AdvertiserDashboard = () => {
         </aside>
 
         {/* Main Content */}
-
         <main className="flex-1 overflow-y-auto">
-          {/* Header */}
-          <Header name={"samla121212"} type="Advertiser" editProfile="/advertiserProfile" />
-          {/* Dashboard Content */}
+          <Header
+            name={"samla121212"}
+            type="Advertiser"
+            editProfile="/advertiserProfile"
+          />
           <div className="p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
               <Card>
@@ -186,9 +205,7 @@ const AdvertiserDashboard = () => {
                   <Map className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
-                    {activities.length}
-                  </div>
+                  <div className="text-2xl font-bold">{activities.length}</div>
                 </CardContent>
               </Card>
               <Card>
@@ -200,7 +217,10 @@ const AdvertiserDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {activities.filter((activity) => activity.isBookingOpen).length}
+                    {
+                      activities.filter((activity) => activity.isBookingOpen)
+                        .length
+                    }
                   </div>
                 </CardContent>
               </Card>
@@ -227,34 +247,52 @@ const AdvertiserDashboard = () => {
                 </CardContent>
               </Card>
             </div>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 ">
-            <TabsList>
-              <TabsTrigger value="activities">Activities</TabsTrigger>
-              <TabsTrigger value="sales">Sales Report</TabsTrigger>
-              <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            </TabsList>
-            <TabsContent value="activities" className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Manage Activities</h2>
-                <Button onClick={() => openDialog(null)} variant = "primary" className="">
-                  <Plus className="mr-2 h-4 w-4" /> Create Activity
-              </Button>
-              </div>
-              <ActivityCard
-                onRefresh={getActivities}
-                activities={activities}
-                isAdvertiser={true}
-                openDialog={openDialog}
-              />
-              <ActivityFormDialog
-                isOpen={isDialogOpen}
-                onClose={closeDialog}
-                dialogArgs={dialogArgs}
-                onRefresh={getActivities}
-              />
-            </TabsContent>
-          </Tabs>
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="space-y-4"
+            >
+              <TabsList>
+                <TabsTrigger value="activities">Activities</TabsTrigger>
+                <TabsTrigger value="sales">Sales Report</TabsTrigger>
+                <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
+                <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              </TabsList>
+              <TabsContent value="activities" className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold">Manage Activities</h2>
+                  <Button onClick={() => openDialog(null)} variant="primary">
+                    <Plus className="mr-2 h-4 w-4" /> Create Activity
+                  </Button>
+                </div>
+                <ActivityCard
+                  onRefresh={getActivities}
+                  activities={activities}
+                  isAdvertiser={true}
+                  openDialog={openDialog}
+                />
+                <ActivityFormDialog
+                  isOpen={isDialogOpen}
+                  onClose={closeDialog}
+                  dialogArgs={dialogArgs}
+                  onRefresh={getActivities}
+                />
+              </TabsContent>
+              <TabsContent value="notifications" className="space-y-4">
+                <h2 className="text-2xl font-bold">Notifications</h2>
+                {notifications.length > 0 ? (
+                  <ul className="space-y-2">
+                    {notifications.map((notification, index) => (
+                      <li key={index} className="p-4 bg-white rounded shadow">
+                        {notification.message}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No notifications available.</p>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         </main>
       </div>

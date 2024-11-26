@@ -2,6 +2,7 @@ import activityModel from "../models/activityModel.js";
 import mongoose from "mongoose";
 import { getActivities } from "../services/activities/activityServices.js";
 import nodemailer from "nodemailer";
+import Notification from "../models/notificationModel.js";
 
 const createNewActivity = async (req, res) => {
   const {
@@ -214,7 +215,7 @@ const flagActivity = async (req, res) => {
       return res.status(404).json({ message: "Activity not found" });
     }
 
-    // Send email notification to the advertiser
+    // Email notification
     if (activity.advertiserId) {
       const { email, username } = activity.advertiserId;
       const activityTitle = activity.title;
@@ -236,6 +237,16 @@ const flagActivity = async (req, res) => {
 
       await transporter.sendMail(mailOptions);
       console.log(`Flagging email sent to ${email}`);
+    }
+
+    // System notification
+    if (activity.advertiserId) {
+      const notificationMessage = `Your activity "${activity.title}" has been flagged by the admin.`;
+      await Notification.create({
+        userId: activity.advertiserId._id,
+        message: notificationMessage,
+      });
+      console.log("System notification created for flagged activity.");
     }
 
     res
@@ -262,7 +273,7 @@ const unflagActivity = async (req, res) => {
       return res.status(404).json({ message: "Activity not found" });
     }
 
-    // Send email notification to the advertiser
+    // Email notification
     if (activity.advertiserId) {
       const { email, username } = activity.advertiserId;
       const activityTitle = activity.title;
@@ -284,6 +295,16 @@ const unflagActivity = async (req, res) => {
 
       await transporter.sendMail(mailOptions);
       console.log(`Unflagging email sent to ${email}`);
+    }
+
+    // System notification
+    if (activity.advertiserId) {
+      const notificationMessage = `Your activity "${activity.title}" has been unflagged by the admin.`;
+      await Notification.create({
+        userId: activity.advertiserId._id,
+        message: notificationMessage,
+      });
+      console.log("System notification created for unflagged activity.");
     }
 
     res
