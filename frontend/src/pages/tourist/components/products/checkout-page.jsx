@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -20,7 +22,6 @@ function CheckoutForm({ clientSecret, handlePayment }) {
   const elements = useElements()
   const [error, setError] = useState(null)
   const [processing, setProcessing] = useState(false)
-  
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -63,11 +64,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('')
   const [error, setError] = useState('')
   const [clientSecret, setClientSecret] = useState('')
-  const [walletBalance,  setWalletBalance] = useState(0)
-
- 
-
-  
+  const [walletBalance, setWalletBalance] = useState(0)
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -82,27 +79,25 @@ export default function CheckoutPage() {
     fetchAddresses()
 
     const fetchWalletBalance = async () => {
-        try {
-          const token = localStorage.getItem('token'); // Retrieve user token from localStorage
-          if (!token) {
-            throw new Error('User not authenticated'); // Show error if no token is available
-          }
-      
-          const response = await axios.get('http://localhost:5001/wallet-balance', {
-            headers: {
-              Authorization: `Bearer ${token}`, // Attach the token in the Authorization header
-            },
-          });
-      
-          setWalletBalance(response.data.balance); // Set wallet balance on successful response
-        } catch (error) {
-          console.error('Error fetching wallet balance:', error.response || error.message || error);
-          setError('Failed to fetch wallet balance. Please try again.'); // Display user-friendly error
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          throw new Error('User not authenticated')
         }
-      };
-      
-      
- 
+
+        const response = await axios.get('http://localhost:5001/api/user/wallet-balance', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+
+        setWalletBalance(response.data.balance)
+      } catch (error) {
+        console.error('Error fetching wallet balance:', error)
+        setError('Failed to fetch wallet balance. Please try again.')
+      }
+    }
+    fetchWalletBalance()
 
     if (cart.length > 0) {
       createPaymentIntent()
@@ -173,7 +168,7 @@ export default function CheckoutPage() {
             },
           }
         )
-    } else if (paymentMethod === 'wallet') {
+      } else if (paymentMethod === 'wallet') {
         response = await axios.post(
           'http://localhost:5001/api/products/pay-with-wallet',
           order,
@@ -183,7 +178,6 @@ export default function CheckoutPage() {
             },
           }
         )
-     
       } else {
         throw new Error('Invalid payment method')
       }
@@ -191,8 +185,8 @@ export default function CheckoutPage() {
       toast.success('Order placed successfully!')
       navigate('/tourist-page?type=products&payment=success', { state: { order: response.data.order } })
     } catch (error) {
-      console.error('Error processing order:', error.response || error)
-      setError('There was an error processing your order. Please try again.')
+      console.error('Error processing order:', error)
+      setError(error.response?.data?.message || 'There was an error processing your order. Please try again.')
       toast.error('Failed to place order. Please try again.')
     }
   }
@@ -280,7 +274,11 @@ export default function CheckoutPage() {
           </CardContent>
           <CardFooter>
             {(paymentMethod === 'cash' || paymentMethod === 'wallet') && (
-              <Button className="w-full" onClick={() => handlePayment()}>
+              <Button 
+                className="w-full" 
+                onClick={() => handlePayment()}
+                disabled={paymentMethod === 'wallet' && walletBalance < totalAmount}
+              >
                 Place Order ({paymentMethod === 'cash' ? 'Cash on Delivery' : 'Pay with Wallet'})
               </Button>
             )}

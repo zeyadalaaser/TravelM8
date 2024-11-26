@@ -5,8 +5,8 @@ const router = express.Router();
 
 router.post('/api/products/pay-with-stripe', verifyToken, payWithStripe);
 router.post('/api/products/pay-with-cash', verifyToken, payWithCash);
+router.post('/products/pay-with-wallet', verifyToken, payWithWallet);
 router.post('/create-payment-intent', createPaymentIntent);
-router.post('/api/products/pay-with-wallet', verifyToken, payWithWallet);
-router.get('/wallet-balance', verifyToken, getWalletBalance);
+router.get('/user/wallet-balance', verifyToken, getWalletBalance);
 
 export default router;

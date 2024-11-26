@@ -111,9 +111,12 @@ export const payWithCash = async (req, res) => {
       const { items, deliveryAddress } = req.body;
       const userId = req.user.userId;
   
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ message: 'Invalid or empty items array' });
+      }
+  
       const totalAmount = calculateTotalAmount(items);
   
-      // Find the user and check wallet balance
       const user = await Tourist.findById(userId);
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
@@ -122,10 +125,6 @@ export const payWithCash = async (req, res) => {
       if (user.wallet < totalAmount) {
         return res.status(400).json({ message: 'Insufficient wallet balance' });
       }
-  
-      // Deduct the amount from the wallet
-      user.wallet -= totalAmount;
-      await user.save();
   
       // Create new order
       const newOrder = new Order({
@@ -138,18 +137,25 @@ export const payWithCash = async (req, res) => {
         totalAmount,
         deliveryAddress: deliveryAddress || 'Not provided',
         paymentMethod: 'wallet',
-        status: 'paid'
+        status: 'paid',
+        deliveryFee: 0 // You may want to calculate this based on your business logic
       });
   
+      // Save the order first
       await newOrder.save();
+  
+      // Deduct the amount from the wallet
+      user.wallet -= totalAmount;
+      await user.save();
   
       res.status(200).json({ message: 'Payment successful', order: newOrder });
     } catch (error) {
       console.error('Error processing wallet payment:', error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({ message: 'Internal server error', error: error.message });
     }
   };
   
+
   export const getWalletBalance = async (req, res) => {
     try {
       const userId = req.user?.userId; // Check if userId is available in req.user
