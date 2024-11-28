@@ -11,9 +11,13 @@ function Activities({token, bookActivity, activities, currency, exchangeRate }) 
   
     const handleBook = async (activity) =>{
       console.log(token);
+      if(token){
         const response = await bookActivity(activity._id, activity.price, "Card", token);
         console.log(response.message);
         alert(response.message);
+      }
+      else 
+        alert("You need to be logged in to book activities!");
     }
   return (
     <div className="space-y-4">

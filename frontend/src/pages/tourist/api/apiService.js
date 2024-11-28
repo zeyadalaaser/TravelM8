@@ -121,19 +121,19 @@ export async function getActivityBookings() {
 }
 
 export async function createItineraryBooking(itinerary, tourGuide, tourDate, price, paymentMethod, token) {
-  // const token = localStorage.getItem('token');
-  return (
-    await apiClient.post(
-      "/itinerary-bookings",
-      { itinerary, tourGuide, tourDate, price, paymentMethod }, // Body payload goes here
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
+    return (
+      await apiClient.post(
+        "/itinerary-bookings",
+        { itinerary, tourGuide, tourDate, price, paymentMethod }, // Body payload goes here
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
     )
-  )
+  
 }
 
 export async function getItineraryBookings() {

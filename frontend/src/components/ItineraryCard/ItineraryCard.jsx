@@ -26,7 +26,6 @@ import { useNavigate } from "react-router-dom";
 import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
 import { createItineraryBooking } from "../../pages/tourist/api/apiService";
 
-const token = localStorage.getItem("token");
 
 export default function ItineraryCard({
   itineraries,
@@ -37,7 +36,6 @@ export default function ItineraryCard({
   onRefresh,
   isTourGuide,
 }) {
-
   const navigate = useNavigate();
 
   const handleDelete = async (id) => {
@@ -88,7 +86,6 @@ export default function ItineraryCard({
   };
 
   // const handleBook = async (itineraryId, tourGuideId) => {
-
 
   // };
 
@@ -148,7 +145,9 @@ export default function ItineraryCard({
                           Activate Itinerary
                         </Button>
                       )}
-                      {isTourist && <ShareButton id={itinerary._id} name="itinerary" />}
+                      {isTourist && (
+                        <ShareButton id={itinerary._id} name="itinerary" />
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center mb-2">
@@ -223,7 +222,9 @@ export default function ItineraryCard({
                     ))}
                   </div>
                   <div className="flex justify-end items-center space-x-2">
-                    <span className="text-xl font-bold mr-auto">{`${(itinerary.price * 1).toFixed(2)} ${currency}`}</span>
+                    <span className="text-xl font-bold mr-auto">{`${(
+                      itinerary.price * 1
+                    ).toFixed(2)} ${currency}`}</span>
                     <Timeline selectedItinerary={itinerary} />
                     {isTourist && (
                       <div className="flex justify-end items-center">
@@ -275,7 +276,6 @@ export default function ItineraryCard({
   );
 }
 
-
 const Timeline = ({ selectedItinerary }) => {
   return (
     <Dialog>
@@ -310,29 +310,33 @@ const ChooseDate = ({ itinerary }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e) => {
-    let message;
     e.preventDefault();
+
+    const token = localStorage.getItem('token');
+    console.log("hello token from handlesubmit " + token)
     if (!selectedDate) {
       setSubmitStatus({ success: false, message: "Please select a date." });
       return;
     }
-
-    try {
-      const response = await createItineraryBooking(
-        itinerary._id,
-        itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
-        selectedDate,
-        itinerary.price,
-        "Card",
-        token
-      );
-      setIsOpen(false);
-      alert(response.data.message);
-      // setSubmitStatus({ success: response.message.success, message: message });
-    } catch (error) {
-      setIsOpen(false);
-      alert("Failed to Book itinerary");
-      // setSubmitStatus({ success: false, message: "failed" });
+    if (token) {
+      try {
+          const response = await createItineraryBooking(
+            itinerary._id,
+            itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
+            selectedDate,
+            itinerary.price,
+            "Card",
+            token
+          );
+          setIsOpen(false);
+          alert(response.data.message);
+        
+      } catch (error) {
+        setIsOpen(false);
+        alert("Failed to Book itinerary");
+      }
+    } else {
+      alert("You need to be logged in to book an itinerary!");
     }
   };
 
