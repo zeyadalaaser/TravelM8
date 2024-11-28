@@ -181,7 +181,10 @@ export default function Navbar({profilePageString}) {
         >
           <MenuItem onClick={() => navigate("/tourist-profile")}>My profile</MenuItem>
           <MenuItem onClick={handleClose}>My bookings</MenuItem>
-          <MenuItem onClick={handleClose}>Wallet</MenuItem>
+          <MenuItem onClick={() => {
+  handleClose();
+  navigate("/wallet");
+}}>Wallet</MenuItem>
           <MenuItem onClick={handleClose}>Settings</MenuItem>
           <Separator />
           <MenuItem onClick={handleLogoutClick}>Sign out</MenuItem>
