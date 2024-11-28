@@ -79,25 +79,24 @@ const touristSchema = new Schema(
       default: 0,
       //immutable: true,
     },
-    
+
     loyaltyPoints: {
       type: Number,
       default: 0,
     },
     badgeLevel: {
       type: String,
-      enum: ['Level 1', 'Level 2', 'Level 3'],
-      default: 'Level 1',
+      enum: ["Level 1", "Level 2", "Level 3"],
+      default: "Level 1",
     },
     preferences: {
       type: [String],
       default: [],
     },
-    address: [ 
+    address: [
       {
-        type:String,
-        
-      }
+        type: String,
+      },
     ],
     cart: [
       {
@@ -113,24 +112,21 @@ const touristSchema = new Schema(
         price: {
           type: Number,
         },
-
-      }
-    ]
-    
+      },
+    ],
   },
   { timestamps: true }
 );
- 
+
 touristSchema.virtual("totalCartPrice").get(function () {
   return this.cart.reduce((total, item) => total + item.price, 0);
 });
 touristSchema.set("toJSON", { virtuals: true });
 touristSchema.set("toObject", { virtuals: true });
 
-
-touristSchema.pre('save', function(next) {
-  if (this.isModified('dob') && !this.isNew) {
-    return next(new Error('Date of Birth cannot be changed once set.'));
+touristSchema.pre("save", function (next) {
+  if (this.isModified("dob") && !this.isNew) {
+    return next(new Error("Date of Birth cannot be changed once set."));
   }
   next();
 });
