@@ -263,12 +263,11 @@ export const removeFromCart = async (req, res) => {
 export const clearCart = async (req, res) => {
   try {
     const userId = req.user?.userId; 
-
     const user = await Tourist.findById(userId).populate("cart.productId");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    // user.cart.map(item => )
     user.cart = []; // Clear all items in the cart
     await user.save();
 

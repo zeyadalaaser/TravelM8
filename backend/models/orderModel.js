@@ -41,13 +41,14 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['placed', 'shipped', 'delivered', 'cancelled'],
-    default: 'placed'
+    enum: ['Placed', 'Shipped', 'Delivered', 'Cancelled'],
+    default: 'Placed'
   },
   stripePaymentIntentId: {
     type: String
   }
 }, { timestamps: true });
+
 
 const Order = mongoose.model('Order', orderSchema);
 
