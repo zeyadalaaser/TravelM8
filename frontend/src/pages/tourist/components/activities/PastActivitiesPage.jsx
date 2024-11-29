@@ -6,7 +6,7 @@ import { Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReviewForm from './ReviewForm';
 
-export const PastActivitiesPage = ({ touristId }) => {
+export  const PastActivitiesPage = ({ touristId }) => {
   const [pastActivities, setPastActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,3 +90,4 @@ export const PastActivitiesPage = ({ touristId }) => {
     </div>
   );
 };
+export default PastActivitiesPage;

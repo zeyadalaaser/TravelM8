@@ -48,6 +48,8 @@ import CheckoutPage from "./pages/tourist/components/products/checkout-page";
 import NotificationsPage from "./pages/TourGuide/NotificationsPage.jsx";
 import LoginPage from "./pages/signIn/signin.jsx";
 import ManageActivities from "./pages/admin/ManageActivities.jsx";
+import PastActivities from "./pages/tourist/components/activities/PastActivitiesPage.jsx";
+import BookmarksPage from './pages/tourist/components/activities/activities.jsx';
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -101,12 +103,13 @@ createRoot(document.getElementById("root")).render(
         />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
-
+        <Route path="/Pastactivities" element={<PastActivities />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/siginIn" element={<LoginPage />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/admin/manage-activities" element={<ManageActivities />} />
+        <Route path="/bookmarks" element={<BookmarksPage ></BookmarksPage>}/>
       </Routes>
     </BrowserRouter>
     <Toaster />

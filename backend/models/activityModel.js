@@ -87,6 +87,7 @@ const activitySchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    
 });
 
 const Activity = mongoose.model("Activity", activitySchema);
