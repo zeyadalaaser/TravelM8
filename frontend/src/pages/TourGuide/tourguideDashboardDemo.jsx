@@ -11,7 +11,7 @@ import {
   Tag,
   User,
   Users,
-  MapPin
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -358,18 +358,19 @@ const TourGuideDashboard = () => {
                   >
                     <div className="flex-grow p-4">
                       <div className="justify-self-end">
-                        {itinerary.flagged? 
-                          <Badge  className="bg-red-600">Flagged</Badge>
-                          : <Badge className="bg-green-600">Not flagged</Badge>
-                        }
+                        {itinerary.flagged ? (
+                          <Badge className="bg-red-600">Flagged</Badge>
+                        ) : (
+                          <Badge className="bg-green-600">Not flagged</Badge>
+                        )}
                       </div>
 
                       <CardHeader>
-                          <img
-                            src={itinerary.images?.[0]}
-                            alt={itinerary.name}
-                            className="w-full h-48 object-cover rounded-t-lg"
-                          />
+                        <img
+                          src={itinerary.images?.[0]}
+                          alt={itinerary.name}
+                          className="w-full h-48 object-cover rounded-t-lg"
+                        />
                         <CardTitle>{itinerary.name}</CardTitle>
                         <CardDescription>
                           {itinerary.description}
@@ -420,7 +421,10 @@ const TourGuideDashboard = () => {
                         />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button className="bg-red-600 hover:bg-red-800" size="sm">
+                            <Button
+                              className="bg-red-600 hover:bg-red-800"
+                              size="sm"
+                            >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
                             </Button>
@@ -570,7 +574,7 @@ const TourGuideDashboard = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="notifications">
+            <TabsContent value="notifications" className="space-y-4">
               <h2 className="text-2xl font-bold">Notifications</h2>
               {isLoading ? (
                 <p>Loading notifications...</p>
@@ -583,15 +587,16 @@ const TourGuideDashboard = () => {
                   {notifications.map((notification) => (
                     <li
                       key={notification._id}
+                      className="p-4 bg-white rounded shadow-md"
                       style={{
-                        marginBottom: "20px",
+                        marginBottom: "10px",
                         border: "1px solid #ddd",
                         padding: "15px",
                         borderRadius: "5px",
                       }}
                     >
                       <p>{notification.message}</p>
-                      <p style={{ fontSize: "12px", color: "gray" }}>
+                      <p className="text-sm text-gray-500 mt-2">
                         {new Date(notification.createdAt).toLocaleString()}
                       </p>
                     </li>
