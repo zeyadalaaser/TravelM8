@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -25,10 +26,7 @@ const pages = [
 ];
 
 export default function Navbar({ profilePageString, children }) {
-  const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [cart, setCart] = useState([]);
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const { location } = useRouter();
@@ -42,43 +40,13 @@ export default function Navbar({ profilePageString, children }) {
   const [isAlertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
-
-  const addToCart = (product) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item._id === product._id);
-      if (existingItem) {
-        return prevCart.map(item =>
-          item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      }
-      return [...prevCart, { ...product, quantity: 1 }];
-    });
-  };
-
-  const removeFromCart = (productId) => {
-    setCart(prevCart => prevCart.filter(item => item._id !== productId));
-  };
-
-  const updateCartItemQuantity = (productId, newQuantity) => {
-    setCart(prevCart =>
-      prevCart.map(item =>
-        item._id === productId ? { ...item, quantity: Math.max(0, newQuantity) } : item
-      ).filter(item => item.quantity > 0)
-    );
-  };
-
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-  useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       const decodedToken = decodeToken(token);
       if (decodedToken && decodedToken.userId) {
         setUserName(decodedToken.username);
         setIsLoggedIn(true);
+        fetchCart();
       }
     }
 
@@ -106,6 +74,58 @@ export default function Navbar({ profilePageString, children }) {
       return null;
     }
   };
+
+  const fetchCart = async () => {
+    try {
+      const response = await axios.get('http://localhost:5001/api/tourists/cart', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setCart(response.data.cart || []);
+    } catch (error) {
+      console.error('Failed to fetch cart:', error);
+      setCart([]);
+    }
+  };
+
+  const addToCart = async (productId) => {
+    try {
+      await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      fetchCart();
+    } catch (error) {
+      console.error('Failed to add item to cart:', error);
+    }
+  };
+
+  const removeFromCart = async (productId) => {
+    try {
+      await axios.delete(`http://localhost:5001/api/tourists/cart/${productId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      fetchCart();
+    } catch (error) {
+      console.error('Failed to remove item from cart:', error);
+    }
+  };
+
+  const updateCartItemQuantity = async (productId, newQuantity) => {
+    try {
+      if (newQuantity === 0) {
+        await removeFromCart(productId);
+      } else {
+        await axios.put(`http://localhost:5001/api/tourists/cart/${productId}`, { quantity: newQuantity }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+      }
+      fetchCart();
+    } catch (error) {
+      console.error('Failed to update item quantity:', error);
+    }
+  };
+
+  const totalItems = Array.isArray(cart) ? cart.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
+  const totalPrice = Array.isArray(cart) ? cart.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 0)), 0) : 0;
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -136,13 +156,15 @@ export default function Navbar({ profilePageString, children }) {
   return (
     <>
       <nav
-        className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300 ${currentPage === "/" ? "bg-transparent" : "bg-white text-black shadow-md"
-          } ${isScrolled && currentPage === "/" ? "bg-gray-800/50 backdrop-blur-md" : "bg-gray-800"}`}
+        className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300 ${
+          currentPage === "/" ? "bg-transparent" : "bg-white text-black shadow-md"
+        } ${isScrolled && currentPage === "/" ? "bg-gray-800/50 backdrop-blur-md" : "bg-gray-800"}`}
         style={{ height: "56px" }}
       >
         <div
-          className={`text-2xl font-semibold ${currentPage === "/" ? "text-white" : "text-black"
-            }`}
+          className={`text-2xl font-semibold ${
+            currentPage === "/" ? "text-white" : "text-black"
+          }`}
         >
           TRAVELM8
         </div>
@@ -150,10 +172,11 @@ export default function Navbar({ profilePageString, children }) {
         <div className="hidden md:flex items-center justify-start ml-20 space-x-1">
           <button
             key="/"
-            className={`${currentPage === "/" ?
-                "text-white hover:text-white/70 py-2 px-4"
+            className={`${
+              currentPage === "/"
+                ? "text-white hover:text-white/70 py-2 px-4"
                 : "text-black hover:text-black/70 py-2 px-4"
-              }`}
+            }`}
             onClick={() => navigate(`/`)}
           >
             Home
@@ -161,13 +184,15 @@ export default function Navbar({ profilePageString, children }) {
           {pages.map((page) => (
             <button
               key={page.value}
-              className={`${currentPage === "/"
+              className={`${
+                currentPage === "/"
                   ? "text-white hover:text-white/70"
                   : "text-black hover:text-black/70"
-                } ${currentPage === `/tourist-page?type=${page.value}`
+              } ${
+                currentPage === `/tourist-page?type=${page.value}`
                   ? "rounded-full py-2 px-4 border-[1px]"
                   : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
-                }`}
+              }`}
               onClick={() => navigate(`/tourist-page?type=${page.value}`)}
             >
               {page.label}
@@ -226,10 +251,11 @@ export default function Navbar({ profilePageString, children }) {
               </Sheet>
               <button
                 onClick={handleClick}
-                className={`${currentPage === "/" ?
-                    "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2"
+                className={`${
+                  currentPage === "/"
+                    ? "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2"
                     : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"
-                  }`}
+                }`}
               >
                 <span>Hello, {userName}</span>
                 <ChevronDown className={`h-4 w-4 ${currentPage === "/" ? "text-white" : "text-gray-500"}`} />
@@ -276,8 +302,9 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <Button
                   variant="outline"
-                  className={`bg-transparent rounded-full px-8 py-2 ${currentPage === "/" ? "text-white hover:bg-white/10 hover:text-white" : "text-black"
-                    } `}
+                  className={`bg-transparent rounded-full px-8 py-2 ${
+                    currentPage === "/" ? "text-white hover:bg-white/10 hover:text-white" : "text-black"
+                  } `}
                 >
                   Login
                 </Button>
@@ -288,8 +315,9 @@ export default function Navbar({ profilePageString, children }) {
                 onLoginClick={openLogin}
               >
                 <button
-                  className={`font-medium rounded-full px-8 py-2 ${currentPage === "/" ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
-                    } `}
+                  className={`font-medium rounded-full px-8 py-2 ${
+                    currentPage === "/" ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+                  } `}
                 >
                   Register
                 </button>
