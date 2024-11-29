@@ -18,9 +18,9 @@ touristRoute.put('/redeemPoints',verifyToken,redeemPoints);
  //touristRoute.put('/redeemPoints/:id',redeemPoints);
  // touristRoute.put('/updatePoints/:id',updatePoints);
 touristRoute.put('/tourists/:touristId/updatePreferences', verifyToken, updatePreferences);
-touristRoute.post("/tourists/cart", verifyToken, addToCart);
-touristRoute.delete("/tourists/cart", verifyToken,removeFromCart);
-touristRoute.delete("/tourists/cart/decrementItem",verifyToken,decrementQuantity);
+touristRoute.post("/tourists/cart/:productId", verifyToken, addToCart);
+touristRoute.delete("/tourists/cart/:productId", verifyToken,removeFromCart);
+touristRoute.delete("/tourists/cart/decrementItem/:productId",verifyToken,decrementQuantity);
 touristRoute.delete("/tourists/cart/clear",verifyToken, clearCart);
 touristRoute.get("/tourists/cart",verifyToken, getCart);
 

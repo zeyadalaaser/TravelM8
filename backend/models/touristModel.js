@@ -95,7 +95,27 @@ const touristSchema = new Schema(
     },
     address: [
       {
-        type: String,
+        fullName: {
+          type: String,
+        },
+        mobileNumber: {
+          type: String,
+        },
+        streetName: {
+          type: String,
+        },
+        buildingNumber: {
+          type: String,
+        },
+        city: {
+          type: String,
+        },
+        postalCode: {
+          type: String,
+        },
+        country: {
+          type: String,
+        },
       },
     ],
     cart: [

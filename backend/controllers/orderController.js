@@ -184,6 +184,16 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   };
+
+  const isAddressEqual = (addr1, addr2) => {
+    return addr1.fullName === addr2.fullName &&
+           addr1.mobileNumber === addr2.mobileNumber &&
+           addr1.streetName === addr2.streetName &&
+           addr1.buildingNumber === addr2.buildingNumber &&
+           addr1.city === addr2.city &&
+           addr1.postalCode === addr2.postalCode &&
+           addr1.country === addr2.country;
+  };
   
   export const checkout = async (req, res) => {
     try {
@@ -195,13 +205,20 @@ export const payWithCash = async (req, res) => {
       if (user.cart.length === 0) {
         return res.status(400).json({ message: "Cart is empty" });
       }
-
+      if (user && user.cart) {
+        for (const item of user.cart) {
+          if (item.productId) {
+            item.productId.sales += 1; 
+            await item.productId.save(); 
+          }
+        }
+      }
       let totalAmount = user.cart.reduce(
         (acc, item) => acc + item.quantity * item.productId.price,
         0
       );
       let deliveryAddress;
-      if (user.address.includes(address)) {
+      if (user.address.some(addr => isAddressEqual(addr, address))) {
         deliveryAddress = address;
       } else {
         user.address.push(address);
@@ -309,14 +326,20 @@ export const payWithCash = async (req, res) => {
       const userId = req.user?.userId;
       const user = await Tourist.findById(userId);
       const { id } = req.params;
-      console.log(req.params);
       const order = await Order.findByIdAndUpdate(
         id,
         { status: "Cancelled" },
         { new: true } 
-      );      
+      ).populate("items.product");      
       if (order.paymentMethod==="wallet") {
         user.wallet= user.wallet + order.totalAmount;
+      }
+      for (const item of order.items) {
+          if (item.product) {
+            item.product.quantity+=item.quantity;
+            item.product.sales -= 1; 
+            await item.product.save(); 
+          }
       }
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
