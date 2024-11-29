@@ -179,7 +179,7 @@ export const getAllProducts = async (req, res) => {
     }
     
     if (inStockOnly)
-      filter.quantity = { $gt: 1 };
+      filter.quantity = { $gt: 0 };
 
     // Search logic
     if (search) {

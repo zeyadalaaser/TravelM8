@@ -25,7 +25,7 @@ export default function Products({ products, currency, token, addToCart }) {
     }
 
 
-    const quantity = 10;
+    const quantity = 1;
 
     try {
       const response = await axios.post('http://localhost:5001/api/purchases', {
