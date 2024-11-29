@@ -284,7 +284,10 @@ const AdvertiserDashboard = () => {
                   <ul className="space-y-2">
                     {notifications.map((notification, index) => (
                       <li key={index} className="p-4 bg-white rounded shadow">
-                        {notification.message}
+                        <p>{notification.message}</p>
+                        <p className="text-sm text-gray-500 mt-2">
+                          {new Date(notification.createdAt).toLocaleString()}
+                        </p>
                       </li>
                     ))}
                   </ul>
