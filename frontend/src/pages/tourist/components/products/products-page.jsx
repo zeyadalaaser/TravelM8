@@ -124,7 +124,6 @@ export function ProductsPage({ addToCart }) {
               products={products}
               currency={currency}
               token={token}
-              addToCart={addToCart}
             />
           )}
         </div>

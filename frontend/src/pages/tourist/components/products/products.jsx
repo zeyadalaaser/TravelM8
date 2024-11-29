@@ -8,35 +8,59 @@ import AnimatedLikeButton from "./like";
 import { useEffect, useState } from "react";
 import { getWishlist } from "../../api/apiService";
 
-export default function Products({ products, currency, token, addToCart }) {
+export default function Products({ products, currency, token}) {
   const [wishlist, setWishlist] = useState([]);
+  const [cart, setCart] = useState([]);
 
   useEffect(() => {
     const fetchWishlist = async () => setWishlist((await getWishlist(token?.token)).map(p => p._id));
     fetchWishlist();
   }, []);
 
-  const handlePurchase = async (product) => {
-    if (!token?.decodedToken?.userId) {
-      alert("Tourist ID is required.")
-      return
-    }
+  // const handlePurchase = async (product) => {
+  //   if (!token?.decodedToken?.userId) {
+  //     alert("Tourist ID is required.")
+  //     return
+  //   }
 
-    const quantity = 1;
+  //   const quantity = 1;
 
+  //   try {
+  //     const response = await axios.post('http://localhost:5001/api/purchases', {
+  //       productId: product._id,
+  //       touristId: token?.decodedToken?.userId,
+  //       quantity,
+  //     });
+
+  //     console.log("product id:", response.data.purchase.productId);
+  //     alert('Purchase successful!');
+
+  //   } catch (error) {
+  //     console.error("Error purchasing product:", error.response ? error.response.data : error.message);
+  //     alert("Failed to purchase product.");
+  //   }
+  // };
+
+  const fetchCart = async () => {
     try {
-      const response = await axios.post('http://localhost:5001/api/purchases', {
-        productId: product._id,
-        touristId: token?.decodedToken?.userId,
-        quantity,
+      const response = await axios.get('http://localhost:5001/api/tourists/cart', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
-
-      console.log("product id:", response.data.purchase.productId);
-      alert('Purchase successful!');
-
+      setCart(response.data.cart || []);
     } catch (error) {
-      console.error("Error purchasing product:", error.response ? error.response.data : error.message);
-      alert("Failed to purchase product.");
+      console.error('Failed to fetch cart:', error);
+      setCart([]);
+    }
+  };
+
+  const addToCart = async (productId) => {
+    try {
+      await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      fetchCart();
+    } catch (error) {
+      console.error('Failed to add item to cart:', error);
     }
   };
 
@@ -102,7 +126,7 @@ export default function Products({ products, currency, token, addToCart }) {
                 variant="outline" 
                 className="bg-emerald-800 hover:bg-emerald-700 hover:text-white text-white rounded-full"
                 size="sm" 
-                onClick={() => addToCart(product)}
+                onClick={() => addToCart(product._id)}
               >
                 Add to Cart
               </Button>
