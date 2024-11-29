@@ -305,8 +305,8 @@ const Timeline = ({ selectedItinerary }) => {
 
 const ChooseDate = ({ itinerary }) => {
   let remainingSpots;
-  const [selectedDate, setSelectedDate] = useState();
-  const [submitStatus, setSubmitStatus] = useState();
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -356,16 +356,17 @@ const ChooseDate = ({ itinerary }) => {
           >
             {itinerary.availableSlots.map((slot, index) => {
               const slotDate = new Date(slot.date).toLocaleDateString();
+              const booked = slot.maxNumberOfBookings == 0;
               return (
                 <div className="flex items-center space-x-2" key={index}>
-                  <RadioGroupItem value={slot.date} id={`slot-${index}`} />
-                  <Label htmlFor={`slot-${index}`}>{slotDate}</Label>
+                  <RadioGroupItem disabled={booked} value={slot.date} id={`slot-${index}`} />
+                  <Label className={`${booked && 'text-gray-500'}`} htmlFor={`slot-${index}`}>{slotDate}</Label>
                 </div>
               );
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button type="submit">Book</Button>
+            <Button disabled={!selectedDate} type="submit">Book</Button>
           </DialogFooter>
         </form>
         {submitStatus && (

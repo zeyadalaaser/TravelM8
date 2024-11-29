@@ -11,6 +11,7 @@ import Footer from "@/components/Footer.jsx";
 import BookingHistory from "@/pages/tourist/components/bookings/BookingHistory.jsx";
 import BookmarksHistory from "@/pages/tourist/components/activities/bookmarks";
 import Navbar from "@/components/Navbar.jsx";
+import { Wishlist } from './wishlist';
 
 const TouristProfilePage = () => {
 
@@ -351,6 +352,12 @@ const TouristProfilePage = () => {
         return (
           <div className="bg-white shadow rounded-lg p-6">
             <BookingHistory />
+          </div>
+        );
+      case 'wishlist':
+        return (
+          <div className="bg-white shadow rounded-lg p-6">
+            <Wishlist token={token} />
           </div>
         );
       case 'bookmarks':
