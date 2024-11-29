@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from 'react'
 import { useNavigate} from 'react-router-dom';
-import { Bell, ChevronDown, Eye, EyeOff, User, X,ThumbsDown ,BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, User, X,ThumbsDown ,BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart , Bookmark} from 'lucide-react'
 import {Input} from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import Logout from "@/hooks/logOut.jsx";
 import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myComplaints.jsx";
 import Footer from "@/components/Footer.jsx";
 import BookingHistory from "@/pages/tourist/components/bookings/BookingHistory.jsx"; 
+import BookmarksHistory from "@/pages/tourist/components/activities/bookmarks"; 
 import Navbar from "@/components/Navbar.jsx";
 
 const TouristProfilePage = () => {
@@ -352,6 +353,12 @@ const TouristProfilePage = () => {
             <BookingHistory/>
           </div>
         );
+        case 'bookmarks':
+        return (
+          <div className="bg-white shadow rounded-lg p-6">
+            <BookmarksHistory/>
+          </div>
+        );
       case 'settings':
         return (
           <div className="bg-white shadow rounded-lg p-6">
@@ -449,6 +456,13 @@ const TouristProfilePage = () => {
             >
               <BookCheck className="mr-3" />
               My bookings
+            </button>
+            <button
+              className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('bookmarks')} // Changed from 'bookings'
+                >
+                 <Bookmark className="mr-3" />
+                   My Bookmarks
             </button>
             <button
               className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
