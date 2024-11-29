@@ -267,6 +267,7 @@ export default function Navbar({ profilePageString, children }) {
                 onClose={handleClose}
                 MenuListProps={{
                   "aria-labelledby": "basic-button",
+                  sx: { p: 0 },
                 }}
                 PaperProps={{
                   sx: {
@@ -286,7 +287,7 @@ export default function Navbar({ profilePageString, children }) {
                 }}>Orders</MenuItem>
                 <MenuItem onClick={handleClose}>Settings</MenuItem>
                 <Separator />
-                <MenuItem onClick={handleLogoutClick}>Sign out</MenuItem>
+                <MenuItem onClick={() => {handleClose(); handleLogoutClick();}}>Sign out</MenuItem>
               </Menu>
               <LogoutAlertDialog
                 isOpen={isAlertOpen}
