@@ -26,6 +26,7 @@ import SellerProducts from "@/pages/seller/SellerProducts.jsx";
 import ComplaintsPage from "@/pages/admin/complaints.jsx";
 import ForgotPassword from "./pages/signIn/ForgetPassword.jsx";
 import ResetPassword from "./pages/signIn/otpPage.jsx";
+import Wallet from "./pages/tourist/components/wallet.jsx";
 
 //import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
 //import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
@@ -106,6 +107,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/siginIn" element={<LoginPage />} />
+        <Route path="/wallet" element={<Wallet />} />
         <Route path="/admin/manage-activities" element={<ManageActivities />} />
         <Route path="/bookmarks" element={<BookmarksPage ></BookmarksPage>}/>
       </Routes>

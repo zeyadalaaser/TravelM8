@@ -77,14 +77,14 @@ app.use("/api", purchaseRoute);
 
 app.use("/api", activityBookingsRoute);
 app.use("/api", itineraryBookingsRoute);
-
+app.use('/api', orderRoutes);
 app.use("/api", bookmarksRoutes);
 
 app.use("/api", deleteRequestRoute);
 app.use("/api", notificationRoutes);
 app.use('/api/auth', authRoute);
 app.use(express.json());
-app.use('/api', orderRoutes);
+
 
 
 app.listen(PORT, () => {

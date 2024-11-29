@@ -161,7 +161,7 @@ export const redeemPoints = async (req, res) => {
 export const addToCart = async (req, res) => {
   try {
     const userId = req.user?.userId; 
-    const { productId} = req.body; // Item details from request body
+    const { productId} = req.params; // Item details from request body
 
     const user = await Tourist.findById(userId).populate("cart.productId");
     if (!user) {
@@ -198,7 +198,7 @@ export const addToCart = async (req, res) => {
 export const decrementQuantity = async (req, res) => {
   try {
     const userId = req.user?.userId; 
-    const { productId } = req.body; // Item details from request body
+    const { productId } = req.params; // Item details from request body
 
     const user = await Tourist.findById(userId).populate("cart.productId");
     if (!user) {
@@ -235,7 +235,7 @@ export const decrementQuantity = async (req, res) => {
 export const removeFromCart = async (req, res) => {
   try {
     const userId = req.user?.userId; 
-    const { productId } = req.body;
+    const { productId } = req.params;
 
     const user = await Tourist.findById(userId).populate("cart.productId");
     if (!user) {
@@ -263,12 +263,11 @@ export const removeFromCart = async (req, res) => {
 export const clearCart = async (req, res) => {
   try {
     const userId = req.user?.userId; 
-
     const user = await Tourist.findById(userId).populate("cart.productId");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    // user.cart.map(item => )
     user.cart = []; // Clear all items in the cart
     await user.save();
 

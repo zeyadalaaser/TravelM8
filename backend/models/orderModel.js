@@ -31,8 +31,27 @@ const orderSchema = new mongoose.Schema({
     required:true
   },
   deliveryAddress: {
-    type: String,
-    required: true
+    fullName: {
+      type: String,
+    },
+    mobileNumber: {
+      type: String,
+    },
+    streetName: {
+      type: String,
+    },
+    buildingNumber: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    postalCode: {
+      type: String,
+    },
+    country: {
+      type: String,
+    },
   },
   paymentMethod: {
     type: String,
@@ -41,13 +60,14 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['placed', 'shipped', 'delivered', 'cancelled'],
-    default: 'placed'
+    enum: ['Placed', 'Shipped', 'Delivered', 'Cancelled'],
+    default: 'Placed'
   },
   stripePaymentIntentId: {
     type: String
   }
 }, { timestamps: true });
+
 
 const Order = mongoose.model('Order', orderSchema);
 

@@ -24,11 +24,6 @@ export const createPaymentIntent = async (req, res) => {
     }
   };
   
-// Helper function to calculate total amount
-const calculateTotalAmount = (items) => {
-  return items.reduce((total, item) => total + item.price * item.quantity, 0);
-};
-
 export const payWithStripe = async (req, res) => {
   try {
     const { items, deliveryAddress, paymentMethodId, currency } = req.body;
@@ -190,49 +185,174 @@ export const payWithCash = async (req, res) => {
     }
   };
 
+  const isAddressEqual = (addr1, addr2) => {
+    return addr1.fullName === addr2.fullName &&
+           addr1.mobileNumber === addr2.mobileNumber &&
+           addr1.streetName === addr2.streetName &&
+           addr1.buildingNumber === addr2.buildingNumber &&
+           addr1.city === addr2.city &&
+           addr1.postalCode === addr2.postalCode &&
+           addr1.country === addr2.country;
+  };
   
-  export const chooseOrAddDeliveryAddress = async (req, res) => {
+  export const checkout = async (req, res) => {
     try {
-      const { addressId, newAddress } = req.body;
-      const userId = req.user.userId;
+      const userId = req.user?.userId; // Assumes user ID is extracted from token
+      const { address, paymentMethod, promoCode } = req.body;
   
-      const tourist = await Tourist.findById(userId);
-      if (!tourist) {
-        return res.status(404).json({ message: 'Tourist not found' });
+      // Find user and populate cart details
+      const user = await Tourist.findById(userId).populate("cart.productId");
+      if (user.cart.length === 0) {
+        return res.status(400).json({ message: "Cart is empty" });
       }
-  
-      let chosenAddress;
-  
-      if (addressId) {
-        // Choose existing address
-        chosenAddress = tourist.address.id(addressId);
-        if (!chosenAddress) {
-          return res.status(404).json({ message: 'Address not found' });
+      if (user && user.cart) {
+        for (const item of user.cart) {
+          if (item.productId) {
+            item.productId.sales += 1; 
+            await item.productId.save(); 
+          }
         }
-      } else if (newAddress) {
-        // Add new address
-        tourist.address.push(newAddress);
-        await tourist.save();
-        chosenAddress = tourist.address[tourist.address.length - 1];
+      }
+      let totalAmount = user.cart.reduce(
+        (acc, item) => acc + item.quantity * item.productId.price,
+        0
+      );
+      let deliveryAddress;
+      if (user.address.some(addr => isAddressEqual(addr, address))) {
+        deliveryAddress = address;
       } else {
-        return res.status(400).json({ message: 'Either addressId or newAddress must be provided' });
+        user.address.push(address);
+        deliveryAddress = address;
       }
   
-      // Update the most recent order with the chosen address
-      const latestOrder = await Order.findOne({ user: userId }).sort({ createdAt: -1 });
-      if (latestOrder) {
-        latestOrder.deliveryAddress = chosenAddress;
-        await latestOrder.save();
+      const deliveryFee = 20; 
+      totalAmount += deliveryFee;
+      if (promoCode) {
+        const discount = 0.1 * totalAmount;
+        totalAmount -= discount;
       }
-  
-      res.status(200).json({ 
-        message: 'Delivery address updated successfully', 
-        address: chosenAddress 
+      let stripePaymentIntentId = null;
+      if (paymentMethod === 'credit-card') {
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: Math.round(totalAmount * 100), 
+          currency: 'usd',
+          payment_method_types: ['card'],
+        });
+        stripePaymentIntentId = paymentIntent.id;
+      } else if (paymentMethod === 'wallet') {
+        if (user.wallet < totalAmount) {
+          return res.status(400).json({ message: 'Insufficient wallet balance' });
+        }
+        user.wallet -= totalAmount;
+      } else if (paymentMethod !== 'cash') {
+        return res.status(400).json({ message: 'Invalid payment method' });
+      }
+
+      const order = await Order.create({
+        user: userId,
+        items: user.cart.map((item) => ({
+          product: item.productId._id,
+          quantity: item.quantity,
+          price: item.productId.price,
+        })),
+        totalAmount,
+        deliveryFee,
+        deliveryAddress,
+        paymentMethod,
+        stripePaymentIntentId,
+        status: 'Placed', // Default status
       });
+      user.cart = [];
+      await user.save();
+      await order.save();
+  
+      res.status(201).json({ message: "Order placed successfully", order });
     } catch (error) {
-      console.error('Error in chooseOrAddDeliveryAddress:', error);
-      res.status(500).json({ message: 'Internal server error', error: error.message });
+      res.status(500).json({ message: "Checkout failed", error: error.message });
     }
   };
+  
+
+  export const getOrders = async (req, res) => {
+    try {
+      const userId = req.user?.userId; // Assumes user ID is extracted from token
+  
+      // Find orders for the logged-in user
+      const orders = await Order.find({ user: userId }).sort({ createdAt: -1 })
+       .populate({
+        path: "items.product",
+        model: "Product", 
+      });; 
+  
+      if (!orders || orders.length === 0) {
+        return res.status(404).json({ message: "No orders found" });
+      }
+  
+      res.status(200).json({ orders });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch orders", error: error.message });
+    }
+  };
+  
+
+ export const updateOrderStatus = async (req, res) => {
+    try {
+      const userId = req.user?.userId;
+      const { orderId } = req.params;
+      const {status } = req.body;
+  
+      if (!["Placed", "Shipped", "Delivered", "Cancelled"].includes(status)) {
+        return res.status(400).json({ message: "Invalid order status" });
+      }
+  
+      const order = await Order.findByIdAndUpdate(
+        orderId,
+        { status: status },
+        { new: true }
+      );
+  
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+  
+      res.status(200).json({ message: "Order status updated", order });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update order status", error });
+    }
+  };
+
+  export const cancelOrder = async (req, res) => {
+    try {
+      const userId = req.user?.userId;
+      const user = await Tourist.findById(userId);
+      const { id } = req.params;
+      const order = await Order.findByIdAndUpdate(
+        id,
+        { status: "Cancelled" },
+        { new: true } 
+      ).populate("items.product");      
+      if (order.paymentMethod==="wallet") {
+        user.wallet= user.wallet + order.totalAmount;
+      }
+      for (const item of order.items) {
+          if (item.product) {
+            item.product.quantity+=item.quantity;
+            item.product.sales -= 1; 
+            await item.product.save(); 
+          }
+      }
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      user.save();
+      res.status(200).json({ message: "Order cancelled successfully", order });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to cancel order", error });
+    }
+  };
+  
+  
+  
+  
   
   //4000056655665556

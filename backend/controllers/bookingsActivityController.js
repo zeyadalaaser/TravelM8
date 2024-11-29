@@ -3,6 +3,16 @@ import BookingActivity from "../models/bookingsActivityModel.js";
 import Activity from "../models/activityModel.js";
 import { updatePoints } from "./touristController.js";
 import { getActivityPrice } from "./activityController.js";
+import tourist from "../models/touristModel.js";
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "mennayehiahassan@gmail.com", // Replace with your email
+    pass: "dsbkyetgxkynwbpz", // Replace with app password
+  },
+});
 
 // Booking an activity
 export const createBooking = async (req, res) => {
@@ -17,7 +27,10 @@ export const createBooking = async (req, res) => {
   }
 
   try {
-    // Find the activity and check if it exists
+    const touristData = await tourist.findById(touristId);
+    if (!touristData) {
+      return res.status(404).json({ message: "Tourist not found." });
+    }
     const activity = await Activity.findById(activityId);
     if (!activity) {
       return res.status(404).json({ message: "Activity not found." });
@@ -37,19 +50,41 @@ export const createBooking = async (req, res) => {
       bookingDate: new Date(),
       status: "Paid",
       price,
-      paymentMethod
+      paymentMethod,
     });
 
     await newBooking.save();
     const activityPrice = await getActivityPrice(activityId);
     if (activityPrice) {
       const { points, current } = await updatePoints(touristId, activityPrice);
-      return res
-        .status(201)
-        .json({
-          message: `Activity booked successfully. You gained ${points} points and currently have ${current} loyality points`,
-          booking: newBooking,
-        });
+      const emailSubject = "Payment Receipt for Your Booking";
+      const emailBody = `
+        <h1>Thank you for booking with us!</h1>
+        <p>Dear ${touristData.name},</p>
+        <p>We are pleased to confirm your booking for the activity: <strong>${activity.title}</strong>.</p>
+        <p><strong>Details:</strong></p>
+        <ul>
+          <li>Booking ID: ${newBooking._id}</li>
+          <li>Activity Date: ${activity.date}</li>
+          <li>Price: ${price}</li>
+          <li>Payment Method: ${paymentMethod}</li>
+        </ul>
+        <p>You have earned <strong>${points}</strong> loyalty points and now have a total of <strong>${current}</strong> points.</p>
+        <p>We hope you enjoy the activity!</p>
+        <p>Best regards,</p>
+        <p>The Team</p>
+      `;
+
+      await transporter.sendMail({
+        from: "mennayehiahassan@gmail.com", // Sender address
+        to: touristData.email, // Use the tourist's email from the fetched data
+        subject: emailSubject,
+        html: emailBody, // Email content
+      });
+      return res.status(201).json({
+        message: `Activity booked successfully. You gained ${points} points and currently have ${current} loyality points`,
+        booking: newBooking,
+      });
     } else
       return res
         .status(400)
@@ -66,12 +101,10 @@ export const getAllActivityBookings = async (req, res) => {
     const allBookings = await BookingActivity.find({
       touristId: touristId,
     }).populate("activityId");
-    res
-      .status(201)
-      .json({
-        allBookings,
-        message: "Successfully fetched all your activity bookings!",
-      });
+    res.status(201).json({
+      allBookings,
+      message: "Successfully fetched all your activity bookings!",
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -99,12 +132,10 @@ export const cancelBooking = async (req, res) => {
 
     bookingToCancel.status = "Cancelled";
     await bookingToCancel.save();
-    res
-      .status(201)
-      .json({
-        bookingToCancel,
-        message: "Successfully cancelled your booking!",
-      });
+    res.status(201).json({
+      bookingToCancel,
+      message: "Successfully cancelled your booking!",
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -112,27 +143,23 @@ export const cancelBooking = async (req, res) => {
 
 export const bookActivity = async (req, res) => {
   // const { touristId, activityId } = req.body;
-
   // if (!touristId || !activityId) {
   //   return res
   //     .status(400)
   //     .json({ message: "Tourist ID and Activity ID are required." });
   // }
-
   // try {
   //   // Find the activity and check if it exists
   //   const activity = await Activity.findById(activityId);
   //   if (!activity) {
   //     return res.status(404).json({ message: "Activity not found." });
   //   }
-
   //   // Check if booking is open for this activity
   //   if (!activity.isBookingOpen) {
   //     return res
   //       .status(400)
   //       .json({ message: "Booking is not open for this activity." });
   //   }
-
   //   // Create a new booking
   //   const newBooking = new BookingActivity({
   //     touristId,
@@ -140,9 +167,7 @@ export const bookActivity = async (req, res) => {
   //     bookingDate: new Date(),
   //     status: "booked", // Set initial status to "booked"
   //   });
-
   //   await newBooking.save();
-
   //   return res
   //     .status(201)
   //     .json({ message: "Activity booked successfully.", booking: newBooking });
@@ -162,12 +187,10 @@ export const getCompletedActivities = async (req, res) => {
   try {
     // Retrieve bookings for the tourist and populate activity details
     const bookings = await BookingActivity.find({
-      touristId, 
+      touristId,
       status: "Paid",
       bookingDate: { $lt: new Date() },
-    }).populate(
-      "activityId"
-    );
+    }).populate("activityId");
 
     console.log("Completed Activities:", bookings);
     return res.status(200).json(bookings);
@@ -179,30 +202,25 @@ export const getCompletedActivities = async (req, res) => {
 
 export const addReview = async (req, res) => {
   // const { touristId, activityId, rating, comment } = req.body;
-
   // if (!touristId || !activityId || !rating) {
   //   return res
   //     .status(400)
   //     .json({ message: "Tourist ID, Activity ID, and rating are required." });
   // }
-
   // try {
   //   const booking = await BookingActivity.findOne({
   //     touristId,
   //     activityId,
   //     status: "completed",
   //   });
-
   //   if (!booking) {
   //     return res
   //       .status(404)
   //       .json({ message: "Booking not found or activity is not completed." });
   //   }
-
   //   booking.rating = rating;
   //   booking.comment = comment;
   //   await booking.save();
-
   //   return res
   //     .status(200)
   //     .json({
@@ -217,7 +235,6 @@ export const addReview = async (req, res) => {
 
 export const addRatingAndComment = async (req, res) => {
   // const { bookingId, rating, comment } = req.body;
-
   // try {
   //   // Update the booking with rating and comment
   //   const booking = await BookingActivity.findByIdAndUpdate(
@@ -225,11 +242,9 @@ export const addRatingAndComment = async (req, res) => {
   //     { rating, comment },
   //     { new: true }
   //   ).populate("activityId");
-
   //   if (!booking) {
   //     return res.status(404).json({ message: "Booking not found." });
   //   }
-
   //   // Update average rating and review count in Activity
   //   const activity = booking.activityId;
   //   activity.reviewCount += 1;
@@ -237,7 +252,6 @@ export const addRatingAndComment = async (req, res) => {
   //     (activity.averageRating * (activity.reviewCount - 1) + rating) /
   //     activity.reviewCount;
   //   await activity.save();
-
   //   return res
   //     .status(200)
   //     .json({ message: "Rating and comment added successfully." });
@@ -317,59 +331,63 @@ export const totalCancelledActivitiesAdvertiser = async (advertiserId) => {
 
 export const getActivitiesReport = async (req, res) => {
   //const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user
-  const advertiserId =  req.body.id; 
-  const {year, month, day} = req.query;
-
+  const advertiserId = req.body.id;
+  const { year, month, day } = req.query;
 
   try {
     const matchConditions = {
-      status: { $in: ['booked', 'completed'] }, // Filter by status
+      status: { $in: ["booked", "completed"] }, // Filter by status
     };
-    
-    if (req.user?.role === 'Advertiser' && advertiserId) {
-      matchConditions['activityDetails.advertiserId'] = new mongoose.Types.ObjectId(advertiserId);
 
+    if (req.user?.role === "Advertiser" && advertiserId) {
+      matchConditions["activityDetails.advertiserId"] =
+        new mongoose.Types.ObjectId(advertiserId);
     }
 
     // Add date-based filtering if year, month, or day is provided
     if (year || month || day) {
       matchConditions.$expr = {
         $and: [
-          ...(year ? [{ $eq: [{ $year: '$bookingDate' }, parseInt(year)] }] : []),
-          ...(month ? [{ $eq: [{ $month: '$bookingDate' }, parseInt(month)] }] : []),
-          ...(day ? [{ $eq: [{ $dayOfMonth: '$bookingDate' }, parseInt(day)] }] : []),
+          ...(year
+            ? [{ $eq: [{ $year: "$bookingDate" }, parseInt(year)] }]
+            : []),
+          ...(month
+            ? [{ $eq: [{ $month: "$bookingDate" }, parseInt(month)] }]
+            : []),
+          ...(day
+            ? [{ $eq: [{ $dayOfMonth: "$bookingDate" }, parseInt(day)] }]
+            : []),
         ],
       };
     }
-  
+
     const results = await BookingActivity.aggregate([
       {
         $lookup: {
-          from: 'activities', // Activity collection name
-          localField: 'activityId', // Field in BookingActivity
-          foreignField: '_id', // Match with Activity `_id`
-          as: 'activityDetails',
+          from: "activities", // Activity collection name
+          localField: "activityId", // Field in BookingActivity
+          foreignField: "_id", // Match with Activity `_id`
+          as: "activityDetails",
         },
       },
       {
-        $unwind: '$activityDetails', // Flatten the activity details array
+        $unwind: "$activityDetails", // Flatten the activity details array
       },
       {
         $match: matchConditions,
       },
       {
         $group: {
-          _id: '$activityId', // Group by the activity ID
-          activityTitle: { $first: '$activityDetails.title' },
+          _id: "$activityId", // Group by the activity ID
+          activityTitle: { $first: "$activityDetails.title" },
           bookingCount: { $sum: 1 }, // Count the number of bookings per activity
-          revenue: { $sum: '$activityDetails.price' }, // Sum up the price of bookings per activity
-          
+          revenue: { $sum: "$activityDetails.price" }, // Sum up the price of bookings per activity
         },
       },
       {
         $project: {
           _id: 1, // Include activity ID
-          name: '$activityTitle', // Include activity title
+          name: "$activityTitle", // Include activity title
           bookingCount: 1, // Include the count of bookings
           revenue: 1, // Include the total revenue
         },
@@ -377,16 +395,18 @@ export const getActivitiesReport = async (req, res) => {
     ]);
 
     // Send the aggregated results as a response
-    if(results.length == 0)
-      return res.status(200).json({message: "No data to show"});
+    if (results.length == 0)
+      return res.status(200).json({ message: "No data to show" });
     return res.status(200).json({
       data: results,
-      message: "Successfully fetched the activities report"
-
+      message: "Successfully fetched the activities report",
     });
   } catch (error) {
-    console.error('Error fetching activities report:', error);
+    console.error("Error fetching activities report:", error);
 
-    res.status(500).json({ message: 'Failed to fetch activity report', error: error.message });
+    res.status(500).json({
+      message: "Failed to fetch activity report",
+      error: error.message,
+    });
   }
 };
