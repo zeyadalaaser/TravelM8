@@ -12,6 +12,7 @@ import {
   fetchItinerary,
   rateItinerary,
   handleFlaggedItinerary,
+  unflagItinerary,
 } from "../controllers/itineraryController.js";
 
 import verifyToken from "../services/tokenDecodingService.js";
@@ -48,5 +49,5 @@ router.post(
   verifyToken,
   handleFlaggedItinerary
 );
-
+router.put("/itinerary/:id/unflag", unflagItinerary);
 export default router;
