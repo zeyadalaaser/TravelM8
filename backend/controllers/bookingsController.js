@@ -5,7 +5,16 @@ import Itinerary from "../models/itineraryModel.js";
 import { updateItineraryUponBookingModification } from "./itineraryController.js";
 import { updatePoints } from "./touristController.js";
 import { getItineraryPrice } from "./itineraryController.js";
+import tourist1 from "../models/touristModel.js"; // Import tourist model
+import nodemailer from "nodemailer";
 
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "mennayehiahassan@gmail.com", // Replace with your email
+    pass: "dsbkyetgxkynwbpz", // Replace with app password
+  },
+});
 export const createBooking2 = async (req, res) => {
   let msg;
   try {
@@ -32,6 +41,35 @@ export const createBooking2 = async (req, res) => {
     if (result.success && itineraryPrice) {
       console.log(itineraryPrice);
       const { points, current } = await updatePoints(tourist, itineraryPrice);
+      const touristData = await tourist1.findById(tourist);
+      if (!touristData) {
+        return res.status(404).json({ message: "Tourist not found." });
+      }
+      const emailSubject = "Booking Confirmation";
+      const emailBody = `
+        <h1>Thank you for booking with us!</h1>
+        <p>Dear ${touristData.name},</p>
+        <p>Your booking for the itinerary <strong>${savedBooking.itinerary}</strong> has been confirmed.</p>
+        <p><strong>Details:</strong></p>
+        <ul>
+          <li>Booking ID: ${savedBooking._id}</li>
+          <li>Tour Date: ${tourDate}</li>
+          <li>Price: ${price}</li>
+          <li>Payment Method: ${paymentMethod}</li>
+        </ul>
+        <p>You have earned <strong>${points}</strong> loyalty points and now have a total of <strong>${current}</strong> points.</p>
+        <p>We hope you enjoy the tour!</p>
+        <p>Best regards,</p>
+        <p>The Team</p>
+      `;
+
+      await transporter.sendMail({
+        from: "mennayehiahassan@gmail.com", // Sender address
+        to: touristData.email, // Tourist's email
+        subject: emailSubject,
+        html: emailBody, // Email content
+      });
+
       res.status(201).json({
         savedBooking,
         message: `Successful Booking of Itinerary! You gained ${points} points and currently have ${current} loyality points`,
