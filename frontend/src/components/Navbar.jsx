@@ -254,6 +254,10 @@ export default function Navbar({ profilePageString, children }) {
                   handleClose();
                   navigate("/wallet");
                 }}>Wallet</MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/order");
+                }}>Orders</MenuItem>
                 <MenuItem onClick={handleClose}>Settings</MenuItem>
                 <Separator />
                 <MenuItem onClick={handleLogoutClick}>Sign out</MenuItem>
