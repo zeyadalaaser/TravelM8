@@ -154,6 +154,7 @@ export const getAllProducts = async (req, res) => {
       sortBy,
       order,
       currency = "USD",
+      inStockOnly = false
     } = req.query;
 
     // Fetch exchange rates
@@ -176,6 +177,9 @@ export const getAllProducts = async (req, res) => {
       if (minPrice) filter.price.$gte = minPrice;
       if (maxPrice) filter.price.$lte = maxPrice;
     }
+    
+    if (inStockOnly)
+      filter.quantity = { $gt: 1 };
 
     // Search logic
     if (search) {

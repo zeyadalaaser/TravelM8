@@ -10,6 +10,7 @@ import { SortSelection } from "../filters/sort-selection";
 import Products from "./products";
 import { SearchBar } from "../filters/search";
 import CircularProgress from '@mui/material/CircularProgress';
+import { getProducts } from '../../api/apiService';
 
 const decodeToken = (token) => {
   try {
@@ -62,11 +63,8 @@ export function ProductsPage({ addToCart }) {
     queryParams.set("currency", currency);
 
     try {
-      const response = await axios.get(`http://localhost:5001/api/products?${queryParams.toString()}`);
-      setTimeout(() => {
-        setProducts(response.data.data);
+        setProducts(await getProducts(queryParams.toString()));
         setLoading(false);
-      }, 500);
     } catch (error) {
       console.error("Error fetching products:", error);
       alert("Failed to load products. Please try again.");
