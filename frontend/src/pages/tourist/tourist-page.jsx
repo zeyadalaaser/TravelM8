@@ -105,32 +105,32 @@ export default function TouristPage() {
     <div className="bg-[#FAF9F6] min-h-screen">
       <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
 
-      <Navbar profilePageString={"/tourist-profile"} />
-      <div className="mt-24">
-      {/* <NavBar onComplaintClick={() => setShowComplaintForm(true)}
+        <Navbar profilePageString={"/tourist-profile"} />
+        <div className="mt-24">
+          {/* <NavBar onComplaintClick={() => setShowComplaintForm(true)}
           onRedeemClick={() => setShowRedeemPoints(true)} /> */}
 
+        </div>
+
+        {page === "activities" && <ActivitiesPage />}
+        {page === "itineraries" && <ItinerariesPage />}
+        {page === "museums" && <MuseumsPage />}
+        {page === "flights" && <FlightsPage />}
+        {page === "hotels" && <HotelsPage />}
+        {page === "products" && (<ProductsPage />)}
+        {page === "complaints" && <MyComplaintsPage />}
+        {page === "completed-tours" && touristId && (<CompletedToursPage touristId={touristId} />)}
+        {page === "past-activities" && touristId && (<PastActivitiesPage touristId={touristId} />)}
+        {page === "products-purchased" && touristId && (<PurchasedProductsPage touristId={touristId} />)}
+        {page === "booking-history" && <BookingHistory />}
+        {showComplaintForm && (<ComplaintForm onClose={() => setShowComplaintForm(false)} />)}
+        {showRedeemPoints && (<RedeemPoints onClose={() => setShowRedeemPoints(false)} />)}
+
+
       </div>
-
-      {page === "activities" && <ActivitiesPage />}
-      {page === "itineraries" && <ItinerariesPage />}
-      {page === "museums" && <MuseumsPage />}
-      {page === "flights" && <FlightsPage />}
-      {page === "hotels" && <HotelsPage />}
-      {page === "products" && (<ProductsPage />)}
-      {page === "complaints" && <MyComplaintsPage />}
-      {page === "completed-tours" && touristId && (<CompletedToursPage touristId={touristId} />)}
-      {page === "past-activities" && touristId && (<PastActivitiesPage touristId={touristId} />)}
-      {page === "products-purchased" && touristId && (<PurchasedProductsPage touristId={touristId} />)}
-      {page === "booking-history" && <BookingHistory />}
-      {showComplaintForm && (<ComplaintForm onClose={() => setShowComplaintForm(false)} />)}
-      {showRedeemPoints && (<RedeemPoints onClose={() => setShowRedeemPoints(false)} />)}
-
-
-    </div>
-    <div className="mt-36">
-    <Footer />
-    </div>
+      <div className="mt-36">
+        <Footer />
+      </div>
     </div>
 
   );

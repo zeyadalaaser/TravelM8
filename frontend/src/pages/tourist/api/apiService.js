@@ -12,12 +12,6 @@ export async function getActivities(query) {
   return (await apiClient.get("activities?" + searchParams.toString())).data;
 }
 
-/* const response = await axios.get(`http://localhost:5001/api/products`,
-  {headers: {
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${token}`,
-}}); */
-
 
 
 export async function getProducts(query) {
@@ -311,10 +305,6 @@ export async function submitComplaint(complaintData, token) {
   })).data;
 }
 
-
-
-
-
 export async function changePassword(passwordData, token) {
   return (
     await apiClient.post("tourists/changepassword", passwordData, {
@@ -346,6 +336,40 @@ export async function updateProfile(updatedData, token) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+    })
+  ).data;
+}
+
+export async function getWishlist(token) {
+  return (
+    await apiClient.get("tourists/wishlist", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data;
+}
+
+export async function addToWishlist(productId, token) {
+  return (
+    await apiClient.post("tourists/wishlist", { productId }, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data;
+}
+
+export async function removeFromWishlist(productId, token) {
+  return (
+    await apiClient.delete("tourists/wishlist", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      data: { productId }
     })
   ).data;
 }

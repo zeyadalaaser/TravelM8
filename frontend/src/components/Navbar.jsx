@@ -96,6 +96,10 @@ export default function Navbar({ profilePageString, children }) {
     try {
       const payload = token.split('.')[1];
       const decodedPayload = JSON.parse(atob(payload));
+      const now = Math.floor(Date.now() / 1000);
+      if (decodedPayload.exp && decodedPayload.exp < now) {
+        return null;
+      }
       return decodedPayload;
     } catch (e) {
       console.error('Failed to decode token:', e);
@@ -132,15 +136,13 @@ export default function Navbar({ profilePageString, children }) {
   return (
     <>
       <nav
-        className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300 ${
-          currentPage === "/" ? "bg-transparent" : "bg-white text-black shadow-md"
-        } ${isScrolled && currentPage === "/" ? "bg-gray-800/50 backdrop-blur-md" : "bg-gray-800"}`}
+        className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300 ${currentPage === "/" ? "bg-transparent" : "bg-white text-black shadow-md"
+          } ${isScrolled && currentPage === "/" ? "bg-gray-800/50 backdrop-blur-md" : "bg-gray-800"}`}
         style={{ height: "56px" }}
       >
         <div
-          className={`text-2xl font-semibold ${
-            currentPage === "/" ? "text-white" : "text-black"
-          }`}
+          className={`text-2xl font-semibold ${currentPage === "/" ? "text-white" : "text-black"
+            }`}
         >
           TRAVELM8
         </div>
@@ -148,11 +150,10 @@ export default function Navbar({ profilePageString, children }) {
         <div className="hidden md:flex items-center justify-start ml-20 space-x-1">
           <button
             key="/"
-            className={`${
-              currentPage === "/" ? 
-              "text-white hover:text-white/70 py-2 px-4" 
-              : "text-black hover:text-black/70 py-2 px-4"
-            }`}
+            className={`${currentPage === "/" ?
+                "text-white hover:text-white/70 py-2 px-4"
+                : "text-black hover:text-black/70 py-2 px-4"
+              }`}
             onClick={() => navigate(`/`)}
           >
             Home
@@ -160,15 +161,13 @@ export default function Navbar({ profilePageString, children }) {
           {pages.map((page) => (
             <button
               key={page.value}
-              className={`${
-                currentPage === "/" 
-                  ? "text-white hover:text-white/70" 
+              className={`${currentPage === "/"
+                  ? "text-white hover:text-white/70"
                   : "text-black hover:text-black/70"
-              } ${
-                currentPage === `/tourist-page?type=${page.value}` 
-                  ? "rounded-full py-2 px-4 border-[1px]" 
+                } ${currentPage === `/tourist-page?type=${page.value}`
+                  ? "rounded-full py-2 px-4 border-[1px]"
                   : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
-              }`}
+                }`}
               onClick={() => navigate(`/tourist-page?type=${page.value}`)}
             >
               {page.label}
@@ -182,16 +181,16 @@ export default function Navbar({ profilePageString, children }) {
               {currentPage === "/" ? <NotificationBadge /> : <NotificationBadgeDark />}
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="icon"
                     className={currentPage === "/" ? "text-white" : "text-black"}
                   >
                     <div className="relative">
                       <ShoppingCart className="h-5 w-5" />
                       {totalItems > 0 && (
-                        <Badge 
-                          variant="secondary" 
+                        <Badge
+                          variant="secondary"
                           className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2"
                         >
                           {totalItems}
@@ -227,11 +226,10 @@ export default function Navbar({ profilePageString, children }) {
               </Sheet>
               <button
                 onClick={handleClick}
-                className={`${
-                  currentPage === "/" ? 
-                  "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2" 
-                  :"text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"
-                }`}
+                className={`${currentPage === "/" ?
+                    "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2"
+                    : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"
+                  }`}
               >
                 <span>Hello, {userName}</span>
                 <ChevronDown className={`h-4 w-4 ${currentPage === "/" ? "text-white" : "text-gray-500"}`} />
@@ -274,9 +272,8 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <Button
                   variant="outline"
-                  className={`bg-transparent rounded-full px-8 py-2 ${
-                    currentPage === "/" ? "text-white hover:bg-white/10 hover:text-white" : "text-black"
-                  } `}
+                  className={`bg-transparent rounded-full px-8 py-2 ${currentPage === "/" ? "text-white hover:bg-white/10 hover:text-white" : "text-black"
+                    } `}
                 >
                   Login
                 </Button>
@@ -287,9 +284,8 @@ export default function Navbar({ profilePageString, children }) {
                 onLoginClick={openLogin}
               >
                 <button
-                  className={`font-medium rounded-full px-8 py-2 ${
-                    currentPage === "/" ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
-                  } `}
+                  className={`font-medium rounded-full px-8 py-2 ${currentPage === "/" ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+                    } `}
                 >
                   Register
                 </button>

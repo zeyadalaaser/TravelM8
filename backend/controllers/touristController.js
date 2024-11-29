@@ -1,45 +1,46 @@
-import Tourist from '../models/touristModel.js'; 
-import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js"; 
+import Tourist from '../models/touristModel.js';
+import { checkUniqueUsernameEmail } from "../helpers/signupHelper.js";
 import Product from '../models/productModel.js';
+import mongoose from "mongoose";
 
 
-export const createTourist = async(req,res) => {
-   //add a new Tourist to the database with 
-   const {username, name, email, password, mobileNumber, nationality, dob, occupation} = req.body;
-   const isNotUnique = await checkUniqueUsernameEmail(username, email);
+export const createTourist = async (req, res) => {
+  //add a new Tourist to the database with 
+  const { username, name, email, password, mobileNumber, nationality, dob, occupation } = req.body;
+  const isNotUnique = await checkUniqueUsernameEmail(username, email);
 
-        if (isNotUnique) {
-            return res.status(400).json({ message: 'Username or email is already in use.' });
-        }
-   try{
-  
-      const tourist = await Tourist.create({username,name, email, password, mobileNumber, nationality, dob, occupation});
-      res.status(200).json({ id: tourist.id, ...tourist.toObject() });
-         }catch(error){
-      res.status(400).json({error:error.message});
-   }
+  if (isNotUnique) {
+    return res.status(400).json({ message: 'Username or email is already in use.' });
+  }
+  try {
+
+    const tourist = await Tourist.create({ username, name, email, password, mobileNumber, nationality, dob, occupation });
+    res.status(200).json({ id: tourist.id, ...tourist.toObject() });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 }
 
 
 
 export const updateTouristProfile = async (req, res) => {
-   const userId = req.user.userId;
-   try{
+  const userId = req.user.userId;
+  try {
     if (req.body.password) {
       req.body.password = await hashPassword(req.body.password);
     }
-      const updatedTourist = await Tourist.findByIdAndUpdate(
-         userId,        
-         req.body,         
-         { new: true, runValidators: true }          
-       );
-       if (!updatedTourist){
-         res.status(400).json({error:error.message});
-       }
-      res.status(200).json(updatedTourist);
-   }catch(error){
-      res.status(400).json({error:error.message});
-   }
+    const updatedTourist = await Tourist.findByIdAndUpdate(
+      userId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedTourist) {
+      res.status(400).json({ error: error.message });
+    }
+    res.status(200).json(updatedTourist);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
 export const updatePreferences = async (req, res) => {
@@ -65,23 +66,23 @@ export const updatePreferences = async (req, res) => {
 };
 
 export const getTourists = async (req, res) => {
-    //retrieve all users from the database
-    try{
-       const Tourists = await Tourist.find({});
-       res.status(200).json(Tourists);
-    }catch(error){
-       res.status(400).json({error:error.message});
-    }
- }
+  //retrieve all users from the database
+  try {
+    const Tourists = await Tourist.find({});
+    res.status(200).json(Tourists);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
 
- export const getMyProfile = async (req, res) => {
-   const userId = req.user.userId;
-   try {
-      const touristInfo = await Tourist.findById(userId);
-      res.status(200).json(touristInfo);
-   } catch (error) {
-      res.status(400).json({ message: "could not fetch account information" });
-   }
+export const getMyProfile = async (req, res) => {
+  const userId = req.user.userId;
+  try {
+    const touristInfo = await Tourist.findById(userId);
+    res.status(200).json(touristInfo);
+  } catch (error) {
+    res.status(400).json({ message: "could not fetch account information" });
+  }
 }
 
 
@@ -117,7 +118,7 @@ export const updatePoints = async (userId, amountPaid) => {
 
     // Save the tourist with the updated points and badge level
     await tourist.save();
-    return {"points":pointsEarned, "current":tourist.loyaltyPoints};  // Return the updated tourist object
+    return { "points": pointsEarned, "current": tourist.loyaltyPoints };  // Return the updated tourist object
   } catch (error) {
     throw new Error(`Error processing payment: ${error.message}`); // Rethrow error for further handling
   }
@@ -160,8 +161,8 @@ export const redeemPoints = async (req, res) => {
 
 export const addToCart = async (req, res) => {
   try {
-    const userId = req.user?.userId; 
-    const { productId} = req.params; // Item details from request body
+    const userId = req.user?.userId;
+    const { productId } = req.params; // Item details from request body
 
     const user = await Tourist.findById(userId).populate("cart.productId");
     if (!user) {
@@ -171,7 +172,7 @@ export const addToCart = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    if (product.quantity<1 ) {
+    if (product.quantity < 1) {
       return res.status(400).json({
         message: `Product is out of stock`,
       });
@@ -183,9 +184,9 @@ export const addToCart = async (req, res) => {
       product.quantity -= 1;
     }
 
-     else {
-      user.cart.push({ productId, price: product.price});
-      product.quantity-=1;
+    else {
+      user.cart.push({ productId, price: product.price });
+      product.quantity -= 1;
     }
     await product.save();
     await user.save();
@@ -197,7 +198,7 @@ export const addToCart = async (req, res) => {
 
 export const decrementQuantity = async (req, res) => {
   try {
-    const userId = req.user?.userId; 
+    const userId = req.user?.userId;
     const { productId } = req.params; // Item details from request body
 
     const user = await Tourist.findById(userId).populate("cart.productId");
@@ -210,10 +211,10 @@ export const decrementQuantity = async (req, res) => {
     }
     const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
     if (existingItem) {
-      if(existingItem.quantity-1<1) {
-        product.quantity+=1;
+      if (existingItem.quantity - 1 < 1) {
+        product.quantity += 1;
         user.cart = user.cart.filter(
-        (item) => item.productId._id.toString() !== productId
+          (item) => item.productId._id.toString() !== productId
         );
       }
       else {
@@ -234,20 +235,20 @@ export const decrementQuantity = async (req, res) => {
 
 export const removeFromCart = async (req, res) => {
   try {
-    const userId = req.user?.userId; 
+    const userId = req.user?.userId;
     const { productId } = req.params;
 
     const user = await Tourist.findById(userId).populate("cart.productId");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-        
+
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
     const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
-    product.quantity+=existingItem.quantity;
+    product.quantity += existingItem.quantity;
     user.cart = user.cart.filter(
       (item) => item.productId._id.toString() !== productId
     );
@@ -262,7 +263,7 @@ export const removeFromCart = async (req, res) => {
 // Clear the cart
 export const clearCart = async (req, res) => {
   try {
-    const userId = req.user?.userId; 
+    const userId = req.user?.userId;
     const user = await Tourist.findById(userId).populate("cart.productId");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -296,8 +297,59 @@ export const getCart = async (req, res) => {
   }
 };
 
+export const getWishlist = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const user = await Tourist.findById(userId).populate("wishlist");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    res.status(200).json(user.wishlist);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to retrieve wishlist", error });
+  }
+};
 
+export const addToWishlist = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const user = await Tourist.findById(userId);
+    if (!user) 
+      return res.status(404).json({ message: "User not found" }); // aw not logged in?
 
+    const productId = new mongoose.Types.ObjectId(req.body?.productId);
 
+    const productExists = await Product.exists({ _id: productId });
+    if (!productExists) {
+      return res.status(404).json({ message: "Product does not exist" });
+    }
 
+    if (!user.wishlist.includes(productId)) {
+      user.wishlist.push(productId);
+      await user.save();
+    }
+
+    res.status(200).json(user.wishlist);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Failed to add to wishlist", error });
+  }
+};
+
+export const removeFromWishlist = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const user = await Tourist.findById(userId);
+    if (!user) 
+      return res.status(404).json({ message: "User not found" }); // aw not logged in?
+
+    const productId = new mongoose.Types.ObjectId(req.body?.productId);
+    user.wishlist = user.wishlist.filter((id) => !id.equals(productId));
+    await user.save();
+
+    res.status(200).json(user.wishlist);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete from wishlist", error });
+  }
+};

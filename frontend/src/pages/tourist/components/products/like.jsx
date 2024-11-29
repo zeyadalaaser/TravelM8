@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
+import { addToWishlist, getWishlist, removeFromWishlist } from '../../api/apiService';
 
-const AnimatedLikeButton = () => {
-  const [isLiked, setIsLiked] = useState(false);
+export default function AnimatedLikeButton({ token, liked, productId }) {
+  const [isLiked, setIsLiked] = useState(liked);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = async () => {
+    if (!token)
+      return;
+
+    !isLiked ? addToWishlist(productId, token) : removeFromWishlist(productId, token);
+    getWishlist(token);
     setIsLiked(!isLiked);
     setIsAnimating(true);
     // Reset animation state after animation completes
@@ -28,5 +34,3 @@ const AnimatedLikeButton = () => {
     </button>
   );
 };
-
-export default AnimatedLikeButton;

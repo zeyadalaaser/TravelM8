@@ -93,6 +93,11 @@ const touristSchema = new Schema(
       type: [String],
       default: [],
     },
+    wishlist: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Product",
+      default: [],
+    },
     address: [
       {
         fullName: {

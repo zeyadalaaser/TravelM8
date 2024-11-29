@@ -6,10 +6,20 @@ import { Button } from "@/components/ui/button"
 import axios from 'axios';
 import { ShareButton } from "@/components/ui/share-button";
 import AnimatedLikeButton from "./like";
+import { useEffect, useState } from "react";
+import { getWishlist } from "../../api/apiService";
 
-export default function Products({ products, currency, exchangeRate, touristId, addToCart }) {
+export default function Products({ products, currency, token, addToCart }) {
+  const [wishlist, setWishlist] = useState([]);
+
+  useEffect(() => {
+    const fetchWishlist = async () => setWishlist((await getWishlist(token?.token)).map(p => p._id));
+    fetchWishlist();
+  }, []);
+
+
   const handlePurchase = async (product) => {
-    if (!touristId) {
+    if (!token?.decodedToken?.userId) {
       alert("Tourist ID is required.")
       return
     }
@@ -20,7 +30,7 @@ export default function Products({ products, currency, exchangeRate, touristId, 
     try {
       const response = await axios.post('http://localhost:5001/api/purchases', {
         productId: product._id,
-        touristId: touristId,
+        touristId: token?.decodedToken?.userId,
         quantity,
       });
 
@@ -70,7 +80,11 @@ export default function Products({ products, currency, exchangeRate, touristId, 
                 >
                   <div className="flex items-center w-full justify-between">
                     <span className="text-white font-medium text-base truncate">{product.name}</span>
-                    <AnimatedLikeButton />
+                    <AnimatedLikeButton
+                      liked={wishlist.includes(product._id)}
+                      productId={product._id}
+                      token={token?.token}
+                    />
                   </div>
                 </div>
               </div>

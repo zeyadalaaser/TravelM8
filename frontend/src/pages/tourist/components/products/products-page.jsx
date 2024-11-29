@@ -11,6 +11,21 @@ import Products from "./products";
 import { SearchBar } from "../filters/search";
 import CircularProgress from '@mui/material/CircularProgress';
 
+const decodeToken = (token) => {
+  try {
+    const payload = token.split('.')[1];
+    const decodedPayload = JSON.parse(atob(payload));
+    const now = Math.floor(Date.now() / 1000);
+    if (decodedPayload.exp && decodedPayload.exp < now) {
+      return null;
+    }
+    return decodedPayload;
+  } catch (e) {
+    console.error('Failed to decode token:', e);
+    return null;
+  }
+};
+
 export function ProductsPage({ addToCart }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -18,6 +33,16 @@ export function ProductsPage({ addToCart }) {
   const [currency, setCurrency] = useState("USD");
   const [loading, setLoading] = useState(false);
   const [exchangeRates, setExchangeRates] = useState({});
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken = decodeToken(token);
+      if (decodedToken && decodedToken.userId)
+        setToken({ token, decodedToken });
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchExchangeRates() {
@@ -100,7 +125,7 @@ export function ProductsPage({ addToCart }) {
             <Products
               products={products}
               currency={currency}
-              exchangeRate={exchangeRates[currency]}
+              token={token}
               addToCart={addToCart}
             />
           )}
