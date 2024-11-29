@@ -51,12 +51,14 @@ import LoginPage from "./pages/signIn/signin.jsx";
 import ManageActivities from "./pages/admin/ManageActivities.jsx";
 import PastActivities from "./pages/tourist/components/activities/PastActivitiesPage.jsx";
 import BookmarksPage from './pages/tourist/components/activities/activities.jsx';
+import Checkout from "./pages/tourist/components/products/checkout.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/checkout" element={<Checkout />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
         <Route path="/loading" element={<LoadingPage />} />
         <Route path="/Sellerdashboard" element={<Sellerdashboard />} />

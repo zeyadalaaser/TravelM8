@@ -181,12 +181,12 @@ export const addToCart = async (req, res) => {
     if (existingItem) {
       existingItem.quantity += 1;
       existingItem.price = product.price * existingItem.quantity;
-      product.quantity -= 1;
+      // product.quantity -= 1;
     }
 
     else {
       user.cart.push({ productId, price: product.price });
-      product.quantity -= 1;
+      // product.quantity -= 1;
     }
     await product.save();
     await user.save();
@@ -195,6 +195,59 @@ export const addToCart = async (req, res) => {
     res.status(500).json({ message: "Failed to add item to cart", error });
   }
 };
+
+export const updateCartItemQuantity = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const { productId } = req.params; // Product details from request params
+    const { quantity } = req.body; // New quantity from request body
+
+    const user = await Tourist.findById(userId).populate("cart.productId");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (product.quantity < 1 && quantity > 0) {
+      return res.status(400).json({
+        message: `Product is out of stock`,
+      });
+    }
+
+    const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
+
+    if (existingItem) {
+      if (quantity === 0) {
+        // If the quantity is set to 0, remove the item from the cart
+        user.cart = user.cart.filter(
+          (item) => item.productId._id.toString() !== productId
+        );
+      } else {
+        // Update the quantity of the existing item
+        existingItem.quantity = quantity;
+        existingItem.price = product.price * quantity;
+      }
+    } else {
+      // If the item doesn't exist in the cart, you could add it with the specified quantity
+      if (quantity > 0) {
+        user.cart.push({ productId, price: product.price, quantity });
+      } else {
+        return res.status(400).json({ message: "Quantity must be greater than zero" });
+      }
+    }
+    await product.save();
+    await user.save();
+
+    res.status(200).json({ message: "Cart updated", cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update item in cart", error });
+  }
+};
+
 
 export const decrementQuantity = async (req, res) => {
   try {
@@ -212,7 +265,7 @@ export const decrementQuantity = async (req, res) => {
     const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
     if (existingItem) {
       if (existingItem.quantity - 1 < 1) {
-        product.quantity += 1;
+        // product.quantity += 1;
         user.cart = user.cart.filter(
           (item) => item.productId._id.toString() !== productId
         );
@@ -220,7 +273,7 @@ export const decrementQuantity = async (req, res) => {
       else {
         existingItem.quantity -= 1;
         existingItem.price = product.price * existingItem.quantity;
-        product.quantity += 1;
+        // product.quantity += 1;
       }
     }
 
@@ -248,7 +301,7 @@ export const removeFromCart = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
     const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
-    product.quantity += existingItem.quantity;
+    // product.quantity += existingItem.quantity;
     user.cart = user.cart.filter(
       (item) => item.productId._id.toString() !== productId
     );
