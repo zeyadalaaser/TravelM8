@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Clock, Globe, Tag } from "lucide-react";
+import { Clock, Globe, Tag,  Bookmark } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,8 @@ export default function ItineraryCard({
   exchangeRate,
   onRefresh,
   isTourGuide,
+  bookmarkedItineraries = [], // Add this prop
+  handleBookmark = () => {},
 }) {
   const navigate = useNavigate();
 
@@ -146,7 +148,19 @@ export default function ItineraryCard({
                         </Button>
                       )}
                       {isTourist && (
-                        <ShareButton id={itinerary._id} name="itinerary" />
+                        <>
+                          <ShareButton id={itinerary._id} name="itinerary" />
+                          <button
+                            onClick={() => handleBookmark(itinerary._id)}
+                            className={`text-gray-500 hover:text-black ${
+                              bookmarkedItineraries.includes(itinerary._id) 
+                                ? 'text-yellow-400' 
+                                : ''
+                            }`}
+                          >
+                            <Bookmark className="w-6 h-6" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
