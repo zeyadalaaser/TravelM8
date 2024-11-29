@@ -31,7 +31,7 @@ const LogoutAlertDialog = ({ isOpen, onClose}) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50">
+    <div className="w-screen fixed inset-0 bg-gray-700 bg-opacity-50 flex justify-center items-center z-50 !ml-0">
       <div className="bg-white p-8 rounded-xl shadow-xl w-96">
         <h2 className="text-xl font-bold">Are you sure you want to sign out?</h2>
         <div className="mt-4 flex justify-end space-x-4">

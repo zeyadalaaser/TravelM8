@@ -12,17 +12,17 @@ import { SortSelection } from "../filters/sort-selection";
 import Activities from "./activities";
 import { SearchBar } from "../filters/search";
 import { getActivities, getCategories, createActivityBooking } from "../../api/apiService";
-import CircularProgress from '@mui/material/CircularProgress'; 
+import CircularProgress from '@mui/material/CircularProgress';
 
 export function ActivitiesPage() {
   const token = localStorage.getItem('token');
   console.log(token);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const { location } = useRouter();
   const [activities, setActivities] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
-  
+
   // Fetch the latest exchange rates from the API
   useEffect(() => {
     async function fetchExchangeRates() {
@@ -46,7 +46,7 @@ export function ActivitiesPage() {
 
     try {
       const fetchedActivities = (await getActivities(`?${queryParams.toString()}`)).filter(a => a.isBookingOpen);
-      
+
       // Simulate a delay by adding a timeout before updating the loading state
       setTimeout(() => {
         setActivities(fetchedActivities);
@@ -86,7 +86,7 @@ export function ActivitiesPage() {
         </label>
       </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4">
+        <div className="w-full md:w-1/4 sticky top-20 h-full">
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
