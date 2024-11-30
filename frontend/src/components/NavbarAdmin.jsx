@@ -1,215 +1,148 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import logo from "../assets/logo4.jpg";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { VscChromeClose } from "react-icons/vsc";
-import { AiOutlineMenu } from "react-icons/ai"; // Icon for the sidebar toggle
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import Sidebar from "./Sidebar"; // Import the Sidebar component
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
+import useRouter from "@/hooks/useRouter";
+import LoginPage from "../pages/signIn/signin";
+import SignupDialog from "../pages/SignUp/signup";
 
-export default function Navbar() {
-  const [navbarState, setNavbarState] = useState(false);
-  const [sidebarState, setSidebarState] = useState(false); // Sidebar toggle state
+export default function Navbar({ profilePageString, children }) {
+  const router = useRouter();
+  const navigate = useNavigate();
+  const { pathname } = router;
+  const currentPage = pathname;
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const toggleSidebar = () => setSidebarState(!sidebarState); // Function to toggle sidebar
+  const [showDashboardButton, setShowDashboardButton] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const openLogin = () => {
+    setIsLoginOpen(true);
+    setIsSignupOpen(false);
+  };
+
+  const openSignup = () => {
+    setIsSignupOpen(true);
+    setIsLoginOpen(false);
+  };
+
+  useEffect(() => {
+    // Check if the user is logged in (replace with your actual authentication logic)
+    const isUserLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(isUserLoggedIn);
+    setShowDashboardButton(isUserLoggedIn);
+  }, []);
 
   return (
     <>
-      <Nav>
-        <div className="brand">
-          <div className="container">
-            <img src={logo} alt="" />
-            TraveM8
-          </div>
-          <div className="toggle">
-            {navbarState ? (
-              <VscChromeClose onClick={() => setNavbarState(false)} />
-            ) : (
-              <GiHamburgerMenu onClick={() => setNavbarState(true)} />
-            )}
-          </div>
+      <nav
+        className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300 ${
+          currentPage === "/"
+            ? "bg-transparent"
+            : "bg-white text-black shadow-md"
+        } ${
+          isScrolled && currentPage === "/"
+            ? "bg-gray-900/50 backdrop-blur-md"
+            : "bg-gray-800"
+        }`}
+        style={{ height: "56px" }}
+      >
+        <div
+          className={`text-2xl font-semibold ${
+            currentPage === "/" ? "text-white" : "text-black"
+          }`}
+        >
+          TRAVELM8
         </div>
 
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="#services">About</Link>
-          </li>
-          <li>
-            <Link to="#recommend">Places</Link>
-          </li>
-          <li>
-            <Link to="#testimonials">Testimonials</Link>
-          </li>
-        </ul>
-      </Nav>
+        <div className="flex-1 text-center">
+          <span
+            className={`text-xl font-semibold ${
+              currentPage === "/" ? "text-white" : "text-black"
+            }`}
+          >
+            This is admin dashboard
+          </span>
+        </div>
 
-      {/* Sidebar Toggle Button */}
-      <SidebarToggle onClick={toggleSidebar}>
-        <AiOutlineMenu size={24} />
-      </SidebarToggle>
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="outline"
+            className={`bg-transparent rounded-full px-8 py-2 ${
+              currentPage === "/"
+                ? "text-white hover:bg-white/10 hover:text-white"
+                : "text-black"
+            }`}
+            onClick={() => navigate("/")}
+          >
+            Home
+          </Button>
 
-      {/* Sidebar */}
-      <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
+          {showDashboardButton && (
+            <Button
+              variant="outline"
+              className={`bg-transparent rounded-full px-8 py-2 ${
+                currentPage === "/"
+                  ? "text-white hover:bg-white/10 hover:text-white"
+                  : "text-black"
+              }`}
+              onClick={() => navigate("/dashboard")}
+            >
+              Go to Dashboard
+            </Button>
+          )}
 
-      <ResponsiveNav state={navbarState}>
-        <ul>
-          <li>
-            <Link to="#home" onClick={() => setNavbarState(false)}>
-              Home
-            </Link>
-          </li>
-          <li>
-            <Link to="#services" onClick={() => setNavbarState(false)}>
-              About
-            </Link>
-          </li>
-          <li>
-            <Link to="#recommend" onClick={() => setNavbarState(false)}>
-              Places
-            </Link>
-          </li>
-          <li>
-            <Link to="#testimonials" onClick={() => setNavbarState(false)}>
-              Testimonials
-            </Link>
-          </li>
-           
-        </ul>
-      </ResponsiveNav>
+          {isLoggedIn ? (
+            <>
+              <Button
+                variant="outline"
+                className={`bg-transparent rounded-full px-8 py-2 ${
+                  currentPage === "/"
+                    ? "text-white hover:bg-white/10 hover:text-white"
+                    : "text-black"
+                }`}
+                onClick={() => {
+                  // Add logout logic here
+                  localStorage.setItem("isLoggedIn", "false");
+                  setIsLoggedIn(false);
+                  setShowDashboardButton(false);
+                  navigate("/");
+                }}
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                className={`font-medium rounded-full px-8 py-2 ${
+                  currentPage === "/"
+                    ? "bg-white text-black hover:bg-white/90"
+                    : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white"
+                }`}
+                onClick={() => (window.location.href = "/Admindashboard")}
+              >
+                Go To DashBoard
+              </Button>
+            </>
+          )}
+        </div>
+      </nav>
     </>
   );
 }
-
-
-
-const Nav = styled.nav`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  .brand {
-    .container {
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 1.2rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      img {
-        width: 90px; /* Adjust the width */
-        height: auto; /* This keeps the aspect ratio */
-      }
-    }
-    .toggle {
-      display: none;
-    }
-  }
-  ul {
-    display: flex;
-    gap: 1rem;
-    list-style-type: none;
-    li {
-      a {
-        text-decoration: none;
-        color: #0077b6;
-        font-size: 1.2rem;
-        transition: 0.1s ease-in-out;
-        &:hover {
-          color: #023e8a;
-        }
-      }
-      &:first-of-type {
-        a {
-          color: #023e8a;
-          font-weight: 900;
-        }
-      }
-    }
-  }
-  button {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 1rem;
-    border: none;
-    color: white;
-    background-color: #48cae4;
-    font-size: 1.1rem;
-    letter-spacing: 0.1rem;
-    text-transform: uppercase;
-    transition: 0.3s ease-in-out;
-    &:hover {
-      background-color: #023e8a;
-    }
-  }
-  @media screen and (min-width: 280px) and (max-width: 1080px) {
-    .brand {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      .toggle {
-        display: block;
-      }
-    }
-    ul {
-      display: none;
-    }
-    button {
-      display: none;
-    }
-  }
-`;
-
-const SidebarToggle = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #0077b6; /* Color for the icon */
-  font-size: 1.5rem; /* Adjust the size as needed */
-  margin-left: 1rem; /* Adjust the margin as needed */
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: #023e8a; /* Color change on hover */
-  }
-`;
-
-const ResponsiveNav = styled.div`
-  display: flex;
-  position: absolute;
-  z-index: 1;
-  top: ${({ state }) => (state ? "50px" : "-400px")};
-  background-color: white;
-  height: 30vh;
-  width: 100%;
-  align-items: center;
-  transition: 0.3s ease-in-out;
-  ul {
-    list-style-type: none;
-    width: 100%;
-    li {
-      width: 100%;
-      margin: 1rem 0;
-      margin-left: 2rem;
-      a {
-        text-decoration: none;
-        color: #0077b6;
-        font-size: 1.2rem;
-        transition: 0.1s ease-in-out;
-        &:hover {
-          color: #023e8a;
-        }
-      }
-      &:first-of-type {
-        a {
-          color: #023e8a;
-          font-weight: 900;
-        }
-      }
-    }
-  }
-`;
