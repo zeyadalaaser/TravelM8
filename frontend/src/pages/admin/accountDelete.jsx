@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/NavbarAdmin";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import { useToast } from "@/components/ui/use-toast";
@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Trash2, X } from "lucide-react";
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -28,20 +28,19 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 //import { getAllUsers, deleteUser } from "@/pages/admin/services/adminDeleteServices.js"; // Import the service
 
-
 const DeletionRequestsAdmin = () => {
   const [requests, setRequests] = useState([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [sidebarState, setSidebarState] = useState(false);
   const openDeleteDialog = (request) => {
-    setSelectedRequest(request);  // Store the selected request to be deleted
-    setIsDeleteDialogOpen(true);  // Open the confirmation dialog
+    setSelectedRequest(request); // Store the selected request to be deleted
+    setIsDeleteDialogOpen(true); // Open the confirmation dialog
   };
-  
+
   const closeDeleteDialog = () => {
-    setIsDeleteDialogOpen(false);  // Close the dialog
-    setSelectedRequest(null);  // Clear selected request
+    setIsDeleteDialogOpen(false); // Close the dialog
+    setSelectedRequest(null); // Clear selected request
   };
   const { toast } = useToast();
 
@@ -49,77 +48,86 @@ const DeletionRequestsAdmin = () => {
   useEffect(() => {
     const fetchDeletionRequests = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/Allrequests', {
-          method: 'GET',
+        const response = await fetch("http://localhost:5001/api/Allrequests", {
+          method: "GET",
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem("token")}`,  // Authorization token
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Authorization token
           },
         });
         const data = await response.json();
         if (response.ok) {
           setRequests(data);
         } else {
-          console.error('Error fetching deletion requests:', data.message);
-          toast({ title: "Failed to load requests", description: data.message });
+          console.error("Error fetching deletion requests:", data.message);
+          toast({
+            title: "Failed to load requests",
+            description: data.message,
+          });
         }
       } catch (error) {
-        console.error('Error:', error);
-        toast({ title: "Error", description: "Failed to fetch deletion requests" });
+        console.error("Error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch deletion requests",
+        });
       }
     };
-  
+
     fetchDeletionRequests();
-  }, [toast]);  // Empty dependency array ensures it runs once on mount
+  }, [toast]); // Empty dependency array ensures it runs once on mount
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
   };
- 
+
   // Function to delete both the user and their deletion request
-const handleDelete = async (username, type) => {
-  try {
-    // Step 1: Delete the user
-    const userResponse = await fetch('http://localhost:5001/api/users', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({ username, type }),
-    });
+  const handleDelete = async (username, type) => {
+    try {
+      // Step 1: Delete the user
+      const userResponse = await fetch("http://localhost:5001/api/users", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ username, type }),
+      });
 
-    // Check if the user deletion was successful
-    if (!userResponse.ok) {
-      const errorData = await userResponse.json();
-      throw new Error(errorData.message || 'Failed to delete the user');
+      // Check if the user deletion was successful
+      if (!userResponse.ok) {
+        const errorData = await userResponse.json();
+        throw new Error(errorData.message || "Failed to delete the user");
+      }
+
+      // Step 2: Delete the deletion request
+      const requestResponse = await fetch(
+        "http://localhost:5001/api/delete-request",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ username }),
+        }
+      );
+
+      if (!requestResponse.ok) {
+        const errorData = await requestResponse.json();
+        throw new Error(
+          errorData.message || "Failed to delete the deletion request"
+        );
+      }
+
+      // Update UI: remove the request from the displayed list
+      setRequests(requests.filter((request) => request.username !== username));
+
+      alert("User  deleted successfully");
+    } catch (error) {
+      console.error("Error deleting the user and/or deletion request:", error);
+      alert("Failed to delete the user and/or deletion request");
     }
-
-    // Step 2: Delete the deletion request
-    const requestResponse = await fetch('http://localhost:5001/api/delete-request', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({ username }),
-    });
- 
-    if (!requestResponse.ok) {
-      const errorData = await requestResponse.json();
-      throw new Error(errorData.message || 'Failed to delete the deletion request');
-    }
-
-    // Update UI: remove the request from the displayed list
-    setRequests(requests.filter((request) => request.username !== username));
-
-    alert('User  deleted successfully');
-
-  } catch (error) {
-    console.error('Error deleting the user and/or deletion request:', error);
-    alert('Failed to delete the user and/or deletion request');
-  }
-};
-
+  };
 
   const handleReject = (id) => {
     console.log(`Rejecting request for ID: ${id}`);
@@ -138,36 +146,60 @@ const handleDelete = async (username, type) => {
       >
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="container mx-auto p-6 bg-background shadow-lg rounded-lg">
-          <h1 className="text-3xl font-bold mb-6 text-primary">Account Deletion Requests</h1>
+          <h1 className="text-3xl font-bold mb-6 text-primary">
+            Account Deletion Requests
+          </h1>
           <div className="border rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted">
-                  <TableHead className="font-semibold text-muted-foreground">Username</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">User Type</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">Request Date</TableHead>
-                  <TableHead className="text-right font-semibold text-muted-foreground">Actions</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">
+                    Username
+                  </TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">
+                    User Type
+                  </TableHead>
+                  <TableHead className="font-semibold text-muted-foreground">
+                    Request Date
+                  </TableHead>
+                  <TableHead className="text-right font-semibold text-muted-foreground">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {requests.map((request) => (
                   <TableRow key={request._id} className="border-t">
-                    <TableCell className="font-medium">{request.username}</TableCell>
+                    <TableCell className="font-medium">
+                      {request.username}
+                    </TableCell>
                     <TableCell>{request.userType}</TableCell>
-                    <TableCell>{new Date(request.requestDate).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {new Date(request.requestDate).toLocaleDateString()}
+                    </TableCell>
                     <TableCell className="text-right space-x-2">
-                      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                        <DialogTrigger asChild> 
-                        <Button variant="destructive" onClick={() => openDeleteDialog(request)}>
-                        <Trash2 className="h-4 w-4 mr-2" />
+                      <Dialog
+                        open={isDeleteDialogOpen}
+                        onOpenChange={setIsDeleteDialogOpen}
+                      >
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            onClick={() => openDeleteDialog(request)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
                             <span className="sr-only">Delete Account</span>
                           </Button>
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Are you sure you want to delete this account?</DialogTitle>
+                            <DialogTitle>
+                              Are you sure you want to delete this account?
+                            </DialogTitle>
                             <DialogDescription>
-                              This action cannot be undone. This will permanently delete the account and remove the data from our servers.
+                              This action cannot be undone. This will
+                              permanently delete the account and remove the data
+                              from our servers.
                             </DialogDescription>
                           </DialogHeader>
                           {/* <div className="grid gap-4 py-4">
@@ -184,18 +216,23 @@ const handleDelete = async (username, type) => {
                             </div>
                           </div> */}
                           <DialogFooter>
-                          <Button variant="outline" onClick={closeDeleteDialog}>
-                          Cancel
+                            <Button
+                              variant="outline"
+                              onClick={closeDeleteDialog}
+                            >
+                              Cancel
                             </Button>
                             <Button
                               variant="destructive"
                               onClick={() => {
                                 if (selectedRequest) {
-                                  handleDelete(selectedRequest.username, selectedRequest.userType); // Use selectedRequest's data
+                                  handleDelete(
+                                    selectedRequest.username,
+                                    selectedRequest.userType
+                                  ); // Use selectedRequest's data
                                   // setIsDeleteDialogOpen(false); // Close dialog after deletion
                                 }
-                                closeDeleteDialog();  // Close the dialog after deletion
-
+                                closeDeleteDialog(); // Close the dialog after deletion
                               }}
                             >
                               Delete Account
@@ -203,7 +240,6 @@ const handleDelete = async (username, type) => {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                   
                     </TableCell>
                   </TableRow>
                 ))}
