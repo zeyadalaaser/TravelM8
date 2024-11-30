@@ -98,7 +98,7 @@ const PendingUserDocuments = () => {
       <Sidebar />
       <div className="flex-1 p-4">
         <Navbar />
-        <div className="container mx-auto p-6">
+        <div className="container mx-auto p-6  mt-8">
           <h2 className="text-2xl font-semibold mb-6">
             Manage Pending User Documents
           </h2>

@@ -145,7 +145,7 @@ const DeletionRequestsAdmin = () => {
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mx-auto p-6 bg-background shadow-lg rounded-lg">
+        <div className="container mx-auto p-6 bg-background shadow-lg rounded-lg  mt-8">
           <h1 className="text-3xl font-bold mb-6 text-primary">
             Account Deletion Requests
           </h1>
