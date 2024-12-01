@@ -10,13 +10,13 @@ import axios from 'axios';
 export default function ProductCard({ product, currency, token, liked }) {
     const addToCart = async (productId) => {
         try {
-          await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
-            headers: { Authorization: `Bearer ${token?.decodedToken?.userId}` }
-          });
+            await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
         } catch (error) {
-          console.error('Failed to add item to cart:', error);
+            console.error('Failed to add item to cart:', error);
         }
-      };
+    };
 
     return (
         <Card key={product._id}>
@@ -81,15 +81,17 @@ export default function ProductCard({ product, currency, token, liked }) {
 
 
                 <div className="!mt-auto flex flex-col">
-                    <div className="mt-2 mb-4 flex justify-between">
+                    <div className="mt-1.5 mb-4 flex justify-between items-center">
                         <span className="text-lg font-bold">
                             {currency} {(product.price * 1).toFixed(2)}
                         </span>
-                        <Badge variant="secondary">
-                            {product.seller?.name || "Unknown Seller"}
-                        </Badge>
+                        <span className="text-sm text-muted-foreground">
+                            by <Badge className="px-1" variant="secondary">
+                                {product.seller?.name || "Unknown Seller"}
+                            </Badge>
+                        </span>
                     </div>
-                    <Button size="sm" onClick={() => addToCart(product)}>
+                    <Button size="sm" onClick={() => addToCart(product._id)}>
                         Add to Cart
                     </Button>
                 </div>
