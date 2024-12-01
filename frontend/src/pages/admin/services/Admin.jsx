@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Sidebar from "@/components/Sidebar";
+
 import Navbar from "@/components/DashboardsNavBar";
+
+//import Navbar from "@/components/NavbarAdmin";
+
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

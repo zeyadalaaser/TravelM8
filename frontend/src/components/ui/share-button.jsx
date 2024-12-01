@@ -6,7 +6,7 @@ import useRouter from "@/hooks/useRouter";
 
 import { useToast } from "@/components/ui/use-toast"
 
-export function ShareButton({ id, name }) {
+export function ShareButton({ className, id, name }) {
     const { location, searchParams } = useRouter();
 
     const url = window.location.origin + location.pathname + "?type=" + searchParams.get("type") + "&id=" + id;
@@ -18,6 +18,7 @@ export function ShareButton({ id, name }) {
                     variant="ghost"
                     size="icon"
                     aria-label={`Share ${name}`}
+                    className={className}
                 >
                     <Share2 className="h-6 w-6" />
                 </Button>

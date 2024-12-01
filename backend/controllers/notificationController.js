@@ -185,6 +185,7 @@ export const sendEmailReminder2 = async (email, subject, body) => {
 };
 
 
+
 export const markNotificationAsRead = async (req, res) => {
   const { id } = req.params; 
 
@@ -236,3 +237,4 @@ export const clearNotifications = async (req, res) => {
     res.status(500).json({ message: "Error clearing notifications.", error: error.message });
   }
 };
+

@@ -5,7 +5,7 @@ import {
 import { useState, useEffect } from "react";
 import useRouter from "@/hooks/useRouter";
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/NavbarAdmin";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import { useToast } from "@/components/ui/use-toast";
@@ -221,13 +221,6 @@ export default function ComplaintsPage() {
                 className="border px-2 py-1 rounded"
                 placeholder="Filter by date"
               />
-
-              <Button
-                onClick={() => (window.location.href = "/AdminDashboard")}
-                variant="outline"
-              >
-                Go to Dashboard
-              </Button>
             </div>
           </div>
 
@@ -268,7 +261,7 @@ export default function ComplaintsPage() {
                     })}
                   </TableCell>
                   <TableCell>
-                    <Dialog >
+                    <Dialog>
                       <DialogTrigger asChild>
                         <Button
                           onClick={() => {

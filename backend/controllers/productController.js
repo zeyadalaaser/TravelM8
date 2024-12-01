@@ -6,14 +6,14 @@ import axios from "axios";
 // Function to create a product
 export const createProduct = async (req, res) => {
   try {
-    const { name, price, quantity, description } = req.body;
-    if (!req.file) {
-      return res.status(400).json({ status: 'error', message: 'No files uploaded' });
-    }
-    const image = req.file;
+    const { name, price, quantity, description,image } = req.body;
+    // if (!req.file) {
+    //   return res.status(400).json({ status: 'error', message: 'No files uploaded' });
+    // }
+    // const image = req.file;
     const newProduct = new Product({
       name,
-      image: image.path,
+      image,
       price,
       quantity,
       description,
@@ -37,6 +37,7 @@ export const updateProduct = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Product not found; invalid" });
     }
+
 
     const product = await Product.findById(id);
     if (!product) {
@@ -63,6 +64,12 @@ export const updateProduct = async (req, res) => {
       const imagePath = req.file.path;
       updateData.image = imagePath;
     }
+
+    // if (req.file) {
+    //   const imagePath = req.file.path;
+    //   updateData.image = imagePath;
+    // }
+
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
       new: true,
@@ -174,13 +181,12 @@ export const getAllProducts = async (req, res) => {
       sortBy,
       order,
       currency = "USD",
-      inStockOnly = false
+      showArchived = true
     } = req.query;
 
     // Fetch exchange rates
     const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
-    const userRole = req.user?.role; //user role available on req.user ? 
 
     // Prepare filter for price range, converting values from the selected currency to USD
     let filter = {};
@@ -188,18 +194,16 @@ export const getAllProducts = async (req, res) => {
     if (id)
       filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
-    if(userRole === 'Tourist') { //kda admins and sellers see all products archived or not
+    if(showArchived === "false") { //kda admins and sellers see all products archived or not
       filter.archived = false; // toursits only see unarchived products
     }
+
     if (price) {
       const [minPrice, maxPrice] = price.split("-").map(Number);
       filter.price = {};
       if (minPrice) filter.price.$gte = minPrice;
       if (maxPrice) filter.price.$lte = maxPrice;
     }
-    
-    if (inStockOnly)
-      filter.quantity = { $gt: 0 };
 
     // Search logic
     if (search) {

@@ -24,7 +24,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/bookmarks', {
+        const response = await fetch('http://localhost:5001/api/bookmarks?type=Activity', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -33,7 +33,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
           const data = await response.json();
           const bookmarkedIds = data.allBookmarks
             .filter(b => b.bookmark)
-            .map(b => b.activityId._id);
+            .map(b => b.itemId?._id || b.activityId?._id);
           setBookmarkedActivities(bookmarkedIds);
         }
       } catch (error) {
@@ -47,25 +47,41 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
   }, [token]);
 
   const handleBookmark = async (activityId) => {
+    if (!token) {
+      alert("Please login to bookmark activities");
+      return;
+    }
     try {
+      console.log("Sending bookmark request:", {
+        itemId: activityId,
+        itemType: 'Activity'
+      });
       const response = await fetch(`http://localhost:5001/api/bookmarks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ activityId })
+        body: JSON.stringify({ 
+          itemId: activityId,
+          itemType: 'Activity'
+        })
       });
+            // Log the raw response
+            const responseText = await response.text();
+            console.log("Raw response:", responseText);
+      
 
       if (response.ok) {
-        const data = await response.json();
-        // Update local state based on the response
-        if (data.bookmark.bookmark) {
+        const data = JSON.parse(responseText);
+        if (data.bookmark?.bookmark) {
           setBookmarkedActivities(prev => [...prev, activityId]);
         } else {
           setBookmarkedActivities(prev => prev.filter(id => id !== activityId));
         }
         alert(data.message);
+      }else {
+        throw new Error(`Server responded with ${response.status}: ${responseText}`);
       }
     } catch (error) {
       console.error("Error while bookmarking:", error);
@@ -90,16 +106,16 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                 <h3 className="text-xl font-semibold mb-1">{activity.title}</h3>
                 <div className="flex items-center space-x-2">
                   <ShareButton id={activity._id} name="activity" />
-                  <button
-                    onClick={() => handleBookmark(activity._id)}
-                    className="text-gray-500 hover:text-black"
+
+                <button
+                  onClick={() => handleBookmark(activity._id)}
+                  className={`text-gray-500 hover:text-black ${
+                  bookmarkedActivities.includes(activity._id) ? 'text-yellow-400' : ''
+                  }`}
                   >
-                    {bookmarkedActivities.includes(activity._id) ? (
-                      <Bookmark className="w-6 h-6" />
-                    ) : (
-                      <BookmarkPlus className="w-6 h-6" />
-                    )}
-                  </button>
+                  <Bookmark className="w-6 h-6" />
+                </button>
+
                 </div>
               </div>
               <div className="flex items-center mb-2">

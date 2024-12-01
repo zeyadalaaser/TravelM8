@@ -11,7 +11,7 @@ import {
   Tag,
   User,
   Users,
-  MapPin
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-
+import { jwtDecode } from 'jwt-decode';
 import {
   BarChart,
   Bar,
@@ -92,6 +92,30 @@ const TourGuideDashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("itineraries"); // Manage active tab
+  useEffect(() => {
+    if (!token) return; // No token, no need to check
+
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token"); 
+      navigate("/");
+    }
+  }, [token, navigate]);
 
   // Fetch itineraries from the server
   const fetchItinerariesData = async () => {
@@ -245,19 +269,30 @@ const TourGuideDashboard = () => {
             <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
           </div>
           <nav className="mt-6">
-            <button className="flex items-center px-4 py-2 text-gray-700 bg-gray-200 w-full text-left">
-              <Layout className="mr-3" />
-              Dashboard
-            </button>
-            <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
+            <button
+              className={`flex items-center px-4 py-2 text-gray-700 w-full text-left ${
+                activeTab === "itineraries" ? "bg-gray-200" : ""
+              }`}
+              onClick={() => setActiveTab("itineraries")}
+            >
               <Map className="mr-3" />
               Itineraries
             </button>
-            <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
+            <button
+              className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
+                activeTab === "sales" ? "bg-gray-200" : ""
+              }`}
+              onClick={() => setActiveTab("sales")}
+            >
               <DollarSign className="mr-3" />
               Sales Reports
             </button>
-            <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
+            <button
+              className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
+                activeTab === "tourists" ? "bg-gray-200" : ""
+              }`}
+              onClick={() => setActiveTab("tourists")}
+            >
               <Users className="mr-3" />
               Tourist Reports
             </button>
@@ -337,7 +372,11 @@ const TourGuideDashboard = () => {
             </Card>
           </div>
 
-          <Tabs defaultValue="itineraries" className="space-y-4">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-4"
+          >
             <TabsList>
               <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
               <TabsTrigger value="sales">Sales Report</TabsTrigger>
@@ -358,18 +397,19 @@ const TourGuideDashboard = () => {
                   >
                     <div className="flex-grow p-4">
                       <div className="justify-self-end">
-                        {itinerary.flagged? 
-                          <Badge  className="bg-red-600">Flagged</Badge>
-                          : <Badge className="bg-green-600">Not flagged</Badge>
-                        }
+                        {itinerary.flagged ? (
+                          <Badge className="bg-red-600">Flagged</Badge>
+                        ) : (
+                          <Badge className="bg-green-600">Not flagged</Badge>
+                        )}
                       </div>
 
                       <CardHeader>
-                          <img
-                            src={itinerary.images?.[0]}
-                            alt={itinerary.name}
-                            className="w-full h-48 object-cover rounded-t-lg"
-                          />
+                        <img
+                          src={itinerary.images?.[0]}
+                          alt={itinerary.name}
+                          className="w-full h-48 object-cover rounded-t-lg"
+                        />
                         <CardTitle>{itinerary.name}</CardTitle>
                         <CardDescription>
                           {itinerary.description}
@@ -420,7 +460,10 @@ const TourGuideDashboard = () => {
                         />
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <Button className="bg-red-600 hover:bg-red-800" size="sm">
+                            <Button
+                              className="bg-red-600 hover:bg-red-800"
+                              size="sm"
+                            >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete
                             </Button>
@@ -570,7 +613,7 @@ const TourGuideDashboard = () => {
               </Card>
             </TabsContent>
 
-            <TabsContent value="notifications">
+            <TabsContent value="notifications" className="space-y-4">
               <h2 className="text-2xl font-bold">Notifications</h2>
               {isLoading ? (
                 <p>Loading notifications...</p>
@@ -583,15 +626,16 @@ const TourGuideDashboard = () => {
                   {notifications.map((notification) => (
                     <li
                       key={notification._id}
+                      className="p-4 bg-white rounded shadow-md"
                       style={{
-                        marginBottom: "20px",
+                        marginBottom: "10px",
                         border: "1px solid #ddd",
                         padding: "15px",
                         borderRadius: "5px",
                       }}
                     >
                       <p>{notification.message}</p>
-                      <p style={{ fontSize: "12px", color: "gray" }}>
+                      <p className="text-sm text-gray-500 mt-2">
                         {new Date(notification.createdAt).toLocaleString()}
                       </p>
                     </li>

@@ -21,9 +21,70 @@ export function ItinerariesPage() {
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [bookmarkedItineraries, setBookmarkedItineraries] = useState([]);
+  const token = localStorage.getItem("token")
 
   // Check if the user is a tourist (i.e., not an admin)
   const isAdmin = false; // Set to `true` for admin, `false` for tourists
+
+useEffect(() => {
+    const fetchBookmarks = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/bookmarks?type=Itinerary', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const bookmarkedIds = data.allBookmarks
+            .filter(b => b.bookmark)
+            .map(b => b.itemId._id);
+          setBookmarkedItineraries(bookmarkedIds);
+        }
+      } catch (error) {
+        console.error("Error fetching bookmarks:", error);
+      }
+    };
+
+    if (token) {
+      fetchBookmarks();
+    }
+  }, [token]);
+
+  const handleBookmark = async (itineraryId) => {
+    if (!token) {
+      alert("Please login to bookmark itineraries");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/bookmarks`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          itemId: itineraryId,
+          itemType: 'Itinerary'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.bookmark?.bookmark) {
+          setBookmarkedItineraries(prev => [...prev, itineraryId]);
+        } else {
+          setBookmarkedItineraries(prev => prev.filter(id => id !== itineraryId));
+        }
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error while bookmarking:", error);
+      alert("Failed to update bookmark");
+    }
+  };
 
   // Fetch exchange rates on mount
   useEffect(() => {
@@ -141,6 +202,8 @@ export function ItinerariesPage() {
               isTourist={true}
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
+              bookmarkedItineraries={bookmarkedItineraries} // Add this prop
+              handleBookmark={handleBookmark}
             />
           // ) : (
           //   <p>No itineraries found. Try adjusting your filters.</p>

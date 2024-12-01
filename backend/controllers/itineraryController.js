@@ -520,6 +520,43 @@ export const flagItinerary = async (req, res) => {
   }
 };
 
+// Method to unflag an itinerary (using PUT)
+export const unflagItinerary = async (req, res) => {
+  const { id } = req.params; // Get the itinerary ID from the request parameters
+
+  try {
+    // Find the itinerary by ID
+    const itinerary = await Itinerary.findById(id);
+
+    if (!itinerary) {
+      // If the itinerary is not found, return a 404 error
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    // Check if the itinerary is already unflagged
+    if (!itinerary.flagged) {
+      return res
+        .status(400)
+        .json({ message: "Itinerary is already unflagged" });
+    }
+
+    // Update the itinerary to set 'flagged' to false
+    itinerary.flagged = false;
+    await itinerary.save(); // Save the changes
+
+    res.status(200).json({
+      message: "Itinerary unflagged successfully",
+      itinerary, // Return the updated itinerary
+    });
+  } catch (error) {
+    // If there's an error, return a 500 error
+    res.status(500).json({
+      message: "Error unflagging itinerary",
+      error: error.message,
+    });
+  }
+};
+
 export const getSalesReport = async (req, res) => {
   try {
     const tourGuideId = req.user.userId;
