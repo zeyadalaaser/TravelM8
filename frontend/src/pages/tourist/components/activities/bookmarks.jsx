@@ -216,7 +216,7 @@ const BookmarksHistory = () => {
 
   return (
     <div className="container mx-auto p-4 bg-background">
-      <h1 className="text-3xl font-bold mb-6 text-center">My Bookmarks</h1>
+      <h1 className="text-2xl font-bold mb-6">My Bookmarks</h1>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-4">

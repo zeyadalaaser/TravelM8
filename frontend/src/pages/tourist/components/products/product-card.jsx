@@ -1,23 +1,21 @@
 // products.jsx
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Stars } from "@/components/Stars";
 import { Button } from "@/components/ui/button"
 import { ShareButton } from "@/components/ui/share-button";
 import AnimatedLikeButton from "./like";
 
 export default function ProductCard({ product, currency, token, addToCart }) {
     return (
-        <Card key={product._id} className="overflow-hidden mx-auto">
-            <div className="flex flex-col md:flex-row">
-                <div className="w-full md:w-1/3 relative group">
+        <Card key={product._id}>
+            <div className="flex flex-col p-4 space-y-4 h-full">
+                <div className="w-full relative group">
                     <img
                         src={product.image || "https://via.placeholder.com/150"}
                         alt={product.name}
-                        className="w-full h-[230px] object-cover"
+                        className="rounded-lg w-full h-[230px] object-cover"
                     />
                     <div
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-5 flex items-end"
+                        className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3 flex items-end"
                         style={{
                             background: `linear-gradient(180deg, 
             rgba(0,0,0,0) 62%, 
@@ -40,44 +38,27 @@ export default function ProductCard({ product, currency, token, addToCart }) {
                     >
                         <div className="flex items-center w-full justify-between">
                             <span className="text-white font-medium text-base truncate">{product.name}</span>
-                            <AnimatedLikeButton
-                                liked={true}
-                                productId={product._id}
-                                token={token}
-                            />
+                            <div className="flex space-x-2">
+                                <AnimatedLikeButton
+                                    liked={true}
+                                    productId={product._id}
+                                    token={token}
+                                />
+                                <ShareButton className="p-2 rounded-full bg-gray-100" id={product._id} name="product" />
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="w-full md:w-2/3 p-4 flex flex-col justify-between h-[230px]">
-                    <div>
-                        <div className="flex justify-between items-center">
-                            <h3 className="text-xl font-semibold mb-2">{product.name}</h3>
-                            <ShareButton id={product._id} name="product" />
-                        </div>
-                        <div className="flex items-center mb-2">
-                            <Stars rating={product.averageRating || 0} />
-                            <span className="ml-2 text-sm text-muted-foreground">
-                                {product.totalRatings || 0} reviews
-                            </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                            {product.description || "No description available"}
-                        </p>
-                        <div className="flex items-center">
-                            <span className="text-sm font-semibold mr-2">Seller:</span>
-                            <Badge variant="secondary">
-                                {product.seller?.name || "Unknown Seller"}
-                            </Badge>
-                        </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-xl font-bold">
-                            {currency} {(product.price * 1).toFixed(2)}
-                        </span>
-                        <Button variant="outline" onClick={() => addToCart(product)}>
-                            Add to Cart
-                        </Button>
-                    </div>
+                <span className="text-xl font-bold !mb-4">
+                    {product.name}
+                </span>
+                <div className="!mt-auto w-full flex items-center justify-between">
+                    <span className="text-xl font-bold">
+                        ${currency}{(product.price * 1).toFixed(2)}
+                    </span>
+                    <Button variant="outline" onClick={() => addToCart(product)}>
+                        Add to Cart
+                    </Button>
                 </div>
             </div>
         </Card>

@@ -183,7 +183,7 @@ const TouristProfilePage = () => {
     switch (activeView) {
       case 'dashboard':
         return (
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="container p-10 bg-white shadow rounded-lg">
             <h1 className="text-2xl font-bold mb-6">Account info</h1>
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Profile</h2>
@@ -337,7 +337,7 @@ const TouristProfilePage = () => {
         );
       case 'locations':
         return (
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white shadow rounded-lg p-10">
             <h1 className="text-2xl font-bold mb-6">Locations</h1>
             {/* Locations content */}
           </div>
@@ -368,7 +368,7 @@ const TouristProfilePage = () => {
         );
       case 'settings':
         return (
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white shadow rounded-lg p-10">
             <h1 className="text-2xl font-bold mb-6">Security & Settings</h1>
             {/* Settings content */}
             <section className="mb-8">

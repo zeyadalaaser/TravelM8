@@ -13,10 +13,11 @@ export default function Products({ products, currency, token, addToCart }) {
   const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
-    const fetchWishlist = async () => setWishlist((await getWishlist(token?.token)).map(p => p._id));
+    const fetchWishlist = async () => {
+      setWishlist((await getWishlist(token?.token)).map(p => p._id));
+    }
     fetchWishlist();
   }, []);
-
 
   const handlePurchase = async (product) => {
     if (!token?.decodedToken?.userId) {

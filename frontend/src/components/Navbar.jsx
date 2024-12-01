@@ -285,7 +285,6 @@ export default function Navbar({ profilePageString, children }) {
                   handleClose();
                   navigate("/order");
                 }}>Orders</MenuItem>
-                <MenuItem onClick={handleClose}>Settings</MenuItem>
                 <Separator />
                 <MenuItem onClick={() => {handleClose(); handleLogoutClick();}}>Sign out</MenuItem>
               </Menu>

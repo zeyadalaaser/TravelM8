@@ -9,10 +9,13 @@ export function Wishlist({ token }) {
     }, []);
 
     return (
-        <div className="space-y-4">
-            {products.map((product) => (
-                <ProductCard product={product} token={token} />
-            ))}
+        <div className="container p-4 bg-background">
+            <h1 className="text-2xl font-bold mb-6">Wishlist</h1>
+            <div className="grid grid-cols-3 gap-3">
+                {products.map((product) => (
+                    <ProductCard product={product} token={token} />
+                ))}
+            </div>
         </div>
     );
 }

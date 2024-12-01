@@ -374,7 +374,7 @@ const ChooseDate = ({ itinerary }) => {
               return (
                 <div className="flex items-center space-x-2" key={index}>
                   <RadioGroupItem disabled={booked} value={slot.date} id={`slot-${index}`} />
-                  <Label className={`${booked && 'text-gray-500'}`} htmlFor={`slot-${index}`}>{slotDate}</Label>
+                  <Label className={`${booked && 'line-through text-gray-500'}`} htmlFor={`slot-${index}`}>{slotDate}</Label>
                 </div>
               );
             })}
