@@ -164,9 +164,15 @@ export default function Navbar({ profilePageString, children }) {
   return (
     <>
       <nav
-        className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300 ${
-          currentPage === "/" ? "bg-transparent" : "bg-white text-black shadow-md"
-        } ${isScrolled && currentPage === "/" ? "bg-gray-800/50 backdrop-blur-md" : "bg-gray-800"}`}
+        className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300  
+          ${
+            currentPage === "/" 
+              ? isScrolled 
+                ? "bg-gray-800/50 backdrop-blur-md" 
+                : "bg-transparent" 
+              : "bg-white text-black shadow-md"
+          }`
+        }
         style={{ height: "56px" }}
       >
         <div
