@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from "./button"; // Ensure this is imported correctly
 import { Label } from "./label";
-import { Input } from "./input";
-import { Textarea } from "./textarea";
+import  Input  from "./input";
+import  Textarea  from "./textarea";
 
 function AddProductForm({ onSubmit, loading }) {
   const [formData, setFormData] = useState({
