@@ -154,7 +154,6 @@ export const getAllProducts = async (req, res) => {
       sortBy,
       order,
       currency = "USD",
-      inStockOnly = false,
       showArchived = true
     } = req.query;
 
@@ -168,7 +167,7 @@ export const getAllProducts = async (req, res) => {
     if (id)
       filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
-    if(!showArchived) { //kda admins and sellers see all products archived or not
+    if(showArchived === "false") { //kda admins and sellers see all products archived or not
       filter.archived = false; // toursits only see unarchived products
     }
 

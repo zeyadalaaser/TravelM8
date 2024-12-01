@@ -358,7 +358,7 @@ export const getWishlist = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user.wishlist);
+    res.status(200).json(user.wishlist.filter(p => !p.archived));
   } catch (error) {
     res.status(500).json({ message: "Failed to retrieve wishlist", error });
   }
