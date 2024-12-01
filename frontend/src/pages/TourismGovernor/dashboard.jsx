@@ -67,7 +67,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ChangePasswordDialog from '@/pages/TourismGovernor/components/changePasswordDialog.jsx';
-
+import { jwtDecode } from 'jwt-decode';
 
 const TourismGovernorDashboard = () => {
     const [isAlertOpen, setAlertOpen] = useState(false);
@@ -111,6 +111,31 @@ const TourismGovernorDashboard = () => {
         locationLng:false,
         locationLat:false,
     });
+    
+    useEffect(() => {
+      if (!token) return; // No token, no need to check
+  
+      try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+  
+        if (decodedToken.exp < currentTime) {
+          localStorage.removeItem("token"); 
+          navigate("/"); 
+        } else {
+          const timeout = setTimeout(() => {
+            localStorage.removeItem("token");
+            navigate("/");
+          }, (decodedToken.exp - currentTime) * 1000);
+  
+          return () => clearTimeout(timeout);
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        localStorage.removeItem("token"); 
+        navigate("/");
+      }
+    }, [token, navigate]);
 
     const handleDialogClose = () => {
       setSelectedPlace(null);

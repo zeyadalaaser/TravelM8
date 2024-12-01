@@ -12,12 +12,24 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"; 
 import {Button} from "@/components/ui/button";
+import { jwtDecode } from 'jwt-decode';
 
 const Logout = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+  const decodedToken = jwtDecode(token);
+  const currentTime = Math.floor(Date.now() / 1000);
+  
+  if (decodedToken.exp < currentTime) {
+    navigate("/");
+  } else {
+    setTimeout(() => {
+      navigate("/");
+    }, (decodedToken.exp - currentTime) * 1000); // Time until expiration
+  }
 
+  console.log(decodedToken);
   const handleLogout = async () => {
-    const token = localStorage.getItem('token');
     try {
       const response = await fetch('http://localhost:5001/api/logout', {
         method: 'POST',

@@ -166,7 +166,7 @@ export default function Navbar({ profilePageString, children }) {
       <nav
         className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300 ${
           currentPage === "/" ? "bg-transparent" : "bg-white text-black shadow-md"
-        } ${isScrolled && currentPage === "/" ? "bg-gray-900/50 backdrop-blur-md" : "bg-gray-800"}`}
+        } ${isScrolled && currentPage === "/" ? "bg-gray-800/50 backdrop-blur-md" : "bg-gray-800"}`}
         style={{ height: "56px" }}
       >
         <div
@@ -241,23 +241,23 @@ export default function Navbar({ profilePageString, children }) {
                       {cart.length > 0 ? (
                         <ul className="space-y-4">
                           {cart.map((item) => (
-                            <li key={item._id} className="flex items-center justify-between space-x-4">
+                            <li key={item?._id} className="flex items-center justify-between space-x-4">
                               {/* Left Section: Image and Name */}
                               <div className="flex items-center space-x-4">
                                 <img
-                                  src={item.productId.image || "https://via.placeholder.com/100"}
-                                  alt={item.productId.name}
+                                  src={item?.productId.image || "https://via.placeholder.com/100"}
+                                  alt={item?.productId.name}
                                   className="w-16 h-16 object-cover rounded"
                                 />
                                 <div>
-                                  <h4 className="font-medium mb-3 text-md">{item.productId.name}</h4>
+                                  <h4 className="font-medium mb-3 text-md">{item?.productId.name}</h4>
                                   <NumberStepper
-                                  value={item.quantity}
+                                  value={item?.quantity}
                                   onChange={(newQuantity) => {
                                       updateItemQuantity(item, newQuantity);
                                   }}
                                   min={0}
-                                  max={item.productId.quantity}
+                                  max={item?.productId.quantity}
                                   step={1}  />
                                 </div>
                               </div>
