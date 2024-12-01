@@ -1,18 +1,31 @@
 // products.jsx
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Stars } from "@/components/Stars";
 import { ShareButton } from "@/components/ui/share-button";
 import AnimatedLikeButton from "./like";
+import axios from 'axios';
 
-export default function ProductCard({ product, currency, token, addToCart }) {
+export default function ProductCard({ product, currency, token, liked }) {
+    const addToCart = async (productId) => {
+        try {
+          await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
+            headers: { Authorization: `Bearer ${token?.decodedToken?.userId}` }
+          });
+        } catch (error) {
+          console.error('Failed to add item to cart:', error);
+        }
+      };
+
     return (
         <Card key={product._id}>
-            <div className="flex flex-col p-4 space-y-4 h-full">
+            <div className="flex flex-col p-4 space-y-2 h-full">
                 <div className="w-full relative group">
                     <img
                         src={product.image || "https://via.placeholder.com/150"}
                         alt={product.name}
-                        className="rounded-lg w-full h-[230px] object-cover"
+                        className="rounded-lg w-full h-52 object-cover"
                     />
                     <div
                         className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3 flex items-end"
@@ -40,7 +53,7 @@ export default function ProductCard({ product, currency, token, addToCart }) {
                             <span className="text-white font-medium text-base truncate">{product.name}</span>
                             <div className="flex space-x-2">
                                 <AnimatedLikeButton
-                                    liked={true}
+                                    liked={liked}
                                     productId={product._id}
                                     token={token}
                                 />
@@ -49,14 +62,34 @@ export default function ProductCard({ product, currency, token, addToCart }) {
                         </div>
                     </div>
                 </div>
-                <span className="text-xl font-bold !mb-4">
+
+                <span className="text-lg font-semibold truncate">
                     {product.name}
                 </span>
-                <div className="!mt-auto w-full flex items-center justify-between">
-                    <span className="text-xl font-bold">
-                        ${currency}{(product.price * 1).toFixed(2)}
-                    </span>
-                    <Button variant="outline" onClick={() => addToCart(product)}>
+
+                <div className="flex-grow">
+                    <div className="flex items-center mb-2">
+                        <Stars rating={product.averageRating || 0} />
+                        <span className="ml-2 text-sm text-muted-foreground">
+                            {product.totalRatings || 0} reviews
+                        </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                        {product.description || "No description available"}
+                    </p>
+                </div>
+
+
+                <div className="!mt-auto flex flex-col">
+                    <div className="mt-2 mb-4 flex justify-between">
+                        <span className="text-lg font-bold">
+                            {currency} {(product.price * 1).toFixed(2)}
+                        </span>
+                        <Badge variant="secondary">
+                            {product.seller?.name || "Unknown Seller"}
+                        </Badge>
+                    </div>
+                    <Button size="sm" onClick={() => addToCart(product)}>
                         Add to Cart
                     </Button>
                 </div>

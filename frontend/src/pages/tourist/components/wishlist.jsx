@@ -13,7 +13,7 @@ export function Wishlist({ token }) {
             <h1 className="text-2xl font-bold mb-6">Wishlist</h1>
             <div className="grid grid-cols-3 gap-3">
                 {products.map((product) => (
-                    <ProductCard product={product} token={token} />
+                    <ProductCard product={product} token={token} liked={true} />
                 ))}
             </div>
         </div>
