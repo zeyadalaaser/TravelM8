@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Sellerdashboard() {
+export default function Sellerdashboard() {
   const navigate = useNavigate();
 
   return (
@@ -43,4 +43,3 @@ const styles = {
       borderRadius: '5px',       // Optional: Rounds the corners
     },
   };
-export default Sellerdashboard;

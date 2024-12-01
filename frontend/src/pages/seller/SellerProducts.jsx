@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SellerNavBar from "../../components/SellerNavbar";
 import {
   Card,
   CardContent,
@@ -219,6 +220,7 @@ export default function SellerProducts() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
+      <SellerNavBar /> 
       <h1 className="text-3xl font-bold mb-4">Your Products</h1>
       <SearchBar />
       <PriceFilter />

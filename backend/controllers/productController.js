@@ -37,6 +37,28 @@ export const updateProduct = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Product not found; invalid" });
     }
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    // Check if quantity is being updated
+    if (updateData.quantity !== undefined) {
+      const oldQuantity = product.quantity;
+      const newQuantity = updateData.quantity;
+
+      // Check if product has just gone out of stock
+      if (oldQuantity > 0 && newQuantity === 0) {
+        console.log("Product out of stock, creating notification");
+        await createStockNotification(
+          product._id,
+          product.name,
+          newQuantity
+        );
+      }
+    }
+
     if (req.file) {
       const imagePath = req.file.path;
       updateData.image = imagePath;
@@ -46,9 +68,7 @@ export const updateProduct = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    if (!updatedProduct) {
-      return res.status(404).json({ success: false, message: "Product not found" });
-    }
+
     res.status(200).json(updatedProduct);
   } catch (error) {
     console.error("Error updating product:", error);
@@ -285,3 +305,4 @@ export const getMyProducts = async (req, res) => {
     res.status(400).json({ message: "Enter a valid ID" });
   }
 }; 
+
