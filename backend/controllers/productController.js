@@ -154,13 +154,13 @@ export const getAllProducts = async (req, res) => {
       sortBy,
       order,
       currency = "USD",
-      inStockOnly = false
+      inStockOnly = false,
+      showArchived = true
     } = req.query;
 
     // Fetch exchange rates
     const rates = await getExchangeRates("USD");
     const exchangeRate = rates[currency] || 1;
-    const userRole = req.user?.role; //user role available on req.user ? 
 
     // Prepare filter for price range, converting values from the selected currency to USD
     let filter = {};
@@ -168,18 +168,16 @@ export const getAllProducts = async (req, res) => {
     if (id)
       filter["_id"] = new mongoose.Types.ObjectId(`${id}`);
 
-    if(userRole === 'Tourist') { //kda admins and sellers see all products archived or not
+    if(!showArchived) { //kda admins and sellers see all products archived or not
       filter.archived = false; // toursits only see unarchived products
     }
+
     if (price) {
       const [minPrice, maxPrice] = price.split("-").map(Number);
       filter.price = {};
       if (minPrice) filter.price.$gte = minPrice;
       if (maxPrice) filter.price.$lte = maxPrice;
     }
-    
-    if (inStockOnly)
-      filter.quantity = { $gt: 0 };
 
     // Search logic
     if (search) {
