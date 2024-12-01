@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input.tsx";
 import Navbar from "@/components/DashboardsNavBar.jsx";
-import LogoutAlertDialog from "../../hooks/logoutAlert.jsx";
+import { jwtDecode } from 'jwt-decode';
 
 //import { useState } from "react";
 import useRouter from "@/hooks/useRouter";
@@ -69,6 +69,34 @@ function AdminDashboard() {
     totalGovernors: 12, // Example statistic for Tourism Governors
     totalComplaints: 12,
   });
+
+
+
+  useEffect(() => {
+    if (!token) return; // No token, no need to check
+
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token"); 
+      navigate("/");
+    }
+  }, [token, navigate]);
+
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);

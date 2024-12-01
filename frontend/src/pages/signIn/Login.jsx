@@ -62,7 +62,7 @@ export default function Login() {
             navigate('/advertiserDashboard');
             break;
           default:
-            navigate('/default-page');
+            navigate('/');
         }
 
       }

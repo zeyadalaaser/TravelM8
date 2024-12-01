@@ -19,6 +19,7 @@ import {
   Users,
   MapPin,
 } from "lucide-react";
+import { jwtDecode } from 'jwt-decode';
 
 import {
   Select,
@@ -45,6 +46,7 @@ const AdvertiserDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogArgs, setDialogArgs] = useState(null);
   const [activeTab, setActiveTab] = useState("activities");
+  const token = localStorage.getItem("token");
 
   const openDialog = (args) => {
     if (args) setDialogArgs(args.activity);
@@ -57,8 +59,32 @@ const AdvertiserDashboard = () => {
     setDialogArgs(null);
   };
 
+  useEffect(() => {
+    if (!token) return; // No token, no need to check
+
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token"); 
+      navigate("/");
+    }
+  }, [token, navigate]);
+
   const fetchActivities = async () => {
-    const token = localStorage.getItem("token");
 
     if (!token) {
       console.error("No token available. Redirecting to login.");

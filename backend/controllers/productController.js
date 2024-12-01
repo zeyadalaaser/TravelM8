@@ -6,14 +6,14 @@ import axios from "axios";
 // Function to create a product
 export const createProduct = async (req, res) => {
   try {
-    const { name, price, quantity, description } = req.body;
-    if (!req.file) {
-      return res.status(400).json({ status: 'error', message: 'No files uploaded' });
-    }
-    const image = req.file;
+    const { name, price, quantity, description,image } = req.body;
+    // if (!req.file) {
+    //   return res.status(400).json({ status: 'error', message: 'No files uploaded' });
+    // }
+    // const image = req.file;
     const newProduct = new Product({
       name,
-      image: image.path,
+      image,
       price,
       quantity,
       description,
@@ -37,10 +37,10 @@ export const updateProduct = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Product not found; invalid" });
     }
-    if (req.file) {
-      const imagePath = req.file.path;
-      updateData.image = imagePath;
-    }
+    // if (req.file) {
+    //   const imagePath = req.file.path;
+    //   updateData.image = imagePath;
+    // }
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
       new: true,

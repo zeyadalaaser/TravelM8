@@ -339,7 +339,12 @@ export const getCart = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    user.cart = user.cart.filter(
+      (item) => item.productId.archived === false
+    );
+    user.cart = user.cart.filter(
+      (item) => item.productId.quantity >= item.quantity
+    );
     res.status(200).json({
       message: "Cart details retrieved successfully",
       cart: user.cart,

@@ -12,12 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Logout from "@/hooks/logOut.jsx";
 import { Link } from 'react-router-dom';
 import Navbar from "@/components/Navbar.jsx";
 import Footer from "@/components/Footer.jsx"
 import BookingComponent from "@/components/bookingCard.jsx";
 import { motion, AnimatePresence } from 'framer-motion'
 import * as services from "@/pages/tourist/api/apiService.js";
+import { jwtDecode } from 'jwt-decode';
 import axios from "axios";
 const images = [
   "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=2020&ixlib=rb-4.0.3",
@@ -43,6 +45,23 @@ export default function HeroSection() {
   const topProducts = products?.slice(0, 3);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+  
+  // useEffect(() => {
+
+  //   const decodedToken = jwtDecode(token);
+  //   const currentTime = Math.floor(Date.now() / 1000);
+  
+  //   if (decodedToken.exp < currentTime) {
+  //     navigate("/");
+  //   } else {
+  //     setTimeout(() => {
+  //       navigate("/");
+  //     }, (decodedToken.exp - currentTime) * 1000); // Time until expiration
+  //   }
+
+  // }, [token]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length)
@@ -160,7 +179,6 @@ export default function HeroSection() {
   }
 
     useEffect(() => {
-    const token = localStorage.getItem("token");
     const { role } = getUserFromToken(token);
     if (role === "Seller") {
       navigate("/Sellerdashboard"); // Redirect if the role is not 'tourist'
