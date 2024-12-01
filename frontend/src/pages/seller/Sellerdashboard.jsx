@@ -80,7 +80,7 @@ import { jwtDecode } from 'jwt-decode';
 import { getMyProducts } from './api/apiService'; // Assuming this is the correct import
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DollarSign, Calendar, Users, Settings } from "lucide-react";
+import { DollarSign, Calendar, Users, Settings, Plus } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "./components/useToast";
 import AddProductForm from "../seller/components/AddProductForm"; // Assuming AddProductForm is in the same folder
@@ -89,6 +89,7 @@ import Header from "@/components/navbarDashboard.jsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocation } from "react-router-dom"; 
 import ProductCard from "../seller/components/ProductCard";
+
 const token = localStorage.getItem("token");
 
 const SellerDashboard = () => {
@@ -330,11 +331,16 @@ const SellerDashboard = () => {
               </CardContent>
             </Card>
           </div>
-
+          <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold">Manage Activities</h2>
           {/* Add Product Button */}
           <Dialog open={isAddProductModalOpen} onOpenChange={setIsAddProductModalOpen}>
             <DialogTrigger asChild>
-              <Button className="mt-4">Add New Product</Button>
+              {/* <Button className="mt-4">Add New Product</Button>
+               */}
+                    <Button  variant="primary">
+                    <Plus className="mr-2 h-4 w-4" /> Create Activity
+                  </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -343,6 +349,7 @@ const SellerDashboard = () => {
               <AddProductForm onSubmit={handleCreateProduct} />
             </DialogContent>
           </Dialog>
+          </div>
 
           {/* Edit Product Modal */}
           <Dialog open={isEditProductModalOpen} onOpenChange={setIsEditProductModalOpen}>

@@ -16,15 +16,16 @@ const ProductCard = ({ product, onEdit, onDelete, onToggleArchive }) => {
     return (
       <Card key={product._id} className="shadow-lg rounded-lg bg-white overflow-hidden hover:shadow-xl transition-shadow duration-200">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold text-gray-900">{product.name}</CardTitle>
-        </CardHeader>
-        <CardContent className="p-4">
-          {/* Product Image */}
-          <img
+        <img
             src={product.image}
             alt={product.name}
             className="w-full h-40 object-cover rounded-lg mb-4"
           />
+          <CardTitle className="text-xl font-semibold text-gray-900">{product.name}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4">
+          {/* Product Image */}
+
           
           {/* Product Info */}
           <div className="text-sm text-gray-600">
