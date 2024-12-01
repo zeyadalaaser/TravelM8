@@ -245,19 +245,30 @@ const TourGuideDashboard = () => {
             <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
           </div>
           <nav className="mt-6">
-            <button className="flex items-center px-4 py-2 text-gray-700 bg-gray-200 w-full text-left">
-              <Layout className="mr-3" />
-              Dashboard
-            </button>
-            <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
+            <button
+              className={`flex items-center px-4 py-2 text-gray-700 w-full text-left ${
+                activeTab === "itineraries" ? "bg-gray-200" : ""
+              }`}
+              onClick={() => setActiveTab("itineraries")}
+            >
               <Map className="mr-3" />
               Itineraries
             </button>
-            <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
+            <button
+              className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
+                activeTab === "sales" ? "bg-gray-200" : ""
+              }`}
+              onClick={() => setActiveTab("sales")}
+            >
               <DollarSign className="mr-3" />
               Sales Reports
             </button>
-            <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
+            <button
+              className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
+                activeTab === "tourists" ? "bg-gray-200" : ""
+              }`}
+              onClick={() => setActiveTab("tourists")}
+            >
               <Users className="mr-3" />
               Tourist Reports
             </button>
@@ -337,7 +348,11 @@ const TourGuideDashboard = () => {
             </Card>
           </div>
 
-          <Tabs defaultValue="itineraries" className="space-y-4">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-4"
+          >
             <TabsList>
               <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
               <TabsTrigger value="sales">Sales Report</TabsTrigger>

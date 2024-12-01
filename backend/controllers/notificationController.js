@@ -102,3 +102,29 @@ export const sendEmailReminder = async (
     return { success: false, error: "Failed to send email reminder." };
   }
 };
+
+export const sendEmailReminder2 = async (email, subject, body) => {
+  // Create the transporter inside the function
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "mennayehiahassan@gmail.com", // Replace with your email
+      pass: "dsbkyetgxkynwbpz", // Replace with app password
+    },
+  });
+
+  try {
+    const info = await transporter.sendMail({
+      from: "mennayehiahassan@gmail.com", // Sender address
+      to: email, // Recipient address
+      subject: subject, // Subject line
+      html: body, // HTML body of the email
+    });
+
+    console.log("Email sent: " + info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return { success: false, error: error.message };
+  }
+};
