@@ -4,6 +4,7 @@ import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
 import ActivityCard from "../../components/ActivityCard/ActivityCard.jsx";
 import ActivityFormDialog from "./ActivityForm.jsx";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   Calendar,
@@ -47,7 +48,7 @@ const AdvertiserDashboard = () => {
   const [dialogArgs, setDialogArgs] = useState(null);
   const [activeTab, setActiveTab] = useState("activities");
   const token = localStorage.getItem("token");
-
+  const navigate = useNavigate();
   const openDialog = (args) => {
     if (args) setDialogArgs(args.activity);
     else setDialogArgs(null);

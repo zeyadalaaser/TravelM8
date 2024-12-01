@@ -17,6 +17,7 @@ const login = (req, res, next) => {
     }
 };
 
+
 // Protect routes using this middleware
 app.get('/protected-route', login, (req, res) => {
     res.send(`Hello, user with role ${req.user.role}`);
