@@ -268,7 +268,7 @@ export default function Navbar({ profilePageString, children }) {
                   ? "text-white hover:text-white/70"
                   : "text-black hover:text-black/70"
               } ${
-                currentPage === `/tourist-page?type=${page.value}`
+                currentPage.includes(`/tourist-page?type=${page.value}`)
                   ? "rounded-full py-2 px-4 border-[1px]"
                   : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
               }`}
@@ -447,6 +447,3 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
-
-//{(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? <NotificationBadge /> : <NotificationBadgeDark />}
-//<NotificationBell theme={currentPage === "/" ? "light" : "dark"} />

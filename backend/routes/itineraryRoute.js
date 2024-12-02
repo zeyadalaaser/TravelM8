@@ -49,5 +49,5 @@ router.post(
   verifyToken,
   handleFlaggedItinerary
 );
-router.put("/itinerary/:id/unflag", unflagItinerary);
+router.put("/itineraries/:id/unflag", unflagItinerary);
 export default router;

@@ -28,7 +28,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
     const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
     const navigate = useNavigate();
     const handleForgotPassword = () => {
-      setIsForgotPasswordOpen(true);  // Open ForgotPassword dialog
+        setIsForgotPasswordOpen(true);  // Open ForgotPassword dialog
     };
 
     const handleSubmit = async (event) => {
@@ -88,7 +88,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
                 <DialogTrigger asChild>
                     {children}
                 </DialogTrigger>
-                
+
                 <DialogContent className="max-w-md w-full bg-gray-100">
                     <DialogHeader className="flex flex-col items-center text-center">
                         <DialogTitle className="text-2xl font-medium">WELCOME BACK</DialogTitle>

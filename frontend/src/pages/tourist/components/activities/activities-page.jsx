@@ -16,11 +16,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 export function ActivitiesPage() {
   const token = localStorage.getItem('token');
-  console.log(token);
   const [loading, setLoading] = useState(false);
   const { location } = useRouter();
   const searchParams = new URLSearchParams(location.search);
-  const type = searchParams.get('type');
   const currency = searchParams.get('currency') ?? "USD";
   const [activities, setActivities] = useState([]);
   const [exchangeRates, setExchangeRates] = useState({});

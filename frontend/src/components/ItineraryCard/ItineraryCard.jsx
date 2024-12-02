@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { Clock, Globe, Tag,  Bookmark } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Clock, Globe, Tag, Bookmark } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
-
+import axios from "axios";
 import {
   Dialog,
   DialogContent,
@@ -23,9 +23,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
-import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
+import {
+  flagItinerary,
+  unflagItinerary,
+} from "../../pages/admin/services/AdminItineraryService";
 import { createItineraryBooking } from "../../pages/tourist/api/apiService";
-
 
 export default function ItineraryCard({
   itineraries,
@@ -90,14 +92,60 @@ export default function ItineraryCard({
   // const handleBook = async (itineraryId, tourGuideId) => {
 
   // };
-
-  const handleFlagItinerary = async (itineraryId) => {
+  const fetchItineraries = async () => {
     try {
-      await flagItinerary(itineraryId);
-      alert("Itinerary flagged successfully");
+      const response = await axios.get("http://localhost:5001/api/itineraries");
+      onRefresh();
     } catch (error) {
-      console.error("Error flagging itinerary:", error);
-      alert("Failed to flag itinerary");
+      console.error("Error fetching itineraries:", error.message);
+    }
+  };
+
+  const [flaggedStatus, setFlaggedStatus] = useState({});
+
+  useEffect(() => {
+    const initialFlaggedStatus = itineraries.reduce((acc, itinerary) => {
+      acc[itinerary._id] = itinerary.flagged;
+      return acc;
+    }, {});
+    setFlaggedStatus(initialFlaggedStatus);
+  }, [itineraries]);
+
+  const toggleFlagItinerary = async (id, isFlagged) => {
+    try {
+      const endpoint = isFlagged
+        ? `http://localhost:5001/api/itineraries/${id}/unflag`
+        : `http://localhost:5001/api/itineraries/${id}/flag`;
+
+      // Make the API request first
+      await axios.put(
+        endpoint,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // Then update the flag status in the state and show the alert simultaneously
+      setFlaggedStatus((prev) => ({ ...prev, [id]: !isFlagged }));
+
+      // Immediately show the alert after the update
+      alert(
+        isFlagged
+          ? "Itinerary unflagged successfully!"
+          : "Itinerary flagged successfully!"
+      );
+
+      // Optionally, refresh the parent component
+      if (typeof onRefresh === "function") {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error("Error toggling itinerary flag:", error.message);
+      // If there's an error, revert the flag status
+      setFlaggedStatus((prev) => ({ ...prev, [id]: isFlagged }));
     }
   };
 
@@ -153,9 +201,9 @@ export default function ItineraryCard({
                           <button
                             onClick={() => handleBookmark(itinerary._id)}
                             className={`text-gray-500 hover:text-black ${
-                              bookmarkedItineraries.includes(itinerary._id) 
-                                ? 'text-yellow-400' 
-                                : ''
+                              bookmarkedItineraries.includes(itinerary._id)
+                                ? "text-yellow-400"
+                                : ""
                             }`}
                           >
                             <Bookmark className="w-6 h-6" />
@@ -272,11 +320,18 @@ export default function ItineraryCard({
                     )}
                     {isAdmin && (
                       <Button
-                        className="hover:bg-red-700"
+                        className="w-100 mt-2 mb-2 bg-black hover:bg-gray-800"
                         variant="destructive"
-                        onClick={() => handleFlagItinerary(itinerary._id)}
+                        onClick={() =>
+                          toggleFlagItinerary(
+                            itinerary._id,
+                            flaggedStatus[itinerary._id]
+                          )
+                        }
                       >
-                        Flag as Inappropriate
+                        {flaggedStatus[itinerary._id]
+                          ? "Unflag Itinerary"
+                          : "Flag as Inappropriate"}
                       </Button>
                     )}
                   </div>
@@ -326,25 +381,24 @@ const ChooseDate = ({ itinerary }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('token');
-    console.log("hello token from handlesubmit " + token)
+    const token = localStorage.getItem("token");
+    console.log("hello token from handlesubmit " + token);
     if (!selectedDate) {
       setSubmitStatus({ success: false, message: "Please select a date." });
       return;
     }
     if (token) {
       try {
-          const response = await createItineraryBooking(
-            itinerary._id,
-            itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
-            selectedDate,
-            itinerary.price,
-            "Card",
-            token
-          );
-          setIsOpen(false);
-          alert(response.data.message);
-        
+        const response = await createItineraryBooking(
+          itinerary._id,
+          itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
+          selectedDate,
+          itinerary.price,
+          "Card",
+          token
+        );
+        setIsOpen(false);
+        alert(response.data.message);
       } catch (error) {
         setIsOpen(false);
         alert("Failed to Book itinerary");
@@ -373,14 +427,25 @@ const ChooseDate = ({ itinerary }) => {
               const booked = slot.maxNumberOfBookings == 0;
               return (
                 <div className="flex items-center space-x-2" key={index}>
-                  <RadioGroupItem disabled={booked} value={slot.date} id={`slot-${index}`} />
-                  <Label className={`${booked && 'line-through text-gray-500'}`} htmlFor={`slot-${index}`}>{slotDate}</Label>
+                  <RadioGroupItem
+                    disabled={booked}
+                    value={slot.date}
+                    id={`slot-${index}`}
+                  />
+                  <Label
+                    className={`${booked && "line-through text-gray-500"}`}
+                    htmlFor={`slot-${index}`}
+                  >
+                    {slotDate}
+                  </Label>
                 </div>
               );
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button disabled={!selectedDate} type="submit">Book</Button>
+            <Button disabled={!selectedDate} type="submit">
+              Book
+            </Button>
           </DialogFooter>
         </form>
         {submitStatus && (

@@ -54,6 +54,7 @@ export default function Navbar({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    console.log("token: ", token);
     if (token) {
       const decodedToken = decodeToken(token);
       if (decodedToken && decodedToken.userId) {
@@ -327,6 +328,7 @@ export default function Navbar({ children }) {
                 onClose={handleClose}
                 MenuListProps={{
                   "aria-labelledby": "basic-button",
+                  sx: { p: 0 },
                 }}
                 PaperProps={{
                   sx: {
