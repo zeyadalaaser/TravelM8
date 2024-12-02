@@ -51,9 +51,6 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
             console.log("token:", token);
             console.log("pref: ", needsPreferences);
 
-            if (!needsPreferences && role === 'Tourist') {
-                navigate(`/preferences-page/${userId}`);
-            } else {
                 switch (role) {
                     case 'Tourist':
                         navigate('/');
@@ -77,7 +74,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
                         navigate('/default-page');
                 }
                 window.location.reload();
-            }
+            
         } catch (error) {
             setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
         } finally {

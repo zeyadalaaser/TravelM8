@@ -39,9 +39,6 @@ export default function Login() {
       console.log("pref: ", needsPreferences);
 
 
-      if (needsPreferences && role === 'Tourist') {
-        navigate(`/preferences-page/${userId}`);
-      } else {
         switch (role) {
           case 'Tourist':
             navigate('/tourist-page');
@@ -65,7 +62,7 @@ export default function Login() {
             navigate('/');
         }
 
-      }
+      
     } catch (error) {
       setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
     }
