@@ -19,7 +19,7 @@ export async function getProducts(query) {
 
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
-  searchParams.set("inStockOnly", true);
+  searchParams.set("showArchived", false);
 
   const response = await apiClient.get("products?" + searchParams.toString(), {
     headers: {
@@ -36,6 +36,19 @@ export async function getMuseums(query) {
   searchParams.delete('type');
 
   return (await apiClient.get('filterbyTags?' + searchParams.toString())).data;
+
+
+}
+
+export async function getMyAddresses(token) { 
+  return (
+    await apiClient.get("tourists/addresses", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data;
 
 }
 

@@ -6,18 +6,33 @@ const notificationSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  type: {
+    type: String,
+    required: false,
+  },
   message: {
     type: String,
     required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
   },
   isRead: {
     type: Boolean,
     default: false,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+
+  metadata: {
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+    },
+    productName: String,
+  },
+},{
+  timestamps: true,
+
 });
 
 const Notification = mongoose.model("Notification", notificationSchema);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import SellerNavBar from "../../components/SellerNavbar";
 import {
   Card,
   CardContent,
@@ -36,27 +37,27 @@ export default function SellerProducts() {
   const [editProductData, setEditProductData] = useState(null);
   const { toast } = useToast();
 
-  const handleAddProduct = async (newProduct) => {
-    try {
-      const response = await fetch("http://localhost:5001/api/products", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newProduct),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to add product");
-      }
+  // const handleAddProduct = async (newProduct) => {
+  //   try {
+  //     const response = await fetch("http://localhost:5001/api/products", {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(newProduct),
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Failed to add product");
+  //     }
 
-      const savedProduct = await response.json();
-      setProducts((prevProducts) => [...prevProducts, savedProduct]);
-      setIsAddProductModalOpen(false);
-    } catch (error) {
-      console.error("Error adding new product:", error);
-    }
-  };
+  //     const savedProduct = await response.json();
+  //     setProducts((prevProducts) => [...prevProducts, savedProduct]);
+  //     setIsAddProductModalOpen(false);
+  //   } catch (error) {
+  //     console.error("Error adding new product:", error);
+  //   }
+  // };
 
   // Fetch products for the seller using getProducts
   useEffect(() => {
@@ -219,6 +220,7 @@ export default function SellerProducts() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
+      <SellerNavBar /> 
       <h1 className="text-3xl font-bold mb-4">Your Products</h1>
       <SearchBar />
       <PriceFilter />
@@ -343,6 +345,7 @@ function AddProductForm({ onSubmit, initialData }) {
       description: formData.description,
       price: parseFloat(formData.price),
       quantity: parseInt(formData.quantity, 10),
+      image: formData.image
     };
 
     const formDataToSubmit = new FormData();
@@ -350,10 +353,11 @@ function AddProductForm({ onSubmit, initialData }) {
     formDataToSubmit.append("description", productData.description);
     formDataToSubmit.append("price", productData.price);
     formDataToSubmit.append("quantity", productData.quantity);
+    formDataToSubmit.append("image", productData.image);
 
-    if (image) {
-      formDataToSubmit.append("image", image); // append image file to form data
-    }
+    // if (image) {
+    //   formDataToSubmit.append("image", image); // append image file to form data
+    // }
 
     // Pass formDataToSubmit to onSubmit function (handleCreateProduct or handleUpdateProduct)
     await onSubmit(formDataToSubmit);
@@ -368,7 +372,7 @@ function AddProductForm({ onSubmit, initialData }) {
         quantity: "",
         image: "",
       });
-      setImage(null); // clear the selected image
+      // setImage(null); // clear the selected image
     }
   };
 
@@ -437,9 +441,10 @@ function AddProductForm({ onSubmit, initialData }) {
         <Input
           id="image"
           name="image"
-          accept="image/*"
-          type="file"
-          onChange={handleImageChange}
+          value={formData.image}
+          // accept="image/*"
+          required
+          onChange={handleChange}
           disabled={isSubmitting}
         />
       </div>

@@ -198,7 +198,7 @@ export const addToCart = async (req, res) => {
         message: `Product is out of stock`,
       });
     }
-    const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
+    const existingItem = user.cart.find(item => item.productId && item.productId._id.toString() === productId);
     if (existingItem) {
       existingItem.quantity += 1;
       existingItem.price = product.price * existingItem.quantity;
@@ -360,7 +360,12 @@ export const getCart = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    user.cart = user.cart.filter(
+      (item) => item.productId && item.productId.archived === false
+    );
+    user.cart = user.cart.filter(
+      (item) => item.productId && item.productId.quantity >= item.quantity
+    );
     res.status(200).json({
       message: "Cart details retrieved successfully",
       cart: user.cart,
@@ -379,7 +384,7 @@ export const getWishlist = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user.wishlist);
+    res.status(200).json(user.wishlist.filter(p => !p.archived));
   } catch (error) {
     res.status(500).json({ message: "Failed to retrieve wishlist", error });
   }
@@ -425,5 +430,30 @@ export const removeFromWishlist = async (req, res) => {
     res.status(200).json(user.wishlist);
   } catch (error) {
     res.status(500).json({ message: "Failed to delete from wishlist", error });
+  }
+};
+
+export const getTouristAddresses = async (req, res) => {
+  const touristId = req.user?.userId;  // Ensure you're getting the correct userId from the request
+
+  if (!touristId) {
+    return res.status(400).json({ message: 'User not authenticated' });
+  }
+
+  try {
+    // Use findById instead of find
+    const tourist = await Tourist.findById(touristId).select('address');
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist doesn't have saved addresses" });
+    }
+
+    // Since tourist is a single document, you don't need to map over it
+    const addresses = tourist.address;
+    return res.status(200).json({ addresses });
+
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    return res.status(500).json({ message: "Failed to retrieve addresses", error: error.message });
   }
 };

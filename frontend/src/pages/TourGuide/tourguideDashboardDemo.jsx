@@ -34,7 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-
+import { jwtDecode } from 'jwt-decode';
 import {
   BarChart,
   Bar,
@@ -92,6 +92,30 @@ const TourGuideDashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("itineraries"); // Manage active tab
+  useEffect(() => {
+    if (!token) return; // No token, no need to check
+
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token"); 
+      navigate("/");
+    }
+  }, [token, navigate]);
 
   // Fetch itineraries from the server
   const fetchItinerariesData = async () => {
