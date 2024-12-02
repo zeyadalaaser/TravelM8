@@ -1,7 +1,7 @@
 import express from 'express';
 import { createTourist, updateTouristProfile, getTourists, getMyProfile
 ,updatePoints,redeemPoints, updatePreferences,addToCart,removeFromCart,clearCart,getCart, decrementQuantity, 
-getWishlist, updateCartItemQuantity,
+getWishlist, updateCartItemQuantity,getUserPreferences, getTouristAddresses,
 addToWishlist,
 removeFromWishlist} from '../controllers/touristController.js';
 import verifyToken from '../services/tokenDecodingService.js';
@@ -20,7 +20,8 @@ touristRoute.put('/updatePoints', verifyToken , updatePoints);
 touristRoute.put('/redeemPoints',verifyToken,redeemPoints);
  //touristRoute.put('/redeemPoints/:id',redeemPoints);
  // touristRoute.put('/updatePoints/:id',updatePoints);
-touristRoute.put('/tourists/:touristId/updatePreferences', verifyToken, updatePreferences);
+touristRoute.put("/tourists/updatePreferences", verifyToken, updatePreferences);
+touristRoute.get("/tourists/preferences",verifyToken, getUserPreferences);
 touristRoute.post("/tourists/cart/:productId", verifyToken, addToCart);
 touristRoute.delete("/tourists/cart/:productId", verifyToken,removeFromCart);
 touristRoute.delete("/tourists/cart/decrementItem/:productId",verifyToken,decrementQuantity);
@@ -30,5 +31,6 @@ touristRoute.get("/tourists/wishlist",verifyToken, getWishlist);
 touristRoute.post("/tourists/wishlist",verifyToken, addToWishlist);
 touristRoute.delete("/tourists/wishlist",verifyToken, removeFromWishlist);
 touristRoute.put("/tourists/cart/:productId",verifyToken, updateCartItemQuantity);
+touristRoute.get('/tourists/addresses', verifyToken, getTouristAddresses);
 
 export default touristRoute; 

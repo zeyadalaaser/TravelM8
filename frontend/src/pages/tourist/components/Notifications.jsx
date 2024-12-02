@@ -1,164 +1,179 @@
-import React, { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Bell, Calendar, Check, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Bell, Clock, CheckCircle, XCircle } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getActivityBookings, getItineraryBookings } from "../api/apiService";
+import React, { useState, useEffect } from 'react';
+import './Prefernces.css';
 
-const NotificationsHistory = () => {
-    const token = localStorage.getItem("token");
-    const [notifications, setNotifications] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("all");
+export default function NotificationSidebar({currency,currentPage}) {
+  const [notifications, setNotifications] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("all");
 
-    const fetchNotifications = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch('http://localhost:5001/api/notifications', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+  const calculateTimeLeft = (eventDate) => {
+    const difference = new Date(eventDate) - new Date();
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
-            if (response.ok) {
-                const data = await response.json();
-                setNotifications(data.notifications);
-            }
-        } catch (error) {
-            console.error("Error fetching notifications:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchNotifications();
-    }, [token]);
-
-    const handleMarkAsRead = async (notificationId) => {
-        try {
-            const response = await fetch(`http://localhost:5001/api/notifications/${notificationId}/read`, {
-                method: "PUT",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                fetchNotifications();
-            }
-        } catch (error) {
-            console.error("Error marking notification as read:", error);
-        }
-    };
-
-    const NotificationCard = ({ notification }) => {
-        return (
-            <Card className="overflow-hidden">
-                <div className="p-4">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                            <Bell className="w-5 h-5" />
-                            <h3 className="text-lg font-semibold">{notification.title}</h3>
-                        </div>
-                        <Badge variant={notification.read ? "secondary" : "default"}>
-                            {notification.read ? "Read" : "Unread"}
-                        </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2">
-                        {notification.message}
-                    </p>
-                    <div className="flex items-center text-sm text-muted-foreground mt-2">
-                        <Clock className="w-4 h-4 mr-1" />
-                        {new Date(notification.createdAt).toLocaleString()}
-                    </div>
-                    {!notification.read && (
-                        <div className="mt-4 flex justify-end">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleMarkAsRead(notification._id)}
-                            >
-                                Mark as Read
-                            </Button>
-                        </div>
-                    )}
-                </div>
-            </Card>
-        );
-    };
-
-    if (loading) {
-        return <div>Loading...</div>;
+    if (difference < 0) {
+      return 'Event passed';
+    } else if (days > 0) {
+      return `${days} days left`;
+    } else if (hours > 0) {
+      return `${hours} hours left`;
+    } else {
+      return ' is soon';
     }
+  };
 
-    const unreadNotifications = notifications.filter(n => !n.read);
-    const readNotifications = notifications.filter(n => n.read);
+  useEffect(() => {
+    if (isOpen) {
+      fetchNotifications();
+    }
+  }, [isOpen]);
 
-    return (
-        <div className="container mx-auto p-4 bg-background">
-            <h1 className="text-3xl font-bold mb-6 text-center">Notifications</h1>
+  const fetchNotifications = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [activityBookings, itineraryBookings] = await Promise.all([
+        getActivityBookings(),
+        getItineraryBookings()
+      ]);
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-4">
-                    <TabsTrigger value="all">
-                        All ({notifications.length})
-                    </TabsTrigger>
-                    <TabsTrigger value="unread">
-                        Unread ({unreadNotifications.length})
-                    </TabsTrigger>
-                    <TabsTrigger value="read">
-                        Read ({readNotifications.length})
-                    </TabsTrigger>
-                </TabsList>
+      const notifications = [
+        ...activityBookings.filter(booking => booking.activityId).map(booking => ({
+          id: booking._id,
+          type: 'activity',
+          status: booking.status,
+          title: booking.activityId?.title,
+          location: `${booking.activityId?.location?.lat}, ${booking.activityId?.location?.lng}`,
+          eventDate: booking.activityId?.date,
+          read: booking.status !== 'booked'
+        })),
+        ...itineraryBookings.filter(booking => booking.itinerary).map(booking => ({
+          id: booking._id,
+          type: 'itinerary',
+          status: booking.completionStatus,
+          title: booking.itinerary?.name,
+          location: booking.itinerary?.historicalSites?.join(', '),
+          eventDate: booking.startDate,
+          read: booking.completionStatus !== 'Pending'
+        }))
+      ]
+        .filter(notification => notification.status === 'Paid')
+        .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
-                <TabsContent value="all">
-                    <div className="space-y-4">
-                        {notifications.length > 0 ? (
-                            notifications.map((notification) => (
-                                <NotificationCard
-                                    key={notification._id}
-                                    notification={notification}
-                                />
-                            ))
-                        ) : (
-                            <p className="text-center text-gray-500">No notifications found.</p>
-                        )}
-                    </div>
-                </TabsContent>
+      setNotifications(notifications);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      setError('Failed to fetch notifications');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                <TabsContent value="unread">
-                    <div className="space-y-4">
-                        {unreadNotifications.length > 0 ? (
-                            unreadNotifications.map((notification) => (
-                                <NotificationCard
-                                    key={notification._id}
-                                    notification={notification}
-                                />
-                            ))
-                        ) : (
-                            <p className="text-center text-gray-500">No unread notifications.</p>
-                        )}
-                    </div>
-                </TabsContent>
+  const formatNotificationMessage = (notification) => {
+    const timeLeft = calculateTimeLeft(notification.eventDate);
 
-                <TabsContent value="read">
-                    <div className="space-y-4">
-                        {readNotifications.length > 0 ? (
-                            readNotifications.map((notification) => (
-                                <NotificationCard
-                                    key={notification._id}
-                                    notification={notification}
-                                />
-                            ))
-                        ) : (
-                            <p className="text-center text-gray-500">No read notifications.</p>
-                        )}
-                    </div>
-                </TabsContent>
-            </Tabs>
-        </div>
+    if (notification.type === 'activity') {
+      return `Don't forget! Your activity "${notification.title}" - ${timeLeft}`;
+    } else {
+      return `Don't forget! Your itinerary "${notification.title}" - ${timeLeft}`;
+    }
+  };
+
+  const markAsRead = (notificationId) => {
+    setNotifications(prevNotifications =>
+      prevNotifications.map(notification =>
+        notification.id === notificationId
+          ? { ...notification, read: true }
+          : notification
+      )
     );
-};
+  };
 
-export default NotificationsHistory;
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'paid':
+        return 'bg-green-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  return (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className={(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
+        >
+          <Bell className="h-5 w-5" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="right" className="w-[400px]">
+        <SheetHeader>
+          <SheetTitle>Notifications</SheetTitle>
+        </SheetHeader>
+        
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
+
+          <ScrollArea className="h-[calc(100vh-200px)] mt-4">
+            {loading ? (
+              <div className="text-center py-8">Loading...</div>
+            ) : error ? (
+              <div className="text-center text-red-500 py-8">{error}</div>
+            ) : notifications.length > 0 ? (
+              <div className="space-y-4">
+                {notifications.map((notification) => (
+                  <div
+                    key={notification.id}
+                    className={`p-4 rounded-lg border shadow-sm hover:bg-gray-50 cursor-pointer transition-colors ${
+                      !notification.read ? 'bg-blue-50' : 'bg-white'
+                    }`}
+                    onClick={() => markAsRead(notification.id)}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        {notification.type === 'activity' ? (
+                          <Calendar className="h-4 w-4" />
+                        ) : (
+                            <Clock className="h-4 w-4" />
+                        )}
+                        <Badge className={`${getStatusColor(notification.status)}`}>
+                          {notification.status}
+                        </Badge>
+                        {notification.read && (
+                          <Check className="h-4 w-4 text-green-500" />
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {formatNotificationMessage(notification)}
+                    </p>
+                    <div className="flex justify-end items-center text-xs mt-2">
+                      <span className="text-gray-400">
+                        {new Date(notification.eventDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 py-8">
+                No notifications to display
+              </div>
+            )}
+          </ScrollArea>
+        </Tabs>
+      </SheetContent>
+    </Sheet>
+  );
+}

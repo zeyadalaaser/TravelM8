@@ -44,22 +44,43 @@ export const updateTouristProfile = async (req, res) => {
 };
 
 export const updatePreferences = async (req, res) => {
-  const touristId = req.params.touristId;  // This gets the touristId from the URL
+  const userId = req.user.userId;
   const { preferences } = req.body;
 
+  if (!Array.isArray(preferences)) {
+    return res.status(400).json({ error: 'Invalid preferences format. Expected an array.' });
+}
+
+try {
+  const updatedTourist = await Tourist.findByIdAndUpdate(
+      userId,
+      { preferences }, // Assuming preferences is a field in the schema
+      { new: true, runValidators: true }
+  );
+
+  if (!updatedTourist) {
+      return res.status(404).json({ error: 'Tourist not found.' });
+  }
+
+  res.status(200).json(updatedTourist);
+} catch (error) {
+  res.status(400).json({ error: error.message });
+}
+};
+
+export const getUserPreferences = async (req, res) => {
+  const userId = req.user.userId;
   try {
-    const tourist = await Tourist.findById(touristId);
+    // Fetch the tourist's preferences
+    const tourist = await Tourist.findById(userId).select('preferences'); // Only select preferences field
     if (!tourist) {
       return res.status(404).json({ message: 'Tourist not found' });
     }
-    if (preferences && Array.isArray(preferences)) {
-      tourist.preferences = preferences;
-    } else {
-      return res.status(400).json({ message: 'Invalid preferences data' });
-    }
 
-    await tourist.save();
-    res.status(200).json(tourist);
+    // Return the preferences (tags the user has selected)
+    res.status(200).json({
+      preferences: tourist.preferences,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -125,39 +146,59 @@ export const updatePoints = async (userId, amountPaid) => {
 };
 
 export const redeemPoints = async (req, res) => {
-  //const { id } = req.params;
   const userId = req.user.userId;
+  const { amount } = req.body;
+
+  console.log("Received amount:", amount);
+
   try {
+    const pointsToRedeem = Number(amount); 
+    if (isNaN(pointsToRedeem) || pointsToRedeem <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid number of points to redeem' });
+    }
+
     const tourist = await Tourist.findById(userId);
     if (!tourist) {
       return res.status(404).json({ success: false, message: 'Tourist not found' });
     }
 
-    if (tourist.loyaltyPoints < 100) {
+    if (pointsToRedeem > tourist.loyaltyPoints) {
       return res.status(400).json({ success: false, message: 'Not enough points to redeem' });
     }
 
-    const cashEarned = Math.floor(tourist.loyaltyPoints / 10000) * 100;
-    const pointsRedeemed = Math.floor(tourist.loyaltyPoints / 10000) * 10000;
-
-    // Calculate the new wallet balance by adding cashEarned to current wallet value
+    const cashEarned = pointsToRedeem / 100; // 100 points = $1
     const newWalletBalance = tourist.wallet + cashEarned;
 
-    // Update wallet and loyalty points directly in a single update call
+    // Update loyalty points
+    const newLoyaltyPoints = tourist.loyaltyPoints - pointsToRedeem;
+
+    // Determine new level based on the remaining loyalty points
+    let newLevel = "Level 1";
+    if (newLoyaltyPoints >= 500000) {
+      newLevel = "Level 3";
+    } else if (newLoyaltyPoints >= 100000) {
+      newLevel = "Level 2";
+    }
+
+    // Update the tourist's data in the database
     const updatedTourist = await Tourist.findByIdAndUpdate(
       userId,
       {
-        wallet: tourist.wallet + ((tourist.loyaltyPoints / 10000) * 100),
-        loyaltyPoints: 0
+        wallet: newWalletBalance,
+        loyaltyPoints: newLoyaltyPoints,
+        badgeLevel: newLevel  // Update the level
       },
       { new: true, runValidators: true }
     );
 
     res.status(200).json(updatedTourist);
   } catch (error) {
+    console.error("Error during points redemption:", error);
     res.status(500).json({ success: false, message: `Error redeeming points: ${error.message}` });
   }
 };
+
+
 
 export const addToCart = async (req, res) => {
   try {
@@ -177,7 +218,7 @@ export const addToCart = async (req, res) => {
         message: `Product is out of stock`,
       });
     }
-    const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
+    const existingItem = user.cart.find(item => item.productId && item.productId._id.toString() === productId);
     if (existingItem) {
       existingItem.quantity += 1;
       existingItem.price = product.price * existingItem.quantity;
@@ -340,10 +381,10 @@ export const getCart = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     user.cart = user.cart.filter(
-      (item) => item.productId.archived === false
+      (item) => item.productId && item.productId.archived === false
     );
     user.cart = user.cart.filter(
-      (item) => item.productId.quantity >= item.quantity
+      (item) => item.productId && item.productId.quantity >= item.quantity
     );
     res.status(200).json({
       message: "Cart details retrieved successfully",
@@ -409,5 +450,30 @@ export const removeFromWishlist = async (req, res) => {
     res.status(200).json(user.wishlist);
   } catch (error) {
     res.status(500).json({ message: "Failed to delete from wishlist", error });
+  }
+};
+
+export const getTouristAddresses = async (req, res) => {
+  const touristId = req.user?.userId;  // Ensure you're getting the correct userId from the request
+
+  if (!touristId) {
+    return res.status(400).json({ message: 'User not authenticated' });
+  }
+
+  try {
+    // Use findById instead of find
+    const tourist = await Tourist.findById(touristId).select('address');
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist doesn't have saved addresses" });
+    }
+
+    // Since tourist is a single document, you don't need to map over it
+    const addresses = tourist.address;
+    return res.status(200).json({ addresses });
+
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    return res.status(500).json({ message: "Failed to retrieve addresses", error: error.message });
   }
 };

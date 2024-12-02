@@ -37,6 +37,19 @@ export async function getMuseums(query) {
 
   return (await apiClient.get('filterbyTags?' + searchParams.toString())).data;
 
+
+}
+
+export async function getMyAddresses(token) { 
+  return (
+    await apiClient.get("tourists/addresses", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data;
+
 }
 
 export async function getItineraries(query) {
@@ -299,6 +312,15 @@ export async function getHotels(query) {
 export async function submitComplaint(complaintData, token) {
 
   return (await apiClient.post('complaints', complaintData, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  })).data;
+}
+
+export async function checkout(checkoutData, token) {
+  return (await apiClient.post('/tourists/checkout', checkoutData, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`

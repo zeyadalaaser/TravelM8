@@ -225,6 +225,9 @@ export const payWithCash = async (req, res) => {
         user.address.push(address);
         deliveryAddress = address;
       }
+      if (!deliveryAddress) {
+        return res.status(400).json({ message: "Address field is required" }); 
+      }
   
       const deliveryFee = 20; 
       totalAmount += deliveryFee;
@@ -279,11 +282,13 @@ export const payWithCash = async (req, res) => {
       const userId = req.user?.userId; // Assumes user ID is extracted from token
   
       // Find orders for the logged-in user
-      const orders = await Order.find({ user: userId }).sort({ createdAt: -1 })
-       .populate({
-        path: "items.product",
-        model: "Product", 
-      });; 
+      const orders = await Order.find({ user: userId })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "items.product",
+          model: "Product", // Populates product details
+        })
+        .select("items totalAmount deliveryFee deliveryAddress paymentMethod status createdAt"); // Explicitly select the fields you want
   
       if (!orders || orders.length === 0) {
         return res.status(404).json({ message: "No orders found" });
@@ -294,6 +299,7 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: "Failed to fetch orders", error: error.message });
     }
   };
+  
   
 
  export const updateOrderStatus = async (req, res) => {
@@ -351,6 +357,8 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: "Failed to cancel order", error });
     }
   };
+
+
   
   
   

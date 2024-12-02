@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ShoppingCart, Bell } from 'lucide-react';
+import { ChevronDown, Globe, ShoppingCart, Bell } from 'lucide-react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import LoginPage from "../pages/signIn/signin";
@@ -13,6 +13,7 @@ import SignupDialog from "../pages/SignUp/signup";
 import LogoutAlertDialog from "@/hooks/logoutAlert";
 import useRouter from "@/hooks/useRouter";
 import { NumberStepper } from "@/components/ui/number-stepper";
+import NotificationBell from "@/pages/tourist/components/Notifications";
 
 const pages = [
   { label: "Activities", value: "activities" },
@@ -25,9 +26,10 @@ const pages = [
 
 export default function Navbar({ profilePageString, children }) {
   const [cart, setCart] = useState([]);
+  const [exchangeRates, setExchangeRates] = useState({});
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
-  const { location } = useRouter();
+  const { searchParams, location } = useRouter();
   const currentPage = location.pathname + location.search;
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -39,6 +41,8 @@ export default function Navbar({ profilePageString, children }) {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const currency = searchParams.get("currency") ?? "USD";
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -88,6 +92,7 @@ export default function Navbar({ profilePageString, children }) {
       setCart([]);
     }
   };
+
   const addToCart = async (productId) => {
     try {
       await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
@@ -98,6 +103,7 @@ export default function Navbar({ profilePageString, children }) {
       console.error('Failed to add item to cart:', error);
     }
   };
+
   const removeFromCart = async (productId) => {
     try {
       await axios.delete(`http://localhost:5001/api/tourists/cart/${productId}`, {
@@ -108,12 +114,12 @@ export default function Navbar({ profilePageString, children }) {
       console.error('Failed to remove item from cart:', error);
     }
   };
+
   const updateItemQuantity = async (item, newQuantity) => {
-    console.log(item);
     try {
-        await axios.put(`http://localhost:5001/api/tourists/cart/${item.productId._id}`, { quantity: newQuantity }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+      await axios.put(`http://localhost:5001/api/tourists/cart/${item.productId._id}`, { quantity: newQuantity }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
       setCart(prevCart => 
         prevCart.map(sth => 
           sth._id === item._id 
@@ -121,7 +127,7 @@ export default function Navbar({ profilePageString, children }) {
             : sth
         )
       );
-      if (newQuantity===0) {
+      if (newQuantity === 0) {
         setCart(prevCart => prevCart.filter(sth => sth._id !== item._id));
       }
     } catch (error) {
@@ -221,35 +227,102 @@ export default function Navbar({ profilePageString, children }) {
   };
 
   const handleCheckout = () => {
-    navigate('/checkout', { state: { cart, currency: 'USD' } });
+    navigate('/checkout', { state: { cart, currency } });
+  };
+
+  useEffect(() => {
+    async function fetchExchangeRates() {
+      try {
+        const response = await axios.get("https://api.exchangerate-api.com/v4/latest/USD");
+        setExchangeRates(response.data.rates);
+      } catch (error) {
+        console.error("Error fetching exchange rates:", error);
+      }
+    }
+    fetchExchangeRates();
+  }, []);
+
+  const handleCurrencyChange = (e) => {
+    searchParams.set("currency", e.target.value);
+    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
   };
 
   return (
     <>
       <nav
         className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300  
-          ${currentPage === "/" ? (isScrolled ? "bg-gray-800/50 backdrop-blur-md" : "bg-transparent") : "bg-white text-black shadow-md"}`}
+          ${currentPage === "/" || currentPage === `/?currency=${currency}`
+            ? isScrolled 
+              ? "bg-gray-800/50 backdrop-blur-md" 
+              : "bg-transparent" 
+            : "bg-white text-black shadow-md"
+          }`}
         style={{ height: "56px" }}
       >
-        <div className={`text-2xl font-semibold ${currentPage === "/" ? "text-white" : "text-black"}`}>
+        <div className={`text-2xl font-semibold ${currentPage === "/" || currentPage === `/?currency=${currency}` ? "text-white" : "text-black"}`}>
           TRAVELM8
         </div>
+        <label
+          htmlFor="currency"
+          style={{
+            display: 'flex',
+            width: 96.5,
+            alignItems: 'center',
+            backgroundColor: 'transparent',
+            color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black',
+          }}
+        >
+          <Globe
+            style={{
+              marginRight: '8px',
+              fontSize: '20px',
+              color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black'
+            }}
+          />
+          <select
+            id="currency"
+            value={currency}
+            onChange={handleCurrencyChange}
+            style={{
+              padding: '5px',
+              fontSize: '14px',
+              backgroundColor: 'transparent',
+              color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black'
+            }}
+          >
+            {Object.keys(exchangeRates).map((cur) => (
+              <option key={cur} value={cur} style={{ color: 'black' }}>
+                {cur}
+              </option>
+            ))}
+          </select>
+        </label>
 
-        <div className="hidden md:flex items-center justify-start ml-20 space-x-1">
+        <div className="hidden md:flex items-center justify-start ml-25 space-x-1">
           <button
             key="/"
-            className={`${currentPage === "/" ? "text-white hover:text-white/70 py-2 px-4" : "text-black hover:text-black/70 py-2 px-4"}`}
-            onClick={() => navigate(`/`)}
+            className={`${
+              (currentPage === "/" || currentPage === `/?currency=${currency}`)
+                ? "text-white hover:text-white/70 py-2 px-4"
+                : "text-black hover:text-black/70 py-2 px-4"
+            }`}
+            onClick={() => navigate(`/?currency=${currency}`)}
           >
             Home
           </button>
           {pages.map((page) => (
             <button
               key={page.value}
-              className={`${currentPage === "/" ? "text-white hover:text-white/70" : "text-black hover:text-black/70"} ${
-                currentPage === `/tourist-page?type=${page.value}` ? "rounded-full py-2 px-4 border-[1px]" : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
+              className={`${
+                (currentPage === "/" || currentPage === `/?currency=${currency}`)
+                  ? "text-white hover:text-white/70"
+                  : "text-black hover:text-black/70"
+              } ${
+                currentPage === `/tourist-page?type=${page.value}`
+                  ? "rounded-full py-2 px-4 border-[1px]"
+                  : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
               }`}
-              onClick={() => navigate(`/tourist-page?type=${page.value}`)}
+              onClick={() => navigate(`/tourist-page?type=${page.value}&currency=${currency}`)}
             >
               {page.label}
             </button>
@@ -259,60 +332,15 @@ export default function Navbar({ profilePageString, children }) {
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
-              <Sheet open={isNotificationOpen} onOpenChange={setIsNotificationOpen}>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className={currentPage === "/" ? "text-white" : "text-black"}>
-                    <div className="relative">
-                      <Bell className="h-5 w-5" />
-                      {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
-                          {unreadCount}
-                        </span>
-                      )}
-                    </div>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent>
-                  <SheetHeader>
-                    <div className="flex justify-between items-center">
-                      <SheetTitle>Notifications</SheetTitle>
-                      {notifications.length > 0 && (
-                        <Button variant="ghost" size="sm" onClick={clearAllNotifications}>
-                          Clear All
-                        </Button>
-                      )}
-                    </div>
-                    <SheetDescription>Your notifications</SheetDescription>
-                  </SheetHeader>
-                  <div className="mt-4 space-y-4 overflow-y-auto" style={{ maxHeight: "540px" }}>
-                    {notifications.length === 0 ? (
-                      <p className="text-center text-muted-foreground">No notifications</p>
-                    ) : (
-                      notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          onClick={() => handleNotificationClick(notification)}
-                          className={`p-4 rounded-lg border cursor-pointer transition-colors ${
-                            !notification.isRead ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' : 'border-gray-200 hover:bg-gray-50'
-                          }`}
-                        >
-                          <p className="font-medium">{notification.message}</p>
-                          <p className="text-sm text-gray-500 mt-1">{new Date(notification.createdAt).toLocaleString()}</p>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteNotification(notification._id);
-                            }}
-                            className="text-red-500 hover:underline mt-2"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </SheetContent>
-              </Sheet>
+              <NotificationBell
+                currency={currency}
+                currentPage={currentPage}
+                notifications={notifications}
+                unreadCount={unreadCount}
+                clearAllNotifications={clearAllNotifications}
+                handleNotificationClick={handleNotificationClick}
+                deleteNotification={deleteNotification}
+              />
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon" className={currentPage === "/" ? "text-white hover:bg-transparent hover:text-white " : "text-black"}>
@@ -337,7 +365,7 @@ export default function Navbar({ profilePageString, children }) {
                         {cart.map((item) => (
                           <li key={item?._id} className="flex items-center justify-between space-x-4">
                             <div className="flex items-center space-x-4">
-                              <img src={item?.productId.image || "https://via.placeholder.com/100"} alt={item?.productId.name} className="w-16 h-16 object-cover rounded" />
+                              <img src={item?.productId?.image || "https://via.placeholder.com/100"} alt={item?.productId.name} className="w-16 h-16 object-cover rounded" />
                               <div>
                                 <h4 className="font-medium mb-3 text-md">{item?.productId.name}</h4>
                                 <NumberStepper
@@ -350,10 +378,11 @@ export default function Navbar({ profilePageString, children }) {
                                   step={1}
                                 />
                               </div>
-                            </div>
-                            <span className="font-medium mb-10 text-lg">USD {(item.productId.price * item.quantity).toFixed(2)}</span>
-                          </li>
-                        ))}
+                              <span className="font-medium mb-10 text-lg">
+                                {currency} {(item.productId.price * (exchangeRates[currency] || 1)).toFixed(2)}
+                              </span>
+                            </li>
+                          ))}
                       </ul>
                     ) : (
                       <p>Your cart is empty.</p>
@@ -363,7 +392,7 @@ export default function Navbar({ profilePageString, children }) {
                     <div className="mt-auto">
                       <div className="flex justify-between items-center p-4">
                         <span className="font-medium">Total:</span>
-                        <span className="font-bold">USD {totalPrice.toFixed(2)}</span>
+                        <span className="font-bold">{currency} {(totalPrice * (exchangeRates[currency] || 1)).toFixed(2)}</span>
                       </div>
                       <Separator />
                       <div className="p-4">
@@ -375,9 +404,16 @@ export default function Navbar({ profilePageString, children }) {
                   )}
                 </SheetContent>
               </Sheet>
-              <button onClick={handleClick} className={`${currentPage === "/" ? "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2" : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"}`}>
+              <button
+                onClick={handleClick}
+                className={`${
+                  (currentPage === "/" || currentPage === `/?currency=${currency}`) 
+                    ? "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2"
+                    : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"
+                }`}
+              >
                 <span>Hello, {userName}</span>
-                <ChevronDown className={`h-4 w-4 ${currentPage === "/" ? "text-white" : "text-gray-500"}`} />
+                <ChevronDown className={`h-4 w-4 ${(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? "text-white" : "text-gray-500"}`} />
               </button>
               <Menu
                 id="basic-menu"
@@ -421,7 +457,9 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <Button
                   variant="outline"
-                  className={`bg-transparent rounded-full px-8 py-2 ${currentPage === "/" ? "text-white hover:bg-white/10 hover:text-white" : "text-black"}`}
+                  className={`bg-transparent rounded-full px-8 py-2 ${
+                    (currentPage === "/" || currentPage === `/?currency=${currency}`)  ? "text-white hover:bg-white/10 hover:text-white" : "text-black"
+                  } `}
                 >
                   Login
                 </Button>
@@ -432,7 +470,9 @@ export default function Navbar({ profilePageString, children }) {
                 onLoginClick={openLogin}
               >
                 <button
-                  className={`font-medium rounded-full px-8 py-2 ${currentPage === "/" ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "}`}
+                  className={`font-medium rounded-full px-8 py-2 ${
+                    (currentPage === "/" || currentPage === `/?currency=${currency}`)  ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+                  } `}
                 >
                   Register
                 </button>

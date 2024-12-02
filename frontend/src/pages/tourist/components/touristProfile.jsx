@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, Eye, EyeOff, User, X, ThumbsDown, BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart, Bookmark } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, User, X, ThumbsDown, BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart, Bookmark,Gift } from 'lucide-react'
 import { Input } from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -10,8 +10,11 @@ import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myCompla
 import Footer from "@/components/Footer.jsx";
 import BookingHistory from "@/pages/tourist/components/bookings/BookingHistory.jsx";
 import BookmarksHistory from "@/pages/tourist/components/activities/bookmarks";
+import RedeemPoints from "@/pages/tourist/components/Points/redeemPoints2.jsx";
 import Navbar from "@/components/Navbar.jsx";
 import { Wishlist } from './wishlist';
+import  PreferencesPage  from './Preferences';
+import { FaStar } from 'react-icons/fa'; // Import star icon
 
 const TouristProfilePage = () => {
 
@@ -366,6 +369,19 @@ const TouristProfilePage = () => {
             <BookmarksHistory />
           </div>
         );
+        case 'preferences':
+       
+        return (
+          <div className="bg-white shadow rounded-lg p-6">
+            <PreferencesPage />
+          </div>
+        );
+        case 'points':
+          return (
+            <div  >
+              <RedeemPoints />
+            </div>
+          );
       case 'settings':
         return (
           <div className="bg-white shadow rounded-lg p-10">
@@ -480,6 +496,21 @@ const TouristProfilePage = () => {
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('preferences')} 
+              >
+                <FaStar className="mr-3 " />
+                My Preferences
+              </button>
+              
+              <button
+                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('points')}
+              >
+                <Gift className="mr-3" />
+               My loyalty Points
+              </button>
+              <button
+                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('settings')}
               >
                 <Settings className="mr-3" />
@@ -489,7 +520,7 @@ const TouristProfilePage = () => {
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setShowDialog(true)}
               >
-                <HeartCrack className="mr-3" />
+                <User className="mr-3" />
                 Delete My account
               </button>
               {showDialog && (

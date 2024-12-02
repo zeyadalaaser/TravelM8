@@ -66,6 +66,7 @@ const activitySchema = new mongoose.Schema({
 
     isBookingOpen: {
         type: Boolean,
+        default:false,
         required: true,
     },
 
