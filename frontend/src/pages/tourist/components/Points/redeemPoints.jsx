@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import axios from "axios";
 
-export function RedeemPoints({ onClose }) {
+export  function RedeemPoints({ onClose }) {
   const token = localStorage.getItem('token');
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
