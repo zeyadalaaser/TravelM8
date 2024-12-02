@@ -87,8 +87,9 @@ export const sendBirthdayPromoCodes = async () => {
 
   try {
     const tourists = await Tourist.find({
-      dob: { $exists: true, $ne: null },
       birthdayPromoSent: false,
+      dob: { $exists: true, $ne: null },
+      
       $expr: {
           $and: [
               { $eq: [{ $dayOfMonth: "$dob" }, day] },

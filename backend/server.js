@@ -97,7 +97,7 @@ app.use('/api/notifications', notificationRoutesTourist);
 app.use(express.json());
 
 
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
   try {
     await sendBirthdayPromoCodes();
   } catch (error) {

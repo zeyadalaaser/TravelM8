@@ -66,9 +66,11 @@ const touristSchema = new Schema(
         message: "You must be at least 21 years old to register.",
       },
     },
+
     birthdayPromoSent: {
       type: Boolean,
       default: false,
+      required: false
   },
 
     occupation: {
