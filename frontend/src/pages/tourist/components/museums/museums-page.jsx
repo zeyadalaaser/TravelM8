@@ -14,8 +14,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 export function MuseumsPage() {
   const [loading, setLoading] = useState(false); 
   const { location } = useRouter();
+  const searchParams = new URLSearchParams(location.search);
+  const type = searchParams.get('type');
+  const currency = searchParams.get('currency');
   const [museums, setMuseums] = useState([]);
-  const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
 
   // Fetch latest exchange rates on mount
@@ -50,9 +52,6 @@ export function MuseumsPage() {
     fetchMuseums();
   }, [location.search, currency]);
 
-  const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
-  };
 
   const searchCategories = [
     { name: 'Name', value: 'name' },
@@ -62,7 +61,7 @@ export function MuseumsPage() {
   return (
     <div className="mt-24">
       <SearchBar categories={searchCategories} />
-      <div className="flex flex-row justify-between mb-4">
+      {/* <div className="flex flex-row justify-between mb-4">
         <label>
           Currency:
           <select value={currency} onChange={handleCurrencyChange}>
@@ -73,7 +72,7 @@ export function MuseumsPage() {
             ))}
           </select>
         </label>
-      </div>
+      </div> */}
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-1/4 sticky top-16 h-full">
           <PriceFilter

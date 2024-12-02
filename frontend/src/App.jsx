@@ -51,7 +51,7 @@ export default function HeroSection() {
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false); 
-    }, 2000); 
+    }, 1000); 
   }, []);
   
   // useEffect(() => {
@@ -156,7 +156,6 @@ export default function HeroSection() {
   ]
 
   const fetchProducts = useDebouncedCallback(async () => {
-    setLoading(true); // Start loading
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
 
@@ -166,11 +165,7 @@ export default function HeroSection() {
       setProducts(fetchedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
-      alert("Failed to load products. Please try again.");
-    } finally {
-      setLoading(false); // End loading
-
-    }
+    } 
   }, 200);
 
 

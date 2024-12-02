@@ -262,7 +262,7 @@ export default function Navbar({ profilePageString, children }) {
                 ? "text-white hover:text-white/70 py-2 px-4"
                 : "text-black hover:text-black/70 py-2 px-4"
             }`}
-            onClick={() => navigate(`/`)}
+            onClick={() => navigate(`/?currency=${currency}`)}
           >
             Home
           </button>
