@@ -116,7 +116,7 @@ useEffect(() => {
     }
   }, [token, navigate]);
 
-  const fetchActivities = async () => {
+   
  
   console.log(reportData);
 const fetchActivities = async () => {
