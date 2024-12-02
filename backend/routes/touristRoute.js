@@ -1,6 +1,6 @@
 import express from 'express';
 import { createTourist, updateTouristProfile, getTourists, getMyProfile
-,updatePoints,redeemPoints, updatePreferences,addToCart,removeFromCart,clearCart,getCart, decrementQuantity, 
+,updatePoints,redeemPoints, updatePreferences, getUserPreferences,addToCart,removeFromCart,clearCart,getCart, decrementQuantity, 
 getWishlist, updateCartItemQuantity,
 addToWishlist,
 removeFromWishlist} from '../controllers/touristController.js';
@@ -20,7 +20,8 @@ touristRoute.put('/updatePoints', verifyToken , updatePoints);
 touristRoute.put('/redeemPoints',verifyToken,redeemPoints);
  //touristRoute.put('/redeemPoints/:id',redeemPoints);
  // touristRoute.put('/updatePoints/:id',updatePoints);
-touristRoute.put('/tourists/:touristId/updatePreferences', verifyToken, updatePreferences);
+touristRoute.put("/tourists/updatePreferences", verifyToken, updatePreferences);
+touristRoute.get("/tourists/preferences",verifyToken, getUserPreferences);
 touristRoute.post("/tourists/cart/:productId", verifyToken, addToCart);
 touristRoute.delete("/tourists/cart/:productId", verifyToken,removeFromCart);
 touristRoute.delete("/tourists/cart/decrementItem/:productId",verifyToken,decrementQuantity);

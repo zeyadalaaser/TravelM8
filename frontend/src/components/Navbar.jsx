@@ -16,6 +16,7 @@ import NotificationBadgeDark from "@/components/notificationBadgeDark.jsx";
 import LogoutAlertDialog from "@/hooks/logoutAlert";
 import useRouter from "@/hooks/useRouter";
 import { NumberStepper } from "@/components/ui/number-stepper"
+import NotificationBell from "@/pages/tourist/components/Notifications";
 
 const pages = [
   { label: "Activities", value: "activities" },
@@ -211,7 +212,7 @@ export default function Navbar({ profilePageString, children }) {
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
-              {currentPage === "/" ? <NotificationBadge /> : <NotificationBadgeDark />}
+              <NotificationBell theme={currentPage === "/" ? "light" : "dark"} />
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                   <SheetTrigger asChild>
                     <Button

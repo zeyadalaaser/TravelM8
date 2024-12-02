@@ -12,6 +12,8 @@ import BookingHistory from "@/pages/tourist/components/bookings/BookingHistory.j
 import BookmarksHistory from "@/pages/tourist/components/activities/bookmarks";
 import Navbar from "@/components/Navbar.jsx";
 import { Wishlist } from './wishlist';
+import  PreferencesPage  from './Preferences';
+import { FaStar } from 'react-icons/fa'; // Import star icon
 
 const TouristProfilePage = () => {
 
@@ -366,6 +368,12 @@ const TouristProfilePage = () => {
             <BookmarksHistory />
           </div>
         );
+        case 'preferences':
+        return (
+          <div className="bg-white shadow rounded-lg p-6">
+            <PreferencesPage />
+          </div>
+        );
       case 'settings':
         return (
           <div className="bg-white shadow rounded-lg p-10">
@@ -478,6 +486,14 @@ const TouristProfilePage = () => {
                 <Bookmark className="mr-3" />
                 My Bookmarks
               </button>
+              <button
+                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('preferences')} 
+              >
+                <FaStar className="mr-3 " />
+                My Preferences
+              </button>
+              
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('settings')}
