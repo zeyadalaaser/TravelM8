@@ -38,6 +38,9 @@ import {
 } from "@/components/ui/card";
 import Logout from "@/hooks/logOut.jsx";
 import Header from "@/components/navbarDashboard.jsx";
+import SalesReport from "../TourGuide/salesReport.jsx";
+import TouristReport from "../TourGuide/TouristReport.jsx";
+import axios from "axios";
 
 const AdvertiserDashboard = () => {
   const [activities, setActivities] = useState([]);
@@ -45,7 +48,34 @@ const AdvertiserDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogArgs, setDialogArgs] = useState(null);
   const [activeTab, setActiveTab] = useState("activities");
+  const [reportData, setReportData] = useState([]);
+  const token = localStorage.getItem("token");
+ 
+  
+  const fetchReport = async () => {
+    const token = localStorage.getItem("token");
+    try {
+        const response = await axios.get(
+         "http://localhost:5001/api/activitiesReport", 
+            {
+                headers: { Authorization: `Bearer ${token}` },
+                //params: { year, month, day },
+            }
+        );
+        setReportData(response.data.data);
+    } catch (err) {
+        console.error("Error fetching activities report:");
+       
+    }  
+};
 
+useEffect(() => {
+    fetchReport();
+    
+}, [token ]);
+  
+  
+  
   const openDialog = (args) => {
     if (args) setDialogArgs(args.activity);
     else setDialogArgs(null);
@@ -56,8 +86,9 @@ const AdvertiserDashboard = () => {
     setIsDialogOpen(false);
     setDialogArgs(null);
   };
-
-  const fetchActivities = async () => {
+ 
+  console.log(reportData);
+const fetchActivities = async () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -232,7 +263,9 @@ const AdvertiserDashboard = () => {
                   <DollarSign className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$24,500</div>
+                  <div className="text-2xl font-bold">
+                  ${reportData.reduce((total, item) => total + item.revenue, 0).toFixed(2)}
+                  </div>
                 </CardContent>
               </Card>
               <Card>
@@ -243,7 +276,9 @@ const AdvertiserDashboard = () => {
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">1,234</div>
+                  <div className="text-2xl font-bold">
+                   1,234
+                    </div>
                 </CardContent>
               </Card>
             </div>
@@ -291,6 +326,12 @@ const AdvertiserDashboard = () => {
                 ) : (
                   <p>No notifications available.</p>
                 )}
+              </TabsContent>
+              <TabsContent value="sales" className="space-y-4">
+                 <SalesReport/>
+              </TabsContent>
+              <TabsContent value="tourists" className="space-y-4">
+                 <TouristReport/>
               </TabsContent>
             </Tabs>
           </div>

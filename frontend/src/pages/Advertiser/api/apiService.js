@@ -55,3 +55,11 @@ export async function changePassword(passwordData,token) {
     ).data;
   }
   
+  export async function getMyActivities(token) {
+    return (await apiClient.get('myActivities', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })).data;
+  }  

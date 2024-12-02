@@ -48,62 +48,62 @@ export const createDeletionRequest = async (req, res) => {
             return res.status(404).json({ msg: "User not found" });
         }
         
-        if (userType === 'TourGuide') {
+        // if (userType === 'TourGuide') {
            
-            hasUpcomingBookings = await Booking.exists({
-              tourGuide: userId,
-              completionStatus: { $in: ['Pending'] },
-              tourDate: { $gte: new Date() } // upcoming tours only
-            });
-          }
+        //     hasUpcomingBookings = await Booking.exists({
+        //       tourGuide: userId,
+        //       completionStatus: { $in: ['Pending'] },
+        //       tourDate: { $gte: new Date() } // upcoming tours only
+        //     });
+        //   }
       
-          if (userType === 'Tourist') {
-              upcomingActivityBooking = await BookingActivity.findOne({
-                touristId: userId,
-                bookingDate: { $lte: new Date() },
-                status: 'booked'
-              });
+        //   if (userType === 'Tourist') {
+        //       upcomingActivityBooking = await BookingActivity.findOne({
+        //         touristId: userId,
+        //         bookingDate: { $lte: new Date() },
+        //         status: 'booked'
+        //       });
           
-                upcomingItineraryBooking = await Booking.findOne({
-                tourist: userId,
-                tourDate: { $gte: new Date() },
-                completionStatus: { $in: ['Pending'] }
-              });
-          }
-          if (userType === 'Advertiser') {
+        //         upcomingItineraryBooking = await Booking.findOne({
+        //         tourist: userId,
+        //         tourDate: { $gte: new Date() },
+        //         completionStatus: { $in: ['Pending'] }
+        //       });
+        //   }
+        //   if (userType === 'Advertiser') {
 
-            const advertiserActivities = await Activity.find({ advertiserId: userId }).select('_id');
+        //     const advertiserActivities = await Activity.find({ advertiserId: userId }).select('_id');
 
-            // Check if any of these activities have future bookings
-            upcomingBooking = await BookingActivity.findOne({
-                activityId: { $in: advertiserActivities.map(activity => activity._id) },
-                bookingDate: { $lte: new Date() },
-                status: 'booked'
-            });
-        }
+        //     // Check if any of these activities have future bookings
+        //     upcomingBooking = await BookingActivity.findOne({
+        //         activityId: { $in: advertiserActivities.map(activity => activity._id) },
+        //         bookingDate: { $lte: new Date() },
+        //         status: 'booked'
+        //     });
+        // }
       
       
-          if (upcomingActivityBooking  ) {
-            return res.status(400).json({
-              msg: "Cannot delete account with upcoming activity bookings."
-            });
-          }
-          if (  upcomingItineraryBooking) {
-            return res.status(400).json({
-              msg: "Cannot delete account with upcoming itinerary bookings."
-            });
-          }
+        //   if (upcomingActivityBooking  ) {
+        //     return res.status(400).json({
+        //       msg: "Cannot delete account with upcoming activity bookings."
+        //     });
+        //   }
+        //   if (  upcomingItineraryBooking) {
+        //     return res.status(400).json({
+        //       msg: "Cannot delete account with upcoming itinerary bookings."
+        //     });
+        //   }
           
-          if (hasUpcomingBookings) {    
-            return res.status(400).json({
-              msg: "Cannot delete account with upcoming booked itineraries ."
-            });
-          } 
-          if (upcomingBooking) {    
-            return res.status(400).json({
-              msg: "Cannot delete account with upcoming booked activities ."
-            });
-          } 
+        //   if (hasUpcomingBookings) {    
+        //     return res.status(400).json({
+        //       msg: "Cannot delete account with upcoming booked itineraries ."
+        //     });
+        //   } 
+        //   if (upcomingBooking) {    
+        //     return res.status(400).json({
+        //       msg: "Cannot delete account with upcoming booked activities ."
+        //     });
+        //   } 
       
         const existingRequest = await DeletionRequest.findOne({ user: userId, userType });
         if (existingRequest) {
