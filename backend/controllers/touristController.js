@@ -411,3 +411,28 @@ export const removeFromWishlist = async (req, res) => {
     res.status(500).json({ message: "Failed to delete from wishlist", error });
   }
 };
+
+export const getTouristAddresses = async (req, res) => {
+  const touristId = req.user?.userId;  // Ensure you're getting the correct userId from the request
+
+  if (!touristId) {
+    return res.status(400).json({ message: 'User not authenticated' });
+  }
+
+  try {
+    // Use findById instead of find
+    const tourist = await Tourist.findById(touristId).select('address');
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist doesn't have saved addresses" });
+    }
+
+    // Since tourist is a single document, you don't need to map over it
+    const addresses = tourist.address;
+    return res.status(200).json({ addresses });
+
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    return res.status(500).json({ message: "Failed to retrieve addresses", error: error.message });
+  }
+};

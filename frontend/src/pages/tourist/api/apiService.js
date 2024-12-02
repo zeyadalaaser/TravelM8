@@ -37,6 +37,19 @@ export async function getMuseums(query) {
 
   return (await apiClient.get('filterbyTags?' + searchParams.toString())).data;
 
+
+}
+
+export async function getMyAddresses(token) { 
+  return (
+    await apiClient.get("tourists/addresses", {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+  ).data;
+
 }
 
 export async function getItineraries(query) {
