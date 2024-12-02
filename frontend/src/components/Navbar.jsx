@@ -282,9 +282,11 @@ export default function Navbar({ profilePageString, children }) {
 
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
-            <>
-              <NotificationBell theme={(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? <NotificationBadge /> : <NotificationBadgeDark />}/>
-
+             <>
+              <NotificationBell
+                currency={currency}
+                currentPage={currentPage}
+              />
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                   <SheetTrigger asChild>
                     <Button

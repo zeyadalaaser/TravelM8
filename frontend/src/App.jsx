@@ -45,14 +45,14 @@ export default function HeroSection() {
   const topItineraries = itineraries?.slice(0, 3);
   const topProducts = products?.slice(0, 3);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false); 
-    }, 1000); 
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setIsLoading(false); 
+  //   }, 1000); 
+  // }, []);
   
   // useEffect(() => {
 
