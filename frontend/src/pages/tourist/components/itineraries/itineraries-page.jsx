@@ -133,24 +133,6 @@ useEffect(() => {
     fetchItineraries();
   }, [location.search, currency, priceRange]);
 
-  // const handleCurrencyChange = (e) => {
-  //   const selectedCurrency = e.target.value;
-  //   setCurrency(selectedCurrency);
-
-  //   const queryParams = new URLSearchParams(location.search);
-  //   queryParams.set("currency", selectedCurrency);
-  //   navigate(`${location.pathname}?${queryParams.toString()}`, {
-  //     replace: true,
-  //   });
-  //   fetchItineraries();
-  // };
-
-  const resetFilters = () => {
-    setItineraries([]);
-    navigate(location.pathname, { replace: true });
-    fetchItineraries();
-  };
-
   const searchCategories = [
     { name: 'Name', value: 'name' },
     { name: 'Tag', value: 'tag' },
@@ -159,18 +141,6 @@ useEffect(() => {
   return (
     <div className="mt-24">
       <SearchBar categories={searchCategories} />
-      {/* <div className="flex justify-between items-center mb-4">
-        <label>
-          Currency:
-          <select value={currency} onChange={handleCurrencyChange}>
-            {Object.keys(exchangeRates).map((cur) => (
-              <option key={cur} value={cur}>
-                {`${cur} `}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div> */}
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full mt-2 md:w-1/4 sticky top-16 h-full">
           <DateFilter />
@@ -188,7 +158,7 @@ useEffect(() => {
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
               <div>{itineraries.length} results</div>
-              <ClearFilters onClick={resetFilters} />
+              <ClearFilters />
             </div>
             <SortSelection />
           </div>

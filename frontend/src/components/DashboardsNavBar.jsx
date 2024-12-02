@@ -327,6 +327,7 @@ export default function Navbar({ children }) {
                 onClose={handleClose}
                 MenuListProps={{
                   "aria-labelledby": "basic-button",
+                  sx: { p: 0 },
                 }}
                 PaperProps={{
                   sx: {

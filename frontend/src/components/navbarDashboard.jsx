@@ -57,9 +57,9 @@ const Header = ({ name = "Jane Doe", editProfile, type="Tour Guide" }) => {
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuLabel>Options</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate(editProfile)}>Edit Profile</DropdownMenuItem>
+              <DropdownMenuItem className="w-full" onClick={() => navigate(editProfile)}>Edit Profile</DropdownMenuItem>
               <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogoutClick} >Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogoutClick}>Sign out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

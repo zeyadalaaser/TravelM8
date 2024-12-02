@@ -28,7 +28,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
     const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
     const navigate = useNavigate();
     const handleForgotPassword = () => {
-      setIsForgotPasswordOpen(true);  // Open ForgotPassword dialog
+        setIsForgotPasswordOpen(true);  // Open ForgotPassword dialog
     };
 
     const handleSubmit = async (event) => {
@@ -51,33 +51,29 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
             console.log("token:", token);
             console.log("pref: ", needsPreferences);
 
-            if (!needsPreferences && role === 'Tourist') {
+            if (!needsPreferences && role === 'Tourist')
                 navigate(`/preferences-page/${userId}`);
-            } else {
-                switch (role) {
-                    case 'Tourist':
-                        navigate('/');
-                        break;
-                    case 'Seller':
-                        navigate('/Sellerdashboard');
-                        break;
-                    case 'TourGuide':
-                        navigate('/tourGuideDashboard');
-                        break;
-                    case 'TourismGovernor':
-                        navigate('/TourismGovernorDashboard');
-                        break;
-                    case 'Admin':
-                        navigate('/AdminDashboard');
-                        break;
-                    case 'Advertiser':
-                        navigate('/advertiserDashboard');
-                        break;
-                    default:
-                        navigate('/default-page');
-                }
-                window.location.reload();
+
+            switch (role) {
+                case 'Seller':
+                    navigate('/Sellerdashboard');
+                    break;
+                case 'TourGuide':
+                    navigate('/tourGuideDashboard');
+                    break;
+                case 'TourismGovernor':
+                    navigate('/TourismGovernorDashboard');
+                    break;
+                case 'Admin':
+                    navigate('/AdminDashboard');
+                    break;
+                case 'Advertiser':
+                    navigate('/advertiserDashboard');
+                    break;
             }
+
+            onOpenChange(false);
+            window.location.reload();
         } catch (error) {
             setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
         } finally {
@@ -91,7 +87,7 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
                 <DialogTrigger asChild>
                     {children}
                 </DialogTrigger>
-                
+
                 <DialogContent className="max-w-md w-full bg-gray-100">
                     <DialogHeader className="flex flex-col items-center text-center">
                         <DialogTitle className="text-2xl font-medium">WELCOME BACK</DialogTitle>
