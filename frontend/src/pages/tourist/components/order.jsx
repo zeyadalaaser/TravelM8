@@ -79,7 +79,7 @@ const OrderPage = () => {
         <p className="text-center text-gray-500">You haven't placed any orders yet.</p>
       ) : (
         <div className="space-y-4">
-          {orders.map((order) => (
+          {orders?.map((order) => (
             <Card key={order._id} className="overflow-hidden">
               <CardHeader>
                 <CardTitle className="flex justify-between items-center">

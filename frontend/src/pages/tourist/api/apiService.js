@@ -319,6 +319,15 @@ export async function submitComplaint(complaintData, token) {
   })).data;
 }
 
+export async function checkout(checkoutData, token) {
+  return (await apiClient.post('/tourists/checkout', checkoutData, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  })).data;
+}
+
 export async function changePassword(passwordData, token) {
   return (
     await apiClient.post("tourists/changepassword", passwordData, {

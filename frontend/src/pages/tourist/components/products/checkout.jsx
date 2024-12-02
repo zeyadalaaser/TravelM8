@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { MinusIcon, PlusIcon, ShoppingBagIcon, MenuIcon, XIcon } from 'lucide-react'
+import { Elements, CardElement, PaymentElement, useStripe, useElements }  from '@stripe/react-stripe-js'
 import { useState, useEffect } from "react"
 import { Separator } from "@/components/ui/separator";
 import Navbar from "@/components/Navbar.jsx";
@@ -16,34 +17,56 @@ import * as services from "@/pages/tourist/api/apiService.js";
 import { useLocation } from "react-router-dom";
 import axios from "axios"
 import { NumberStepper } from "@/components/ui/number-stepper"
-// Mock addresses data
-// const addresses = [
-//   {
-//     id: 1,
-//     name: "Sara Hussein",
-//     address: "FLAT 3102 PIONEER POINT NORTH TOWER 3, WINSTON WAY, ILFORD, IG1 2ZD",
-//     country: "United Kingdom"
-//   },
-//   {
-//     id: 2,
-//     name: "Mahmoud Awad",
-//     address: "Prince Sultan Road, 205 طريق جدة للوحدات السكنية, منطقة",
-//     city: "Jeddah",
-//     region: "Makkah",
-//     country: "Saudi Arabia"
-//   },
-//   {
-//     id: 3,
-//     name: "Mohamed Taha",
-//     address: "Almukall Street, 12485, North Building, apartment number: 19, Second Floor",
-//     city: "Riyadh",
-//     region: "Riyadh",
-//     country: "Saudi Arabia"
-//   }
-// ]
+import { useNavigate } from 'react-router-dom';
+import { useToast } from "@/components/ui/use-toast";
+import { CheckoutToast } from "@/pages/tourist/components/products/checkoutToast.jsx";
+import { loadStripe } from '@stripe/stripe-js'
+
+const stripePromise = loadStripe('pk_test_51QNwSmLNUgOldllO51XLfeq4fZCMqG9jUXp4wVgY6uq9wpvjOAJ1XgKNyErFb6jf8rmH74Efclz55kWzG8UDxZ9J0064KdbDCb')
+
+
+function CheckoutForm({ clientSecret, handlePayment }) {
+  const stripe = useStripe()
+  const elements = useElements()
+  const [error, setError] = useState(null)
+  const [processing, setProcessing] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (!stripe || !elements) return
+
+    setProcessing(true)
+    const result = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: 'http://localhost:5173/tourist-page?type=products&payment=success',
+      },
+    })
+
+    if (result.error) {
+      setError(result.error.message)
+      setProcessing(false)
+    } else {
+      handlePayment(result.paymentIntent.id)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <PaymentElement />
+      {error && <Alert variant="destructive" className="mt-2"><AlertTitle>Error</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+    </form>
+  )
+}
+
+
+
 
 export default function CheckoutPage() {
+  const { toast } = useToast();
+  const [clientSecret, setClientSecret] = useState('')
   const location = useLocation();
+  const navigate = useNavigate();
   const { cart} = location.state || {};
   const searchParams = new URLSearchParams(location.search);
   const currency = searchParams.get('currency') ?? "USD";
@@ -51,13 +74,50 @@ export default function CheckoutPage() {
   const [showAddAddressDialog, setShowAddAddressDialog] = useState(false)
   const [showDeliveryForm, setShowDeliveryForm] = useState(true)
   const [showPaymentForm, setShowPaymentForm] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("card")
+  const [paymentMethod, setPaymentMethod] = useState("credit-card")
   const [showPromotionCode, setShowPromotionCode] = useState(false)
+  const [promoCode, setPromoCode] = useState("");
   const token = localStorage.getItem("token");
   const [addresses, setAddresses] = useState([]);
-  const [selectedAddress, setSelectedAddress] = useState("");
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    fullName: "",
+    mobileNumber: "",
+    streetName: "",
+    buildingNumber: "",
+    city: "",
+    postalCode: "",
+    country: "",
+  });
   const [exchangeRates, setExchangeRates] = useState({});
   const [cartItems, setCartItems] = useState(cart || []);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate("/");
+      return;
+    }
+    const getProfileInfo = async () => {
+      try {
+        const data = await services.fetchProfileInfo(token);
+        setProfile(data);
+      } catch (err) {
+        setError('Failed to fetch profile information.');
+      }
+    };
+
+    getProfileInfo();
+  }, [navigate, token]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setDeliveryAddress({ ...deliveryAddress, [name]: value });
+  };
+
   useEffect(() => {
 
     if (cart) {
@@ -112,6 +172,7 @@ export default function CheckoutPage() {
     try {
         const response = await services.getMyAddresses(token);
         setAddresses(response.addresses);
+        console.log(response)
     }
     catch(error) {
         console.error("Message:", error.message);
@@ -121,9 +182,43 @@ export default function CheckoutPage() {
 
   useEffect (() => {
     fetchMyAddresses();
-    console.log(cart);
+    if (cart.length > 0) {
+      createPaymentIntent()
+    }
 }
 , [cart])
+
+const checkout = async ()=> {
+  if (selectedAddressId) {
+    const address = addresses.find((addr) => addr._id === selectedAddressId);
+    try {
+      const response = await services.checkout({address,paymentMethod,promoCode},token);
+        CheckoutToast(toast,profile?.wallet,paymentMethod);
+        setTimeout(() => {
+          navigate("/"); 
+        }, 1000);
+    } catch (error) {
+      console.log("helllo",error);
+      setError(error.response?.message || "Checkout failed");
+    }
+  }
+  else {
+    setError(error.response?.message || "Please select an address");
+  }
+}
+
+const createPaymentIntent = async () => {
+  try {
+    const response = await axios.post('http://localhost:5001/api/create-payment-intent', {
+      amount: totalPrice+20,
+      currency: currency.toLowerCase(),
+    })
+    setClientSecret(response.data.clientSecret)
+  } catch (error) {
+    console.error('Error creating PaymentIntent:', error)
+    setError('Failed to initialize payment. Please try again.')
+  }
+}
 
 
   return (
@@ -154,34 +249,33 @@ export default function CheckoutPage() {
                                   </div>
                               </div>
                               <div className="bg-white rounded-lg border p-6 relative">
-                                  <RadioGroup
-                                      value={selectedAddress}
-                                      onValueChange={(value) => setSelectedAddress(value)}
+                              <RadioGroup
+                                      value={selectedAddressId}
+                                      onValueChange={(value) => setSelectedAddressId(value)}
                                       className="space-y-4"
-                                  >
+                                    >
                                       {addresses.map((addr) => (
-                                          <div key={addr._id} className="flex items-start space-x-3 rounded-lg border p-4">
-                                              <RadioGroupItem value={addr._id} id={addr._id} className="mt-1" />
-                                              <div className="flex-1">
-                                                  <Label htmlFor={addr._id} className="font-medium">
-                                                      {addr.fullName}
-                                                  </Label>
-                                                  <p className="text-sm text-gray-600 mt-1">{addr.streetName}, {addr.postalCode}, Building {addr.buildingNumber}</p>
-                                                  {addr.city && (
-                                                      <p className="text-sm text-gray-600">
-                                                          {addr.city}, {addr.country}
-                                                      </p>
-                                                  )}
-                                                  {/* <div className="flex gap-4 mt-2">
-                                                      <button className="text-blue-600 text-sm hover:underline">Edit</button>
-                                                      <button className="text-blue-600 text-sm hover:underline">
-                                                          Add delivery instructions
-                                                      </button>
-                                                  </div> */}
-                                              </div>
+                                        <div
+                                          key={addr._id}
+                                          className="flex items-start space-x-3 rounded-lg border p-4"
+                                        >
+                                          <RadioGroupItem value={addr._id} id={addr._id} className="mt-1" />
+                                          <div className="flex-1">
+                                            <Label htmlFor={addr._id} className="font-medium">
+                                              {addr.fullName}
+                                            </Label>
+                                            <p className="text-sm text-gray-600 mt-1">
+                                              {addr.streetName}, {addr.postalCode}, Building {addr.buildingNumber}
+                                            </p>
+                                            {addr.city && (
+                                              <p className="text-sm text-gray-600">
+                                                {addr.city}, {addr.country}
+                                              </p>
+                                            )}
                                           </div>
+                                        </div>
                                       ))}
-                                  </RadioGroup>
+                                    </RadioGroup>
                                   <Dialog open={showAddAddressDialog} onOpenChange={setShowAddAddressDialog}>
                                       <DialogTrigger>
                                           <button className="text-blue-600 flex items-center gap-2 mt-4">
@@ -269,27 +363,40 @@ export default function CheckoutPage() {
                                   </div>
                               </div>
                             <div className="bg-white rounded-lg border p-6 relative">
-                              <RadioGroup
-                                  value={paymentMethod}
-                                  onValueChange={setPaymentMethod}
-                                  className="space-y-4"
+                            <RadioGroup
+                                value={paymentMethod}
+                                onValueChange={setPaymentMethod}
+                                className="space-y-4"
                               >
-                                  <div className={`rounded-lg border p-4 ${paymentMethod === "card" ? 'bg-white' : 'rounded-lg border p-4'}`}>
-                                      <div className="flex items-center  space-x-2">
-                                          <RadioGroupItem value="card" id="card" />
-                                          <Label htmlFor="card">Credit/Debit Card</Label>
-                                      </div>
-                                      {paymentMethod === "card" && <CreditCardForm />}
+                                <div
+                                  className={`rounded-lg border p-4 ${
+                                    paymentMethod === "credit-card" ? "bg-white" : ""
+                                  }`}
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="credit-card" id="credit-card" />
+                                    <Label htmlFor="credit-card">Credit/Debit Card</Label>
                                   </div>
-                                  <div className="flex items-center space-x-2 rounded-lg border p-4">
-                                      <RadioGroupItem value="cod" id="cod" />
-                                      <Label htmlFor="cod">Cash on Delivery</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2 rounded-lg border p-4">
-                                      <RadioGroupItem value="wallet" id="wallet" />
-                                      <Label htmlFor="wallet">Wallet Balance</Label>
-                                  </div>
-                              </RadioGroup>
+                                  {paymentMethod === 'credit-card' && clientSecret && (
+                                <div className="mt-4">
+                                  <Elements stripe={stripePromise} options={{ clientSecret }}>
+                                    <CheckoutForm clientSecret={clientSecret} handlePayment={checkout} />
+                                  </Elements>
+                                </div>
+                              )}
+                                </div>
+                                <div className="flex items-center space-x-2 rounded-lg border p-4">
+                                  <RadioGroupItem value="cash" id="cash" />
+                                  <Label htmlFor="cash">Cash on Delivery</Label>
+                                </div>
+                                <div className="flex items-center space-x-2 rounded-lg border p-4">
+                                  <RadioGroupItem value="wallet" id="wallet" />
+                                  <Label htmlFor="wallet">Wallet Balance</Label>
+                                  <p className="text-xs text-gray-500">
+                                    ({currency} {profile ? profile.wallet.toFixed(2) : "0"})
+                                  </p>
+                                </div>
+                                </RadioGroup>
                               </div>
                           </div>
                           <div className="border-b pb-6">
@@ -372,9 +479,11 @@ export default function CheckoutPage() {
                                       <span>Total ({currency})</span>
                                       <span>{currency} {((totalPrice +20)* (exchangeRates[currency])).toFixed(2)}</span>
                                   </div>
-                                  <Button className="w-full bg-green-800 text-white hover:bg-green-900">
+                                  <Button onClick={checkout} className="w-full bg-green-800 text-white hover:bg-green-900">
                                       Confirm Order
                                   </Button>
+                                {error && <p style={{ color: "red" }}>{error}</p>}
+                                {success && <p style={{ color: "green" }}>{success}</p>}
                               </div>
                           </Card>
                       </div>

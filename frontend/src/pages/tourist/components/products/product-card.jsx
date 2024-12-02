@@ -6,13 +6,16 @@ import { Stars } from "@/components/Stars";
 import { ShareButton } from "@/components/ui/share-button";
 import AnimatedLikeButton from "./like";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductCard({ product, currency, token, liked }) {
+    const navigate = useNavigate();
     const addToCart = async (productId) => {
         try {
             await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+                navigate(0); 
         } catch (error) {
             console.error('Failed to add item to cart:', error);
         }
