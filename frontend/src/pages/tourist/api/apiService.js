@@ -19,7 +19,7 @@ export async function getProducts(query) {
 
   const searchParams = new URLSearchParams(query);
   searchParams.delete("type");
-  searchParams.set("inStockOnly", true);
+  searchParams.set("showArchived", false);
 
   const response = await apiClient.get("products?" + searchParams.toString(), {
     headers: {

@@ -86,7 +86,7 @@ export function ActivitiesPage() {
         </label>
       </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-20 h-full">
+        <div className="w-full md:w-1/4 sticky top-16 h-full">
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -106,7 +106,6 @@ export function ActivitiesPage() {
             </div>
             <SortSelection />
           </div>
-          {/* Show the CircularProgress if loading is true */}
           {loading ? (
             <div className="flex justify-center items-center mt-36">
               <CircularProgress />

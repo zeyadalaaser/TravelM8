@@ -4,9 +4,9 @@ import { invalidatedTokens } from '../controllers/logoutController.js';
 
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1]; // Get the token from the Authorization header
-  console.log("from verifyToken: ",token);
+  //console.log("from verifyToken: ",token);
   if (!token) {
-    console.log("where", token);
+    //console.log("where", token);
     return res.status(401).json({ message: 'No token provided' });
   }
 
@@ -18,7 +18,7 @@ const verifyToken = (req, res, next) => {
     if (err) {
       return res.status(403).json({ message: 'Token is not valid' });
     }
-    console.log('Decoded Token:', decoded); 
+    //console.log('Decoded Token:', decoded); 
 
     // Attach user info to the request object
     req.user = {
@@ -26,7 +26,7 @@ const verifyToken = (req, res, next) => {
       role: decoded.role ,      // Extract role from the payload
       username: decoded.username
     };
-    console.log('req.user:', req.user); 
+    //console.log('req.user:', req.user); 
 
     // Call next() to proceed to the next middleware or route handler
     next();

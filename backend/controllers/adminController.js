@@ -14,22 +14,31 @@ import Rating from '../models/ratingModel.js';
 
 
 export const registerAdmin = async (req, res) => {
-    const { username, password } = req.body;
-    const isNotUnique = await checkUniqueUsername(username);
+    const { username, password, email } = req.body;
 
-    if (isNotUnique) {
+    // Check for unique username and email
+    const isNotUniqueUsername = await checkUniqueUsername(username);
+    const isNotUniqueEmail = await Admin.findOne({ email });
+
+    if (isNotUniqueUsername) {
         return res.status(400).json({ message: 'Username is already in use.' });
+    }
+
+    if (isNotUniqueEmail) {
+        return res.status(400).json({ message: 'Email is already in use.' });
     }
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new Admin({ username, password: hashedPassword });
-        await newUser.save();
+        const newAdmin = new Admin({ username, password: hashedPassword, email });
+        await newAdmin.save();
         res.status(201).json({ message: "Admin registered successfully" });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
 
 export const deleteAccount = async (req, res) => {
     const { username, type } = req.body; // Get username and user type from request body
@@ -97,15 +106,14 @@ export const deleteAccount = async (req, res) => {
 
 export const getUsers = async (req, res) => {
     try {
-
-        const admins = await Admin.find({}, 'username');
+        const admins = await Admin.find({}, 'username email');
         const tourists = await Tourist.find({}, 'username');
         const tourGuides = await TourGuide.find({}, 'username');
         const sellers = await Seller.find({}, 'username');
         const advertisers = await Advertiser.find({}, 'username');
 
         const users = [
-            ...admins.map(user => ({ username: user.username, type: 'Admin' })),
+            ...admins.map(user => ({ username: user.username, email: user.email, type: 'Admin' })),
             ...tourists.map(user => ({ username: user.username, type: 'Tourist' })),
             ...tourGuides.map(user => ({ username: user.username, type: 'TourGuide' })),
             ...sellers.map(user => ({ username: user.username, type: 'Seller' })),
@@ -117,16 +125,18 @@ export const getUsers = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: "Error fetching users" });
     }
-}
+};
 
 export const getAllAdmins = async (req, res) => {
     try {
-        const allAdmins = await Admin.find({});
+        const allAdmins = await Admin.find({}, 'username email createdAt updatedAt'); 
         res.status(200).json(allAdmins);
     } catch (error) {
+        console.error(error);
         res.status(500).send("Server error");
     }
 };
+
 
 export const getUsersReport = async (req, res) => {
     try {

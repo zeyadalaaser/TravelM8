@@ -86,6 +86,7 @@ export function ProductsPage({ addToCart }) {
 
   return (
     <div className="mt-24">
+      <SearchBar categories={[{ name: "Name", value: "name" }]} />
       <div className="flex flex-row justify-between mb-4 ">
         <label>
           Currency:
@@ -98,9 +99,8 @@ export function ProductsPage({ addToCart }) {
           </select>
         </label>
       </div>
-      <SearchBar categories={[{ name: "Name", value: "name" }]} />
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4">
+        <div className="w-full md:w-1/4 sticky top-16 h-full">
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}

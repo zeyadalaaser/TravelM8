@@ -91,8 +91,13 @@ export default function ProductCard({ product, currency, token, liked }) {
                             </Badge>
                         </span>
                     </div>
-                    <Button size="sm" onClick={() => addToCart(product._id)}>
-                        Add to Cart
+                    <Button
+                        className={`w-full ${product.quantity > 0 ? 'bg-black hover:bg-gray-800' : 'bg-gray-400 hover:bg-gray-500'} text-white`}
+                        size="sm"
+                        onClick={() => product.quantity > 0 && addToCart(product._id)}
+                        disabled={product.quantity <= 0}
+                    >
+                        {product.quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
                     </Button>
                 </div>
             </div>
