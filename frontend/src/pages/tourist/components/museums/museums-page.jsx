@@ -16,7 +16,7 @@ export function MuseumsPage() {
   const { location } = useRouter();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type');
-  const currency = searchParams.get('currency');
+  const currency = searchParams.get('currency') ?? "USD";
   const [museums, setMuseums] = useState([]);
   const [exchangeRates, setExchangeRates] = useState({});
 

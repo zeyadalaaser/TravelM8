@@ -21,7 +21,7 @@ export function ActivitiesPage() {
   const { location } = useRouter();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type');
-  const currency = searchParams.get('currency');
+  const currency = searchParams.get('currency') ?? "USD";
   const [activities, setActivities] = useState([]);
   const [exchangeRates, setExchangeRates] = useState({});
 

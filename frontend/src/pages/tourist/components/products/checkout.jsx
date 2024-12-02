@@ -46,7 +46,7 @@ export default function CheckoutPage() {
   const location = useLocation();
   const { cart} = location.state || {};
   const searchParams = new URLSearchParams(location.search);
-  const currency = searchParams.get('currency');
+  const currency = searchParams.get('currency') ?? "USD";
   const [isLoading, setIsLoading] = useState(true);
   const [showAddAddressDialog, setShowAddAddressDialog] = useState(false)
   const [showDeliveryForm, setShowDeliveryForm] = useState(true)

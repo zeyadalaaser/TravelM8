@@ -18,7 +18,7 @@ export function ItinerariesPage() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type');
-  const currency = searchParams.get('currency');
+  const currency = searchParams.get('currency') ?? "USD";
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
   const [exchangeRates, setExchangeRates] = useState({});

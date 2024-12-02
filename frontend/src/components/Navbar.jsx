@@ -29,11 +29,10 @@ const pages = [
 
 export default function Navbar({ profilePageString, children }) {
   const [cart, setCart] = useState([]);
-  const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({})
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
-  const { location } = useRouter();
+  const { searchParams, location } = useRouter();
   const currentPage = location.pathname + location.search;
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -42,6 +41,8 @@ export default function Navbar({ profilePageString, children }) {
   const [userName, setUserName] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAlertOpen, setAlertOpen] = useState(false);
+
+  const currency = searchParams.get("currency") ?? "USD";
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -179,18 +180,9 @@ export default function Navbar({ profilePageString, children }) {
   }, []);
 
   const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set("currency", e.target.value);
-    navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
+    searchParams.set("currency", e.target.value);
+    navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
   };
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const urlCurrency = queryParams.get("currency");
-    if (urlCurrency) {
-      setCurrency(urlCurrency);
-    }
-  }, [location.search]); 
 
   return (
     <>
@@ -217,6 +209,7 @@ export default function Navbar({ profilePageString, children }) {
       htmlFor="currency"
       style={{
         display: 'flex',
+        width: 96.5,
         alignItems: 'center',
         backgroundColor: 'transparent',
        color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black', // Set color based on currentPage
