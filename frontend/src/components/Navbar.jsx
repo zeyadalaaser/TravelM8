@@ -3,19 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Globe,ShoppingCart } from 'lucide-react';
+import { ChevronDown, Globe, ShoppingCart, Bell } from 'lucide-react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Cart from "../pages/tourist/components/products/cart.jsx";
 import LoginPage from "../pages/signIn/signin";
 import SignupDialog from "../pages/SignUp/signup";
-import NotificationBadge from "@/components/notificationBadge.jsx";
-import NotificationBadgeDark from "@/components/notificationBadgeDark.jsx";
 import LogoutAlertDialog from "@/hooks/logoutAlert";
 import useRouter from "@/hooks/useRouter";
-import { NumberStepper } from "@/components/ui/number-stepper"
+import { NumberStepper } from "@/components/ui/number-stepper";
 import NotificationBell from "@/pages/tourist/components/Notifications";
 
 const pages = [
@@ -29,7 +26,7 @@ const pages = [
 
 export default function Navbar({ profilePageString, children }) {
   const [cart, setCart] = useState([]);
-  const [exchangeRates, setExchangeRates] = useState({})
+  const [exchangeRates, setExchangeRates] = useState({});
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const { searchParams, location } = useRouter();
@@ -41,6 +38,9 @@ export default function Navbar({ profilePageString, children }) {
   const [userName, setUserName] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAlertOpen, setAlertOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const currency = searchParams.get("currency") ?? "USD";
 
@@ -52,6 +52,7 @@ export default function Navbar({ profilePageString, children }) {
         setUserName(decodedToken.username);
         setIsLoggedIn(true);
         fetchCart();
+        fetchNotifications(decodedToken.userId);
       }
     }
 
@@ -79,8 +80,6 @@ export default function Navbar({ profilePageString, children }) {
       return null;
     }
   };
-
-
 
   const fetchCart = async () => {
     try {
@@ -117,11 +116,10 @@ export default function Navbar({ profilePageString, children }) {
   };
 
   const updateItemQuantity = async (item, newQuantity) => {
-    console.log(item);
     try {
-        await axios.put(`http://localhost:5001/api/tourists/cart/${item.productId._id}`, { quantity: newQuantity }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+      await axios.put(`http://localhost:5001/api/tourists/cart/${item.productId._id}`, { quantity: newQuantity }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
       setCart(prevCart => 
         prevCart.map(sth => 
           sth._id === item._id 
@@ -129,12 +127,78 @@ export default function Navbar({ profilePageString, children }) {
             : sth
         )
       );
-      if (newQuantity===0) {
+      if (newQuantity === 0) {
         setCart(prevCart => prevCart.filter(sth => sth._id !== item._id));
       }
     } catch (error) {
       console.error('Failed to update item quantity:', error);
     }
+  };
+
+  const fetchNotifications = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:5001/api/notifications`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications(response.data.notifications || []);
+      setUnreadCount(response.data.notifications.filter(n => !n.isRead).length);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+      setNotifications([]);
+    }
+  };
+
+  const markAsRead = async (notificationId) => {
+    try {
+      await axios.patch(`http://localhost:5001/api/notifications/${notificationId}/read`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications(prevNotifications =>
+        prevNotifications.map(notification =>
+          notification._id === notificationId ? { ...notification, isRead: true } : notification
+        )
+      );
+      setUnreadCount(prevCount => prevCount - 1);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  const deleteNotification = async (notificationId) => {
+    try {
+      await axios.delete(`http://localhost:5001/api/notifications/${notificationId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications(prevNotifications =>
+        prevNotifications.filter(notification => notification._id !== notificationId)
+      );
+      setUnreadCount(prevCount => {
+        const notification = notifications.find(n => n._id === notificationId);
+        return prevCount - (notification && !notification.isRead ? 1 : 0);
+      });
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+    }
+  };
+
+  const clearAllNotifications = async () => {
+    try {
+      await axios.delete('http://localhost:5001/api/notifications', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    if (!notification._id) {
+      console.error("Invalid notification ID");
+      return;
+    }
+    markAsRead(notification._id);
   };
 
   const totalItems = Array.isArray(cart) ? cart.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
@@ -163,8 +227,7 @@ export default function Navbar({ profilePageString, children }) {
   };
 
   const handleCheckout = () => {
-    navigate('/checkout', { state: { cart, currency} });
-    navigate(`/checkout?currency=${currency}`,{ state: { cart }});
+    navigate('/checkout', { state: { cart, currency } });
   };
 
   useEffect(() => {
@@ -188,65 +251,52 @@ export default function Navbar({ profilePageString, children }) {
     <>
       <nav
         className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300  
-          ${
-            currentPage === "/" || currentPage === `/?currency=${currency}`
-              ? isScrolled 
-                ? "bg-gray-800/50 backdrop-blur-md" 
-                : "bg-transparent" 
-              : "bg-white text-black shadow-md"
-          }`
-        }
+          ${currentPage === "/" || currentPage === `/?currency=${currency}`
+            ? isScrolled 
+              ? "bg-gray-800/50 backdrop-blur-md" 
+              : "bg-transparent" 
+            : "bg-white text-black shadow-md"
+          }`}
         style={{ height: "56px" }}
       >
-        <div
-          className={`text-2xl font-semibold ${
-            (currentPage === "/" || currentPage === `/?currency=${currency}`) ? "text-white" : "text-black"
-          }`}
-        >
+        <div className={`text-2xl font-semibold ${currentPage === "/" || currentPage === `/?currency=${currency}` ? "text-white" : "text-black"}`}>
           TRAVELM8
         </div>
         <label
-      htmlFor="currency"
-      style={{
-        display: 'flex',
-        width: 96.5,
-        alignItems: 'center',
-        backgroundColor: 'transparent',
-       color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black', // Set color based on currentPage
-      }}
-    >
-      <Globe
-        style={{
-          marginRight: '8px',
-          fontSize: '20px',
-          color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black' // Set icon color based on currentPage
-        }}
-      />
-      <select
-              id="currency"
-              value={currency}
-              onChange={handleCurrencyChange}
-              style={{
-                padding: '5px',
-                fontSize: '14px',
-                backgroundColor: 'transparent',
-                color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black' // Set text color based on currentPage
-              }}
-            >
-              {Object.keys(exchangeRates).map((cur) => (
-                <option
-                  key={cur}
-                  value={cur}
-                  style={{
-                    color: 'black', // Option elements usually inherit color, explicitly set if needed
-                  }}
-                >
-                  {cur}
-                </option>
-              ))}
-            </select>
-          </label>
-
+          htmlFor="currency"
+          style={{
+            display: 'flex',
+            width: 96.5,
+            alignItems: 'center',
+            backgroundColor: 'transparent',
+            color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black',
+          }}
+        >
+          <Globe
+            style={{
+              marginRight: '8px',
+              fontSize: '20px',
+              color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black'
+            }}
+          />
+          <select
+            id="currency"
+            value={currency}
+            onChange={handleCurrencyChange}
+            style={{
+              padding: '5px',
+              fontSize: '14px',
+              backgroundColor: 'transparent',
+              color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black'
+            }}
+          >
+            {Object.keys(exchangeRates).map((cur) => (
+              <option key={cur} value={cur} style={{ color: 'black' }}>
+                {cur}
+              </option>
+            ))}
+          </select>
+        </label>
 
         <div className="hidden md:flex items-center justify-start ml-25 space-x-1">
           <button
@@ -277,93 +327,83 @@ export default function Navbar({ profilePageString, children }) {
               {page.label}
             </button>
           ))}
-
         </div>
 
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
-             <>
+            <>
               <NotificationBell
                 currency={currency}
                 currentPage={currentPage}
+                notifications={notifications}
+                unreadCount={unreadCount}
+                clearAllNotifications={clearAllNotifications}
+                handleNotificationClick={handleNotificationClick}
+                deleteNotification={deleteNotification}
               />
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-                  <SheetTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
-                    >
-                      <div className="relative">
-                        <ShoppingCart className="h-5 w-5" />
-                        {totalItems > 0 && (
-                          <Badge
-                            variant="secondary"
-                            className="absolute bg-emerald-700 text-white hover:bg-emerald-700 -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2"
-                          >
-                            {totalItems}
-                          </Badge>
-                        )}
-                      </div>
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent className="flex flex-col h-screen">
-                    <SheetHeader>
-                      <SheetTitle>Your Cart</SheetTitle>
-                      <SheetDescription>Review your items before checkout</SheetDescription>
-                    </SheetHeader>
-                    <div className="flex-grow overflow-y-auto">
-                      {cart.length > 0 ? (
-                        <ul className="space-y-4">
-                          {cart.map((item) => (
-                            <li key={item?._id} className="flex items-center justify-between space-x-4">
-                              {/* Left Section: Image and Name */}
-                              <div className="flex items-center space-x-4">
-                                <img
-                                  src={item?.productId?.image || "https://via.placeholder.com/100"}
-                                  alt={item?.productId.name}
-                                  className="w-16 h-16 object-cover rounded"
-                                />
-                                <div>
-                                  <h4 className="font-medium mb-3 text-md">{item?.productId.name}</h4>
-                                  <NumberStepper
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className={currentPage === "/" ? "text-white hover:bg-transparent hover:text-white " : "text-black"}>
+                    <div className="relative">
+                      <ShoppingCart className="h-5 w-5" />
+                      {totalItems > 0 && (
+                        <Badge variant="secondary" className="absolute bg-emerald-700 text-white -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2">
+                          {totalItems}
+                        </Badge>
+                      )}
+                    </div>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="flex flex-col h-screen">
+                  <SheetHeader>
+                    <SheetTitle>Your Cart</SheetTitle>
+                    <SheetDescription>Review your items before checkout</SheetDescription>
+                  </SheetHeader>
+                  <div className="flex-grow overflow-y-auto">
+                    {cart.length > 0 ? (
+                      <ul className="space-y-4">
+                        {cart.map((item) => (
+                          <li key={item?._id} className="flex items-center justify-between space-x-4">
+                            <div className="flex items-center space-x-4">
+                              <img src={item?.productId?.image || "https://via.placeholder.com/100"} alt={item?.productId.name} className="w-16 h-16 object-cover rounded" />
+                              <div>
+                                <h4 className="font-medium mb-3 text-md">{item?.productId.name}</h4>
+                                <NumberStepper
                                   value={item?.quantity}
                                   onChange={(newQuantity) => {
-                                      updateItemQuantity(item, newQuantity);
+                                    updateItemQuantity(item, newQuantity);
                                   }}
                                   min={0}
                                   max={item?.productId.quantity}
-                                  step={1}  />
-                                </div>
+                                  step={1}
+                                />
                               </div>
-
-                              {/* Right Section: Price */}
                               <span className="font-medium mb-10 text-lg">
                                 {currency} {(item.productId.price * (exchangeRates[currency] || 1)).toFixed(2)}
                               </span>
                             </li>
                           ))}
-                        </ul>
-                      ) : (
-                        <p>Your cart is empty.</p>
-                      )}
-                    </div>
-                    {cart.length > 0 && (
-                      <div className="mt-auto">
-                        <div className="flex justify-between items-center p-4">
-                          <span className="font-medium">Total:</span>
-                          <span className="font-bold">{currency} {(totalPrice* (exchangeRates[currency] || 1)).toFixed(2)}</span>
-                        </div>
-                        <Separator />
-                        <div className="p-4">
-                          <Button className="w-full bg-emerald-900 hover:bg-emerald-800" onClick={handleCheckout}>
-                            Proceed to Checkout
-                          </Button>
-                        </div>
-                      </div>
+                      </ul>
+                    ) : (
+                      <p>Your cart is empty.</p>
                     )}
-                  </SheetContent>
-                </Sheet>
+                  </div>
+                  {cart.length > 0 && (
+                    <div className="mt-auto">
+                      <div className="flex justify-between items-center p-4">
+                        <span className="font-medium">Total:</span>
+                        <span className="font-bold">{currency} {(totalPrice * (exchangeRates[currency] || 1)).toFixed(2)}</span>
+                      </div>
+                      <Separator />
+                      <div className="p-4">
+                        <Button className="w-full bg-emerald-900 hover:bg-emerald-800" onClick={handleCheckout}>
+                          Proceed to Checkout
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </SheetContent>
+              </Sheet>
               <button
                 onClick={handleClick}
                 className={`${
@@ -401,7 +441,7 @@ export default function Navbar({ profilePageString, children }) {
                   navigate("/order");
                 }}>Orders</MenuItem>
                 <Separator />
-                <MenuItem onClick={() => {handleClose(); handleLogoutClick();}}>Sign out</MenuItem>
+                <MenuItem onClick={() => { handleClose(); handleLogoutClick(); }}>Sign out</MenuItem>
               </Menu>
               <LogoutAlertDialog
                 isOpen={isAlertOpen}
@@ -447,6 +487,3 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
-
-//{(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? <NotificationBadge /> : <NotificationBadgeDark />}
-//<NotificationBell theme={currentPage === "/" ? "light" : "dark"} />

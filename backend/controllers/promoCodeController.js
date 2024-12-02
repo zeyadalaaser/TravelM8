@@ -1,4 +1,9 @@
-import PromoCode from "../models/promoCodeModel";
+import PromoCode from "../models/promoCodeModel.js";
+import Tourist from "../models/touristModel.js";
+import { sendBirthdayPromoCode } from "../utils/email.js";
+import { notifyTouristBirthdayPromo } from './notificationController.js'; //
+import { generatePromoCode } from "../utils/promoCodeGenerator.js"; 
+
 
 // Create a new promo code
 export const createPromoCode = async (req, res) => {
@@ -69,5 +74,51 @@ export const checkPromoCodeValidity = async (req, res) => {
     res.status(200).json({ message: 'Promo code is valid!', value: foundPromo.value });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const sendBirthdayPromoCodes = async () => {
+  const today = new Date();
+  console.log("today: ", today);
+  const day = today.getDate();
+  console.log("day: ", day);
+  const month = today.getMonth() + 1; // Months are 0-indexed
+  console.log("month: ", month);
+
+  try {
+    const tourists = await Tourist.find({
+      dob: { $exists: true, $ne: null },
+      birthdayPromoSent: false,
+      $expr: {
+          $and: [
+              { $eq: [{ $dayOfMonth: "$dob" }, day] },
+              { $eq: [{ $month: "$dob" }, month] }
+          ]
+      }
+  });
+
+      for (const tourist of tourists) {
+        if (!tourist.email) {
+          console.error(`No email found for tourist: ${tourist._id}`);
+          continue; // Skip tourists without email
+      }
+          console.log(`Processing tourist: ${tourist._id}, Email: ${tourist.email}, DOB: ${tourist.dob}`);
+          console.log('Sending birthday promo code to:', tourist.email);
+          const promoCode = generatePromoCode(); 
+          const value = 50; 
+          const newPromoCode = new PromoCode({ promoCode, value });
+          await newPromoCode.save();
+
+          if (tourist.email) {
+              console.log('Sending birthday promo code to:', tourist.email);
+              await sendBirthdayPromoCode(tourist.email, promoCode);
+          } else {
+              console.error('No email address found for tourist:', tourist._id);
+          }
+          tourist.birthdayPromoSent = true;
+          await notifyTouristBirthdayPromo(tourist._id, promoCode); // Call the new function
+      }
+  } catch (error) {
+      console.error('Error sending birthday promo codes:', error);
   }
 };
