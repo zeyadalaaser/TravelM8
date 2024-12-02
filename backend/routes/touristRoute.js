@@ -1,7 +1,7 @@
 import express from 'express';
 import { createTourist, updateTouristProfile, getTourists, getMyProfile
 ,updatePoints,redeemPoints, updatePreferences,addToCart,removeFromCart,clearCart,getCart, decrementQuantity, 
-getWishlist, updateCartItemQuantity,
+getWishlist, updateCartItemQuantity,  getTouristAddresses,
 addToWishlist,
 removeFromWishlist} from '../controllers/touristController.js';
 import verifyToken from '../services/tokenDecodingService.js';
@@ -30,5 +30,6 @@ touristRoute.get("/tourists/wishlist",verifyToken, getWishlist);
 touristRoute.post("/tourists/wishlist",verifyToken, addToWishlist);
 touristRoute.delete("/tourists/wishlist",verifyToken, removeFromWishlist);
 touristRoute.put("/tourists/cart/:productId",verifyToken, updateCartItemQuantity);
+touristRoute.get('/tourists/addresses', verifyToken, getTouristAddresses);
 
 export default touristRoute; 
