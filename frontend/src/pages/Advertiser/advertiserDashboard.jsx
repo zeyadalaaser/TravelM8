@@ -4,6 +4,7 @@ import DashboardsNavBar from "../../components/DashboardsNavBar.jsx";
 import ActivityCard from "../../components/ActivityCard/ActivityCard.jsx";
 import ActivityFormDialog from "./ActivityForm.jsx";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   Calendar,
@@ -19,6 +20,7 @@ import {
   Users,
   MapPin,
 } from "lucide-react";
+import { jwtDecode } from 'jwt-decode';
 
 import {
   Select,
@@ -48,6 +50,8 @@ const AdvertiserDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogArgs, setDialogArgs] = useState(null);
   const [activeTab, setActiveTab] = useState("activities");
+  
+  const navigate = useNavigate();
   const [reportData, setReportData] = useState([]);
   const token = localStorage.getItem("token");
  
@@ -86,6 +90,33 @@ useEffect(() => {
     setIsDialogOpen(false);
     setDialogArgs(null);
   };
+
+  useEffect(() => {
+    if (!token) return; // No token, no need to check
+
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token"); 
+      navigate("/");
+    }
+  }, [token, navigate]);
+
+  const fetchActivities = async () => {
  
   console.log(reportData);
 const fetchActivities = async () => {
@@ -319,7 +350,10 @@ const fetchActivities = async () => {
                   <ul className="space-y-2">
                     {notifications.map((notification, index) => (
                       <li key={index} className="p-4 bg-white rounded shadow">
-                        {notification.message}
+                        <p>{notification.message}</p>
+                        <p className="text-sm text-gray-500 mt-2">
+                          {new Date(notification.createdAt).toLocaleString()}
+                        </p>
                       </li>
                     ))}
                   </ul>

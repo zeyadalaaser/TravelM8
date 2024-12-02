@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import Seller from './sellerModel.js'
-
+import { notifyProductOutOfStock } from '../controllers/notificationController.js';
 const productSchema = new mongoose.Schema({
     name:{
         type: String,
@@ -48,6 +47,16 @@ const productSchema = new mongoose.Schema({
 },{
     timestamps: true
 });
+productSchema.post('save', async function (doc) {
+  if (doc.quantity === 0) {
+      try {
+          await notifyProductOutOfStock(doc); 
+      } catch (error) {
+          console.error('Error notifying product out of stock:', error);
+      }
+  }
+});
+
 
 const Product = mongoose.model('Product', productSchema);
 export default Product;

@@ -7,6 +7,7 @@
   import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
   import { fetchProfileInfo ,updateProfile,changePassword} from '../seller/api/apiService';
   import { Textarea } from "@/components/ui/textarea";
+  import SellerNavbar from '../../components/SellerNavbar';
   import Logout from "@/hooks/logOut.jsx";
   
   const SellerProfile = () => {
@@ -284,22 +285,8 @@
   
     return (
       <div className="min-h-screen bg-gray-100">
-        {/* Header */}
-        <header className="bg-white shadow">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div className="text-2xl font-bold text-blue-600">TravelM8</div>
-            <div className="flex items-center space-x-4">
-              <button className="text-gray-600 hover:text-gray-800">
-                <Bell className="h-6 w-6" />
-              </button>
-              <button className="flex items-center text-gray-600 hover:text-gray-800">
-                <User className="h-6 w-6 mr-2" />
-                <span>John Doe</span>
-                <ChevronDown className="h-4 w-4 ml-1" />
-              </button>
-            </div>
-          </div>
-        </header>
+           <SellerNavbar />
+
   
         {/* Main Content */}
         <main className="container mx-auto px-4 py-8">

@@ -29,9 +29,11 @@ const decodeToken = (token) => {
 
 export function ProductsPage({ addToCart }) {
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const type = searchParams.get('type');
+  const currency = searchParams.get('currency') ?? "USD";
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [currency, setCurrency] = useState("USD");
   const [loading, setLoading] = useState(false);
   const [exchangeRates, setExchangeRates] = useState({});
   const [token, setToken] = useState(null);
@@ -77,17 +79,17 @@ export function ProductsPage({ addToCart }) {
     fetchProducts();
   }, [currency, location.search]);
 
-  const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set("currency", e.target.value);
-    navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
-  };
+  // const handleCurrencyChange = (e) => {
+  //   setCurrency(e.target.value);
+  //   const queryParams = new URLSearchParams(location.search);
+  //   queryParams.set("currency", e.target.value);
+  //   navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
+  // };
 
   return (
     <div className="mt-24">
       <SearchBar categories={[{ name: "Name", value: "name" }]} />
-      <div className="flex flex-row justify-between mb-4">
+      {/* <div className="flex flex-row justify-between mb-4 ">
         <label>
           Currency:
           <select value={currency} onChange={handleCurrencyChange}>
@@ -98,9 +100,9 @@ export function ProductsPage({ addToCart }) {
             ))}
           </select>
         </label>
-      </div>
+      </div> */}
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4">
+        <div className="w-full md:w-1/4 sticky top-16 h-full">
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
@@ -124,7 +126,6 @@ export function ProductsPage({ addToCart }) {
               products={products}
               currency={currency}
               token={token}
-              addToCart={addToCart}
             />
           )}
         </div>

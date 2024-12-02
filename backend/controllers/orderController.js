@@ -209,6 +209,7 @@ export const payWithCash = async (req, res) => {
         for (const item of user.cart) {
           if (item.productId) {
             item.productId.sales += 1; 
+            item.productId.quantity-=item.quantity;
             await item.productId.save(); 
           }
         }
@@ -350,6 +351,8 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: "Failed to cancel order", error });
     }
   };
+
+
   
   
   

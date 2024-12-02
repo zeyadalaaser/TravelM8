@@ -6,16 +6,23 @@ const bookmarkSchema = new mongoose.Schema({
     ref: 'Tourist',
     required: true,
   },
-  activityId: {
+  // Make the reference dynamic
+  itemId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Activity',
     required: true,
+    // This will be either 'Activity' or 'Itinerary'
+    refPath: 'itemType'
   },
-  bookmark:{
+  itemType: {
+    type: String,
+    required: true,
+    enum: ['Activity', 'Itinerary']
+  },
+  bookmark: {
     type: Boolean,
-    default:false,
+    default: false,
   },
 });
 
-const bookmarkActivity = mongoose.model('bookmarkActivity', bookmarkSchema);
-export default bookmarkActivity;
+const Bookmark = mongoose.model('Bookmark', bookmarkSchema);
+export default Bookmark;

@@ -41,7 +41,7 @@ import PurchasedProductsPage from "@/pages/tourist/components/products/Purchased
 import PendingUserDocuments from "./pages/admin/PendingUsersDocuments.jsx";
 import Sellerdashboard from "@/pages/seller/Sellerdashboard.jsx";
 import AccountDelete from "./pages/admin/accountDelete.jsx";
-import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
+//import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
 import SignupsRoles from "./pages/SignUp/signupRoles.jsx";
 import { Toaster } from "@/components/ui/toaster";
 import LoadingPage from "./components/loading.jsx";
@@ -51,12 +51,15 @@ import LoginPage from "./pages/signIn/signin.jsx";
 import ManageActivities from "./pages/admin/ManageActivities.jsx";
 import PastActivities from "./pages/tourist/components/activities/PastActivitiesPage.jsx";
 import BookmarksPage from './pages/tourist/components/activities/activities.jsx';
+import Checkout from "./pages/tourist/components/products/checkout.jsx";
+import PreferencesPage from './pages/tourist/components/Preferences.jsx';
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/checkout" element={<Checkout />} />
         {/* <Route path="/admin" element={<AdminPage/>} /> */}
         <Route path="/loading" element={<LoadingPage />} />
         <Route path="/Sellerdashboard" element={<Sellerdashboard />} />
@@ -98,10 +101,6 @@ createRoot(document.getElementById("root")).render(
         <Route path="/itineraryForm" element={<ItineraryForm />} />
         <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
         <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
-        <Route
-          path="/preferences-page/:touristId"
-          element={<PreferencesPage />}
-        />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/Pastactivities" element={<PastActivities />} />
@@ -112,6 +111,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/order" element={<Order />} />
         <Route path="/admin/manage-activities" element={<ManageActivities />} />
         <Route path="/bookmarks" element={<BookmarksPage ></BookmarksPage>}/>
+        <Route path="/preferences" element={<PreferencesPage />}/>
       </Routes>
     </BrowserRouter>
     <Toaster />

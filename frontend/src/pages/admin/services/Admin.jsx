@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
+
+import Navbar from "@/components/DashboardsNavBar";
+
+//import Navbar from "@/components/NavbarAdmin";
+
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,13 +24,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react"; // Removed Trash2 as per previous instructions
+import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+
 
 const AdminPanel = () => {
   const [sidebarState, setSidebarState] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(""); // Added email state
   const [admins, setAdmins] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
@@ -56,16 +61,23 @@ const AdminPanel = () => {
       return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Invalid email format.");
+      setSuccess(null);
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:5001/api/admins/register",
-        { username, password }
+        { username, password, email } 
       );
       setSuccess(response.data.message);
       setError(null);
       fetchAdmins();
       setUsername("");
       setPassword("");
+      setEmail(""); // Clear email field
       setIsOpen(false);
       toast({ title: "Admin added successfully!", duration: 3000 });
     } catch (error) {
@@ -96,10 +108,11 @@ const AdminPanel = () => {
             onOpenChange={(open) => {
               setIsOpen(open);
               if (open) {
-                setError(null); // Clear any previous error message
-                setSuccess(null); // Clear any previous success message
-                setUsername(""); // Clear previous username
-                setPassword(""); // Clear previous password
+                setError(null);
+                setSuccess(null);
+                setUsername("");
+                setPassword("");
+                setEmail(""); // Clear email field when opening dialog
               }
             }}
           >
@@ -126,6 +139,19 @@ const AdminPanel = () => {
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="email" className="text-right">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="col-span-3"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="password" className="text-right">
                     Password
                   </Label>
@@ -136,7 +162,7 @@ const AdminPanel = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     className="col-span-3"
                     required
-                    minLength={7} // Enforce password length on frontend
+                    minLength={7}
                   />
                 </div>
                 {error && (
@@ -160,12 +186,14 @@ const AdminPanel = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Username</TableHead>
+                <TableHead>Email</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {admins.map((admin) => (
                 <TableRow key={admin.username}>
                   <TableCell>{admin.username}</TableCell>
+                  <TableCell>{admin.email}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

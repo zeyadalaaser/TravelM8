@@ -12,6 +12,9 @@ import BookingHistory from "@/pages/tourist/components/bookings/BookingHistory.j
 import BookmarksHistory from "@/pages/tourist/components/activities/bookmarks";
 import RedeemPoints from "@/pages/tourist/components/Points/redeemPoints2.jsx";
 import Navbar from "@/components/Navbar.jsx";
+import { Wishlist } from './wishlist';
+import  PreferencesPage  from './Preferences';
+import { FaStar } from 'react-icons/fa'; // Import star icon
 
 const TouristProfilePage = () => {
 
@@ -183,7 +186,7 @@ const TouristProfilePage = () => {
     switch (activeView) {
       case 'dashboard':
         return (
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="container p-10 bg-white shadow rounded-lg">
             <h1 className="text-2xl font-bold mb-6">Account info</h1>
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Profile</h2>
@@ -337,7 +340,7 @@ const TouristProfilePage = () => {
         );
       case 'locations':
         return (
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white shadow rounded-lg p-10">
             <h1 className="text-2xl font-bold mb-6">Locations</h1>
             {/* Locations content */}
           </div>
@@ -354,10 +357,23 @@ const TouristProfilePage = () => {
             <BookingHistory />
           </div>
         );
+      case 'wishlist':
+        return (
+          <div className="bg-white shadow rounded-lg p-6">
+            <Wishlist token={token} />
+          </div>
+        );
       case 'bookmarks':
         return (
           <div className="bg-white shadow rounded-lg p-6">
             <BookmarksHistory />
+          </div>
+        );
+        case 'preferences':
+       
+        return (
+          <div className="bg-white shadow rounded-lg p-6">
+            <PreferencesPage />
           </div>
         );
         case 'points':
@@ -368,7 +384,7 @@ const TouristProfilePage = () => {
           );
       case 'settings':
         return (
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white shadow rounded-lg p-10">
             <h1 className="text-2xl font-bold mb-6">Security & Settings</h1>
             {/* Settings content */}
             <section className="mb-8">
@@ -478,6 +494,14 @@ const TouristProfilePage = () => {
                 <Bookmark className="mr-3" />
                 My Bookmarks
               </button>
+              <button
+                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('preferences')} 
+              >
+                <FaStar className="mr-3 " />
+                My Preferences
+              </button>
+              
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('points')}

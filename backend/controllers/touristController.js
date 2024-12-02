@@ -44,22 +44,43 @@ export const updateTouristProfile = async (req, res) => {
 };
 
 export const updatePreferences = async (req, res) => {
-  const touristId = req.params.touristId;  // This gets the touristId from the URL
+  const userId = req.user.userId;
   const { preferences } = req.body;
 
+  if (!Array.isArray(preferences)) {
+    return res.status(400).json({ error: 'Invalid preferences format. Expected an array.' });
+}
+
+try {
+  const updatedTourist = await Tourist.findByIdAndUpdate(
+      userId,
+      { preferences }, // Assuming preferences is a field in the schema
+      { new: true, runValidators: true }
+  );
+
+  if (!updatedTourist) {
+      return res.status(404).json({ error: 'Tourist not found.' });
+  }
+
+  res.status(200).json(updatedTourist);
+} catch (error) {
+  res.status(400).json({ error: error.message });
+}
+};
+
+export const getUserPreferences = async (req, res) => {
+  const userId = req.user.userId;
   try {
-    const tourist = await Tourist.findById(touristId);
+    // Fetch the tourist's preferences
+    const tourist = await Tourist.findById(userId).select('preferences'); // Only select preferences field
     if (!tourist) {
       return res.status(404).json({ message: 'Tourist not found' });
     }
-    if (preferences && Array.isArray(preferences)) {
-      tourist.preferences = preferences;
-    } else {
-      return res.status(400).json({ message: 'Invalid preferences data' });
-    }
 
-    await tourist.save();
-    res.status(200).json(tourist);
+    // Return the preferences (tags the user has selected)
+    res.status(200).json({
+      preferences: tourist.preferences,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -197,16 +218,16 @@ export const addToCart = async (req, res) => {
         message: `Product is out of stock`,
       });
     }
-    const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
+    const existingItem = user.cart.find(item => item.productId && item.productId._id.toString() === productId);
     if (existingItem) {
       existingItem.quantity += 1;
       existingItem.price = product.price * existingItem.quantity;
-      product.quantity -= 1;
+      // product.quantity -= 1;
     }
 
     else {
       user.cart.push({ productId, price: product.price });
-      product.quantity -= 1;
+      // product.quantity -= 1;
     }
     await product.save();
     await user.save();
@@ -215,6 +236,59 @@ export const addToCart = async (req, res) => {
     res.status(500).json({ message: "Failed to add item to cart", error });
   }
 };
+
+export const updateCartItemQuantity = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const { productId } = req.params; // Product details from request params
+    const { quantity } = req.body; // New quantity from request body
+
+    const user = await Tourist.findById(userId).populate("cart.productId");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (product.quantity < 1 && quantity > 0) {
+      return res.status(400).json({
+        message: `Product is out of stock`,
+      });
+    }
+
+    const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
+
+    if (existingItem) {
+      if (quantity === 0) {
+        // If the quantity is set to 0, remove the item from the cart
+        user.cart = user.cart.filter(
+          (item) => item.productId._id.toString() !== productId
+        );
+      } else {
+        // Update the quantity of the existing item
+        existingItem.quantity = quantity;
+        existingItem.price = product.price * quantity;
+      }
+    } else {
+      // If the item doesn't exist in the cart, you could add it with the specified quantity
+      if (quantity > 0) {
+        user.cart.push({ productId, price: product.price, quantity });
+      } else {
+        return res.status(400).json({ message: "Quantity must be greater than zero" });
+      }
+    }
+    await product.save();
+    await user.save();
+
+    res.status(200).json({ message: "Cart updated", cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update item in cart", error });
+  }
+};
+
 
 export const decrementQuantity = async (req, res) => {
   try {
@@ -232,7 +306,7 @@ export const decrementQuantity = async (req, res) => {
     const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
     if (existingItem) {
       if (existingItem.quantity - 1 < 1) {
-        product.quantity += 1;
+        // product.quantity += 1;
         user.cart = user.cart.filter(
           (item) => item.productId._id.toString() !== productId
         );
@@ -240,7 +314,7 @@ export const decrementQuantity = async (req, res) => {
       else {
         existingItem.quantity -= 1;
         existingItem.price = product.price * existingItem.quantity;
-        product.quantity += 1;
+        // product.quantity += 1;
       }
     }
 
@@ -268,7 +342,7 @@ export const removeFromCart = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
     const existingItem = user.cart.find(item => item.productId._id.toString() === productId);
-    product.quantity += existingItem.quantity;
+    // product.quantity += existingItem.quantity;
     user.cart = user.cart.filter(
       (item) => item.productId._id.toString() !== productId
     );
@@ -306,7 +380,12 @@ export const getCart = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    user.cart = user.cart.filter(
+      (item) => item.productId && item.productId.archived === false
+    );
+    user.cart = user.cart.filter(
+      (item) => item.productId && item.productId.quantity >= item.quantity
+    );
     res.status(200).json({
       message: "Cart details retrieved successfully",
       cart: user.cart,
@@ -325,7 +404,7 @@ export const getWishlist = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user.wishlist);
+    res.status(200).json(user.wishlist.filter(p => !p.archived));
   } catch (error) {
     res.status(500).json({ message: "Failed to retrieve wishlist", error });
   }
@@ -371,5 +450,30 @@ export const removeFromWishlist = async (req, res) => {
     res.status(200).json(user.wishlist);
   } catch (error) {
     res.status(500).json({ message: "Failed to delete from wishlist", error });
+  }
+};
+
+export const getTouristAddresses = async (req, res) => {
+  const touristId = req.user?.userId;  // Ensure you're getting the correct userId from the request
+
+  if (!touristId) {
+    return res.status(400).json({ message: 'User not authenticated' });
+  }
+
+  try {
+    // Use findById instead of find
+    const tourist = await Tourist.findById(touristId).select('address');
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist doesn't have saved addresses" });
+    }
+
+    // Since tourist is a single document, you don't need to map over it
+    const addresses = tourist.address;
+    return res.status(200).json({ addresses });
+
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    return res.status(500).json({ message: "Failed to retrieve addresses", error: error.message });
   }
 };

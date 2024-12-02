@@ -32,7 +32,7 @@ import "./services/Reminders/reminderjob.js";
 import authRoute from './routes/authRoute.js';
 import orderRoutes from './routes/orderRoute.js';
 import bookmarksRoutes from './routes/BookmarkRoute.js';
-
+import notificationRoutesTourist from './routes/NotificationTouristRouter.js';
 
 dotenv.config({ path: "../.env" });
 
@@ -83,9 +83,15 @@ app.use("/api", bookmarksRoutes);
 app.use("/api", deleteRequestRoute);
 app.use("/api", notificationRoutes);
 app.use('/api/auth', authRoute);
+app.use('/api/notifications', notificationRoutesTourist);
 app.use(express.json());
 
 
+// Add logging middleware
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
 
 app.listen(PORT, () => {
   connectDB();

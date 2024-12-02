@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Clock, Globe, Tag } from "lucide-react";
+import { Clock, Globe, Tag,  Bookmark } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +35,8 @@ export default function ItineraryCard({
   exchangeRate,
   onRefresh,
   isTourGuide,
+  bookmarkedItineraries = [], // Add this prop
+  handleBookmark = () => {},
 }) {
   const navigate = useNavigate();
 
@@ -146,7 +148,19 @@ export default function ItineraryCard({
                         </Button>
                       )}
                       {isTourist && (
-                        <ShareButton id={itinerary._id} name="itinerary" />
+                        <>
+                          <ShareButton id={itinerary._id} name="itinerary" />
+                          <button
+                            onClick={() => handleBookmark(itinerary._id)}
+                            className={`text-gray-500 hover:text-black ${
+                              bookmarkedItineraries.includes(itinerary._id) 
+                                ? 'text-yellow-400' 
+                                : ''
+                            }`}
+                          >
+                            <Bookmark className="w-6 h-6" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -305,8 +319,8 @@ const Timeline = ({ selectedItinerary }) => {
 
 const ChooseDate = ({ itinerary }) => {
   let remainingSpots;
-  const [selectedDate, setSelectedDate] = useState();
-  const [submitStatus, setSubmitStatus] = useState();
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [submitStatus, setSubmitStatus] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -356,16 +370,17 @@ const ChooseDate = ({ itinerary }) => {
           >
             {itinerary.availableSlots.map((slot, index) => {
               const slotDate = new Date(slot.date).toLocaleDateString();
+              const booked = slot.maxNumberOfBookings == 0;
               return (
                 <div className="flex items-center space-x-2" key={index}>
-                  <RadioGroupItem value={slot.date} id={`slot-${index}`} />
-                  <Label htmlFor={`slot-${index}`}>{slotDate}</Label>
+                  <RadioGroupItem disabled={booked} value={slot.date} id={`slot-${index}`} />
+                  <Label className={`${booked && 'line-through text-gray-500'}`} htmlFor={`slot-${index}`}>{slotDate}</Label>
                 </div>
               );
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button type="submit">Book</Button>
+            <Button disabled={!selectedDate} type="submit">Book</Button>
           </DialogFooter>
         </form>
         {submitStatus && (

@@ -200,14 +200,14 @@ const BookingHistory = () => {
   const renderSubTabs = () => {
     if (mainTab === "products") {
       return (
-        <TabsList className="mb-4">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="purchased">Purchased</TabsTrigger>
         </TabsList>
       );
     } else {
       return (
-        <TabsList className="mb-4">
+        <TabsList className="grid w-full grid-cols-4 mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -471,7 +471,7 @@ const renderCards = () => {
 
   return (
     <div className="container mx-auto p-4 bg-background">
-      <h1 className="text-3xl font-bold mb-6 text-center">Bookings</h1>
+      <h1 className="text-2xl font-bold mb-6">Bookings</h1>
       <Tabs value={mainTab} onValueChange={setMainTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="products">Products</TabsTrigger>

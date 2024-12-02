@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/NavbarAdmin";
+import Navbar from "@/components/DashboardsNavBar.jsx";
 import Footer from "@/components/Footer";
 import {
   Table,

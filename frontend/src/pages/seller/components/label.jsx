@@ -1,6 +1,6 @@
 import React from 'react';
 import Input from './input'; // Import your Input component
-import { Textarea } from './textarea'; // Import your Textarea component
+import  Textarea  from "./textarea";
 
 // Define the Label component
 const Label = ({ htmlFor, children }) => {

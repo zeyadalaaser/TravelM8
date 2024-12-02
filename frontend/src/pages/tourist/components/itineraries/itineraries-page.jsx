@@ -16,14 +16,77 @@ import CircularProgress from '@mui/material/CircularProgress';
 export function ItinerariesPage() {
   const [loading, setLoading] = useState(false); 
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const type = searchParams.get('type');
+  const currency = searchParams.get('currency') ?? "USD";
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
-  const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [bookmarkedItineraries, setBookmarkedItineraries] = useState([]);
+  const token = localStorage.getItem("token")
 
   // Check if the user is a tourist (i.e., not an admin)
   const isAdmin = false; // Set to `true` for admin, `false` for tourists
+
+useEffect(() => {
+    const fetchBookmarks = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/bookmarks?type=Itinerary', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const bookmarkedIds = data.allBookmarks
+            .filter(b => b.bookmark)
+            .map(b => b.itemId._id);
+          setBookmarkedItineraries(bookmarkedIds);
+        }
+      } catch (error) {
+        console.error("Error fetching bookmarks:", error);
+      }
+    };
+
+    if (token) {
+      fetchBookmarks();
+    }
+  }, [token]);
+
+  const handleBookmark = async (itineraryId) => {
+    if (!token) {
+      alert("Please login to bookmark itineraries");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/bookmarks`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          itemId: itineraryId,
+          itemType: 'Itinerary'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.bookmark?.bookmark) {
+          setBookmarkedItineraries(prev => [...prev, itineraryId]);
+        } else {
+          setBookmarkedItineraries(prev => prev.filter(id => id !== itineraryId));
+        }
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Error while bookmarking:", error);
+      alert("Failed to update bookmark");
+    }
+  };
 
   // Fetch exchange rates on mount
   useEffect(() => {
@@ -70,20 +133,19 @@ export function ItinerariesPage() {
     fetchItineraries();
   }, [location.search, currency, priceRange]);
 
-  const handleCurrencyChange = (e) => {
-    const selectedCurrency = e.target.value;
-    setCurrency(selectedCurrency);
+  // const handleCurrencyChange = (e) => {
+  //   const selectedCurrency = e.target.value;
+  //   setCurrency(selectedCurrency);
 
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set("currency", selectedCurrency);
-    navigate(`${location.pathname}?${queryParams.toString()}`, {
-      replace: true,
-    });
-    fetchItineraries();
-  };
+  //   const queryParams = new URLSearchParams(location.search);
+  //   queryParams.set("currency", selectedCurrency);
+  //   navigate(`${location.pathname}?${queryParams.toString()}`, {
+  //     replace: true,
+  //   });
+  //   fetchItineraries();
+  // };
 
   const resetFilters = () => {
-    setCurrency("USD");
     setItineraries([]);
     navigate(location.pathname, { replace: true });
     fetchItineraries();
@@ -97,7 +159,7 @@ export function ItinerariesPage() {
   return (
     <div className="mt-24">
       <SearchBar categories={searchCategories} />
-      <div className="flex justify-between items-center mb-4">
+      {/* <div className="flex justify-between items-center mb-4">
         <label>
           Currency:
           <select value={currency} onChange={handleCurrencyChange}>
@@ -108,9 +170,9 @@ export function ItinerariesPage() {
             ))}
           </select>
         </label>
-      </div>
+      </div> */}
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4">
+        <div className="w-full mt-2 md:w-1/4 sticky top-16 h-full">
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -141,6 +203,8 @@ export function ItinerariesPage() {
               isTourist={true}
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
+              bookmarkedItineraries={bookmarkedItineraries} // Add this prop
+              handleBookmark={handleBookmark}
             />
           // ) : (
           //   <p>No itineraries found. Try adjusting your filters.</p>

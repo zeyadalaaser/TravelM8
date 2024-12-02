@@ -1,9 +1,8 @@
 "use client";
 
-
 import React, { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -116,16 +115,6 @@ const Preferencetag = () => {
         <Navbar toggleSidebar={toggleSidebar} />
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-bold mb-4">Vacation Preference Tags</h1>
-
-          {/* Dashboard Button */}
-          <div className="flex justify-end mb-4">
-            <Button
-              onClick={() => (window.location.href = "/AdminDashboard")} // Change '/dashboard' to your actual dashboard route
-              variant="outline"
-            >
-              Go to Dashboard
-            </Button>
-          </div>
 
           <div className="flex justify-between items-center mb-4">
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
