@@ -53,4 +53,22 @@ const transporter = nodemailer.createTransport({
       throw new Error('Failed to send email.');
     }
   };
-  
+
+  export const sendBirthdayPromoCode = async (to, promoCode) => {
+    try {
+        const mailOptions = {
+            from: 'TravelM8.noreply <TravelM8noreply@gmail.com>',
+            to,
+            subject: 'Happy Birthday! Here’s a Promo Code Just for You!',
+            text: `Happy Birthday! Use the promo code ${promoCode} to get a discount on your next purchase!`,
+            html: `<p>Happy Birthday! Use the promo code <b>${promoCode}</b> to get a discount on your next purchase!</p>`,
+        };
+
+        const result = await transporter.sendMail(mailOptions);
+        console.log('Birthday promo code email sent:', result);
+    } catch (error) {
+      console.log("emai:", to);
+        console.error('Error sending birthday promo code email:', error);
+        throw new Error('Failed to send birthday promo code email.');
+    }
+};

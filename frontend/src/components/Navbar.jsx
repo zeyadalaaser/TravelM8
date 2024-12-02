@@ -3,19 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ShoppingCart } from 'lucide-react';
+import { ChevronDown, ShoppingCart, Bell } from 'lucide-react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Cart from "../pages/tourist/components/products/cart.jsx";
 import LoginPage from "../pages/signIn/signin";
 import SignupDialog from "../pages/SignUp/signup";
-import NotificationBadge from "@/components/notificationBadge.jsx";
-import NotificationBadgeDark from "@/components/notificationBadgeDark.jsx";
 import LogoutAlertDialog from "@/hooks/logoutAlert";
 import useRouter from "@/hooks/useRouter";
-import { NumberStepper } from "@/components/ui/number-stepper"
+import { NumberStepper } from "@/components/ui/number-stepper";
 
 const pages = [
   { label: "Activities", value: "activities" },
@@ -38,8 +35,10 @@ export default function Navbar({ profilePageString, children }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [userName, setUserName] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [count, setCount] = useState(0)
   const [isAlertOpen, setAlertOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -49,6 +48,7 @@ export default function Navbar({ profilePageString, children }) {
         setUserName(decodedToken.username);
         setIsLoggedIn(true);
         fetchCart();
+        fetchNotifications(decodedToken.userId);
       }
     }
 
@@ -88,7 +88,6 @@ export default function Navbar({ profilePageString, children }) {
       setCart([]);
     }
   };
-
   const addToCart = async (productId) => {
     try {
       await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
@@ -99,7 +98,6 @@ export default function Navbar({ profilePageString, children }) {
       console.error('Failed to add item to cart:', error);
     }
   };
-
   const removeFromCart = async (productId) => {
     try {
       await axios.delete(`http://localhost:5001/api/tourists/cart/${productId}`, {
@@ -110,7 +108,6 @@ export default function Navbar({ profilePageString, children }) {
       console.error('Failed to remove item from cart:', error);
     }
   };
-
   const updateItemQuantity = async (item, newQuantity) => {
     console.log(item);
     try {
@@ -130,6 +127,72 @@ export default function Navbar({ profilePageString, children }) {
     } catch (error) {
       console.error('Failed to update item quantity:', error);
     }
+  };
+
+  const fetchNotifications = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:5001/api/notifications`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications(response.data.notifications || []);
+      setUnreadCount(response.data.notifications.filter(n => !n.isRead).length);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+      setNotifications([]);
+    }
+  };
+
+  const markAsRead = async (notificationId) => {
+    try {
+      await axios.patch(`http://localhost:5001/api/notifications/${notificationId}/read`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications(prevNotifications =>
+        prevNotifications.map(notification =>
+          notification._id === notificationId ? { ...notification, isRead: true } : notification
+        )
+      );
+      setUnreadCount(prevCount => prevCount - 1);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  const deleteNotification = async (notificationId) => {
+    try {
+      await axios.delete(`http://localhost:5001/api/notifications/${notificationId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications(prevNotifications =>
+        prevNotifications.filter(notification => notification._id !== notificationId)
+      );
+      setUnreadCount(prevCount => {
+        const notification = notifications.find(n => n._id === notificationId);
+        return prevCount - (notification && !notification.isRead ? 1 : 0);
+      });
+    } catch (error) {
+      console.error("Error deleting notification:", error);
+    }
+  };
+
+  const clearAllNotifications = async () => {
+    try {
+      await axios.delete('http://localhost:5001/api/notifications', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (error) {
+      console.error("Error clearing notifications:", error);
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    if (!notification._id) {
+      console.error("Invalid notification ID");
+      return;
+    }
+    markAsRead(notification._id);
   };
 
   const totalItems = Array.isArray(cart) ? cart.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
@@ -165,32 +228,17 @@ export default function Navbar({ profilePageString, children }) {
     <>
       <nav
         className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300  
-          ${
-            currentPage === "/" 
-              ? isScrolled 
-                ? "bg-gray-800/50 backdrop-blur-md" 
-                : "bg-transparent" 
-              : "bg-white text-black shadow-md"
-          }`
-        }
+          ${currentPage === "/" ? (isScrolled ? "bg-gray-800/50 backdrop-blur-md" : "bg-transparent") : "bg-white text-black shadow-md"}`}
         style={{ height: "56px" }}
       >
-        <div
-          className={`text-2xl font-semibold ${
-            currentPage === "/" ? "text-white" : "text-black"
-          }`}
-        >
+        <div className={`text-2xl font-semibold ${currentPage === "/" ? "text-white" : "text-black"}`}>
           TRAVELM8
         </div>
 
         <div className="hidden md:flex items-center justify-start ml-20 space-x-1">
           <button
             key="/"
-            className={`${
-              currentPage === "/"
-                ? "text-white hover:text-white/70 py-2 px-4"
-                : "text-black hover:text-black/70 py-2 px-4"
-            }`}
+            className={`${currentPage === "/" ? "text-white hover:text-white/70 py-2 px-4" : "text-black hover:text-black/70 py-2 px-4"}`}
             onClick={() => navigate(`/`)}
           >
             Home
@@ -198,14 +246,8 @@ export default function Navbar({ profilePageString, children }) {
           {pages.map((page) => (
             <button
               key={page.value}
-              className={`${
-                currentPage === "/"
-                  ? "text-white hover:text-white/70"
-                  : "text-black hover:text-black/70"
-              } ${
-                currentPage === `/tourist-page?type=${page.value}`
-                  ? "rounded-full py-2 px-4 border-[1px]"
-                  : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
+              className={`${currentPage === "/" ? "text-white hover:text-white/70" : "text-black hover:text-black/70"} ${
+                currentPage === `/tourist-page?type=${page.value}` ? "rounded-full py-2 px-4 border-[1px]" : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
               }`}
               onClick={() => navigate(`/tourist-page?type=${page.value}`)}
             >
@@ -217,92 +259,123 @@ export default function Navbar({ profilePageString, children }) {
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
-              {currentPage === "/" ? <NotificationBadge /> : <NotificationBadgeDark />}
-              <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-                  <SheetTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={currentPage === "/" ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
-                    >
-                      <div className="relative">
-                        <ShoppingCart className="h-5 w-5" />
-                        {totalItems > 0 && (
-                          <Badge
-                            variant="secondary"
-                            className="absolute bg-emerald-700 text-white -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2"
+              <Sheet open={isNotificationOpen} onOpenChange={setIsNotificationOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className={currentPage === "/" ? "text-white" : "text-black"}>
+                    <div className="relative">
+                      <Bell className="h-5 w-5" />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <div className="flex justify-between items-center">
+                      <SheetTitle>Notifications</SheetTitle>
+                      {notifications.length > 0 && (
+                        <Button variant="ghost" size="sm" onClick={clearAllNotifications}>
+                          Clear All
+                        </Button>
+                      )}
+                    </div>
+                    <SheetDescription>Your notifications</SheetDescription>
+                  </SheetHeader>
+                  <div className="mt-4 space-y-4 overflow-y-auto" style={{ maxHeight: "540px" }}>
+                    {notifications.length === 0 ? (
+                      <p className="text-center text-muted-foreground">No notifications</p>
+                    ) : (
+                      notifications.map((notification) => (
+                        <div
+                          key={notification._id}
+                          onClick={() => handleNotificationClick(notification)}
+                          className={`p-4 rounded-lg border cursor-pointer transition-colors ${
+                            !notification.isRead ? 'bg-blue-50 border-blue-200 hover:bg-blue-100' : 'border-gray-200 hover:bg-gray-50'
+                          }`}
+                        >
+                          <p className="font-medium">{notification.message}</p>
+                          <p className="text-sm text-gray-500 mt-1">{new Date(notification.createdAt).toLocaleString()}</p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification._id);
+                            }}
+                            className="text-red-500 hover:underline mt-2"
                           >
-                            {totalItems}
-                          </Badge>
-                        )}
-                      </div>
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent className="flex flex-col h-screen">
-                    <SheetHeader>
-                      <SheetTitle>Your Cart</SheetTitle>
-                      <SheetDescription>Review your items before checkout</SheetDescription>
-                    </SheetHeader>
-                    <div className="flex-grow overflow-y-auto">
-                      {cart.length > 0 ? (
-                        <ul className="space-y-4">
-                          {cart.map((item) => (
-                            <li key={item?._id} className="flex items-center justify-between space-x-4">
-                              {/* Left Section: Image and Name */}
-                              <div className="flex items-center space-x-4">
-                                <img
-                                  src={item?.productId.image || "https://via.placeholder.com/100"}
-                                  alt={item?.productId.name}
-                                  className="w-16 h-16 object-cover rounded"
-                                />
-                                <div>
-                                  <h4 className="font-medium mb-3 text-md">{item?.productId.name}</h4>
-                                  <NumberStepper
+                            Delete
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+              <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className={currentPage === "/" ? "text-white hover:bg-transparent hover:text-white " : "text-black"}>
+                    <div className="relative">
+                      <ShoppingCart className="h-5 w-5" />
+                      {totalItems > 0 && (
+                        <Badge variant="secondary" className="absolute bg-emerald-700 text-white -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2">
+                          {totalItems}
+                        </Badge>
+                      )}
+                    </div>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="flex flex-col h-screen">
+                  <SheetHeader>
+                    <SheetTitle>Your Cart</SheetTitle>
+                    <SheetDescription>Review your items before checkout</SheetDescription>
+                  </SheetHeader>
+                  <div className="flex-grow overflow-y-auto">
+                    {cart.length > 0 ? (
+                      <ul className="space-y-4">
+                        {cart.map((item) => (
+                          <li key={item?._id} className="flex items-center justify-between space-x-4">
+                            <div className="flex items-center space-x-4">
+                              <img src={item?.productId.image || "https://via.placeholder.com/100"} alt={item?.productId.name} className="w-16 h-16 object-cover rounded" />
+                              <div>
+                                <h4 className="font-medium mb-3 text-md">{item?.productId.name}</h4>
+                                <NumberStepper
                                   value={item?.quantity}
                                   onChange={(newQuantity) => {
-                                      updateItemQuantity(item, newQuantity);
+                                    updateItemQuantity(item, newQuantity);
                                   }}
                                   min={0}
                                   max={item?.productId.quantity}
-                                  step={1}  />
-                                </div>
+                                  step={1}
+                                />
                               </div>
-
-                              {/* Right Section: Price */}
-                              <span className="font-medium mb-10 text-lg">
-                                USD {(item.productId.price * item.quantity).toFixed(2)}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>Your cart is empty.</p>
-                      )}
-                    </div>
-                    {cart.length > 0 && (
-                      <div className="mt-auto">
-                        <div className="flex justify-between items-center p-4">
-                          <span className="font-medium">Total:</span>
-                          <span className="font-bold">USD {totalPrice.toFixed(2)}</span>
-                        </div>
-                        <Separator />
-                        <div className="p-4">
-                          <Button className="w-full bg-emerald-900 hover:bg-emerald-800" onClick={handleCheckout}>
-                            Proceed to Checkout
-                          </Button>
-                        </div>
-                      </div>
+                            </div>
+                            <span className="font-medium mb-10 text-lg">USD {(item.productId.price * item.quantity).toFixed(2)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>Your cart is empty.</p>
                     )}
-                  </SheetContent>
-                </Sheet>
-              <button
-                onClick={handleClick}
-                className={`${
-                  currentPage === "/"
-                    ? "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2"
-                    : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"
-                }`}
-              >
+                  </div>
+                  {cart.length > 0 && (
+                    <div className="mt-auto">
+                      <div className="flex justify-between items-center p-4">
+                        <span className="font-medium">Total:</span>
+                        <span className="font-bold">USD {totalPrice.toFixed(2)}</span>
+                      </div>
+                      <Separator />
+                      <div className="p-4">
+                        <Button className="w-full bg-emerald-900 hover:bg-emerald-800" onClick={handleCheckout}>
+                          Proceed to Checkout
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </SheetContent>
+              </Sheet>
+              <button onClick={handleClick} className={`${currentPage === "/" ? "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2" : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"}`}>
                 <span>Hello, {userName}</span>
                 <ChevronDown className={`h-4 w-4 ${currentPage === "/" ? "text-white" : "text-gray-500"}`} />
               </button>
@@ -332,7 +405,7 @@ export default function Navbar({ profilePageString, children }) {
                   navigate("/order");
                 }}>Orders</MenuItem>
                 <Separator />
-                <MenuItem onClick={() => {handleClose(); handleLogoutClick();}}>Sign out</MenuItem>
+                <MenuItem onClick={() => { handleClose(); handleLogoutClick(); }}>Sign out</MenuItem>
               </Menu>
               <LogoutAlertDialog
                 isOpen={isAlertOpen}
@@ -348,9 +421,7 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <Button
                   variant="outline"
-                  className={`bg-transparent rounded-full px-8 py-2 ${
-                    currentPage === "/" ? "text-white hover:bg-white/10 hover:text-white" : "text-black"
-                  } `}
+                  className={`bg-transparent rounded-full px-8 py-2 ${currentPage === "/" ? "text-white hover:bg-white/10 hover:text-white" : "text-black"}`}
                 >
                   Login
                 </Button>
@@ -361,9 +432,7 @@ export default function Navbar({ profilePageString, children }) {
                 onLoginClick={openLogin}
               >
                 <button
-                  className={`font-medium rounded-full px-8 py-2 ${
-                    currentPage === "/" ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
-                  } `}
+                  className={`font-medium rounded-full px-8 py-2 ${currentPage === "/" ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "}`}
                 >
                   Register
                 </button>
@@ -378,4 +447,3 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
-

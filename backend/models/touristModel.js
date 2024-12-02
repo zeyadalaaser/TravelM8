@@ -57,15 +57,19 @@ const touristSchema = new Schema(
     dob: {
       type: Date,
       required: true,
-      immutable: true, // This ensures that dob cannot be changed after creation
+      immutable: false, // This ensures that dob cannot be changed after creation
       validate: {
         validator: function (value) {
           const age = moment().diff(moment(value), "years");
-          return age >= 18; // Returns false if the age is less than 18
+          return age >= 21; // Returns false if the age is less than 21
         },
-        message: "You must be at least 18 years old to register.",
+        message: "You must be at least 21 years old to register.",
       },
     },
+    birthdayPromoSent: {
+      type: Boolean,
+      default: false,
+  },
 
     occupation: {
       // student/job
@@ -123,6 +127,10 @@ const touristSchema = new Schema(
         },
       },
     ],
+    promoCode: { 
+      type: String,
+      default: null,
+    },
     cart: [
       {
         productId: {

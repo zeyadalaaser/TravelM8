@@ -6,6 +6,7 @@ import {
   updatePromoCode,
   deletePromoCode,
   checkPromoCodeValidity,
+  sendBirthdayPromoCodes
 } from '../controllers/promoCodeController.js';
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.get('/promo-codes/:id', getPromoCode); // Get a promo code by ID
 router.put('/promo-codes/:id', updatePromoCode); // Update a promo code by ID
 router.delete('/promo-codes/:id', deletePromoCode); // Delete a promo code by ID
 router.post('/use-promo-code', checkPromoCodeValidity); // Check promo code validity
+router.post('/send-birthday-promo-codes', sendBirthdayPromoCodes);
 
 export default router;

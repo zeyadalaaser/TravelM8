@@ -54,6 +54,7 @@ export default function Navbar({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    console.log("token: ", token);
     if (token) {
       const decodedToken = decodeToken(token);
       if (decodedToken && decodedToken.userId) {
