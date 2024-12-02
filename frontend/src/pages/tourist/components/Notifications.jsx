@@ -8,7 +8,7 @@ import { getActivityBookings, getItineraryBookings } from "../api/apiService";
 import React, { useState, useEffect } from 'react';
 import './Prefernces.css';
 
-export default function NotificationSidebar() {
+export default function NotificationSidebar({currency,currentPage}) {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -113,7 +113,7 @@ export default function NotificationSidebar() {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="relative hover:bg-transparent"
+          className={(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
         >
           <Bell className="h-5 w-5" />
         </Button>
