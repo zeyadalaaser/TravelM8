@@ -330,13 +330,16 @@ export const totalCancelledActivitiesAdvertiser = async (advertiserId) => {
 };
 
 export const getActivitiesReport = async (req, res) => {
-  //const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user
-  const advertiserId = req.body.id;
+  const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user
+//  const advertiserId = req.body.id;
   const { year, month, day } = req.query;
 
   try {
     const matchConditions = {
-      status: { $in: ["booked", "completed"] }, // Filter by status
+      $or: [
+        { status: { $in: ["booked", "completed"] } },  // Filter by status "booked" or "completed"
+        { completionStatus: "Paid" }                    // Filter by completionstatus "paid"
+      ]
     };
 
     if (req.user?.role === "Advertiser" && advertiserId) {

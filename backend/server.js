@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { connectDB } from "./config/db.js";
+import cron from 'node-cron'; 
 import activityCategoryRoute from "./routes/activityCategoryRoute.js";
 import adminRoute from "./routes/adminRoute.js";
 import preferenceTagRoute from "./routes/preferenceTagRoute.js";
@@ -32,7 +33,13 @@ import "./services/Reminders/reminderjob.js";
 import authRoute from './routes/authRoute.js';
 import orderRoutes from './routes/orderRoute.js';
 import bookmarksRoutes from './routes/BookmarkRoute.js';
+
+import promoControlRoute from './routes/promoControlRoute.js';
+import { sendBirthdayPromoCodes } from './controllers/promoCodeController.js'
+
+
 import notificationRoutesTourist from './routes/NotificationTouristRouter.js';
+
 
 dotenv.config({ path: "../.env" });
 
@@ -83,9 +90,20 @@ app.use("/api", bookmarksRoutes);
 app.use("/api", deleteRequestRoute);
 app.use("/api", notificationRoutes);
 app.use('/api/auth', authRoute);
+
+app.use('/api', promoControlRoute);
+
 app.use('/api/notifications', notificationRoutesTourist);
 app.use(express.json());
 
+
+cron.schedule('0 0 * * *', async () => {
+  try {
+    await sendBirthdayPromoCodes();
+  } catch (error) {
+    console.error("Error in sendBirthdayPromoCode cron job:", error.message);
+  }
+});
 
 // Add logging middleware
 app.use((req, res, next) => {

@@ -238,3 +238,20 @@ export const clearNotifications = async (req, res) => {
   }
 };
 
+export const notifyTouristBirthdayPromo = async (touristId, promoCode) => {
+  try {
+    const message = `Happy Birthday! Use the promo code ${promoCode} to get a discount on your next purchase!`;
+    const notification = await Notification.create({
+      userId: touristId,
+      message,
+      type: 'birthday-promo-code', 
+      isRead: false,
+    });
+
+    console.log("Notification created successfully:", notification);
+    return { success: true, message: "Notification created successfully." };
+  } catch (error) {
+    console.error("Error creating notification:", error.message);
+    return { success: false, error: "Failed to create notification." };
+  }
+};

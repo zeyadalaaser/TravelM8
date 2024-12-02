@@ -447,6 +447,3 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
-
-//{(currentPage === "/" || currentPage === `/?currency=${currency}`)  ? <NotificationBadge /> : <NotificationBadgeDark />}
-//<NotificationBell theme={currentPage === "/" ? "light" : "dark"} />

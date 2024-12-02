@@ -146,39 +146,59 @@ export const updatePoints = async (userId, amountPaid) => {
 };
 
 export const redeemPoints = async (req, res) => {
-  //const { id } = req.params;
   const userId = req.user.userId;
+  const { amount } = req.body;
+
+  console.log("Received amount:", amount);
+
   try {
+    const pointsToRedeem = Number(amount); 
+    if (isNaN(pointsToRedeem) || pointsToRedeem <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid number of points to redeem' });
+    }
+
     const tourist = await Tourist.findById(userId);
     if (!tourist) {
       return res.status(404).json({ success: false, message: 'Tourist not found' });
     }
 
-    if (tourist.loyaltyPoints < 100) {
+    if (pointsToRedeem > tourist.loyaltyPoints) {
       return res.status(400).json({ success: false, message: 'Not enough points to redeem' });
     }
 
-    const cashEarned = Math.floor(tourist.loyaltyPoints / 10000) * 100;
-    const pointsRedeemed = Math.floor(tourist.loyaltyPoints / 10000) * 10000;
-
-    // Calculate the new wallet balance by adding cashEarned to current wallet value
+    const cashEarned = pointsToRedeem / 100; // 100 points = $1
     const newWalletBalance = tourist.wallet + cashEarned;
 
-    // Update wallet and loyalty points directly in a single update call
+    // Update loyalty points
+    const newLoyaltyPoints = tourist.loyaltyPoints - pointsToRedeem;
+
+    // Determine new level based on the remaining loyalty points
+    let newLevel = "Level 1";
+    if (newLoyaltyPoints >= 500000) {
+      newLevel = "Level 3";
+    } else if (newLoyaltyPoints >= 100000) {
+      newLevel = "Level 2";
+    }
+
+    // Update the tourist's data in the database
     const updatedTourist = await Tourist.findByIdAndUpdate(
       userId,
       {
-        wallet: tourist.wallet + ((tourist.loyaltyPoints / 10000) * 100),
-        loyaltyPoints: 0
+        wallet: newWalletBalance,
+        loyaltyPoints: newLoyaltyPoints,
+        badgeLevel: newLevel  // Update the level
       },
       { new: true, runValidators: true }
     );
 
     res.status(200).json(updatedTourist);
   } catch (error) {
+    console.error("Error during points redemption:", error);
     res.status(500).json({ success: false, message: `Error redeeming points: ${error.message}` });
   }
 };
+
+
 
 export const addToCart = async (req, res) => {
   try {
