@@ -40,7 +40,7 @@ export async function getMuseums(query) {
 
 }
 
-export async function getMyAddresses(token) { 
+export async function getMyAddresses(token) {
   return (
     await apiClient.get("tourists/addresses", {
       headers: {
@@ -78,6 +78,22 @@ export async function getCategories() {
 
 export async function getPreferenceTags() {
   return (await apiClient.get("preference-tags")).data.map((t) => t.name);
+}
+
+export async function getMyPreferredTags(token) {
+  console.log(token);
+  if (!token)
+    return [];
+
+  const response = await apiClient.get("tourists/preferences", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  console.log(response.data);
+
+  return response.data.preferences;
 }
 
 export async function getPlaceTags() {
@@ -129,19 +145,19 @@ export async function getActivityBookings() {
 }
 
 export async function createItineraryBooking(itinerary, tourGuide, tourDate, price, paymentMethod, token) {
-    return (
-      await apiClient.post(
-        "/itinerary-bookings",
-        { itinerary, tourGuide, tourDate, price, paymentMethod }, // Body payload goes here
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+  return (
+    await apiClient.post(
+      "/itinerary-bookings",
+      { itinerary, tourGuide, tourDate, price, paymentMethod }, // Body payload goes here
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
     )
-  
+  )
+
 }
 
 export async function getItineraryBookings() {
