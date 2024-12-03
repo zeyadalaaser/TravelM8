@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
+import { jwtDecode } from 'jwt-decode';
 import axios from "axios";
 import {
   Dialog,
@@ -366,6 +367,7 @@ export default function ItineraryCard({
 }
 
 const ChooseDate = ({ itinerary }) => {
+  const navigate = useNavigate();
   let remainingSpots;
   const [selectedDate, setSelectedDate] = useState(null);
   const [submitStatus, setSubmitStatus] = useState(null);
@@ -408,7 +410,32 @@ const ChooseDate = ({ itinerary }) => {
   };
   const token = localStorage.getItem("token");
 
+  useEffect(() => {
+    if (!token) return; 
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token"); 
+      navigate("/");
+    }
+  }, [token, navigate]);
+
   const checkForToken = () => {
+    console.log(token);
     if (!token) {
       toast({
         title: `Failed to book itinerary`,
