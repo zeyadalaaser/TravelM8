@@ -202,21 +202,6 @@ const TouristProfilePage = () => {
                 </div>
               </div>
             </section>
-            {/* Display User Preferences */}
-            <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4">Preferences</h2>
-              <div>
-                {profile && profile.preferences && profile.preferences.length > 0 ? (
-                  <ul className="list-disc pl-6">
-                    {profile.preferences.map((pref, index) => (
-                      <li key={index} className="text-lg text-gray-700">{pref}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No preferences available.</p>
-                )}
-              </div>
-            </section>
 
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Personal info</h2>
