@@ -233,7 +233,7 @@ export default function HeroSection() {
   return (
 
 
- <div className="bg-[#FAF9F6] min-h-screen">
+ <div className="bg-gray-50 min-h-screen">
       {isLoading ? (
       <div style={spinnerStyle}>
         <CircularProgress/>

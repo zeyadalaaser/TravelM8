@@ -16,6 +16,7 @@ import { Wishlist } from './wishlist';
 import  PreferencesPage  from './Preferences';
 import { FaStar } from 'react-icons/fa'; // Import star icon
 import MyOrdersPage from "@/pages/tourist/components/orders.jsx";
+import { ComplaintForm } from "@/pages/tourist/components/complaints/complaint-form.jsx";
 
 const TouristProfilePage = () => {
 
@@ -23,6 +24,7 @@ const TouristProfilePage = () => {
     percentageChange = 20.1,
     timeframe = "from last month";
   const isPositive = percentageChange > 0;
+  const [showComplaintForm, setShowComplaintForm] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -349,7 +351,8 @@ const TouristProfilePage = () => {
       case 'complaints':
         return (
           <div className="bg-white shadow rounded-lg p-6">
-            <MyComplaintsPage />
+            <MyComplaintsPage onComplaintClick={() => setShowComplaintForm(true)}
+          onRedeemClick={() => setShowRedeemPoints(true)}/>
           </div>
         );
       case 'bookings':
@@ -424,7 +427,7 @@ const TouristProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6]">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <Navbar profilePageString={"/tourist-profile"} />
 
@@ -660,7 +663,9 @@ const TouristProfilePage = () => {
           </div>
         </div>
       )}
+     {showComplaintForm && (<ComplaintForm onClose={() => setShowComplaintForm(false)} />)}
     </div>
+    
   )
 }
 

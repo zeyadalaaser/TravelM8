@@ -102,7 +102,7 @@ export default function TouristPage() {
   return (
 
 
-    <div className="bg-[#FAF9F6] min-h-screen">
+    <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto p-4 overflow-y: scroll min-h-[101vh]">
 
         <Navbar profilePageString={"/tourist-profile"} />

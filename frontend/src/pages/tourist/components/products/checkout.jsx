@@ -233,7 +233,7 @@ const createPaymentIntent = async () => {
 
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6]">
+    <div className="min-h-screen bg-gray-50">
        {isLoading ? (
         <div style={spinnerStyle}>
           <CircularProgress/>
@@ -559,7 +559,7 @@ function CreditCardForm() {
     
   }
   const navbarStyle = {
-    backgroundColor: "bg-[#FAF9F6]",
+    backgroundColor: "bg-gray-50",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
