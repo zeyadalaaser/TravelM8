@@ -138,7 +138,7 @@ export default function Navbar({ profilePageString, children }) {
   };
 
   const totalItems = Array.isArray(cart) ? cart.reduce((sum, item) => sum + (item.quantity || 0), 0) : 0;
-  const totalPrice = Array.isArray(cart) ? cart.reduce((sum, item) => sum + ((item.price || 0)), 0) : 0;
+  const totalPrice = cart.reduce((acc, item) => acc + item.productId.price * item.quantity, 0);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

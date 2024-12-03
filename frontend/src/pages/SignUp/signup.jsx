@@ -578,7 +578,7 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
                 required
               />
               <label htmlFor="terms">
-                I accept the{' '}
+                {" "}I accept the{' '}
                 <span
                   className="text-blue-600 cursor-pointer"
                   onClick={() => alert("read terms and consitions")}

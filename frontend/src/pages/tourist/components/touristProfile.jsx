@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, Eye, EyeOff, User, X, ThumbsDown, BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart, Bookmark,Gift } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, User, X,ClockArrowDown, ThumbsDown, BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart, Bookmark,Gift } from 'lucide-react'
 import { Input } from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import Navbar from "@/components/Navbar.jsx";
 import { Wishlist } from './wishlist';
 import  PreferencesPage  from './Preferences';
 import { FaStar } from 'react-icons/fa'; // Import star icon
+import MyOrdersPage from "@/pages/tourist/components/orders.jsx";
 
 const TouristProfilePage = () => {
 
@@ -338,11 +339,11 @@ const TouristProfilePage = () => {
             </div>
           </div>
         );
-      case 'locations':
+      case 'orders':
         return (
           <div className="bg-white shadow rounded-lg p-10">
-            <h1 className="text-2xl font-bold mb-6">Locations</h1>
-            {/* Locations content */}
+            <h1 className="text-2xl font-bold mb-6">My orders</h1>
+            <MyOrdersPage/>
           </div>
         );
       case 'complaints':
@@ -461,10 +462,10 @@ const TouristProfilePage = () => {
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView('locations')}
+                onClick={() => setActiveView('orders')}
               >
-                <Map className="mr-3" />
-                Locations
+                <ClockArrowDown className="mr-3" />
+                My orders
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
@@ -507,7 +508,7 @@ const TouristProfilePage = () => {
                 onClick={() => setActiveView('points')}
               >
                 <Gift className="mr-3" />
-               My loyalty Points
+               My loyalty points
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"

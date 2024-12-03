@@ -1,28 +1,38 @@
 import Stripe from 'stripe';
 import Order from '../models/orderModel.js';
 import Tourist from '../models/touristModel.js';
+import axios from "axios"
 
 
 const stripe = new Stripe('sk_test_51QNwSmLNUgOldllO81Gcdv4m60Pf04huhn0DcH2jm0NedAn6xh3krj5GyJ9PEojkKCJYmGJGojBK12S52FktB5Jc00dYqr1Ujo');
 
-
+async function getExchangeRates(base = "USD") {
+  const response = await axios.get(
+    `https://api.exchangerate-api.com/v4/latest/${base}`
+  );
+  return response.data.rates;
+}
 export const createPaymentIntent = async (req, res) => {
-    try {
-      const { amount, currency } = req.body;
-  
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount,
-        currency,
-        automatic_payment_methods: {
-          enabled: true,
-        },
-      });
-  
-      res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+  try {
+    const { amount, currency, targetCurrency } = req.body;
+    const rates = await getExchangeRates(currency);
+    if (!rates[targetCurrency]) {
+      return res.status(400).json({ error: 'Conversion rate not found for this currency pair.' });
     }
-  };
+    const convertedAmount = amount * rates[targetCurrency];
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(convertedAmount * 100),
+      currency: targetCurrency, 
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
   
 export const payWithStripe = async (req, res) => {
   try {
@@ -338,9 +348,7 @@ export const payWithCash = async (req, res) => {
         { status: "Cancelled" },
         { new: true } 
       ).populate("items.product");      
-      if (order.paymentMethod==="wallet") {
-        user.wallet= user.wallet + order.totalAmount;
-      }
+      user.wallet= user.wallet + order.totalAmount;
       for (const item of order.items) {
           if (item.product) {
             item.product.quantity+=item.quantity;
