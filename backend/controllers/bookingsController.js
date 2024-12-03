@@ -275,7 +275,7 @@ export const getItinerariesReport = async (req, res) => {
   try {
     const matchConditions = {
       tourGuide: new mongoose.Types.ObjectId(tourguideId),  
-      completionStatus: { $in: ['Pending', 'Completed'] },  
+      completionStatus: { $in: ['Pending', 'Completed','Paid'] },  
     };
     
     if (year || month || day) {
