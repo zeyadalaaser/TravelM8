@@ -43,16 +43,6 @@ export default function Navbar({ profilePageString, children }) {
   const currency = searchParams.get("currency") ?? "USD";
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decodedToken = decodeToken(token);
-      if (decodedToken && decodedToken.userId) {
-        setUserName(decodedToken.username);
-        setIsLoggedIn(true);
-        fetchCart();
-      }
-    }
-
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
@@ -62,6 +52,18 @@ export default function Navbar({ profilePageString, children }) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken = decodeToken(token);
+      if (decodedToken && decodedToken.userId) {
+        setUserName(decodedToken.username);
+        setIsLoggedIn(true);
+        fetchCart();
+      }
+    }
+  }, [isLoggedIn]);
 
   const decodeToken = (token) => {
     try {
@@ -403,6 +405,7 @@ export default function Navbar({ profilePageString, children }) {
               <LogoutAlertDialog
                 isOpen={isAlertOpen}
                 onClose={() => setAlertOpen(false)}
+                onLogout={() => setIsLoggedIn(false)}
               />
             </>
           ) : (
@@ -411,6 +414,7 @@ export default function Navbar({ profilePageString, children }) {
                 isOpen={isLoginOpen}
                 onOpenChange={setIsLoginOpen}
                 onSignupClick={openSignup}
+                onLogin={() => setIsLoggedIn(true)}
               >
                 <Button
                   variant="outline"

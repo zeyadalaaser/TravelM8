@@ -17,8 +17,7 @@ import { Link } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 import ForgotPassword from './ForgetPassword';
 
-const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
-    const [openLogin, setOpenLogin] = useState(false);
+const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick, onLogin }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -50,31 +49,33 @@ const LoginPage = ({ children, isOpen, onOpenChange, onSignupClick }) => {
             console.log("Login successful. Role:", role);
             console.log("token:", token);
             console.log("pref: ", needsPreferences);
+            onOpenChange(false);
+            onLogin();
 
-                switch (role) {
-                    case 'Tourist':
-                        navigate('/');
-                        break;
-                    case 'Seller':
-                        navigate('/Sellerdashboard');
-                        break;
-                    case 'TourGuide':
-                        navigate('/tourGuideDashboard');
-                        break;
-                    case 'TourismGovernor':
-                        navigate('/TourismGovernorDashboard');
-                        break;
-                    case 'Admin':
-                        navigate('/AdminDashboard');
-                        break;
-                    case 'Advertiser':
-                        navigate('/advertiserDashboard');
-                        break;
-                    default:
-                        navigate('/default-page');
-                }
-                window.location.reload();
-            
+            switch (role) {
+                case 'Tourist':
+                    navigate('/');
+                    break;
+                case 'Seller':
+                    navigate('/Sellerdashboard');
+                    break;
+                case 'TourGuide':
+                    navigate('/tourGuideDashboard');
+                    break;
+                case 'TourismGovernor':
+                    navigate('/TourismGovernorDashboard');
+                    break;
+                case 'Admin':
+                    navigate('/AdminDashboard');
+                    break;
+                case 'Advertiser':
+                    navigate('/advertiserDashboard');
+                    break;
+                default:
+                    navigate('/default-page');
+            }
+            //window.location.reload();
+
         } catch (error) {
             setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
         } finally {
