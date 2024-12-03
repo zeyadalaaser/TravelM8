@@ -7,6 +7,7 @@ export function Wishlist({ token }) {
     useEffect(() => {
         getWishlist(token).then(setProducts);
     }, []);
+    console.log(products);
 
     return (
         <div className="container p-4 bg-background">

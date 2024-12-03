@@ -38,7 +38,6 @@ export function Combobox({ className, data, placeholder, empty, value, onChange,
 
     useEffect(() => {
         if (buttonRef.current) {
-            console.log(buttonRef.current.offsetWidth);
             setButtonWidth(buttonRef.current.offsetWidth.toString());
         }
     }, []);

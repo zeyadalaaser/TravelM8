@@ -56,21 +56,22 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
         itemId: activityId,
         itemType: 'Activity'
       });
+      
       const response = await fetch(`http://localhost:5001/api/bookmarks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           itemId: activityId,
           itemType: 'Activity'
         })
       });
-            // Log the raw response
-            const responseText = await response.text();
-            console.log("Raw response:", responseText);
-      
+      // Log the raw response
+      const responseText = await response.text();
+      console.log("Raw response:", responseText);
+
 
       if (response.ok) {
         const data = JSON.parse(responseText);
@@ -80,7 +81,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
           setBookmarkedActivities(prev => prev.filter(id => id !== activityId));
         }
         alert(data.message);
-      }else {
+      } else {
         throw new Error(`Server responded with ${response.status}: ${responseText}`);
       }
     } catch (error) {
@@ -107,14 +108,13 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                 <div className="flex items-center space-x-2">
                   <ShareButton id={activity._id} name="activity" />
 
-                <button
-                  onClick={() => handleBookmark(activity._id)}
-                  className={`text-gray-500 hover:text-black ${
-                  bookmarkedActivities.includes(activity._id) ? 'text-yellow-400' : ''
-                  }`}
+                  <button
+                    onClick={() => handleBookmark(activity._id)}
+                    className={`text-gray-500 hover:text-black ${bookmarkedActivities.includes(activity._id) ? 'text-yellow-400' : ''
+                      }`}
                   >
-                  <Bookmark className="w-6 h-6" />
-                </button>
+                    <Bookmark className="w-6 h-6" />
+                  </button>
 
                 </div>
               </div>
@@ -155,10 +155,10 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
               <div className="flex justify-between items-center">
                 <span className="text-xl font-bold">
                   {Array.isArray(activity.price) && activity.price.length === 2
-                    ? `${(activity.price[0] * exchangeRate).toFixed(2)} - ${(
+                    ? `${(activity.price[0] * exchangeRate).formatCurrency(currency)} - ${(
                       activity.price[1] * exchangeRate
-                    ).toFixed(2)} ${currency}`
-                    : `${(activity.price * exchangeRate).toFixed(2)} ${currency}`}
+                    ).formatCurrency(currency)}`
+                    : `${(activity.price * exchangeRate).formatCurrency(currency)}`}
                 </span>
                 <Button onClick={() => handleBook(activity)}>Book Activity!</Button>
               </div>

@@ -1,25 +1,21 @@
-import { ToastAction } from "@/components/ui/toast"
+import { toast } from "sonner"
 
-export function BookingToast(toast, name, message, confirm = true) {
-    const confirmation = () => toast({
-        title: "Booking Confirmation",
+export function BookingToast(name, message, confirm = true) {
+    const confirmation = () => toast.success("Booking Confirmation", {
         description: message,
     });
 
-    if (!confirm)
-    {
+    if (!confirm) {
         confirmation();
         return;
     }
 
-    toast({
-        title: "Booking Confirmation",
+    toast("Booking Confirmation", {
         description: "Book the selected " + name + "?",
         duration: 10000,
-        action: (
-            <ToastAction altText="Yes" onClick={confirmation}>
-                Yes
-            </ToastAction>
-        )
+        action: {
+            label: "Yes",
+            onClick: confirmation
+        }
     })
 }

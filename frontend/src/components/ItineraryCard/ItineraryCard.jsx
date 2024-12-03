@@ -28,6 +28,7 @@ import {
   unflagItinerary,
 } from "../../pages/admin/services/AdminItineraryService";
 import { createItineraryBooking } from "../../pages/tourist/api/apiService";
+import PaymentDialog from "../../pages/tourist/components/bookings/payment-dialog";
 
 export default function ItineraryCard({
   itineraries,
@@ -38,7 +39,7 @@ export default function ItineraryCard({
   onRefresh,
   isTourGuide,
   bookmarkedItineraries = [], // Add this prop
-  handleBookmark = () => {},
+  handleBookmark = () => { },
 }) {
   const navigate = useNavigate();
 
@@ -200,11 +201,10 @@ export default function ItineraryCard({
                           <ShareButton id={itinerary._id} name="itinerary" />
                           <button
                             onClick={() => handleBookmark(itinerary._id)}
-                            className={`text-gray-500 hover:text-black ${
-                              bookmarkedItineraries.includes(itinerary._id)
-                                ? "text-yellow-400"
-                                : ""
-                            }`}
+                            className={`text-gray-500 hover:text-black ${bookmarkedItineraries.includes(itinerary._id)
+                              ? "text-yellow-400"
+                              : ""
+                              }`}
                           >
                             <Bookmark className="w-6 h-6" />
                           </button>
@@ -286,7 +286,7 @@ export default function ItineraryCard({
                   <div className="flex justify-end items-center space-x-2">
                     <span className="text-xl font-bold mr-auto">{`${(
                       itinerary.price * 1
-                    ).toFixed(2)} ${currency}`}</span>
+                    ).formatCurrency(currency)}`}</span>
                     <Timeline selectedItinerary={itinerary} />
                     {isTourist && (
                       <div className="flex justify-end items-center">
@@ -377,10 +377,10 @@ const ChooseDate = ({ itinerary }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const token = localStorage.getItem("token");
     console.log("hello token from handlesubmit " + token);
     if (!selectedDate) {
@@ -409,15 +409,15 @@ const ChooseDate = ({ itinerary }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button>Book Now</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Choose Date</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit}>
+    <>
+      <Dialog open={isOpen} onOpenChange={setIsOpen} >
+        <DialogTrigger asChild>
+          <Button>Book Now</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Choose Date</DialogTitle>
+          </DialogHeader>
           <RadioGroup
             onValueChange={(value) => setSelectedDate(value)}
             className="space-y-2"
@@ -430,8 +430,7 @@ const ChooseDate = ({ itinerary }) => {
                   <RadioGroupItem
                     disabled={booked}
                     value={slot.date}
-                    id={`slot-${index}`}
-                  />
+                    id={`slot-${index}`} />
                   <Label
                     className={`${booked && "line-through text-gray-500"}`}
                     htmlFor={`slot-${index}`}
@@ -443,34 +442,31 @@ const ChooseDate = ({ itinerary }) => {
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button disabled={!selectedDate} type="submit">
+            <Button onClick={() => { setIsOpen(false); setPaymentOpen(true) }} disabled={!selectedDate}>
               Book
             </Button>
           </DialogFooter>
-        </form>
-        {submitStatus && (
-          <div
-            className={`mt-4 p-4 rounded-md ${
-              submitStatus.success ? "bg-green-100" : "bg-red-100"
-            }`}
-          >
-            <div className="flex items-center">
-              {submitStatus.success ? (
-                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-              ) : (
-                <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-              )}
-              <p
-                className={
-                  submitStatus.success ? "text-green-700" : "text-red-700"
-                }
-              >
-                {submitStatus.message}
-              </p>
+          {submitStatus && (
+            <div
+              className={`mt-4 p-4 rounded-md ${submitStatus.success ? "bg-green-100" : "bg-red-100"}`}
+            >
+              <div className="flex items-center">
+                {submitStatus.success ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
+                ) : (
+                  <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                )}
+                <p
+                  className={submitStatus.success ? "text-green-700" : "text-red-700"}
+                >
+                  {submitStatus.message}
+                </p>
+              </div>
             </div>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
+          )}
+        </DialogContent>
+      </Dialog>
+      <PaymentDialog isOpen={paymentOpen} onOpenChange={setPaymentOpen} amount={10000} />
+    </>
   );
 };

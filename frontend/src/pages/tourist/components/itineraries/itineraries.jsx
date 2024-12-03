@@ -68,12 +68,10 @@ export function Itineraries({ itineraries, currency, exchangeRate }) {
                     ? itinerary.price
                         .map(
                           ({ value }) =>
-                            `${(value * exchangeRate).toFixed(2)} ${currency}`
+                            `${(value * exchangeRate).formatCurrency(currency)}`
                         )
                         .join(" - ")
-                    : `${(itinerary.price * exchangeRate).toFixed(
-                        2
-                      )} ${currency}`}
+                    : `${(itinerary.price * exchangeRate).formatCurrency(currency)}`}
                 </div>
                 <div className="flex justify-end items-center">
                   {/* <Button onClick={modalOpen(true)}>

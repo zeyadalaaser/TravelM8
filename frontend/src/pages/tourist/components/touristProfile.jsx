@@ -14,7 +14,6 @@ import RedeemPoints from "@/pages/tourist/components/Points/redeemPoints2.jsx";
 import Navbar from "@/components/Navbar.jsx";
 import { Wishlist } from './wishlist';
 import  PreferencesPage  from './Preferences';
-import { FaStar } from 'react-icons/fa'; // Import star icon
 import MyOrdersPage from "@/pages/tourist/components/orders.jsx";
 import { ComplaintForm } from "@/pages/tourist/components/complaints/complaint-form.jsx";
 
@@ -502,7 +501,7 @@ const TouristProfilePage = () => {
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('preferences')} 
               >
-                <FaStar className="mr-3 " />
+                <Star className="mr-3 " />
                 My Preferences
               </button>
               

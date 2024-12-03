@@ -67,7 +67,6 @@ export function FlightsPage() {
                     "https://api.exchangerate-api.com/v4/latest/USD"
                 );
                 setExchangeRates(response.data.rates);
-                console.log(exchangeRates);
             } catch (error) {
                 console.error("Error fetching exchange rates:", error);
             }

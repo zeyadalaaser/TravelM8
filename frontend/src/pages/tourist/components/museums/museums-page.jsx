@@ -9,10 +9,10 @@ import { Museums } from "./museums";
 import { getMuseums, getPlaceTags } from "../../api/apiService";
 import { SearchBar } from "../filters/search";
 import axios from "axios";
-import CircularProgress from '@mui/material/CircularProgress'; 
+import CircularProgress from '@mui/material/CircularProgress';
 
 export function MuseumsPage() {
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const { location } = useRouter();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type');
@@ -36,16 +36,15 @@ export function MuseumsPage() {
   }, []);
 
   const fetchMuseums = useDebouncedCallback(async () => {
-    setLoading(true); 
+    setLoading(true);
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
     queryParams.set("exchangeRate", exchangeRates[currency] || 1);
 
     const fetchedMuseums = await getMuseums(`?${queryParams.toString()}`);
-    setTimeout(() => {
-      setMuseums(fetchedMuseums);
-      setLoading(false);
-    }, 500); 
+
+    setMuseums(fetchedMuseums);
+    setLoading(false);
   }, 200);
 
   useEffect(() => {
@@ -82,12 +81,12 @@ export function MuseumsPage() {
               <CircularProgress />
             </div>
           ) : (
-          <Museums
-            museums={museums}
-            currency={currency}
-            exchangeRate={exchangeRates[currency] || 1}
-          />
-        )}
+            <Museums
+              museums={museums}
+              currency={currency}
+              exchangeRate={exchangeRates[currency] || 1}
+            />
+          )}
         </div>
       </div>
     </div>

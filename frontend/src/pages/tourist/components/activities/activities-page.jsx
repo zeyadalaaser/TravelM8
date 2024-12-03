@@ -47,11 +47,8 @@ export function ActivitiesPage() {
     try {
       const fetchedActivities = (await getActivities(`?${queryParams.toString()}`)).filter(a => a.isBookingOpen);
 
-      // Simulate a delay by adding a timeout before updating the loading state
-      setTimeout(() => {
-        setActivities(fetchedActivities);
-        setLoading(false); // Set loading to false after the simulated delay
-      }, 500); // Adjust this time to control how long the loading indicator stays
+      setActivities(fetchedActivities);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching activities:", error);
       setLoading(false); // Ensure loading is set to false if there’s an error

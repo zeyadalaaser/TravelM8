@@ -11,8 +11,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Cart from "../pages/tourist/components/products/cart.jsx";
 import LoginPage from "../pages/signIn/signin";
 import SignupDialog from "../pages/SignUp/signup";
-import NotificationBadge from "@/components/notificationBadge.jsx";
-import NotificationBadgeDark from "@/components/notificationBadgeDark.jsx";
 import LogoutAlertDialog from "@/hooks/logoutAlert";
 import useRouter from "@/hooks/useRouter";
 import { NumberStepper } from "@/components/ui/number-stepper"
@@ -298,8 +296,7 @@ export default function Navbar({ profilePageString, children }) {
                         <ShoppingCart className="h-5 w-5" />
                         {totalItems > 0 && (
                           <Badge
-                            variant="secondary"
-                            className="absolute bg-emerald-700 text-white hover:bg-emerald-700 -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2"
+                            className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2"
                           >
                             {totalItems}
                           </Badge>
@@ -339,7 +336,7 @@ export default function Navbar({ profilePageString, children }) {
 
                               {/* Right Section: Price */}
                               <span className="font-medium mb-10 text-lg">
-                                {currency} {(item.productId.price * (exchangeRates[currency] || 1)).toFixed(2)}
+                                {(item.productId.price * (exchangeRates[currency] || 1)).formatCurrency(currency)}
                               </span>
                             </li>
                           ))}
@@ -352,11 +349,11 @@ export default function Navbar({ profilePageString, children }) {
                       <div className="mt-auto">
                         <div className="flex justify-between items-center p-4">
                           <span className="font-medium">Total:</span>
-                          <span className="font-bold">{currency} {(totalPrice* (exchangeRates[currency] || 1)).toFixed(2)}</span>
+                          <span className="font-bold">{(totalPrice* (exchangeRates[currency] || 1)).formatCurrency(currency)}</span>
                         </div>
                         <Separator />
                         <div className="p-4">
-                          <Button className="w-full bg-emerald-900 hover:bg-emerald-800" onClick={handleCheckout}>
+                          <Button className="w-full" onClick={handleCheckout}>
                             Proceed to Checkout
                           </Button>
                         </div>

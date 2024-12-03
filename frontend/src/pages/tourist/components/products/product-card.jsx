@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function ProductCard({ product, currency, token, liked }) {
     const navigate = useNavigate();
+    console.log(product);
     const addToCart = async (productId) => {
         try {
             await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
@@ -86,7 +87,7 @@ export default function ProductCard({ product, currency, token, liked }) {
                 <div className="!mt-auto flex flex-col">
                     <div className="mt-1.5 mb-4 flex justify-between items-center">
                         <span className="text-lg font-bold">
-                            {currency} {(product.price * 1).toFixed(2)}
+                            {(product.price * 1).formatCurrency(currency)}
                         </span>
                         <span className="text-sm text-muted-foreground">
                             by <Badge className="px-1" variant="secondary">

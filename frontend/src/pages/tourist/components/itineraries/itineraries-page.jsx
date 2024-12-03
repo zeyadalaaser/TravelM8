@@ -11,10 +11,10 @@ import { SearchBar } from "../filters/search";
 import { getItineraries, getPreferenceTags } from "../../api/apiService";
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";
-import CircularProgress from '@mui/material/CircularProgress'; 
+import CircularProgress from '@mui/material/CircularProgress';
 
 export function ItinerariesPage() {
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type');
@@ -29,7 +29,7 @@ export function ItinerariesPage() {
   // Check if the user is a tourist (i.e., not an admin)
   const isAdmin = false; // Set to `true` for admin, `false` for tourists
 
-useEffect(() => {
+  useEffect(() => {
     const fetchBookmarks = async () => {
       try {
         const response = await fetch('http://localhost:5001/api/bookmarks?type=Itinerary', {
@@ -67,7 +67,7 @@ useEffect(() => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           itemId: itineraryId,
           itemType: 'Itinerary'
         })
@@ -104,7 +104,7 @@ useEffect(() => {
   }, []);
 
   const fetchItineraries = useDebouncedCallback(async () => {
-    setLoading(true); 
+    setLoading(true);
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("isAdmin", isAdmin);
     queryParams.set("currency", currency);
@@ -120,10 +120,8 @@ useEffect(() => {
           (itinerary) => !itinerary.flagged
         );
       }
-      setTimeout(() => {
-        setItineraries(fetchedItineraries);
-        setLoading(false);
-    }, 500); 
+      setItineraries(fetchedItineraries);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching itineraries:", error);
     }
@@ -167,7 +165,7 @@ useEffect(() => {
               <CircularProgress />
             </div>
           ) : (
-          // {itineraries.length > 0 ? (
+            // {itineraries.length > 0 ? (
             <ItineraryCard
               itineraries={itineraries}
               isTourist={true}
@@ -176,10 +174,10 @@ useEffect(() => {
               bookmarkedItineraries={bookmarkedItineraries} // Add this prop
               handleBookmark={handleBookmark}
             />
-          // ) : (
-          //   <p>No itineraries found. Try adjusting your filters.</p>
-          // )}
-        )}
+            // ) : (
+            //   <p>No itineraries found. Try adjusting your filters.</p>
+            // )}
+          )}
         </div>
       </div>
     </div>

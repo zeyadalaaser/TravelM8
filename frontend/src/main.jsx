@@ -44,6 +44,7 @@ import AccountDelete from "./pages/admin/accountDelete.jsx";
 //import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
 import SignupsRoles from "./pages/SignUp/signupRoles.jsx";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as ToasterSonner } from "@/components/ui/sonner"
 import LoadingPage from "./components/loading.jsx";
 import CheckoutPage from "./pages/tourist/components/products/checkout-page";
 import NotificationsPage from "./pages/TourGuide/NotificationsPage.jsx";
@@ -53,6 +54,7 @@ import PastActivities from "./pages/tourist/components/activities/PastActivities
 import BookmarksPage from './pages/tourist/components/activities/activities.jsx';
 import Checkout from "./pages/tourist/components/products/checkout.jsx";
 import PreferencesPage from './pages/tourist/components/Preferences.jsx';
+import "@/lib/formatter.js";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -115,5 +117,6 @@ createRoot(document.getElementById("root")).render(
       </Routes>
     </BrowserRouter>
     <Toaster />
+    <ToasterSonner closeButton richColors />
   </StrictMode>
 );

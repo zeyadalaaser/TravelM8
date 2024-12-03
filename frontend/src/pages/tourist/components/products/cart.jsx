@@ -10,7 +10,7 @@ export default function Cart({ cart, removeFromCart, updateCartItemQuantity, cur
         <div key={item._id} className="flex justify-between items-center py-4">
           <div>
             <h3 className="font-medium">{item.name}</h3>
-            <p className="text-sm text-gray-500">{currency} {Number(item.price).toFixed(2)}</p>
+            <p className="text-sm text-gray-500">{Number(item.price).formatCurrency(currency)}</p>
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="icon" onClick={() => updateCartItemQuantity(item._id, item.quantity - 1)}>

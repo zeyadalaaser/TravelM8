@@ -202,7 +202,7 @@ const checkout = async ()=> {
     const address = addresses.find((addr) => addr.fullName === selectedAddressId);
     try {
       const response = await services.checkout({address,paymentMethod,promoCode},token);
-        CheckoutToast(toast,(profile?.wallet-totalPrice-20).toFixed(2),paymentMethod);
+        CheckoutToast(toast,(profile?.wallet-totalPrice-20).formatCurrency(currency),paymentMethod);
         setTimeout(() => {
           navigate("/"); 
         }, 1000);
@@ -463,7 +463,7 @@ const createPaymentIntent = async () => {
                                   <RadioGroupItem value="wallet" id="wallet" />
                                   <Label htmlFor="wallet">Wallet Balance</Label>
                                   <p className="text-xs text-gray-500">
-                                    ({currency} {profile ? profile.wallet.toFixed(2) : "0"})
+                                    ({profile ? profile.wallet.formatCurrency(currency) : Number(0).formatCurrency(currency)})
                                   </p>
                                 </div>
                                 </RadioGroup>
@@ -485,7 +485,7 @@ const createPaymentIntent = async () => {
                                       <div className="flex-1">
                                           <h3 className="font-medium">{item.productId.name}</h3>
                                       </div>
-                                      <p className="text-sm text-gray-500">{currency} {(item.productId.price * (exchangeRates[currency])).toFixed(2)}</p>
+                                      <p className="text-sm text-gray-500">{(item.productId.price * (exchangeRates[currency])).formatCurrency(currency)}</p>
                                   </div><Separator /></>
 
                                 ))}
@@ -495,15 +495,15 @@ const createPaymentIntent = async () => {
                               <div className="mb-4 space-y-2 pt-4 px-4">
                                   <div className="flex justify-between">
                                       <span className="text-gray-500">Subtotal</span>
-                                      <span>{currency} {(totalPrice* (exchangeRates[currency])).toFixed(2)}</span>
+                                      <span>{(totalPrice* (exchangeRates[currency])).formatCurrency(currency)}</span>
                                   </div>
                                   <div className="flex justify-between">
                                       <span className="text-gray-500">Shipping</span>
-                                      <span>{currency} 20.00</span>
+                                      <span>{Number(20).formatCurrency(currency)}</span>
                                   </div>
                                   <div className="flex justify-between font-medium">
                                       <span>Total ({currency})</span>
-                                      <span>{currency} {((totalPrice +20)* (exchangeRates[currency])).toFixed(2)}</span>
+                                      <span>{((totalPrice +20)* (exchangeRates[currency])).formatCurrency(currency)}</span>
                                   </div>
                                   <Button onClick={checkout} className="w-full bg-green-800 text-white hover:bg-green-900">
                                       Confirm Order

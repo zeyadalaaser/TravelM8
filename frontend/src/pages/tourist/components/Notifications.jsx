@@ -63,7 +63,7 @@ export default function NotificationSidebar({currency, currentPage}) {
           status: booking.completionStatus,
           title: booking.itinerary?.name,
           location: booking.itinerary?.historicalSites?.join(', '),
-          eventDate: booking.startDate,
+          eventDate: booking.tourDate,
           read: booking.completionStatus !== 'Pending'
         }))
       ]
