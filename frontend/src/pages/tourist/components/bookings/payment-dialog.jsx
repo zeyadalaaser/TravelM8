@@ -1,11 +1,15 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { CreditCard, Wallet, Check } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
-export default function PaymentDialog({ isOpen, onOpenChange, amount }) {
+export default function PaymentDialog({ isOpen, onOpenChange, currency, amount }) {
   const [paymentMethod, setPaymentMethod] = useState("card")
+
+  useEffect(() => {
+    console.log(currency);
+  }, []);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -65,8 +69,8 @@ export default function PaymentDialog({ isOpen, onOpenChange, amount }) {
             )}
           </div>
 
-          <Button className="w-full mt-4" onClick={() => onOpenChange(false)}>
-            Pay ${amount.toFixed(2)}
+          <Button className="w-full bg-emerald-900 hover:bg-emerald-800 mt-4" onClick={() => onOpenChange(false)}>
+            Pay ${`${(amount * 1)}`}
           </Button>
         </div>
       </DialogContent>

@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import * as services from "@/pages/TourGuide/api/apiService.js";
@@ -222,6 +223,13 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
     }));
   };
 
+  const handleImageChange = (e, index) => {
+    const { value } = e.target;
+    const updatedImages = [...formData.images];
+    updatedImages[index] = value; // Update the specific index with the new value
+    setFormData({ ...formData, images: updatedImages });
+  };
+
   const formatDateForInput2 = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -270,12 +278,18 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
           },
           body: JSON.stringify(formData),
         });
-        alert("place updated succesfully");
+        toast({
+          title: `Itinerary updated successfully`,
+          description: "View itinerary in dashboard",
+        });
         setDialogOpen(false);
       } else {
         try {
           response = await services.addItinerary(token, formData);
-          alert("Itinerary Added Successfully");
+          toast({
+            title: `Itinerary added successfully`,
+            description: "View itinerary in dashboard",
+          });
           setDialogOpen(false);
         } catch (error) {
           console.log("Error:", error.message);
@@ -371,7 +385,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
               <Badge
                 key={index}
                 style={{ marginRight: "5px" }}
-                className="badge"
+                className="badge bg-emerald-800"
               >
                 {activity}
                 <button
@@ -417,7 +431,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
               <Badge
                 key={index}
                 style={{ marginRight: "5px" }}
-                className="badge"
+                className="badge bg-emerald-800"
               >
                 {place}
                 <button
@@ -453,6 +467,8 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
               <SelectItem value="english">English</SelectItem>
               <SelectItem value="spanish">Spanish</SelectItem>
               <SelectItem value="french">French</SelectItem>
+              <SelectItem value="arabic">Arabic</SelectItem>
+              <SelectItem value="german">German</SelectItem>
               {/* Add more languages as needed */}
             </SelectContent>
           </Select>
@@ -622,7 +638,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
               <Badge
                 key={index}
                 style={{ marginRight: "5px" }}
-                className="badge"
+                className="badge bg-emerald-800"
               >
                 {tag.name}
                 <button
@@ -642,6 +658,37 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
           </div>
         </div>
         <div>
+        <div>
+          <Label>Available Slots</Label>
+          {formData.images.map((image, index) => (
+            <div key={index} className="flex items-center space-x-2 mt-2">
+              <Input
+                type="text"
+                value={image}
+                onChange={(e) => handleImageChange(e, index)} // Pass index to identify which image to update
+                placeholder="Image URL"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => removeField("images", index)}
+              >
+                <MinusCircle className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => addField("images")}
+            className="mt-2"
+          >
+            <PlusCircle className="h-4 w-4 mr-2" /> Add images
+          </Button>
+        </div>
+{/*           
           <Label htmlFor="images">Images URL</Label>
           <Input
             id="images"
@@ -649,11 +696,11 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
             value={formData.images}
             onChange={handleInputChange}
             required
-          />
+          /> */}
         </div>
         <DialogFooter className="sm:justify-start">
-          <Button onClick={handleSubmit} className="w-full">
-            Submit
+          <Button onClick={handleSubmit} className="w-full bg-emerald-900 hover:bg-emerald-800 hover:text-white">
+            Add itinerary
           </Button>
         </DialogFooter>
       </DialogContent>
