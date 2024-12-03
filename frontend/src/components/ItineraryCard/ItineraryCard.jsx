@@ -18,8 +18,9 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { AlertCircle, CheckCircle2, MapPin } from "lucide-react";
-
+import ItineraryDetails from "@/components/ItineraryCard/ItineraryDetails.jsx";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "@/components/ui/use-toast";
 
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
@@ -53,11 +54,17 @@ export default function ItineraryCard({
       );
       if (!response.ok) {
         const data = await response.json();
-        alert(data.message);
+        toast({
+          title: `Failed to delete itinerary`,
+          description: `${data.message}`,
+        });
         return;
       }
       await onRefresh();
-      alert("Itinerary Deleted successfully");
+      toast({
+        title: `Success`,
+        description: `itinerary deleted successfully`,
+      });
       console.log("Success:", response);
     } catch (error) {
       console.error("Error:", error);
@@ -79,11 +86,17 @@ export default function ItineraryCard({
       );
       if (!response.ok) {
         const data = await response.json();
-        alert(data.message);
+        toast({
+          title: `Failed to update itinerary`,
+          description: `${data.message}`,
+        });
         return;
       }
       onRefresh();
-      alert(`Itinerary ${state} successfully`);
+      toast({
+        title: `Success`,
+        description: `itinerary updated successfully`,
+      });
       console.log("Success:", response);
     } catch (error) {
       console.error("Error:", error);
@@ -218,10 +231,7 @@ export default function ItineraryCard({
                       {itinerary.totalRatings} reviews
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {itinerary.description}
-                  </p>
-                  {itinerary.activities.length > 0 && (
+                  {/* {itinerary.activities.length > 0 && (
                     <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                       <Label className="text-m font-semibold text-black">
                         Activities:
@@ -237,7 +247,7 @@ export default function ItineraryCard({
                         ))}
                       </div>
                     </div>
-                  )}
+                  )} */}
                   {itinerary.historicalSites.length > 0 && (
                     <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                       <Label className="text-m font-semibold text-black">
@@ -287,13 +297,23 @@ export default function ItineraryCard({
                     <span className="text-xl font-bold mr-auto">{`${(
                       itinerary.price * 1
                     ).formatCurrency(currency)}`}</span>
-                    <Timeline selectedItinerary={itinerary} />
+                    {/* <Timeline selectedItinerary={itinerary} /> */}
                     {isTourist && (
                       <div className="flex justify-end items-center">
                         {/* <Button onClick={modalOpen(true)}>
                             Book Activity!
                           </Button> */}
+                       <ItineraryDetails 
+                        itinerary={itinerary} 
+                        isAdmin={isAdmin} 
+                        isTourist={isTourist} 
+                        isTourGuide={isTourGuide} 
+                        onRefresh={onRefresh}
+                        currency={currency}
+                      />
+                      <div className="px-2">
                         <ChooseDate itinerary={itinerary} />
+                        </div>
                       </div>
                     )}
                     {isTourGuide && (
@@ -345,33 +365,6 @@ export default function ItineraryCard({
   );
 }
 
-const Timeline = ({ selectedItinerary }) => {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">View Timeline</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Itinerary Timeline</DialogTitle>
-        <div className="flex flex-col mt-4">
-          {selectedItinerary?.timeline.map((event, index) => (
-            <div key={index} className="flex items-center mb-2">
-              <div className="w-4 h-4 bg-black rounded-full mr-2"></div>{" "}
-              {/* Dot */}
-              <div className="flex-1">
-                <h4 className="font-semibold">{event.event}</h4>{" "}
-                {/* Adjust based on your data structure */}
-                <p>Start: {new Date(event.startTime).toLocaleString()}</p>
-                <p>End: {new Date(event.endTime).toLocaleString()}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
 const ChooseDate = ({ itinerary }) => {
   let remainingSpots;
   const [selectedDate, setSelectedDate] = useState(null);
@@ -398,21 +391,42 @@ const ChooseDate = ({ itinerary }) => {
           token
         );
         setIsOpen(false);
-        alert(response.data.message);
+        toast({
+          title: `Success`,
+          description: `itinerary booked successfully`,
+        });
       } catch (error) {
         setIsOpen(false);
-        alert("Failed to Book itinerary");
+        toast({
+          title: `Failed to book itinerary`,
+          description: `${data.message}`,
+        });
       }
     } else {
       alert("You need to be logged in to book an itinerary!");
     }
   };
+  const token = localStorage.getItem("token");
+
+  const checkForToken = () => {
+    if (!token) {
+      toast({
+        title: `Failed to book itinerary`,
+        description: `You need to be logged in first`,
+      });
+    }
+    else {
+      setIsOpen(true);
+    }
+  }
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen} >
+      <Dialog 
+        open={isOpen && !!token} 
+        onOpenChange={checkForToken}>
         <DialogTrigger asChild>
-          <Button>Book Now</Button>
+          <Button className="bg-gray-800 hover:bg-gray-700">Book itinerary</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -442,8 +456,8 @@ const ChooseDate = ({ itinerary }) => {
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button onClick={() => { setIsOpen(false); setPaymentOpen(true) }} disabled={!selectedDate}>
-              Book
+            <Button className="bg-gray-800"onClick={() => { setIsOpen(false); setPaymentOpen(true) }} disabled={!selectedDate}>
+              Select date
             </Button>
           </DialogFooter>
           {submitStatus && (
@@ -466,7 +480,7 @@ const ChooseDate = ({ itinerary }) => {
           )}
         </DialogContent>
       </Dialog>
-      <PaymentDialog isOpen={paymentOpen} onOpenChange={setPaymentOpen} amount={10000} />
+      <PaymentDialog isOpen={paymentOpen} currency={currency} onOpenChange={setPaymentOpen} amount={itinerary.price} />
     </>
   );
 };

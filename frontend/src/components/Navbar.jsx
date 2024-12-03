@@ -298,7 +298,7 @@ export default function Navbar({ profilePageString, children }) {
                         <ShoppingCart className="h-5 w-5" />
                         {totalItems > 0 && (
                           <Badge
-                            className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2"
+                            className="absolute -top-2 bg-blue-500 hover:bg-blue-500 -right-2 h-4 w-4 flex items-center justify-center p-2"
                           >
                             {totalItems}
                           </Badge>
@@ -355,7 +355,7 @@ export default function Navbar({ profilePageString, children }) {
                         </div>
                         <Separator />
                         <div className="p-4">
-                          <Button className="w-full" onClick={handleCheckout}>
+                          <Button className="w-full bg-gray-800 hover:bg-gray-700" onClick={handleCheckout}>
                             Proceed to Checkout
                           </Button>
                         </div>
