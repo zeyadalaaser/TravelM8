@@ -50,7 +50,7 @@ export const ChooseDate = ({ itinerary }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-emerald-900 hover:bg-emerald-800 text-white">Book Now</Button>
+        <Button className="bg-gray-800 hover:bg-gray-700 text-white">Book itinerary</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -72,7 +72,7 @@ export const ChooseDate = ({ itinerary }) => {
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button type="submit">Book</Button>
+            <Button className="bg-gray-800 hover:bg-gray-700 text-white"type="submit">Choose date</Button>
           </DialogFooter>
         </form>
         {submitStatus && (

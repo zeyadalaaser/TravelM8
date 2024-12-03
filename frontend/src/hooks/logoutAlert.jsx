@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button.jsx"; // Adjust the import path accordingly
 
-const LogoutAlertDialog = ({ isOpen, onClose}) => {
+const LogoutAlertDialog = ({ isOpen, onClose, onLogout}) => {
   if (!isOpen) return null; // Don't render the dialog if it's not open
   const navigate = useNavigate();
 
@@ -20,8 +20,8 @@ const LogoutAlertDialog = ({ isOpen, onClose}) => {
        
       if (response.ok) {
         localStorage.removeItem('token'); 
+        onLogout();
         navigate("/"); 
-        window.location.reload(); 
       } else {
         console.error('Failed to logout');
       }

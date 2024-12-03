@@ -43,16 +43,6 @@ export default function Navbar({ profilePageString, children }) {
   const currency = searchParams.get("currency") ?? "USD";
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decodedToken = decodeToken(token);
-      if (decodedToken && decodedToken.userId) {
-        setUserName(decodedToken.username);
-        setIsLoggedIn(true);
-        fetchCart();
-      }
-    }
-
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
@@ -62,6 +52,18 @@ export default function Navbar({ profilePageString, children }) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken = decodeToken(token);
+      if (decodedToken && decodedToken.userId) {
+        setUserName(decodedToken.username);
+        setIsLoggedIn(true);
+        fetchCart();
+      }
+    }
+  }, [isLoggedIn]);
 
   const decodeToken = (token) => {
     try {
@@ -296,7 +298,7 @@ export default function Navbar({ profilePageString, children }) {
                         <ShoppingCart className="h-5 w-5" />
                         {totalItems > 0 && (
                           <Badge
-                            className="absolute -top-2 -right-2 h-4 w-4 flex items-center justify-center p-2"
+                            className="absolute -top-2  bg-gray-800 hover:bg-gray-700 -right-2 h-4 w-4 flex items-center justify-center p-2"
                           >
                             {totalItems}
                           </Badge>
@@ -353,7 +355,7 @@ export default function Navbar({ profilePageString, children }) {
                         </div>
                         <Separator />
                         <div className="p-4">
-                          <Button className="w-full" onClick={handleCheckout}>
+                          <Button className="w-full bg-gray-800 hover:bg-gray-700" onClick={handleCheckout}>
                             Proceed to Checkout
                           </Button>
                         </div>
@@ -403,6 +405,7 @@ export default function Navbar({ profilePageString, children }) {
               <LogoutAlertDialog
                 isOpen={isAlertOpen}
                 onClose={() => setAlertOpen(false)}
+                onLogout={() => setIsLoggedIn(false)}
               />
             </>
           ) : (
@@ -411,6 +414,7 @@ export default function Navbar({ profilePageString, children }) {
                 isOpen={isLoginOpen}
                 onOpenChange={setIsLoginOpen}
                 onSignupClick={openSignup}
+                onLogin={() => setIsLoggedIn(true)}
               >
                 <Button
                   variant="outline"

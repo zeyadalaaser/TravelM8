@@ -66,7 +66,7 @@ const AdvertiserDashboard = () => {
                 //params: { year, month, day },
             }
         );
-        setReportData(response.data.data);
+       setReportData(response.data?.data || []);
     } catch (err) {
         console.error("Error fetching activities report:");
        
@@ -295,7 +295,7 @@ const fetchActivities = async () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                  ${reportData.reduce((total, item) => total + item.revenue, 0).toFixed(2)}
+                  ${reportData.length > 0 ? reportData.reduce((total, item) => total + item.revenue, 0).toFixed(2) : '0.00'}
                   </div>
                 </CardContent>
               </Card>
