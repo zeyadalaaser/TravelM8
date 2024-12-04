@@ -1,78 +1,4 @@
-/*  import React, {useEffect} from 'react';
-import { useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import Navbar from "@/components/DashboardsNavBar.jsx";
-function Sellerdashboard() {
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  useEffect(() => {
-    if (!token) return; // No token, no need to check
 
-    try {
-      const decodedToken = jwtDecode(token);
-      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-
-      if (decodedToken.exp < currentTime) {
-        localStorage.removeItem("token"); 
-        navigate("/"); 
-      } else {
-        const timeout = setTimeout(() => {
-          localStorage.removeItem("token");
-          navigate("/");
-        }, (decodedToken.exp - currentTime) * 1000);
-
-        return () => clearTimeout(timeout);
-      }
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      localStorage.removeItem("token"); 
-      navigate("/");
-    }
-  }, [token, navigate]);
-
-  return (
-    <><Navbar /><div style={styles.container}>
-
-      <h1 style={styles.header}>Seller Dashboard</h1>
-      <button style={styles.button} onClick={() => navigate('/SellerProducts')}>
-        Go to Seller Products
-      </button>
-      <button style={styles.button} onClick={() => navigate('/SellerProfile')}>
-        Go to Seller Profile
-      </button>
-    </div></>
-  );
-}
-
-
-const styles = {
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      height: '100vh',
-    },
-    header: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        marginBottom: '20px',
-        color: 'black', // Header text color
-      },
-    button: {
-      margin: '10px',
-      padding: '10px 20px',
-      fontSize: '16px',
-      cursor: 'pointer',
-      backgroundColor: 'black', // Button background color
-      color: 'white',            // Button text color
-      border: 'none',            // Removes default border
-      borderRadius: '5px',       // Optional: Rounds the corners
-    },
-  };
-export default Sellerdashboard; 
-
-  */
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -89,6 +15,7 @@ import Header from "@/components/navbarDashboard.jsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocation } from "react-router-dom"; 
 import ProductCard from "../seller/components/ProductCard";
+import ProductDetailCard from "../seller/components/ProductDetailsCard";
 
 const token = localStorage.getItem("token");
 
@@ -102,6 +29,9 @@ const SellerDashboard = () => {
   const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
   const [editProductData, setEditProductData] = useState(null);
   const { toast } = useToast();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -260,6 +190,23 @@ const SellerDashboard = () => {
     }
   };
 
+   const handleCardClick = (product) => {
+   
+      console.log("Product clicked:", product); // Add logging here
+      setSelectedProduct(product);  // Ensure product is passed correctly
+      console.log("Selected Product after setting:", selectedProduct); // Log the selected product after setting it
+      setIsDetailModalOpen(true);
+    
+  }; 
+
+
+
+  const closeModal = () => {
+    setIsDetailModalOpen(false);
+    setSelectedProduct(null);
+  };
+
+
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -333,6 +280,7 @@ const SellerDashboard = () => {
           </div>
           <div className="flex justify-between items-center">
                   <h2 className="text-2xl font-bold">Manage Activities</h2>
+
           {/* Add Product Button */}
           <Dialog open={isAddProductModalOpen} onOpenChange={setIsAddProductModalOpen}>
             <DialogTrigger asChild>
@@ -364,7 +312,77 @@ const SellerDashboard = () => {
               </DialogHeader>
               <AddProductForm onSubmit={handleUpdateProduct} initialData={editProductData} />
             </DialogContent>
-          </Dialog>
+          </Dialog>     
+
+  
+
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  {loading ? (
+    <p>Loading products...</p>
+  ) : products.length === 0 ? (
+    <p>No products found.</p>
+  ) : (
+    products.map((product) => (
+     
+      <ProductCard
+        key={product._id}
+        product={product}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onToggleArchive={toggleArchive}
+        onDetails={handleCardClick}
+      />
+
+     
+    ))
+  )}
+</div>
+
+          {/* Detailed Product Modal */}
+          <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
+  <DialogTrigger asChild>
+    <Button className="mt-4" style={{ display: "none" }}>
+      Edit Product
+    </Button>
+  </DialogTrigger>
+  <DialogContent>
+    {selectedProduct ? (
+      <ProductDetailCard product={selectedProduct} onClose={closeModal} />
+    ) : (
+      <div>Loading...</div>
+    )}
+  </DialogContent>
+</Dialog>
+
+
+
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default SellerDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
           {/* Product List */}
 {/*           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -405,29 +423,3 @@ const SellerDashboard = () => {
               ))
             )}
           </div> */}
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-  {loading ? (
-    <p>Loading products...</p>
-  ) : products.length === 0 ? (
-    <p>No products found.</p>
-  ) : (
-    products.map((product) => (
-      <ProductCard
-        key={product._id}
-        product={product}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onToggleArchive={toggleArchive}
-      />
-    ))
-  )}
-</div>
-
-
-        </div>
-      </main>
-    </div>
-  );
-};
-
-export default SellerDashboard;
