@@ -166,18 +166,18 @@ export default function ItineraryCard({
 
   return (
     <>
-      <div className="space-y-2">
+      <div className="space-y-5">
         {itineraries?.map((itinerary) => (
           <Card key={itinerary._id}>
-            <div className="flex flex-row">
-              <div className="w-1/3">
+            <div className="flex flex-row h-[265px]">
+              <div className="w-1/3 h-full">
                 <img
                   src={
                     itinerary.images[0] ||
                     "/placeholder.svg?height=200&width=300"
                   }
                   alt={itinerary.name}
-                  className="w-full min-h-full"
+                  className="w-full h-full objct-cover"
                 />
               </div>
               <div className="flex flex-row w-2/3">

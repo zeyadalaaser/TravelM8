@@ -356,7 +356,7 @@ const toggleArchive = async (productId, isArchived) => {
                   <Label htmlFor="productDescription" className="text-right">Description</Label>
                   <Input
                     id="productDescription"
-                    type="number"
+                    type="text"
                     value={updatedProductData.description || ''}
                     onChange={(e) => setUpdatedProductData({ ...updatedProductData, description: e.target.value })}
                     className="col-span-3"
@@ -392,10 +392,11 @@ const toggleArchive = async (productId, isArchived) => {
                   <TableCell>{product.description}</TableCell>
                   <TableCell>
                     {/* //toggle to archive / unarchive a p */}
-                  <Button onClick={() => toggleArchive(product._id, product.archived )} className="mr-2 ml-2">{product.archived ? 'Unarchive' : 'Archive'}</Button>
-                    <Button onClick={() => openEditModal(product)} className="mr-2 ml-2 ">Edit</Button>
-                    <Button onClick={() => handleDeleteProduct(product._id)} className="bg-red-500 text-white ml-2">Delete</Button>
-                    
+                    <div className="flex flex-col space-y-2">
+                      <Button onClick={() => openEditModal(product)} variant="outline" className="w-[80px]  hover: bg-grey-900 mr-2 ml-2 ">Edit</Button>
+                      <Button onClick={() => toggleArchive(product._id, product.archived )} className=" w-[80px] mr-2 ml-2">{product.archived ? 'Unarchive' : 'Archive'}</Button>
+                      <Button onClick={() => handleDeleteProduct(product._id)} className="w-[80px] bg-red-500 text-white ml-2">Delete</Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

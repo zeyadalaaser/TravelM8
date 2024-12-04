@@ -274,9 +274,12 @@ export const getItinerariesReport = async (req, res) => {
 
   try {
     const matchConditions = {
-      tourGuide: new mongoose.Types.ObjectId(tourguideId),  
       completionStatus: { $in: ['Pending', 'Completed','Paid'] },  
     };
+    if(req.user.role === "TourGuide" && tourguideId){
+      matchConditions["tourguide"] =  new mongoose.Types.ObjectId(tourguideId);
+    }
+   console.log("tourguide in match conditions: " ,matchConditions["tourguide"]);
     
     if (year || month || day) {
       matchConditions.$expr = {

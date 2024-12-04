@@ -49,7 +49,7 @@ const ProductForm = ({ productId, onProductSaved }) => {
       <input type="text" name="image" placeholder="Image URL" value={formData.image} onChange={handleChange} required />
       <input type="number" name="price" placeholder="Price" value={formData.price} onChange={handleChange} required />
       <input type="number" name="quantity" placeholder="Quantity" value={formData.quantity} onChange={handleChange} required />
-      <textarea name="description" placeholder="Description" value={formData.description} onChange={handleChange} />
+      <input type="text" name="description" placeholder="Description" value={formData.description} onChange={handleChange}  />
       <button type="submit">{productId ? 'Update Product' : 'Create Product'}</button>
     </form>
   );
