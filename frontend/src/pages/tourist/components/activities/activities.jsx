@@ -6,21 +6,52 @@ import { ShareButton } from "@/components/ui/share-button";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useEffect } from 'react';
-
-
+import ActivityDetails from "@/components/ActivityCard/activityDetails.jsx";
+import { toast } from "@/components/ui/use-toast";
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from "react-router-dom";
 function Activities({ token, bookActivity, activities, currency, exchangeRate }) {
   const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
-
+  const navigate = useNavigate();
   const handleBook = async (activity) => {
     console.log(token);
     if (token) {
       const response = await bookActivity(activity._id, activity.price, "Card", token);
       console.log(response.message);
-      alert(response.message);
+      toast({
+        title: `Success`,
+        description: `Activity booked successfully`,
+      });
     }
     else
-      alert("You need to be logged in to book activities!");
+    toast({
+      title: `Failed to book activity`,
+      description: `You need to be logged in first`,
+    });
   }
+  useEffect(() => {
+    if (!token) return; 
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token"); 
+      navigate("/");
+    }
+  }, [token, navigate]);
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
@@ -124,9 +155,6 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                   {activity.totalRatings} reviews
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                {activity.description}
-              </p>
               <div className="flex items-center text-sm text-muted-foreground mb-2 gap-2">
                 <Clock className="flex-shrink-0 w-4 h-4 mr-1" />
                 {activity.date.slice(0, 10)}
@@ -160,7 +188,17 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                     ).formatCurrency(currency)}`
                     : `${(activity.price * exchangeRate).formatCurrency(currency)}`}
                 </span>
-                <Button onClick={() => handleBook(activity)}>Book Activity!</Button>
+                <div className="flex justify-end items-center">
+                <ActivityDetails 
+                        activity={activity} 
+                        bookActivity={bookActivity}
+                        currency={currency}
+                        token={token}
+                />
+                <div className="px-2">
+                <Button onClick={() => handleBook(activity)}>Book activity</Button>
+                </div>
+                </div>
               </div>
             </div>
           </div>

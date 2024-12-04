@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
 import { Badge } from "@/components/ui/badge";
@@ -17,10 +17,23 @@ import { useNavigate } from "react-router-dom";
 import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
 import { Timeline } from './Timeline';
 import { ChooseDate } from './ChooseDate';
-
-export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTourGuide, onRefresh,currency }) {
+import { toast } from "@/components/ui/use-toast";
+export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTourGuide, onRefresh,currency,token }) {
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isToken,setToken]=useState(true);
+
+
+  // useState(() => {
+  //   if (!token) {
+  //     setToken(false);
+  //     toast({
+  //       title: `Failed to book itinerary`,
+  //       description: `You need to be logged in to book an itinerary`,
+  //     });
+  // }
+   
+  // }, []);
 
   const handleDelete = async (id) => {
     try {
@@ -185,7 +198,7 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
           {/* Right-aligned components (Timeline and ChooseDate) */}
           <div className="flex items-center space-x-4">
             <Timeline selectedItinerary={itinerary} />
-            {isTourist && <ChooseDate itinerary={itinerary} />}
+            {isTourist && <ChooseDate itinerary={itinerary} token={token} />}
           </div>
         </div>
         {(isTourGuide || isAdmin) && (
