@@ -23,6 +23,7 @@ const pages = [
   { label: "Products", value: "products" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
+  { label: "Transportation", value: "hotels" },
 ];
 
 export default function Navbar({ profilePageString, children }) {
@@ -206,7 +207,8 @@ export default function Navbar({ profilePageString, children }) {
         >
           TRAVELM8
         </div>
-        <label
+
+        {/* <label
       htmlFor="currency"
       style={{
         display: 'flex',
@@ -246,7 +248,7 @@ export default function Navbar({ profilePageString, children }) {
                 </option>
               ))}
             </select>
-          </label>
+          </label> */}
 
 
         <div className="hidden md:flex items-center justify-start ml-25 space-x-1">
