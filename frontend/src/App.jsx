@@ -16,7 +16,7 @@ import Logout from "@/hooks/logOut.jsx";
 import { Link } from 'react-router-dom';
 import Navbar from "@/components/Navbar.jsx";
 import Footer from "@/components/Footer.jsx"
-import BookingComponent from "@/components/bookingCard.jsx";
+import BookingComponent from "@/components/bookingCard/bookingCard.jsx";
 import { motion, AnimatePresence } from 'framer-motion'
 import * as services from "@/pages/tourist/api/apiService.js";
 import { jwtDecode } from 'jwt-decode';

@@ -33,21 +33,19 @@ export default function TouristPage() {
   const [touristId, setTouristId] = useState(null);
   //navigate(`/preferences-page/${touristId}`);
 
-
-  // Function to decode JWT and get user role and id
   function getUserFromToken(token) {
     if (!token) return {};
-    const decoded = JSON.parse(atob(token.split(".")[1])); // Decode the token
+    const decoded = JSON.parse(atob(token.split(".")[1])); 
     console.log("User ID:", decoded.userId);
-    return { id: decoded.userId, role: decoded.role }; // Get the role and tourist ID from the token
+    return { id: decoded.userId, role: decoded.role }; 
   }
 
   useEffect(() => {
     window.scrollTo(0, 0);
   });
-  // Fetch tourist's badge information from the backend
+
   const fetchBadgeInfo = async () => {
-    const token = localStorage.getItem("token"); // Get token within the function scope
+    const token = localStorage.getItem("token"); 
     if (!token) return;
 
     try {
@@ -60,7 +58,7 @@ export default function TouristPage() {
           },
         }
       );
-      const { loyaltyPoints, badgeLevel } = response.data; // Adjust according to your schema
+      const { loyaltyPoints, badgeLevel } = response.data;
       setTotalPoints(loyaltyPoints);
       setLevel(badgeLevel);
     } catch (error) {

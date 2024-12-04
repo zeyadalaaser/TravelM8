@@ -59,7 +59,15 @@ export function Date({
                     </div>
                 </div>
             </PopoverTrigger>
-            <PopoverContent className='p-0' style={{ width: buttonWidth !== null ? `${buttonWidth}px` : 'auto' }} align="start">
+            <PopoverContent
+                className="p-0"
+                style={{
+                    width: 'auto',  
+                    maxWidth: '100%', 
+                    overflow: 'visible', 
+                }}
+                align="start"
+>
                 <Calendar
                     initialFocus
                     mode="single"

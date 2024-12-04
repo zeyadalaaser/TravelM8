@@ -18,6 +18,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { FlightsPage } from "@/components/bookingCard/flights-card.jsx";
 
 function MyTabs() {
   const [value, setValue] = useState("flights");
@@ -58,104 +59,18 @@ function MyTabs() {
           <Tab label="Cars" value="cars" />
         </TabList>
       </Box>
-  
-      {/* Tab Panels, Rounded Corners and Shadowed */}
     <Box
         sx={{
           bgcolor: "#FFFFFF",
           p: 2,
-          borderRadius: "0 0 16px 16px", // Rounded bottom corners
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", // Add shadow
+          borderRadius: "0 0 16px 16px",
+          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
         }}
       >
-        {/* Flights Tab Content */}
         <TabPanel value="flights">
             <div className="flex flex-col gap-4 w-full">
-                <div className="flex items-end gap-2 w-full">
-                <div className="flex-1 min-w-[120px]">
-                    <Label htmlFor="leaving-from" className="mb-2 block text-s">From</Label>
-                    <Input id="leaving-from" placeholder="City or airport" className="h-9" />
-                </div>
-                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0">
-                    <ArrowRightLeft className="h-4 w-4" />
-                </Button>
-                <div className="flex-1 min-w-[120px]">
-                    <Label htmlFor="going-to" className="mb-2 block text-s">To</Label>
-                    <Input id="going-to" placeholder="City or airport" className="h-9" />
-                </div>
-                <div className="flex-1 min-w-[120px]">
-                <Label htmlFor="destination" className="mb-2 block text-s">Departure</Label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={`w-full justify-start text-left font-normal ${!date && "text-muted-foreground"}`}
-                    >
-                        <CalendarIcon className="mr-2 h-6 w-6" />
-                        {date ? format(date, "PPP") : "Select date"}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        initialFocus
-                    />
-                    </PopoverContent>
-                </Popover>
-                <Input
-                    type="date"
-                    value={date ? format(date, "yyyy-MM-dd") : ""}
-                    onChange={(e) => setDate(new Date(e.target.value))}
-                    className="sr-only"
-                />
-                </div>
-                {flightType === "roundtrip" && (
-                    <div className="flex-1 min-w-[120px]">
-                <Label htmlFor="destination" className="mb-2 block text-s">Return</Label>
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={`w-full justify-start text-left font-normal ${!date && "text-muted-foreground"}`}
-                    >
-                        <CalendarIcon className="mr-2 h-6 w-6" />
-                        {date ? format(date, "PPP") : "Select date"}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={setDate}
-                        initialFocus
-                    />
-                    </PopoverContent>
-                </Popover>
-                <Input
-                    type="date"
-                    value={date ? format(date, "yyyy-MM-dd") : ""}
-                    onChange={(e) => setDate(new Date(e.target.value))}
-                    className="sr-only"
-                />
-                    </div>
-                )}
-                <div className="flex-1 min-w-[120px]">
-                    <Label htmlFor="travelers" className="mb-2 block text-s">Travelers</Label>
-                    <Select>
-                    <SelectTrigger id="travelers" className="h-9">
-                        <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="1">1 traveler</SelectItem>
-                        <SelectItem value="2">2 travelers</SelectItem>
-                        <SelectItem value="3">3 travelers</SelectItem>
-                    </SelectContent>
-                    </Select>
-                </div>
-                <Button className="rounded-full px-8 text-white ">Search</Button>
-                </div>
+                <FlightsPage/>
+
 
                 {/* Radio buttons container below */}
                 <div className="flex justify-start gap-4">
