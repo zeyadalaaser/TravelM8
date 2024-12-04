@@ -261,73 +261,7 @@ export const addRatingAndComment = async (req, res) => {
   // }
 };
 
-export const totalBookedActivitiesAdmin = async () => {
-  try {
-    const bookings = await BookingActivity.find({
-      status: "Paid",
-    }).populate("activityId");
 
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      totalPrice += booking.activityId.price || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalCancelledActivitiesAdmin = async () => {
-  try {
-    const bookings = await BookingActivity.find({
-      status: "Cancelled",
-    }).populate("activityId");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      totalPrice += booking.activityId.price || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalBookedActivitiesAdvertiser = async (advertiserId) => {
-  try {
-    const bookings = await BookingActivity.find({
-      status: "Paid",
-    }).populate("activityId");
-
-    let totalPrice = 0;
-
-    bookings.forEach((booking) => {
-      if (booking.advertiserId === advertiserId) {
-        totalPrice += booking.activityId.price || 0;
-      }
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
-
-export const totalCancelledActivitiesAdvertiser = async (advertiserId) => {
-  try {
-    const bookings = await BookingActivity.find({
-      status: "Cancelled",
-    }).populate("activityId");
-
-    let totalPrice = 0;
-    bookings.forEach((booking) => {
-      if (booking.advertiserId === advertiserId)
-        totalPrice += booking.activityId.price || 0;
-    });
-    return totalPrice;
-  } catch (error) {
-    return -1;
-  }
-};
 
 export const getActivitiesReport = async (req, res) => {
   const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user

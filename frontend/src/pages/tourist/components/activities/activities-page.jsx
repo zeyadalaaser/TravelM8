@@ -13,6 +13,7 @@ import Activities from "./activities";
 import { SearchBar } from "../filters/search";
 import { getActivities, getCategories, createActivityBooking } from "../../api/apiService";
 import CircularProgress from '@mui/material/CircularProgress';
+import { Button } from "@/components/ui/button"
 
 export function ActivitiesPage() {
   const token = localStorage.getItem('token');
@@ -22,6 +23,11 @@ export function ActivitiesPage() {
   const currency = searchParams.get('currency') ?? "USD";
   const [activities, setActivities] = useState([]);
   const [exchangeRates, setExchangeRates] = useState({});
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 4; // Adjust how many items per page you want
 
   // Fetch the latest exchange rates from the API
   useEffect(() => {
@@ -59,12 +65,27 @@ export function ActivitiesPage() {
     fetchActivities();
   }, [location.search, currency]);
 
-
   const searchCategories = [
     { name: "Name", value: "name" },
     { name: "Category", value: "categoryName" },
     { name: "Tag", value: "tag" },
   ];
+
+  // Calculate the start and end indices for the current page
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  // Paginated activities
+  const paginatedActivities = activities.slice(startIndex, endIndex);
+
+  // Total pages
+  const totalPages = Math.ceil(activities.length / itemsPerPage);
+
+  // Handle page change
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo(0, 0); // Scroll to the top of the page when changing pages
+  };
 
   return (
     <div className="mt-24">
@@ -80,7 +101,11 @@ export function ActivitiesPage() {
           <Separator className="mt-5" />
           <RatingFilter />
           <Separator className="mt-7" />
-          <SelectFilter name="Categories" paramName="categoryName" getOptions={getCategories} />
+          <SelectFilter
+            name="Categories"
+            paramName="categoryName"
+            getOptions={getCategories}
+          />
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
@@ -98,11 +123,40 @@ export function ActivitiesPage() {
             <Activities
               token={token}
               bookActivity={createActivityBooking}
-              activities={activities}
+              activities={paginatedActivities}
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
           )}
+
+          <div className="flex justify-center mt-6 space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                onClick={() => {
+                  setCurrentPage(page);
+                  window.scroll(0, 0);
+                }}
+              >
+                {page}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </div>
