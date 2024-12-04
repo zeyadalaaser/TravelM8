@@ -9,16 +9,26 @@ import { Museums } from "./museums";
 import { getMuseums, getPlaceTags } from "../../api/apiService";
 import { SearchBar } from "../filters/search";
 import axios from "axios";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
+import { Button } from "@/components/ui/button";
 
 export function MuseumsPage() {
   const [loading, setLoading] = useState(false);
   const { location } = useRouter();
   const searchParams = new URLSearchParams(location.search);
-  const type = searchParams.get('type');
-  const currency = searchParams.get('currency') ?? "USD";
+  const type = searchParams.get("type");
+  const currency = searchParams.get("currency") ?? "USD";
   const [museums, setMuseums] = useState([]);
   const [exchangeRates, setExchangeRates] = useState({});
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4; // Adjust how many items per page you want
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const totalPages = Math.ceil(museums.length / itemsPerPage);
+  // Paginated activities
+  const paginatedPlaces = museums.slice(startIndex, endIndex);
 
   // Fetch latest exchange rates on mount
   useEffect(() => {
@@ -51,12 +61,16 @@ export function MuseumsPage() {
     fetchMuseums();
   }, [location.search, currency]);
 
-
   const searchCategories = [
-    { name: 'Name', value: 'name' },
-    { name: 'Tag', value: 'tag' }
+    { name: "Name", value: "name" },
+    { name: "Tag", value: "tag" },
   ];
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo(0, 0); // Scroll to the top of the page when changing pages
+  };
+  
   return (
     <div className="mt-24">
       <SearchBar categories={searchCategories} />
@@ -82,11 +96,39 @@ export function MuseumsPage() {
             </div>
           ) : (
             <Museums
-              museums={museums}
+              museums={paginatedPlaces}
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
           )}
+          <div className="flex justify-center mt-6 space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                onClick={() => {
+                  setCurrentPage(page);
+                  window.scroll(0, 0);
+                }}
+              >
+                {page}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </div>

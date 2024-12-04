@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "@/components/Sidebar";
-import Navbar from "@/components/DashboardsNavBar";
+import Navbar from "@/components/NavbarAdmin";
 
 //import Navbar from "@/components/NavbarAdmin";
 
@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-
 
 const AdminPanel = () => {
   const [sidebarState, setSidebarState] = useState(false);
@@ -69,7 +68,7 @@ const AdminPanel = () => {
     try {
       const response = await axios.post(
         "http://localhost:5001/api/admins/register",
-        { username, password, email } 
+        { username, password, email }
       );
       setSuccess(response.data.message);
       setError(null);

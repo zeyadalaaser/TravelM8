@@ -18,6 +18,10 @@ import {
   SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Eye, EyeOff, X } from "lucide-react";
+import { changePassword } from "../pages/admin/services/apiService.js";
+import { Input } from "@/components/ui/input.tsx";
+import { toast } from "sonner";
 
 const ContentWrapper = ({ children }) => (
   <div className="pt-[76px]">{children}</div>
@@ -50,8 +54,18 @@ export default function Navbar({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  //////////// Admin Shit ////////////////////////
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
     console.log("token: ", token);
     if (token) {
       const decodedToken = decodeToken(token);
@@ -210,6 +224,7 @@ export default function Navbar({ children }) {
 
   const handleLogoutClick = () => {
     setAlertOpen(true);
+    handleClose();
   };
 
   const openSignup = () => {
@@ -220,6 +235,72 @@ export default function Navbar({ children }) {
   const openLogin = () => {
     setIsLoginOpen(true);
     setIsSignupOpen(false);
+  };
+
+  const handleChangePassword = (e) => {
+    e.preventDefault();
+    setError("");
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setError("All fields are required");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirm password do not match");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setError("New password must be at least 8 characters long");
+      return;
+    }
+    console.log("Password change requested");
+
+    // Close the modal and reset fields
+    setIsPasswordModalOpen(false);
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setError("All fields are required");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirm password do not match");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast("New password must be at least 8 characters long");
+      setError("New password must be at least 8 characters long");
+      return;
+    }
+    try {
+      const passwordData = {
+        currentPassword,
+        newPassword,
+        confirmNewPassword: confirmPassword,
+      };
+      console.log(passwordData);
+      const response = await changePassword(passwordData, token);
+      toast("Password changed successfully");
+      console.log("success");
+      setIsPasswordModalOpen(false);
+      setCurrentPassword(null);
+      setNewPassword(null);
+      setConfirmPassword(null);
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message); // Display the specific error message
+      } else {
+        setError("An unexpected error occurred");
+      }
+    }
   };
 
   return (
@@ -253,7 +334,7 @@ export default function Navbar({ children }) {
                 currentPage === "/admin/dashboard" ? "text-white" : "text-black"
               }`}
             >
-              Admin Dashboard
+              Dashboard
             </button>
           )}
         </div>
@@ -298,7 +379,7 @@ export default function Navbar({ children }) {
                       )}
                     </div>
                     <SheetDescription>
-                      {userRole === "admin"
+                      {userRole === "Admin"
                         ? "System and product notifications"
                         : "Your notifications"}
                     </SheetDescription>
@@ -392,18 +473,32 @@ export default function Navbar({ children }) {
                   },
                 }}
               >
-                <MenuItem
-                  onClick={() => {
-                    navigate(
-                      userRole === "admin"
-                        ? "/admin/dashboard"
-                        : "/tourist-profile"
-                    );
-                    handleClose();
-                  }}
-                >
-                  My profile
-                </MenuItem>
+                {userRole !== "Admin" && (
+                  <div>
+                    <MenuItem
+                      onClick={() => {
+                        if (userRole === "Tourist") {
+                          navigate("/tourist-profile");
+                        }
+                        handleClose();
+                      }}
+                    >
+                      My profile
+                    </MenuItem>
+                    <Separator />
+                  </div>
+                )}
+                {userRole === "Admin" && (
+                  <MenuItem
+                    onClick={() => {
+                      setIsPasswordModalOpen(true);
+                      handleClose();
+                    }}
+                  >
+                    Change Password
+                  </MenuItem>
+                )}
+
                 <Separator />
                 <MenuItem onClick={handleLogoutClick}>Sign out</MenuItem>
               </Menu>
@@ -411,6 +506,130 @@ export default function Navbar({ children }) {
                 isOpen={isAlertOpen}
                 onClose={() => setAlertOpen(false)}
               />
+              {/* Password Change Modal */}
+              {isPasswordModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                  <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-bold">Change Password</h2>
+                      <button
+                        onClick={() => setIsPasswordModalOpen(false)}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        <X className="h-6 w-6" />
+                      </button>
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="currentPassword"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Current Password
+                      </label>
+                      <div className="relative">
+                        <Input
+                          type={showCurrentPassword ? "text" : "password"}
+                          id="currentPassword"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                          onClick={() =>
+                            setShowCurrentPassword(!showCurrentPassword)
+                          }
+                        >
+                          {showCurrentPassword ? (
+                            <EyeOff className="h-5 w-5 text-gray-400" />
+                          ) : (
+                            <Eye className="h-5 w-5 text-gray-400" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        htmlFor="newPassword"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        New Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showNewPassword ? "text" : "password"}
+                          id="newPassword"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                        >
+                          {showNewPassword ? (
+                            <EyeOff className="h-5 w-5 text-gray-400" />
+                          ) : (
+                            <Eye className="h-5 w-5 text-gray-400" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mb-6">
+                      <label
+                        htmlFor="confirmPassword"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Confirm New Password
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPassword ? "text" : "password"}
+                          id="confirmPassword"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="h-5 w-5 text-gray-400" />
+                          ) : (
+                            <Eye className="h-5 w-5 text-gray-400" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    {error && <p className="text-red-500 mb-4">{error}</p>}
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setIsPasswordModalOpen(false)}
+                        className="mr-4 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handlePasswordChange}
+                        type="submit"
+                        className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      >
+                        Change Password
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <>

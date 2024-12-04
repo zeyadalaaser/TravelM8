@@ -165,9 +165,9 @@ export default function ItineraryCard({
     <>
       <div className="space-y-5">
         {itineraries?.map((itinerary) => (
-          <Card key={itinerary._id}>
-            <div className="flex flex-row h-[265px]">
-              <div className="w-1/3 h-full">
+          <Card key={itinerary._id} className="overflow-hidden">
+            <div className="flex flex-row ">
+              <div className="w-1/3">
                 <img
                   src={
                     itinerary.images[0] ||
@@ -212,12 +212,15 @@ export default function ItineraryCard({
                           <ShareButton id={itinerary._id} name="itinerary" />
                           <button
                             onClick={() => handleBookmark(itinerary._id)}
-                            className={`text-gray-500 hover:text-black ${bookmarkedItineraries.includes(itinerary._id)
-                              ? "text-yellow-400"
-                              : ""
-                              }`}
+                            className="text-gray-500 hover:text-black"
                           >
-                            <Bookmark className="w-6 h-6" />
+                            <Bookmark
+                              className={`w-7 h-7 ${
+                                bookmarkedItineraries.includes(itinerary._id)
+                                  ? "fill-yellow-400 text-black"
+                                  : "fill-none text-black"
+                              }`}
+                            />
                           </button>
                         </>
                       )}
@@ -298,17 +301,17 @@ export default function ItineraryCard({
                     {/* <Timeline selectedItinerary={itinerary} /> */}
                     {isTourist && (
                       <div className="flex justify-end items-center">
-                       <ItineraryDetails 
-                        token={token}
-                        itinerary={itinerary} 
-                        isAdmin={isAdmin} 
-                        isTourist={isTourist} 
-                        isTourGuide={isTourGuide} 
-                        onRefresh={onRefresh}
-                        currency={currency}
-                      />
-                      <div className="px-2">
-                        <ChooseDate itinerary={itinerary} />
+                        <ItineraryDetails
+                          token={token}
+                          itinerary={itinerary}
+                          isAdmin={isAdmin}
+                          isTourist={isTourist}
+                          isTourGuide={isTourGuide}
+                          onRefresh={onRefresh}
+                          currency={currency}
+                        />
+                        <div className="px-2">
+                          <ChooseDate itinerary={itinerary} />
                         </div>
                       </div>
                     )}

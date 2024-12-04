@@ -16,11 +16,6 @@ export default function AdminDashboard() {
   const [sidebarState, setSidebarState] = useState(false);
   const { location, searchParams } = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  // const [stats, setStats] = useState({});
-  // const [totalRevenue, setTotalRevenue] = useState(0);
-  // const [activitiesRevenue, setActivitiesRevenue] = useState(0);
-  // const [itinerariesRevenue, setItinerariesRevenue] = useState(0);
-  // const [productsRevenue, setProductsRevenue] = useState(0);
   const navigate = useNavigate();
   console.log("from dashboard",token);
 
@@ -50,22 +45,6 @@ export default function AdminDashboard() {
     }
   }, [token, navigate]);
 
-  // useEffect(() => {
-  //   console.log("setting stats");
-  //   setStats(getSystemStats());
-  //   // console.log("stats: ", stats);
-  // }, []);
-
-  // useEffect(() => {
-  //   if (stats) {
-  //     console.log("stats: ", stats);
-  //     setTotalRevenue(stats.Total);
-  //     setActivitiesRevenue(stats.Activities);
-  //     setItinerariesRevenue(stats.Itineraries);
-  //     setProductsRevenue(stats.Products);
-  //   }
-  // }, [stats]);
-
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
   };
@@ -86,11 +65,6 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <UsersReport />
               <RevenueBreakdown/>
-                {/* activitiesRevenue={activitiesRevenue}
-                itinerariesRevenue={itinerariesRevenue}
-                productsRevenue={productsRevenue}
-                totalRevenue={totalRevenue}
-              /> */}
             </div>
             <AdminActions
               currentPage={currentPage}

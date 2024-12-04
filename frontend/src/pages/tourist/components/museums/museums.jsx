@@ -8,9 +8,9 @@ export function Museums({ museums, currency, exchangeRate }) {
   return (
     <div className="space-y-4">
       {museums.map((museum, index) => (
-        <Card key={index}>
+        <Card key={index} className="overflow-hidden">
           <div className="flex flex-col md:flex-row">
-            <div className="w-full md:w-1/3 h-[230px]">
+            <div className="w-full md:w-1/3 h-[230px] ">
               <img
                 src={museum.image}
                 alt={museum.name}

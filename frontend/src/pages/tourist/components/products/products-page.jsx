@@ -12,6 +12,7 @@ import { SearchBar } from "../filters/search";
 import CircularProgress from '@mui/material/CircularProgress';
 import { getProducts } from '../../api/apiService';
 import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
 
 const decodeToken = (token) => {
   try {
@@ -38,6 +39,15 @@ export function ProductsPage({ addToCart }) {
   const [loading, setLoading] = useState(false);
   const [exchangeRates, setExchangeRates] = useState({});
   const [token, setToken] = useState(null);
+
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6; // Adjust how many items per page you want
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const totalPages = Math.ceil(products.length / itemsPerPage);
+    // Paginated activities
+    const paginatedProducts = products.slice(startIndex, endIndex);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -87,6 +97,11 @@ export function ProductsPage({ addToCart }) {
   //   navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
   // };
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo(0, 0); // Scroll to the top of the page when changing pages
+  };
+
   return (
     <div className="mt-24">
       <SearchBar categories={[{ name: "Name", value: "name" }]} />
@@ -113,11 +128,39 @@ export function ProductsPage({ addToCart }) {
             </div>
           ) : (
             <Products
-              products={products}
+              products={paginatedProducts}
               currency={currency}
               token={token}
             />
           )}
+          <div className="flex justify-center mt-6 space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                onClick={() => {
+                  setCurrentPage(page);
+                  window.scroll(0, 0);
+                }}
+              >
+                {page}
+              </Button>
+            ))}
+            <Button
+              variant="outline"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </div>

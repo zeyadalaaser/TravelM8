@@ -1,23 +1,109 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { UserPlus, FileText, Settings, Bell, BarChart, Users, ShoppingCart, Mail, Shield, Database, Cloud, Code, Globe, Camera, Headphones, Printer, Wifi, Zap, Briefcase, Coffee, Compass, Feather, Heart, Map } from 'lucide-react'
+import { 
+  User, 
+  Shield, 
+  Clipboard, 
+  Settings, 
+  Tag, 
+  ShoppingBag, 
+  AlertCircle, 
+  Calendar, 
+  UserCheck, 
+  Trash, 
+  Activity, 
+  Percent 
+} from "lucide-react";
 import { useNavigate } from "react-router-dom"
 
 
 const actions = [
-  { title: "Users", description: "Manage All Users", icon: UserPlus, path: "/deleteUser" },
-  { title: "Admins", description: "Manage Admins", icon: FileText, path: "/admin/addAdmin" },
-  { title: "Tourism Governors", description: "Manage Tourism Governors", icon: Settings, path: "/admin/addTourismGovernor" },
-  { title: "Activity Categories", description: "Manage Activity Categories", icon: Bell, path: "/admin/EditActivityCategories" },
-  { title: "Preference Tags", description: "Manage Preference Tags", icon: BarChart, path: "/preferenceTag"},
-  { title: "Products", description: "Manage Products", icon: Users, path: "/product" },
-  { title: "Complaints", description: "Manage Complaints", icon: ShoppingCart, path: "/viewComplaints" },
-  { title: "Itineraries", description: "Manage Itineraries", icon: Mail, path: "/admin/itineraries" },
-  { title: "Pending Users", description: "Manage Pending Users", icon: Shield, path: "/admin/pending-users" },
-  { title: "Account Deletion Requests", description: "Manage Account Deletion Requests", icon: UserPlus, path: "/deleteAccount" },
-  { title: "Activities", description: "Manage Activities", icon: Database, path: "/admin/manage-activities" },
-  { title: "Promo Codes", description: "Manage Promo Codes", icon: Cloud, path: "/" },
-]
+  { 
+    title: "Pending Users", 
+    description: "Approve or reject new user registrations.", 
+    buttonText: "Manage Pending Users", 
+    icon: UserCheck, 
+    path: "/admin/pending-users" 
+  },
+  { 
+    title: "Users", 
+    description: "View, edit, or delete existing user accounts.", 
+    buttonText: "Manage Users", 
+    icon: User, 
+    path: "/deleteUser" 
+  },
+  { 
+    title: "Account Deletion Requests", 
+    description: "Review and process user account deletion requests.", 
+    buttonText: "Manage Deletion Requests", 
+    icon: Trash, 
+    path: "/deleteAccount" 
+  },
+  { 
+    title: "Admins", 
+    description: "Add or manage system administrators.", 
+    buttonText: "Manage Admins", 
+    icon: Shield, 
+    path: "/admin/addAdmin" 
+  },
+  { 
+    title: "Tourism Governors", 
+    description: "Assign or manage tourism governors in the system.", 
+    buttonText: "Manage Governors", 
+    icon: Settings, 
+    path: "/admin/addTourismGovernor" 
+  },
+  { 
+    title: "Activities", 
+    description: "Create, update, or remove activities in the system.", 
+    buttonText: "Manage Activities", 
+    icon: Activity, 
+    path: "/admin/manage-activities" 
+  },
+  { 
+    title: "Itineraries", 
+    description: "Oversee and manage available itineraries.", 
+    buttonText: "Manage Itineraries", 
+    icon: Calendar, 
+    path: "/admin/itineraries" 
+  },
+  { 
+    title: "Activity Categories", 
+    description: "Organize and manage categories for activities.", 
+    buttonText: "Manage Categories", 
+    icon: Clipboard, 
+    path: "/admin/EditActivityCategories" 
+  },
+  { 
+    title: "Preference Tags", 
+    description: "Set up and manage tags for user preferences.", 
+    buttonText: "Manage Tags", 
+    icon: Tag, 
+    path: "/preferenceTag" 
+  },
+  { 
+    title: "Products", 
+    description: "Manage items available for sale or rent.", 
+    buttonText: "Manage Products", 
+    icon: ShoppingBag, 
+    path: "/product" 
+  },
+  { 
+    title: "Complaints", 
+    description: "Handle and resolve user complaints.", 
+    buttonText: "Manage Complaints", 
+    icon: AlertCircle, 
+    path: "/viewComplaints" 
+  },
+  { 
+    title: "Promo Codes", 
+    description: "Generate and manage discount codes for users.", 
+    buttonText: "Manage Promo Codes", 
+    icon: Percent, 
+    path: "/" 
+  }
+];
+
 
 
 export default function AdminActions({ currentPage, setCurrentPage }) {
@@ -42,8 +128,8 @@ export default function AdminActions({ currentPage, setCurrentPage }) {
                 <action.icon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                {/* <p className="text-xs text-muted-foreground">{action.description}</p> */}
-                <Button className="mt-4 w-full" onClick={() => navigate(action.path)}>{action.description}</Button>
+                <p className="text-xs text-muted-foreground">{action.description}</p>
+                <Button className="mt-4 w-full" onClick={() => navigate(action.path)}>{action.buttonText}</Button>
               </CardContent>
             </Card>
           ))}
