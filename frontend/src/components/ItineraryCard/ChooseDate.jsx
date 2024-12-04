@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -12,11 +12,26 @@ import {
 } from "@/components/ui/dialog";
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { createItineraryBooking } from "../../pages/tourist/api/apiService";
+import { toast } from "@/components/ui/use-toast";
 
-export const ChooseDate = ({ itinerary }) => {
+export const ChooseDate = ({ itinerary,token }) => {
   const [selectedDate, setSelectedDate] = useState();
   const [submitStatus, setSubmitStatus] = useState();
   const [isOpen, setIsOpen] = useState(false);
+
+  const checkForToken = () => {
+    console.log(token);
+    if (!token) {
+      toast({
+        title: `Failed to book itinerary`,
+        description: `You need to be logged in first`,
+      });
+      setIsOpen(false);
+    }
+    else {
+      setIsOpen(true);
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,9 +63,18 @@ export const ChooseDate = ({ itinerary }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog  open={isOpen && token} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-gray-800 hover:bg-gray-700 text-white">Book itinerary</Button>
+        <Button 
+          onClick={() => {
+            if (!token) {
+              toast({
+              title: `Failed to book itinerary`,
+              description: `You need to be logged in first`,
+              });
+            }
+          }}
+        className="bg-gray-800 hover:bg-gray-700 text-white">Book itinerary</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

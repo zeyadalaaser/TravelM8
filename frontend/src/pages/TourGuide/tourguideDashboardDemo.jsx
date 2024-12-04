@@ -34,7 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import {
   BarChart,
   Bar,
@@ -96,7 +96,7 @@ const TourGuideDashboard = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("itineraries"); // Manage active tab
   const [reportData, setReportData] = useState([]);
-  
+
   useEffect(() => {
     if (!token) return; // No token, no need to check
 
@@ -105,8 +105,8 @@ const TourGuideDashboard = () => {
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
 
       if (decodedToken.exp < currentTime) {
-        localStorage.removeItem("token"); 
-        navigate("/"); 
+        localStorage.removeItem("token");
+        navigate("/");
       } else {
         const timeout = setTimeout(() => {
           localStorage.removeItem("token");
@@ -117,41 +117,37 @@ const TourGuideDashboard = () => {
       }
     } catch (error) {
       console.error("Error decoding token:", error);
-      localStorage.removeItem("token"); 
+      localStorage.removeItem("token");
       navigate("/");
     }
   }, [token, navigate]);
 
-  
- 
   // Fetch itineraries from the server
- 
- 
+
   const fetchReport = async () => {
     setIsLoading(true);
     //setError("");
     try {
-        const response = await axios.get(
-            "http://localhost:5001/api/itinerariesReport", 
-            {
-                headers: { Authorization: `Bearer ${token}` },
-               // params: { year, month, day },
-            }
-        );
-        setReportData(response.data.data);
+      const response = await axios.get(
+        "http://localhost:5001/api/itinerariesReport",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          // params: { year, month, day },
+        }
+      );
+      setReportData(response.data?.data || []);
     } catch (err) {
-        console.error("Error fetching itineraries report:");
+      console.error("Error fetching itineraries report:");
       //  setError(err.response?.data?.message || "Failed to fetch report");
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-};
+  };
 
-useEffect(() => {
+  useEffect(() => {
     fetchReport();
-}, [token]); 
- 
- 
+  }, [token]);
+
   const fetchItinerariesData = async () => {
     try {
       setIsLoading(true);
@@ -294,9 +290,6 @@ useEffect(() => {
     }
   };
 
-  
-
-
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -332,19 +325,6 @@ useEffect(() => {
             >
               <Users className="mr-3" />
               Tourist Reports
-            </button>
-            <button
-              className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
-                activeTab === "notifications" ? "bg-gray-200" : ""
-              }`}
-              onClick={() => setActiveTab("notifications")}
-            >
-              <Bell className="mr-3" />
-              Notifications
-            </button>
-            <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
-              <Settings className="mr-3" />
-              Settings
             </button>
           </nav>
         </div>
@@ -394,7 +374,12 @@ useEffect(() => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                ${reportData.reduce((total, item) => total + item.revenue, 0).toFixed(2)}
+                  $
+                  {reportData.length > 0
+                    ? reportData
+                        .reduce((total, item) => total + item.revenue, 0)
+                        .toFixed(2)
+                    : "0.00"}
                 </div>
               </CardContent>
             </Card>
@@ -406,9 +391,7 @@ useEffect(() => {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold"> 
-           1,234
-        </div>
+                <div className="text-2xl font-bold">1,234</div>
               </CardContent>
             </Card>
           </div>
@@ -422,7 +405,7 @@ useEffect(() => {
               <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
               <TabsTrigger value="sales">Sales Report</TabsTrigger>
               <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              {/* <TabsTrigger value="notifications">Notifications</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="itineraries" className="space-y-4">
@@ -541,13 +524,12 @@ useEffect(() => {
 
             <TabsContent value="sales" className="space-y-4">
               <h2 className="text-2xl font-bold">Sales Report</h2>
-            <SalesReport/>
-              
+              <SalesReport />
             </TabsContent>
 
             <TabsContent value="tourists" className="space-y-4">
               <h2 className="text-2xl font-bold">Tourist Report</h2>
-              <TouristReport/>
+              <TouristReport />
             </TabsContent>
 
             <TabsContent value="notifications" className="space-y-4">

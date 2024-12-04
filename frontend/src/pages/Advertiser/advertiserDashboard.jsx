@@ -20,7 +20,7 @@ import {
   Users,
   MapPin,
 } from "lucide-react";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 import {
   Select,
@@ -50,36 +50,31 @@ const AdvertiserDashboard = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [dialogArgs, setDialogArgs] = useState(null);
   const [activeTab, setActiveTab] = useState("activities");
-  
+
   const navigate = useNavigate();
   const [reportData, setReportData] = useState([]);
   const token = localStorage.getItem("token");
- 
-  
+
   const fetchReport = async () => {
     const token = localStorage.getItem("token");
     try {
-        const response = await axios.get(
-         "http://localhost:5001/api/activitiesReport", 
-            {
-                headers: { Authorization: `Bearer ${token}` },
-                //params: { year, month, day },
-            }
-        );
-        setReportData(response.data.data);
+      const response = await axios.get(
+        "http://localhost:5001/api/activitiesReport",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          //params: { year, month, day },
+        }
+      );
+      setReportData(response.data?.data || []);
     } catch (err) {
-        console.error("Error fetching activities report:");
-       
-    }  
-};
+      console.error("Error fetching activities report:");
+    }
+  };
 
-useEffect(() => {
+  useEffect(() => {
     fetchReport();
-    
-}, [token ]);
-  
-  
-  
+  }, [token]);
+
   const openDialog = (args) => {
     if (args) setDialogArgs(args.activity);
     else setDialogArgs(null);
@@ -99,8 +94,8 @@ useEffect(() => {
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
 
       if (decodedToken.exp < currentTime) {
-        localStorage.removeItem("token"); 
-        navigate("/"); 
+        localStorage.removeItem("token");
+        navigate("/");
       } else {
         const timeout = setTimeout(() => {
           localStorage.removeItem("token");
@@ -111,15 +106,13 @@ useEffect(() => {
       }
     } catch (error) {
       console.error("Error decoding token:", error);
-      localStorage.removeItem("token"); 
+      localStorage.removeItem("token");
       navigate("/");
     }
   }, [token, navigate]);
 
-   
- 
   console.log(reportData);
-const fetchActivities = async () => {
+  const fetchActivities = async () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -230,19 +223,6 @@ const fetchActivities = async () => {
                 <Users className="mr-3" />
                 Tourist Reports
               </button>
-              <button
-                className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
-                  activeTab === "notifications" ? "bg-gray-200" : ""
-                }`}
-                onClick={() => setActiveTab("notifications")}
-              >
-                <Bell className="mr-3" />
-                Notifications
-              </button>
-              <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
-                <Settings className="mr-3" />
-                Settings
-              </button>
             </nav>
           </div>
           <div className="p-4">
@@ -295,7 +275,12 @@ const fetchActivities = async () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                  ${reportData.reduce((total, item) => total + item.revenue, 0).toFixed(2)}
+                    $
+                    {reportData.length > 0
+                      ? reportData
+                          .reduce((total, item) => total + item.revenue, 0)
+                          .toFixed(2)
+                      : "0.00"}
                   </div>
                 </CardContent>
               </Card>
@@ -307,9 +292,7 @@ const fetchActivities = async () => {
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
-                   1,234
-                    </div>
+                  <div className="text-2xl font-bold">1,234</div>
                 </CardContent>
               </Card>
             </div>
@@ -322,7 +305,6 @@ const fetchActivities = async () => {
                 <TabsTrigger value="activities">Activities</TabsTrigger>
                 <TabsTrigger value="sales">Sales Report</TabsTrigger>
                 <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
-                <TabsTrigger value="notifications">Notifications</TabsTrigger>
               </TabsList>
               <TabsContent value="activities" className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -362,10 +344,10 @@ const fetchActivities = async () => {
                 )}
               </TabsContent>
               <TabsContent value="sales" className="space-y-4">
-                 <SalesReport/>
+                <SalesReport />
               </TabsContent>
               <TabsContent value="tourists" className="space-y-4">
-                 <TouristReport/>
+                <TouristReport />
               </TabsContent>
             </Tabs>
           </div>

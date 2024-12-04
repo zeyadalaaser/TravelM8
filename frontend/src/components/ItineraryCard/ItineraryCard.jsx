@@ -44,6 +44,7 @@ export default function ItineraryCard({
   handleBookmark = () => { },
 }) {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const handleDelete = async (id) => {
     try {
@@ -166,18 +167,18 @@ export default function ItineraryCard({
 
   return (
     <>
-      <div className="space-y-2">
+      <div className="space-y-5">
         {itineraries?.map((itinerary) => (
           <Card key={itinerary._id}>
-            <div className="flex flex-row">
-              <div className="w-1/3">
+            <div className="flex flex-row h-[265px]">
+              <div className="w-1/3 h-full">
                 <img
                   src={
                     itinerary.images[0] ||
                     "/placeholder.svg?height=200&width=300"
                   }
                   alt={itinerary.name}
-                  className="w-full min-h-full"
+                  className="w-full h-full objct-cover"
                 />
               </div>
               <div className="flex flex-row w-2/3">
@@ -301,10 +302,8 @@ export default function ItineraryCard({
                     {/* <Timeline selectedItinerary={itinerary} /> */}
                     {isTourist && (
                       <div className="flex justify-end items-center">
-                        {/* <Button onClick={modalOpen(true)}>
-                            Book Activity!
-                          </Button> */}
                        <ItineraryDetails 
+                        token={token}
                         itinerary={itinerary} 
                         isAdmin={isAdmin} 
                         isTourist={isTourist} 
@@ -373,41 +372,6 @@ const ChooseDate = ({ itinerary }) => {
   const [submitStatus, setSubmitStatus] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-    console.log("hello token from handlesubmit " + token);
-    if (!selectedDate) {
-      setSubmitStatus({ success: false, message: "Please select a date." });
-      return;
-    }
-    if (token) {
-      try {
-        const response = await createItineraryBooking(
-          itinerary._id,
-          itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
-          selectedDate,
-          itinerary.price,
-          "Card",
-          token
-        );
-        setIsOpen(false);
-        toast({
-          title: `Success`,
-          description: `itinerary booked successfully`,
-        });
-      } catch (error) {
-        setIsOpen(false);
-        toast({
-          title: `Failed to book itinerary`,
-          description: `${data.message}`,
-        });
-      }
-    } else {
-      alert("You need to be logged in to book an itinerary!");
-    }
-  };
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -434,26 +398,22 @@ const ChooseDate = ({ itinerary }) => {
     }
   }, [token, navigate]);
 
-  const checkForToken = () => {
-    console.log(token);
-    if (!token) {
-      toast({
-        title: `Failed to book itinerary`,
-        description: `You need to be logged in first`,
-      });
-    }
-    else {
-      setIsOpen(true);
-    }
-  }
-
   return (
     <>
       <Dialog 
         open={isOpen && !!token} 
-        onOpenChange={checkForToken}>
+        onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button className="bg-gray-800 hover:bg-gray-700">Book itinerary</Button>
+          <Button 
+                onClick={() => {
+                  if (!token) {
+                    toast({
+                      title: `Failed to book itinerary`,
+                      description: `You need to be logged in first`,
+                    });
+                  }
+                }}
+          className="bg-gray-800 hover:bg-gray-700">Book itinerary</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>

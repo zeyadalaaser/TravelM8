@@ -7,14 +7,15 @@ import {
   CardTitle,
   
 } from "@/components/ui/card";
-
+import { Stars } from "@/components/Stars";
 import { Button } from "@/components/ui/button";
 
 
 
-const ProductCard = ({ product, onEdit, onDelete, onToggleArchive }) => {
+
+const ProductCard = ({ product, onEdit, onDelete, onToggleArchive, onDetails }) => {
     return (
-      <Card key={product._id} className="shadow-lg rounded-lg bg-white overflow-hidden hover:shadow-xl transition-shadow duration-200">
+      <Card key={product._id} className="shadow-lg rounded-lg bg-white overflow-hidden hover:shadow-xl transition-shadow duration-200" > 
         <CardHeader>
         <img
             src={product.image}
@@ -30,7 +31,17 @@ const ProductCard = ({ product, onEdit, onDelete, onToggleArchive }) => {
           {/* Product Info */}
           <div className="text-sm text-gray-600">
             <p className="font-bold text-gray-900">Price: USD {parseFloat(product.price).toFixed(2)}</p>
-            <p className="mb-2">{product.description}</p>
+            <div className="flex-grow">
+                    <div className="flex items-center mb-2">
+                        <Stars rating={product.averageRating || 0} />
+                        <span className="ml-2 text-sm text-muted-foreground">
+                            {product.totalRatings || 0} reviews
+                        </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                        {product.description || "No description available"}
+                    </p>
+                </div>
             <p className="text-gray-700">Sold: {product.sales}</p>
             <p className="text-gray-700">Remaining Stock: {product.quantity}</p>
           </div>
@@ -52,6 +63,11 @@ const ProductCard = ({ product, onEdit, onDelete, onToggleArchive }) => {
               className="bg-red-600 hover:bg-red-800" size="sm">
                         <Trash2 className="h-4 w-4 mr-2" />
               Delete
+            </Button>
+            <Button
+              onClick={() => onDetails(product)}
+              className="border border-gray-200 text-gray-600" variant="outline">
+              View Details
             </Button>
           </div>
         </CardContent>
