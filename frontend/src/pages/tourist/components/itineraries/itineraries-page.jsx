@@ -170,9 +170,16 @@ export function ItinerariesPage() {
 
   return (
     <div className="mt-24">
-      <SearchBar categories={searchCategories} />
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex-grow">
+          <SearchBar categories={searchCategories} />
+        </div>
+        <div className="ml-4 mb-8">
+          <SortSelection />
+        </div>
+      </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full mt-2 md:w-1/4 sticky top-16 h-full">
+        <div className="w-full -mt-3 md:w-1/4 sticky top-16 h-full">
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -196,13 +203,12 @@ export function ItinerariesPage() {
             </>
           )}
         </div>
-        <div className="w-full md:w-3/4">
-          <div className="flex justify-between items-center mb-4">
+        <div className="w-full md:w-3/4 -mt-7">
+          <div className="flex justify-between items-center mb-2 -mt-3">
             <div className="flex h-5 items-center space-x-4 text-sm">
               <div>{itineraries.length} results</div>
               <ClearFilters />
             </div>
-            <SortSelection />
           </div>
           {loading ? (
             <div className="flex justify-center items-center mt-36">
