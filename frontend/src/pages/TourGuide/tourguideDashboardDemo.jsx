@@ -326,10 +326,6 @@ const TourGuideDashboard = () => {
               <Users className="mr-3" />
               Tourist Reports
             </button>
-            <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
-              <Settings className="mr-3" />
-              Settings
-            </button>
           </nav>
         </div>
         <div className="p-4">
@@ -378,7 +374,12 @@ const TourGuideDashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                ${reportData.length > 0 ? reportData.reduce((total, item) => total + item.revenue, 0).toFixed(2) : '0.00'}
+                  $
+                  {reportData.length > 0
+                    ? reportData
+                        .reduce((total, item) => total + item.revenue, 0)
+                        .toFixed(2)
+                    : "0.00"}
                 </div>
               </CardContent>
             </Card>
