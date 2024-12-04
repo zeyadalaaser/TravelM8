@@ -11,9 +11,9 @@ import { SearchBar } from "../filters/search";
 import { getItineraries, getMyPreferredTags } from "../../api/apiService";
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export function ItinerariesPage() {
   const [loading, setLoading] = useState(false);
@@ -28,7 +28,7 @@ export function ItinerariesPage() {
   const [bookmarkedItineraries, setBookmarkedItineraries] = useState([]);
   const token = localStorage.getItem("token");
 
-  // Pagination 
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4; // Adjust how many items per page you want
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -168,7 +168,6 @@ export function ItinerariesPage() {
     window.scrollTo(0, 0); // Scroll to the top of the page when changing pages
   };
 
-
   return (
     <div className="mt-24">
       <SearchBar categories={searchCategories} />
@@ -223,7 +222,7 @@ export function ItinerariesPage() {
             //   <p>No itineraries found. Try adjusting your filters.</p>
             // )}
           )}
-           <div className="flex justify-center mt-6 space-x-2">
+          <div className="flex justify-center mt-6 space-x-2">
             <Button
               variant="outline"
               onClick={() => handlePageChange(currentPage - 1)}
