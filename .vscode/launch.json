@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Node: Nodemon",
+            "name": "Debug: Backend",
             "runtimeExecutable": "nodemon",
             "cwd": "${workspaceFolder}/backend",
             "program": "${workspaceFolder}/backend/server.js",
@@ -16,6 +16,16 @@
             "internalConsoleOptions": "neverOpen",
             "env": {
                 "debug": "app:*",
+            }
+        },
+        {
+            "name": "Debug: Frontend",
+            "type": "msedge",
+            "request": "launch",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/frontend",
+            "sourceMapPathOverrides": {
+                "webpack:///./*": "${webRoot}/*"
             }
         }
     ]

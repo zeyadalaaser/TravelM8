@@ -2,14 +2,27 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Share2, Copy, CircleCheck, Mail } from "lucide-react"
-import useRouter from "@/hooks/useRouter";
 
 import { useToast } from "@/components/ui/use-toast"
 
 export function ShareButton({ className, id, name }) {
-    const { location, searchParams } = useRouter();
-
-    const url = window.location.origin + location.pathname + "?type=" + searchParams.get("type") + "&id=" + id;
+    let type = "";
+    switch (name) {
+        case "activity":
+            type = "activities";
+            break;
+        case "itinerary":
+            type = "itineraries";
+            break;
+        case "place":
+            type = "museums";
+            break;
+        case "product":
+            type = "products";
+            break;
+    }
+    
+    const url = window.location.origin + "/tourist-page?type=" + type + "&id=" + id;
     const { toast } = useToast();
     return (
         <Popover>

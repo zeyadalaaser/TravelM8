@@ -16,11 +16,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 export function ActivitiesPage() {
   const token = localStorage.getItem('token');
-  console.log(token);
   const [loading, setLoading] = useState(false);
   const { location } = useRouter();
+  const searchParams = new URLSearchParams(location.search);
+  const currency = searchParams.get('currency') ?? "USD";
   const [activities, setActivities] = useState([]);
-  const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
 
   // Fetch the latest exchange rates from the API
@@ -47,11 +47,8 @@ export function ActivitiesPage() {
     try {
       const fetchedActivities = (await getActivities(`?${queryParams.toString()}`)).filter(a => a.isBookingOpen);
 
-      // Simulate a delay by adding a timeout before updating the loading state
-      setTimeout(() => {
-        setActivities(fetchedActivities);
-        setLoading(false); // Set loading to false after the simulated delay
-      }, 500); // Adjust this time to control how long the loading indicator stays
+      setActivities(fetchedActivities);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching activities:", error);
       setLoading(false); // Ensure loading is set to false if there’s an error
@@ -62,9 +59,6 @@ export function ActivitiesPage() {
     fetchActivities();
   }, [location.search, currency]);
 
-  const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
-  };
 
   const searchCategories = [
     { name: "Name", value: "name" },
@@ -75,18 +69,8 @@ export function ActivitiesPage() {
   return (
     <div className="mt-24">
       <SearchBar categories={searchCategories} />
-      <div className="flex flex-row justify-between mb-4">
-        <label>
-          Currency:
-          <select value={currency} onChange={handleCurrencyChange}>
-            {Object.keys(exchangeRates).map((cur) => (
-              <option key={cur} value={cur}>{`${cur}`}</option>
-            ))}
-          </select>
-        </label>
-      </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-20 h-full">
+        <div className="w-full mt-2 md:w-1/4 sticky top-16 h-full">
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -106,7 +90,6 @@ export function ActivitiesPage() {
             </div>
             <SortSelection />
           </div>
-          {/* Show the CircularProgress if loading is true */}
           {loading ? (
             <div className="flex justify-center items-center mt-36">
               <CircularProgress />

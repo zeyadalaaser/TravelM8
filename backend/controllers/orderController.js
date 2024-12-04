@@ -1,28 +1,38 @@
 import Stripe from 'stripe';
 import Order from '../models/orderModel.js';
 import Tourist from '../models/touristModel.js';
+import axios from "axios"
 
 
 const stripe = new Stripe('sk_test_51QNwSmLNUgOldllO81Gcdv4m60Pf04huhn0DcH2jm0NedAn6xh3krj5GyJ9PEojkKCJYmGJGojBK12S52FktB5Jc00dYqr1Ujo');
 
-
+async function getExchangeRates(base = "USD") {
+  const response = await axios.get(
+    `https://api.exchangerate-api.com/v4/latest/${base}`
+  );
+  return response.data.rates;
+}
 export const createPaymentIntent = async (req, res) => {
-    try {
-      const { amount, currency } = req.body;
-  
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount,
-        currency,
-        automatic_payment_methods: {
-          enabled: true,
-        },
-      });
-  
-      res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+  try {
+    const { amount, currency, targetCurrency } = req.body;
+    const rates = await getExchangeRates(currency);
+    if (!rates[targetCurrency]) {
+      return res.status(400).json({ error: 'Conversion rate not found for this currency pair.' });
     }
-  };
+    const convertedAmount = amount * rates[targetCurrency];
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(convertedAmount * 100),
+      currency: targetCurrency, 
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
   
 export const payWithStripe = async (req, res) => {
   try {
@@ -225,6 +235,9 @@ export const payWithCash = async (req, res) => {
         user.address.push(address);
         deliveryAddress = address;
       }
+      if (!deliveryAddress) {
+        return res.status(400).json({ message: "Address field is required" }); 
+      }
   
       const deliveryFee = 20; 
       totalAmount += deliveryFee;
@@ -279,11 +292,13 @@ export const payWithCash = async (req, res) => {
       const userId = req.user?.userId; // Assumes user ID is extracted from token
   
       // Find orders for the logged-in user
-      const orders = await Order.find({ user: userId }).sort({ createdAt: -1 })
-       .populate({
-        path: "items.product",
-        model: "Product", 
-      });; 
+      const orders = await Order.find({ user: userId })
+        .sort({ createdAt: -1 })
+        .populate({
+          path: "items.product",
+          model: "Product", // Populates product details
+        })
+        .select("items totalAmount deliveryFee deliveryAddress paymentMethod status createdAt"); // Explicitly select the fields you want
   
       if (!orders || orders.length === 0) {
         return res.status(404).json({ message: "No orders found" });
@@ -294,6 +309,7 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: "Failed to fetch orders", error: error.message });
     }
   };
+  
   
 
  export const updateOrderStatus = async (req, res) => {
@@ -332,9 +348,7 @@ export const payWithCash = async (req, res) => {
         { status: "Cancelled" },
         { new: true } 
       ).populate("items.product");      
-      if (order.paymentMethod==="wallet") {
-        user.wallet= user.wallet + order.totalAmount;
-      }
+      user.wallet= user.wallet + order.totalAmount;
       for (const item of order.items) {
           if (item.product) {
             item.product.quantity+=item.quantity;
@@ -351,6 +365,8 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: "Failed to cancel order", error });
     }
   };
+
+
   
   
   

@@ -18,7 +18,7 @@ import { flagItinerary } from "../../pages/admin/services/AdminItineraryService"
 import { Timeline } from './Timeline';
 import { ChooseDate } from './ChooseDate';
 
-export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTourGuide, onRefresh }) {
+export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTourGuide, onRefresh,currency }) {
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -87,7 +87,7 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
           <DialogTitle className="text-2xl font-bold">{itinerary.name}</DialogTitle>
         </DialogHeader>
         <div className="flex gap-4">
-          <div className="w-1/3">
+          <div className="w-1/2">
             <div className="aspect-square overflow-hidden rounded-lg mb-2">
               <img
                 src={itinerary.images[selectedImage] || "/placeholder.svg?height=300&width=300"}
@@ -95,7 +95,7 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
                 className="w-full h-full object-cover"
               />
             </div>
-            {/* <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {itinerary.images.map((image, index) => (
                 <button
                   key={index}
@@ -109,7 +109,7 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
                   />
                 </button>
               ))}
-            </div> */}
+            </div>
           </div>
           <div className="w-2/3 space-y-4">
           <div className="flex flex-wrap gap-2">
@@ -179,7 +179,7 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
         <div className="flex items-center mt-8 bg-gray-100 justify-between w-full p-4 rounded-lg">
           {/* Price on the far left */}
           <span className="text-2xl font-bold">
-            ${(itinerary.price * 1).toFixed(2)}
+          {`${(itinerary.price * 1).formatCurrency(currency)}`}
           </span>
 
           {/* Right-aligned components (Timeline and ChooseDate) */}

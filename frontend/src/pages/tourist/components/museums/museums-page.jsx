@@ -9,13 +9,15 @@ import { Museums } from "./museums";
 import { getMuseums, getPlaceTags } from "../../api/apiService";
 import { SearchBar } from "../filters/search";
 import axios from "axios";
-import CircularProgress from '@mui/material/CircularProgress'; 
+import CircularProgress from '@mui/material/CircularProgress';
 
 export function MuseumsPage() {
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const { location } = useRouter();
+  const searchParams = new URLSearchParams(location.search);
+  const type = searchParams.get('type');
+  const currency = searchParams.get('currency') ?? "USD";
   const [museums, setMuseums] = useState([]);
-  const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
 
   // Fetch latest exchange rates on mount
@@ -34,25 +36,21 @@ export function MuseumsPage() {
   }, []);
 
   const fetchMuseums = useDebouncedCallback(async () => {
-    setLoading(true); 
+    setLoading(true);
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
     queryParams.set("exchangeRate", exchangeRates[currency] || 1);
 
     const fetchedMuseums = await getMuseums(`?${queryParams.toString()}`);
-    setTimeout(() => {
-      setMuseums(fetchedMuseums);
-      setLoading(false);
-    }, 500); 
+
+    setMuseums(fetchedMuseums);
+    setLoading(false);
   }, 200);
 
   useEffect(() => {
     fetchMuseums();
   }, [location.search, currency]);
 
-  const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
-  };
 
   const searchCategories = [
     { name: 'Name', value: 'name' },
@@ -61,21 +59,9 @@ export function MuseumsPage() {
 
   return (
     <div className="mt-24">
-      <div className="flex flex-row justify-between mb-4">
-        <label>
-          Currency:
-          <select value={currency} onChange={handleCurrencyChange}>
-            {Object.keys(exchangeRates).map((cur) => (
-              <option key={cur} value={cur}>
-                {` ${cur}`}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
       <SearchBar categories={searchCategories} />
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4">
+        <div className="w-full md:w-1/4 sticky top-16 h-full">
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
@@ -95,12 +81,12 @@ export function MuseumsPage() {
               <CircularProgress />
             </div>
           ) : (
-          <Museums
-            museums={museums}
-            currency={currency}
-            exchangeRate={exchangeRates[currency] || 1}
-          />
-        )}
+            <Museums
+              museums={museums}
+              currency={currency}
+              exchangeRate={exchangeRates[currency] || 1}
+            />
+          )}
         </div>
       </div>
     </div>

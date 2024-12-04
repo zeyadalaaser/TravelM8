@@ -74,9 +74,9 @@ export const CompletedToursPage = ({ touristId }) => {
                 <div className="text-xl font-bold mb-4">
                   {Array.isArray(tour.itinerary?.price) && tour.itinerary?.price.length > 0
                     ? tour.itinerary.price
-                        .map(({ value }) => `${value} ${tour.currency}`)
+                        .map(({ value }) => `${value.formatCurrency(tour.currency)}`)
                         .join(" - ")
-                    : `${tour.itinerary?.price} ${tour.currency}`}
+                    : `${tour.itinerary?.price?.formatCurrency(tour.currency)}`}
                 </div>
 
                 <div className="text-xl font-bold mb-4">

@@ -20,12 +20,15 @@ export function ClearFilters() {
         if (searchParams.has('type')) {
             newParams.set('type', searchParams.get('type'));
         }
+        if (searchParams.has('currency')) {
+            newParams.set('currency', searchParams.get('currency'));
+        }
         
         navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
     };
 
     const hasOtherFilters = [...searchParams.keys()].filter(
-        (key) => key !== 'sortBy' && key !== 'order' && key !== 'searchBy' && key != 'type'
+        (key) => key !== 'sortBy' && key !== 'order' && key !== 'searchBy' && key != 'type' && key != 'currency'
       ).length > 0;
 
     return (

@@ -23,6 +23,17 @@ const adminSchema = new mongoose.Schema({
       message: "Password must contain numbers, letters and min length is 4",
     },
   },
+  email: {
+    type: String,
+    required: false,
+    validate: {
+      validator: function (email) {
+        // Basic email validation regex
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      },
+      message: "Invalid email format.",
+    },
+  },
 },
 {
   timestamps: true

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input.tsx";
 import Navbar from "@/components/DashboardsNavBar.jsx";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 //import { useState } from "react";
 import useRouter from "@/hooks/useRouter";
@@ -70,8 +70,6 @@ function AdminDashboard() {
     totalComplaints: 12,
   });
 
-
-
   useEffect(() => {
     if (!token) return; // No token, no need to check
 
@@ -80,8 +78,8 @@ function AdminDashboard() {
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
 
       if (decodedToken.exp < currentTime) {
-        localStorage.removeItem("token"); 
-        navigate("/"); 
+        localStorage.removeItem("token");
+        navigate("/");
       } else {
         const timeout = setTimeout(() => {
           localStorage.removeItem("token");
@@ -92,11 +90,10 @@ function AdminDashboard() {
       }
     } catch (error) {
       console.error("Error decoding token:", error);
-      localStorage.removeItem("token"); 
+      localStorage.removeItem("token");
       navigate("/");
     }
   }, [token, navigate]);
-
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
@@ -179,8 +176,6 @@ function AdminDashboard() {
         <Navbar toggleSidebar={toggleSidebar} />
 
         <div className="container mx-auto p-4">
-          <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {/* Total Users Card */}
             <Card>

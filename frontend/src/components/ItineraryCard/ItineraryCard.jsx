@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Clock, Globe, Tag,  Bookmark } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Clock, Globe, Tag, Bookmark } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
-
+import { jwtDecode } from 'jwt-decode';
+import axios from "axios";
 import {
   Dialog,
   DialogContent,
@@ -18,14 +19,18 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { AlertCircle, CheckCircle2, MapPin } from "lucide-react";
-
+import ItineraryDetails from "@/components/ItineraryCard/ItineraryDetails.jsx";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "@/components/ui/use-toast";
 
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
-import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
+import {
+  flagItinerary,
+  unflagItinerary,
+} from "../../pages/admin/services/AdminItineraryService";
 import { createItineraryBooking } from "../../pages/tourist/api/apiService";
-
+import PaymentDialog from "../../pages/tourist/components/bookings/payment-dialog";
 
 export default function ItineraryCard({
   itineraries,
@@ -36,7 +41,7 @@ export default function ItineraryCard({
   onRefresh,
   isTourGuide,
   bookmarkedItineraries = [], // Add this prop
-  handleBookmark = () => {},
+  handleBookmark = () => { },
 }) {
   const navigate = useNavigate();
 
@@ -50,11 +55,17 @@ export default function ItineraryCard({
       );
       if (!response.ok) {
         const data = await response.json();
-        alert(data.message);
+        toast({
+          title: `Failed to delete itinerary`,
+          description: `${data.message}`,
+        });
         return;
       }
       await onRefresh();
-      alert("Itinerary Deleted successfully");
+      toast({
+        title: `Success`,
+        description: `itinerary deleted successfully`,
+      });
       console.log("Success:", response);
     } catch (error) {
       console.error("Error:", error);
@@ -76,11 +87,17 @@ export default function ItineraryCard({
       );
       if (!response.ok) {
         const data = await response.json();
-        alert(data.message);
+        toast({
+          title: `Failed to update itinerary`,
+          description: `${data.message}`,
+        });
         return;
       }
       onRefresh();
-      alert(`Itinerary ${state} successfully`);
+      toast({
+        title: `Success`,
+        description: `itinerary updated successfully`,
+      });
       console.log("Success:", response);
     } catch (error) {
       console.error("Error:", error);
@@ -90,14 +107,60 @@ export default function ItineraryCard({
   // const handleBook = async (itineraryId, tourGuideId) => {
 
   // };
-
-  const handleFlagItinerary = async (itineraryId) => {
+  const fetchItineraries = async () => {
     try {
-      await flagItinerary(itineraryId);
-      alert("Itinerary flagged successfully");
+      const response = await axios.get("http://localhost:5001/api/itineraries");
+      onRefresh();
     } catch (error) {
-      console.error("Error flagging itinerary:", error);
-      alert("Failed to flag itinerary");
+      console.error("Error fetching itineraries:", error.message);
+    }
+  };
+
+  const [flaggedStatus, setFlaggedStatus] = useState({});
+
+  useEffect(() => {
+    const initialFlaggedStatus = itineraries.reduce((acc, itinerary) => {
+      acc[itinerary._id] = itinerary.flagged;
+      return acc;
+    }, {});
+    setFlaggedStatus(initialFlaggedStatus);
+  }, [itineraries]);
+
+  const toggleFlagItinerary = async (id, isFlagged) => {
+    try {
+      const endpoint = isFlagged
+        ? `http://localhost:5001/api/itineraries/${id}/unflag`
+        : `http://localhost:5001/api/itineraries/${id}/flag`;
+
+      // Make the API request first
+      await axios.put(
+        endpoint,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      // Then update the flag status in the state and show the alert simultaneously
+      setFlaggedStatus((prev) => ({ ...prev, [id]: !isFlagged }));
+
+      // Immediately show the alert after the update
+      alert(
+        isFlagged
+          ? "Itinerary unflagged successfully!"
+          : "Itinerary flagged successfully!"
+      );
+
+      // Optionally, refresh the parent component
+      if (typeof onRefresh === "function") {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error("Error toggling itinerary flag:", error.message);
+      // If there's an error, revert the flag status
+      setFlaggedStatus((prev) => ({ ...prev, [id]: isFlagged }));
     }
   };
 
@@ -152,11 +215,10 @@ export default function ItineraryCard({
                           <ShareButton id={itinerary._id} name="itinerary" />
                           <button
                             onClick={() => handleBookmark(itinerary._id)}
-                            className={`text-gray-500 hover:text-black ${
-                              bookmarkedItineraries.includes(itinerary._id) 
-                                ? 'text-yellow-400' 
-                                : ''
-                            }`}
+                            className={`text-gray-500 hover:text-black ${bookmarkedItineraries.includes(itinerary._id)
+                              ? "text-yellow-400"
+                              : ""
+                              }`}
                           >
                             <Bookmark className="w-6 h-6" />
                           </button>
@@ -170,10 +232,7 @@ export default function ItineraryCard({
                       {itinerary.totalRatings} reviews
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {itinerary.description}
-                  </p>
-                  {itinerary.activities.length > 0 && (
+                  {/* {itinerary.activities.length > 0 && (
                     <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                       <Label className="text-m font-semibold text-black">
                         Activities:
@@ -189,7 +248,7 @@ export default function ItineraryCard({
                         ))}
                       </div>
                     </div>
-                  )}
+                  )} */}
                   {itinerary.historicalSites.length > 0 && (
                     <div className="flex items-center text-sm text-gray-600 mb-2 gap-2">
                       <Label className="text-m font-semibold text-black">
@@ -238,14 +297,24 @@ export default function ItineraryCard({
                   <div className="flex justify-end items-center space-x-2">
                     <span className="text-xl font-bold mr-auto">{`${(
                       itinerary.price * 1
-                    ).toFixed(2)} ${currency}`}</span>
-                    <Timeline selectedItinerary={itinerary} />
+                    ).formatCurrency(currency)}`}</span>
+                    {/* <Timeline selectedItinerary={itinerary} /> */}
                     {isTourist && (
                       <div className="flex justify-end items-center">
                         {/* <Button onClick={modalOpen(true)}>
                             Book Activity!
                           </Button> */}
+                       <ItineraryDetails 
+                        itinerary={itinerary} 
+                        isAdmin={isAdmin} 
+                        isTourist={isTourist} 
+                        isTourGuide={isTourGuide} 
+                        onRefresh={onRefresh}
+                        currency={currency}
+                      />
+                      <div className="px-2">
                         <ChooseDate itinerary={itinerary} />
+                        </div>
                       </div>
                     )}
                     {isTourGuide && (
@@ -272,11 +341,18 @@ export default function ItineraryCard({
                     )}
                     {isAdmin && (
                       <Button
-                        className="hover:bg-red-700"
+                        className="w-100 mt-2 mb-2 bg-black hover:bg-gray-800"
                         variant="destructive"
-                        onClick={() => handleFlagItinerary(itinerary._id)}
+                        onClick={() =>
+                          toggleFlagItinerary(
+                            itinerary._id,
+                            flaggedStatus[itinerary._id]
+                          )
+                        }
                       >
-                        Flag as Inappropriate
+                        {flaggedStatus[itinerary._id]
+                          ? "Unflag Itinerary"
+                          : "Flag as Inappropriate"}
                       </Button>
                     )}
                   </div>
@@ -290,80 +366,99 @@ export default function ItineraryCard({
   );
 }
 
-const Timeline = ({ selectedItinerary }) => {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">View Timeline</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Itinerary Timeline</DialogTitle>
-        <div className="flex flex-col mt-4">
-          {selectedItinerary?.timeline.map((event, index) => (
-            <div key={index} className="flex items-center mb-2">
-              <div className="w-4 h-4 bg-black rounded-full mr-2"></div>{" "}
-              {/* Dot */}
-              <div className="flex-1">
-                <h4 className="font-semibold">{event.event}</h4>{" "}
-                {/* Adjust based on your data structure */}
-                <p>Start: {new Date(event.startTime).toLocaleString()}</p>
-                <p>End: {new Date(event.endTime).toLocaleString()}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
 const ChooseDate = ({ itinerary }) => {
+  const navigate = useNavigate();
   let remainingSpots;
   const [selectedDate, setSelectedDate] = useState(null);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const token = localStorage.getItem('token');
-    console.log("hello token from handlesubmit " + token)
+    const token = localStorage.getItem("token");
+    console.log("hello token from handlesubmit " + token);
     if (!selectedDate) {
       setSubmitStatus({ success: false, message: "Please select a date." });
       return;
     }
     if (token) {
       try {
-          const response = await createItineraryBooking(
-            itinerary._id,
-            itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
-            selectedDate,
-            itinerary.price,
-            "Card",
-            token
-          );
-          setIsOpen(false);
-          alert(response.data.message);
-        
+        const response = await createItineraryBooking(
+          itinerary._id,
+          itinerary.tourGuideId._id, //tourguide doesnt get sent with the itinerary
+          selectedDate,
+          itinerary.price,
+          "Card",
+          token
+        );
+        setIsOpen(false);
+        toast({
+          title: `Success`,
+          description: `itinerary booked successfully`,
+        });
       } catch (error) {
         setIsOpen(false);
-        alert("Failed to Book itinerary");
+        toast({
+          title: `Failed to book itinerary`,
+          description: `${data.message}`,
+        });
       }
     } else {
       alert("You need to be logged in to book an itinerary!");
     }
   };
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!token) return; 
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token"); 
+        navigate("/"); 
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token"); 
+      navigate("/");
+    }
+  }, [token, navigate]);
+
+  const checkForToken = () => {
+    console.log(token);
+    if (!token) {
+      toast({
+        title: `Failed to book itinerary`,
+        description: `You need to be logged in first`,
+      });
+    }
+    else {
+      setIsOpen(true);
+    }
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button>Book Now</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Choose Date</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit}>
+    <>
+      <Dialog 
+        open={isOpen && !!token} 
+        onOpenChange={checkForToken}>
+        <DialogTrigger asChild>
+          <Button className="bg-gray-800 hover:bg-gray-700">Book itinerary</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Choose Date</DialogTitle>
+          </DialogHeader>
           <RadioGroup
             onValueChange={(value) => setSelectedDate(value)}
             className="space-y-2"
@@ -373,39 +468,46 @@ const ChooseDate = ({ itinerary }) => {
               const booked = slot.maxNumberOfBookings == 0;
               return (
                 <div className="flex items-center space-x-2" key={index}>
-                  <RadioGroupItem disabled={booked} value={slot.date} id={`slot-${index}`} />
-                  <Label className={`${booked && 'line-through text-gray-500'}`} htmlFor={`slot-${index}`}>{slotDate}</Label>
+                  <RadioGroupItem
+                    disabled={booked}
+                    value={slot.date}
+                    id={`slot-${index}`} />
+                  <Label
+                    className={`${booked && "line-through text-gray-500"}`}
+                    htmlFor={`slot-${index}`}
+                  >
+                    {slotDate}
+                  </Label>
                 </div>
               );
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button disabled={!selectedDate} type="submit">Book</Button>
+            <Button className="bg-gray-800"onClick={() => { setIsOpen(false); setPaymentOpen(true) }} disabled={!selectedDate}>
+              Select date
+            </Button>
           </DialogFooter>
-        </form>
-        {submitStatus && (
-          <div
-            className={`mt-4 p-4 rounded-md ${
-              submitStatus.success ? "bg-green-100" : "bg-red-100"
-            }`}
-          >
-            <div className="flex items-center">
-              {submitStatus.success ? (
-                <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-              ) : (
-                <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-              )}
-              <p
-                className={
-                  submitStatus.success ? "text-green-700" : "text-red-700"
-                }
-              >
-                {submitStatus.message}
-              </p>
+          {submitStatus && (
+            <div
+              className={`mt-4 p-4 rounded-md ${submitStatus.success ? "bg-green-100" : "bg-red-100"}`}
+            >
+              <div className="flex items-center">
+                {submitStatus.success ? (
+                  <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
+                ) : (
+                  <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+                )}
+                <p
+                  className={submitStatus.success ? "text-green-700" : "text-red-700"}
+                >
+                  {submitStatus.message}
+                </p>
+              </div>
             </div>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
+          )}
+        </DialogContent>
+      </Dialog>
+      <PaymentDialog isOpen={paymentOpen} currency={currency} onOpenChange={setPaymentOpen} amount={itinerary.price} />
+    </>
   );
 };

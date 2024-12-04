@@ -8,17 +8,19 @@ import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
 import ItineraryCard from "@/components/ItineraryCard/ItineraryCard";
 import { SearchBar } from "../filters/search";
-import { getItineraries, getPreferenceTags } from "../../api/apiService";
+import { getItineraries, getMyPreferredTags } from "../../api/apiService";
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";
-import CircularProgress from '@mui/material/CircularProgress'; 
+import CircularProgress from '@mui/material/CircularProgress';
 
 export function ItinerariesPage() {
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const type = searchParams.get('type');
+  const currency = searchParams.get('currency') ?? "USD";
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
-  const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [bookmarkedItineraries, setBookmarkedItineraries] = useState([]);
@@ -27,7 +29,7 @@ export function ItinerariesPage() {
   // Check if the user is a tourist (i.e., not an admin)
   const isAdmin = false; // Set to `true` for admin, `false` for tourists
 
-useEffect(() => {
+  useEffect(() => {
     const fetchBookmarks = async () => {
       try {
         const response = await fetch('http://localhost:5001/api/bookmarks?type=Itinerary', {
@@ -65,7 +67,7 @@ useEffect(() => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           itemId: itineraryId,
           itemType: 'Itinerary'
         })
@@ -102,7 +104,7 @@ useEffect(() => {
   }, []);
 
   const fetchItineraries = useDebouncedCallback(async () => {
-    setLoading(true); 
+    setLoading(true);
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("isAdmin", isAdmin);
     queryParams.set("currency", currency);
@@ -118,10 +120,8 @@ useEffect(() => {
           (itinerary) => !itinerary.flagged
         );
       }
-      setTimeout(() => {
-        setItineraries(fetchedItineraries);
-        setLoading(false);
-    }, 500); 
+      setItineraries(fetchedItineraries);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching itineraries:", error);
     }
@@ -131,47 +131,22 @@ useEffect(() => {
     fetchItineraries();
   }, [location.search, currency, priceRange]);
 
-  const handleCurrencyChange = (e) => {
-    const selectedCurrency = e.target.value;
-    setCurrency(selectedCurrency);
-
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set("currency", selectedCurrency);
-    navigate(`${location.pathname}?${queryParams.toString()}`, {
-      replace: true,
-    });
-    fetchItineraries();
-  };
-
-  const resetFilters = () => {
-    setCurrency("USD");
-    setItineraries([]);
-    navigate(location.pathname, { replace: true });
-    fetchItineraries();
-  };
-
   const searchCategories = [
     { name: 'Name', value: 'name' },
     { name: 'Tag', value: 'tag' },
   ];
 
+  const [preferences, setPreferences] = useState([]);
+  useEffect(() => {
+    const getPreferences = async () => { setPreferences(await getMyPreferredTags(token)) };
+    getPreferences();
+  }, []);
+
   return (
     <div className="mt-24">
       <SearchBar categories={searchCategories} />
-      <div className="flex justify-between items-center mb-4">
-        <label>
-          Currency:
-          <select value={currency} onChange={handleCurrencyChange}>
-            {Object.keys(exchangeRates).map((cur) => (
-              <option key={cur} value={cur}>
-                {`${cur} `}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4">
+        <div className="w-full mt-2 md:w-1/4 sticky top-16 h-full">
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -180,14 +155,19 @@ useEffect(() => {
           />
           <Separator className="mt-7" />
           <SelectFilter name="Languages" paramName="language" getOptions={async () => ['Arabic', 'English', 'German']} />
-          <Separator className="mt-7" />
-          <SelectFilter name="Tags" paramName="tag" getOptions={getPreferenceTags} />
+          {preferences.length > 0 && (
+            <>
+              <Separator className="mt-7" />
+              <SelectFilter name="Preference Tags" paramName="tag" getOptions={async () => preferences} />
+            </>
+          )}
+
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
               <div>{itineraries.length} results</div>
-              <ClearFilters onClick={resetFilters} />
+              <ClearFilters />
             </div>
             <SortSelection />
           </div>
@@ -196,7 +176,7 @@ useEffect(() => {
               <CircularProgress />
             </div>
           ) : (
-          // {itineraries.length > 0 ? (
+            // {itineraries.length > 0 ? (
             <ItineraryCard
               itineraries={itineraries}
               isTourist={true}
@@ -205,10 +185,10 @@ useEffect(() => {
               bookmarkedItineraries={bookmarkedItineraries} // Add this prop
               handleBookmark={handleBookmark}
             />
-          // ) : (
-          //   <p>No itineraries found. Try adjusting your filters.</p>
-          // )}
-        )}
+            // ) : (
+            //   <p>No itineraries found. Try adjusting your filters.</p>
+            // )}
+          )}
         </div>
       </div>
     </div>

@@ -115,7 +115,7 @@ const itineraySchema = new mongoose.Schema({
   },
 
   flagged: { type: Boolean, default: false },
-  isBookingOpen: { type: Boolean, default: true } 
+  isBookingOpen: { type: Boolean, default: false } 
 
 });
 

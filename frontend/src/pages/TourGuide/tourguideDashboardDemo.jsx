@@ -34,7 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import {
   BarChart,
   Bar,
@@ -61,6 +61,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import Logout from "@/hooks/logOut.jsx";
 import Header from "@/components/navbarDashboard.jsx";
+import SalesReport from "./salesReport";
+import TouristReport from "./TouristReport";
+import axios from "axios";
 
 const TourGuideDashboard = () => {
   const navigate = useNavigate();
@@ -92,6 +95,8 @@ const TourGuideDashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("itineraries"); // Manage active tab
+  const [reportData, setReportData] = useState([]);
+
   useEffect(() => {
     if (!token) return; // No token, no need to check
 
@@ -100,8 +105,8 @@ const TourGuideDashboard = () => {
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
 
       if (decodedToken.exp < currentTime) {
-        localStorage.removeItem("token"); 
-        navigate("/"); 
+        localStorage.removeItem("token");
+        navigate("/");
       } else {
         const timeout = setTimeout(() => {
           localStorage.removeItem("token");
@@ -112,12 +117,37 @@ const TourGuideDashboard = () => {
       }
     } catch (error) {
       console.error("Error decoding token:", error);
-      localStorage.removeItem("token"); 
+      localStorage.removeItem("token");
       navigate("/");
     }
   }, [token, navigate]);
 
   // Fetch itineraries from the server
+
+  const fetchReport = async () => {
+    setIsLoading(true);
+    //setError("");
+    try {
+      const response = await axios.get(
+        "http://localhost:5001/api/itinerariesReport",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          // params: { year, month, day },
+        }
+      );
+      setReportData(response.data?.data || []);
+    } catch (err) {
+      console.error("Error fetching itineraries report:");
+      //  setError(err.response?.data?.message || "Failed to fetch report");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReport();
+  }, [token]);
+
   const fetchItinerariesData = async () => {
     try {
       setIsLoading(true);
@@ -296,15 +326,6 @@ const TourGuideDashboard = () => {
               <Users className="mr-3" />
               Tourist Reports
             </button>
-            <button
-              className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
-                activeTab === "notifications" ? "bg-gray-200" : ""
-              }`}
-              onClick={() => setActiveTab("notifications")}
-            >
-              <Bell className="mr-3" />
-              Notifications
-            </button>
             <button className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left">
               <Settings className="mr-3" />
               Settings
@@ -356,7 +377,9 @@ const TourGuideDashboard = () => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$24,500</div>
+                <div className="text-2xl font-bold">
+                ${reportData.length > 0 ? reportData.reduce((total, item) => total + item.revenue, 0).toFixed(2) : '0.00'}
+                </div>
               </CardContent>
             </Card>
             <Card>
@@ -381,7 +404,7 @@ const TourGuideDashboard = () => {
               <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
               <TabsTrigger value="sales">Sales Report</TabsTrigger>
               <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
-              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              {/* <TabsTrigger value="notifications">Notifications</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="itineraries" className="space-y-4">
@@ -500,117 +523,12 @@ const TourGuideDashboard = () => {
 
             <TabsContent value="sales" className="space-y-4">
               <h2 className="text-2xl font-bold">Sales Report</h2>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Monthly Sales</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={salesData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="sales" fill="#8884d8" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Filter Sales Report</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex space-x-2">
-                    <Select>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Itinerary" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {itineraries?.map((itinerary) => (
-                          <SelectItem
-                            key={itinerary?._id}
-                            value={itinerary?._id?.toString()}
-                          >
-                            {itinerary.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input type="date" className="w-[180px]" />
-                    <Select>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Month" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">January</SelectItem>
-                        <SelectItem value="2">February</SelectItem>
-                        <SelectItem value="3">March</SelectItem>
-                        {/* Add more months */}
-                      </SelectContent>
-                    </Select>
-                    <Button>Apply Filter</Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <SalesReport />
             </TabsContent>
 
             <TabsContent value="tourists" className="space-y-4">
               <h2 className="text-2xl font-bold">Tourist Report</h2>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Total Tourists per Month</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={salesData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="sales" fill="#82ca9d" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Filter Tourist Report</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex space-x-2">
-                    <Select>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Itinerary" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {itineraries?.map((itinerary) => (
-                          <SelectItem
-                            key={itinerary?._id}
-                            value={itinerary?._id?.toString()}
-                          >
-                            {itinerary.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Select>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Month" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">January</SelectItem>
-                        <SelectItem value="2">February</SelectItem>
-                        <SelectItem value="3">March</SelectItem>
-                        {/* Add more months */}
-                      </SelectContent>
-                    </Select>
-                    <Button>Apply Filter</Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <TouristReport />
             </TabsContent>
 
             <TabsContent value="notifications" className="space-y-4">

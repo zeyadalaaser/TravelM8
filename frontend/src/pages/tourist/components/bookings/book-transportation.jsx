@@ -9,7 +9,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useToast } from "@/components/ui/use-toast"
 import { BookingToast } from './booking-toast';
 
 const transportOptions = [
@@ -20,7 +19,6 @@ const transportOptions = [
 ];
 
 export function BookTransportation() {
-    const { toast } = useToast();
     const [selectedTransport, setSelectedTransport] = useState('')
     const [fromLocation, setFromLocation] = useState('')
     const [toLocation, setToLocation] = useState('')
@@ -33,7 +31,7 @@ export function BookTransportation() {
             return;
 
         const message = `Booking confirmed with ${selectedTransport} from ${fromLocation} to ${toLocation} on ${format(date, 'PP')} at ${time}`;
-        BookingToast(toast, "transportation", message, false);
+        BookingToast("transportation", message, false);
 
         setIsDialogOpen(false)
         setSelectedTransport('');

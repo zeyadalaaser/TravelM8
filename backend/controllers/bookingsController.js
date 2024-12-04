@@ -269,32 +269,21 @@ export const totalCancelledItineraiesTourguide = async (tourGuideId) => {
 };
 
 export const getItinerariesReport = async (req, res) => {
-  //const tourguideId = req.user.userId;
-  const tourguideId = req.body.id;
+  const tourguideId = req.user.userId;
   const { year, month, day } = req.query;
 
   try {
     const matchConditions = {
-      completionStatus: { $in: ["Pending", "Completed"] }, // Match specific statuses
+      tourGuide: new mongoose.Types.ObjectId(tourguideId),  
+      completionStatus: { $in: ['Pending', 'Completed','Paid'] },  
     };
-
-    if (req.user?.role === "TourGuide" && tourguideId) {
-      matchConditions["tourGuide"] = new mongoose.Types.ObjectId(tourguideId);
-    }
-
-    // Add date-based filtering if year, month, or day is provided
+    
     if (year || month || day) {
       matchConditions.$expr = {
         $and: [
-          ...(year
-            ? [{ $eq: [{ $year: "$bookingDate" }, parseInt(year)] }]
-            : []),
-          ...(month
-            ? [{ $eq: [{ $month: "$bookingDate" }, parseInt(month)] }]
-            : []),
-          ...(day
-            ? [{ $eq: [{ $dayOfMonth: "$bookingDate" }, parseInt(day)] }]
-            : []),
+          ...(year ? [{ $eq: [{ $year: { $toDate: '$bookingDate' } }, parseInt(year)] }] : []),
+          ...(month ? [{ $eq: [{ $month: { $toDate: '$bookingDate' } }, parseInt(month)] }] : []),
+          ...(day ? [{ $eq: [{ $dayOfMonth: { $toDate: '$bookingDate' } }, parseInt(day)] }] : []),
         ],
       };
     }
@@ -305,27 +294,27 @@ export const getItinerariesReport = async (req, res) => {
       },
       {
         $lookup: {
-          from: "itineraries", // Itinerary collection name
-          localField: "itinerary", // Grouped itinerary ID
-          foreignField: "_id", // Match with Itinerary `_id`
-          as: "itineraryDetails",
+          from: 'itineraries', // Itinerary collection name
+          localField: 'itinerary', // Grouped itinerary ID
+          foreignField: '_id', // Match with Itinerary `_id`
+          as: 'itineraryDetails',
         },
       },
       {
-        $unwind: "$itineraryDetails", // Flatten the itinerary details array
+        $unwind: '$itineraryDetails',  
       },
       {
         $group: {
-          _id: "$itinerary", // Group by the itinerary ID
+          _id: '$itinerary', // Group by the itinerary ID
           bookingCount: { $sum: 1 }, // Count the number of bookings per itinerary
-          revenue: { $sum: "$itineraryDetails.price" }, // Sum up the price of bookings per itinerary
-          itineraryTitle: { $first: "$itineraryDetails.name" },
+          revenue: { $sum: '$itineraryDetails.price' }, // Sum up the price of bookings per itinerary
+          itineraryTitle: { $first: '$itineraryDetails.name' },
         },
       },
       {
         $project: {
           _id: 1, // Include itinerary ID
-          name: "$itineraryTitle", // Include itinerary name
+          name: '$itineraryTitle', // Include itinerary name
           bookingCount: 1, // Include the count of bookings
           revenue: 1, // Include the total revenue
         },
@@ -333,17 +322,19 @@ export const getItinerariesReport = async (req, res) => {
     ]);
 
     console.log(results);
-    if (results.length == 0)
+
+    if (results.length == 0) {
       return res.status(200).json({ message: "No data to show" });
+    }
+
     return res.status(200).json({
       data: results,
-      message: "Successfully fetched the itineraries report",
+      message: 'Successfully fetched the itineraries report',
     });
   } catch (error) {
-    console.error("Error fetching itineraries report:", error);
-
+    console.error('Error fetching itineraries report:', error);
     res.status(500).json({
-      message: "Failed to fetch itinerary report",
+      message: 'Failed to fetch itinerary report',
       error: error.message,
     });
   }

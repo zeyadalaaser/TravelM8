@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, Eye, EyeOff, User, X, ThumbsDown, BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart, Bookmark } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, User, X,ClockArrowDown, ThumbsDown, BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart, Bookmark,Gift } from 'lucide-react'
 import { Input } from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -10,8 +10,12 @@ import { MyComplaintsPage } from "@/pages/tourist/components/complaints/myCompla
 import Footer from "@/components/Footer.jsx";
 import BookingHistory from "@/pages/tourist/components/bookings/BookingHistory.jsx";
 import BookmarksHistory from "@/pages/tourist/components/activities/bookmarks";
+import RedeemPoints from "@/pages/tourist/components/Points/redeemPoints2.jsx";
 import Navbar from "@/components/Navbar.jsx";
 import { Wishlist } from './wishlist';
+import  PreferencesPage  from './Preferences';
+import MyOrdersPage from "@/pages/tourist/components/orders.jsx";
+import { ComplaintForm } from "@/pages/tourist/components/complaints/complaint-form.jsx";
 
 const TouristProfilePage = () => {
 
@@ -19,6 +23,7 @@ const TouristProfilePage = () => {
     percentageChange = 20.1,
     timeframe = "from last month";
   const isPositive = percentageChange > 0;
+  const [showComplaintForm, setShowComplaintForm] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -197,21 +202,6 @@ const TouristProfilePage = () => {
                 </div>
               </div>
             </section>
-            {/* Display User Preferences */}
-            <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-4">Preferences</h2>
-              <div>
-                {profile && profile.preferences && profile.preferences.length > 0 ? (
-                  <ul className="list-disc pl-6">
-                    {profile.preferences.map((pref, index) => (
-                      <li key={index} className="text-lg text-gray-700">{pref}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No preferences available.</p>
-                )}
-              </div>
-            </section>
 
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Personal info</h2>
@@ -335,17 +325,18 @@ const TouristProfilePage = () => {
             </div>
           </div>
         );
-      case 'locations':
+      case 'orders':
         return (
           <div className="bg-white shadow rounded-lg p-10">
-            <h1 className="text-2xl font-bold mb-6">Locations</h1>
-            {/* Locations content */}
+            <h1 className="text-2xl font-bold mb-6">My orders</h1>
+            <MyOrdersPage/>
           </div>
         );
       case 'complaints':
         return (
           <div className="bg-white shadow rounded-lg p-6">
-            <MyComplaintsPage />
+            <MyComplaintsPage onComplaintClick={() => setShowComplaintForm(true)}
+          onRedeemClick={() => setShowRedeemPoints(true)}/>
           </div>
         );
       case 'bookings':
@@ -366,6 +357,19 @@ const TouristProfilePage = () => {
             <BookmarksHistory />
           </div>
         );
+        case 'preferences':
+       
+        return (
+          <div className="bg-white shadow rounded-lg p-6">
+            <PreferencesPage />
+          </div>
+        );
+        case 'points':
+          return (
+            <div  >
+              <RedeemPoints />
+            </div>
+          );
       case 'settings':
         return (
           <div className="bg-white shadow rounded-lg p-10">
@@ -407,7 +411,7 @@ const TouristProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6]">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <Navbar profilePageString={"/tourist-profile"} />
 
@@ -445,10 +449,10 @@ const TouristProfilePage = () => {
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView('locations')}
+                onClick={() => setActiveView('orders')}
               >
-                <Map className="mr-3" />
-                Locations
+                <ClockArrowDown className="mr-3" />
+                My orders
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
@@ -480,6 +484,21 @@ const TouristProfilePage = () => {
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('preferences')} 
+              >
+                <Star className="mr-3 " />
+                My Preferences
+              </button>
+              
+              <button
+                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('points')}
+              >
+                <Gift className="mr-3" />
+               My loyalty points
+              </button>
+              <button
+                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('settings')}
               >
                 <Settings className="mr-3" />
@@ -489,7 +508,7 @@ const TouristProfilePage = () => {
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setShowDialog(true)}
               >
-                <HeartCrack className="mr-3" />
+                <User className="mr-3" />
                 Delete My account
               </button>
               {showDialog && (
@@ -628,7 +647,9 @@ const TouristProfilePage = () => {
           </div>
         </div>
       )}
+     {showComplaintForm && (<ComplaintForm onClose={() => setShowComplaintForm(false)} />)}
     </div>
+    
   )
 }
 

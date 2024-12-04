@@ -9,25 +9,45 @@ import PdfDetailsSellerAdvertiser from "../models/pdfsDetailsSeller&AdvModel.js"
 
 export const createPendingUser = async (req, res) => {
   const { username, email, password, type } = req.body;
+
+  // Log incoming data to verify the request body
+  console.log('Received data:', { username, email, password, type });
+
   const isNotUnique = await checkUniqueUsernameEmail(username, email);
 
+  // Log if the username/email is unique or not
+  console.log('Is username or email unique?', !isNotUnique);
+
   if (isNotUnique) {
+    // Log the failure reason
+    console.log('Username or email is already in use.');
     return res
       .status(400)
       .json({ message: "Username or email is already in use." });
   }
+
   try {
+    // Log before attempting to create a new pending user
+    console.log('Attempting to create a new pending user...');
+
     const pending = await PendingUser.create({
       username,
       email,
       password,
       type,
     });
+
+    // Log the successfully created user
+    console.log('Pending user created successfully:', pending);
+
     res.status(200).json(pending);
   } catch (error) {
+    // Log the error if there is an issue with creation
+    console.error('Error creating pending user:', error.message);
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Controller to accept a pending user
 export const acceptPendingUser = async (req, res) => {

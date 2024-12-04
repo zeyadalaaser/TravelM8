@@ -6,13 +6,26 @@ import { Stars } from "@/components/Stars";
 import { ShareButton } from "@/components/ui/share-button";
 import AnimatedLikeButton from "./like";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from "@/components/ui/use-toast";
 
 export default function ProductCard({ product, currency, token, liked }) {
+    const navigate = useNavigate();
+    console.log(product);
     const addToCart = async (productId) => {
         try {
-            await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            if (token) {
+                await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                navigate(0); 
+            }    
+            else {
+                toast({
+                    title: `Failed to add product`,
+                    description: "Please log in first",
+                  });
+            }
         } catch (error) {
             console.error('Failed to add item to cart:', error);
         }
@@ -83,7 +96,7 @@ export default function ProductCard({ product, currency, token, liked }) {
                 <div className="!mt-auto flex flex-col">
                     <div className="mt-1.5 mb-4 flex justify-between items-center">
                         <span className="text-lg font-bold">
-                            {currency} {(product.price * 1).toFixed(2)}
+                            {(product.price * 1).formatCurrency(currency)}
                         </span>
                         <span className="text-sm text-muted-foreground">
                             by <Badge className="px-1" variant="secondary">
@@ -92,7 +105,7 @@ export default function ProductCard({ product, currency, token, liked }) {
                         </span>
                     </div>
                     <Button
-                        className={`w-full ${product.quantity > 0 ? 'bg-black hover:bg-gray-800' : 'bg-gray-400 hover:bg-gray-500'} text-white`}
+                        className={`w-full ${product.quantity > 0 ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-400 hover:bg-gray-500'} text-white`}
                         size="sm"
                         onClick={() => product.quantity > 0 && addToCart(product._id)}
                         disabled={product.quantity <= 0}

@@ -32,7 +32,6 @@ export function Date({
 
     useEffect(() => {
         if (buttonRef.current) {
-            console.log(buttonRef.current.offsetWidth);
             setButtonWidth(buttonRef.current.offsetWidth.toString());
         }
     }, []);

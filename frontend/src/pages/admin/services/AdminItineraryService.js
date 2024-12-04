@@ -25,3 +25,35 @@ export const flagItinerary = async (itineraryId) => {
   );
   return response.data;
 };
+
+export const unflagItinerary = async (itineraryId) => {
+  console.log("Unflagging itinerary with ID:", itineraryId);
+  const response = await axios.put(
+    `${API_BASE_URL}itineraries/${itineraryId}/unflag`
+  );
+  return response.data;
+};
+
+const fetchFlaggedItineraries = async () => {
+  try {
+    const response = await fetch(
+      "http://localhost:5001/api/itineraries/flagged",
+      {
+        headers: {
+          Authorization: `Bearer ${getToken()}`, // Ensure the token is included
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("API Error:", errorData);
+      throw new Error(`Error: ${errorData.message}`);
+    }
+
+    const data = await response.json();
+    setFlaggedItineraries(data.flaggedItineraries || []);
+  } catch (error) {
+    console.error("Error fetching flagged itineraries:", error);
+  }
+};

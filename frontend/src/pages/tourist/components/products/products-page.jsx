@@ -29,9 +29,11 @@ const decodeToken = (token) => {
 
 export function ProductsPage({ addToCart }) {
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const type = searchParams.get('type');
+  const currency = searchParams.get('currency') ?? "USD";
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [currency, setCurrency] = useState("USD");
   const [loading, setLoading] = useState(false);
   const [exchangeRates, setExchangeRates] = useState({});
   const [token, setToken] = useState(null);
@@ -63,8 +65,8 @@ export function ProductsPage({ addToCart }) {
     queryParams.set("currency", currency);
 
     try {
-        setProducts(await getProducts(queryParams.toString()));
-        setLoading(false);
+      setProducts(await getProducts(queryParams.toString()));
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
       alert("Failed to load products. Please try again.");
@@ -77,30 +79,18 @@ export function ProductsPage({ addToCart }) {
     fetchProducts();
   }, [currency, location.search]);
 
-  const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set("currency", e.target.value);
-    navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
-  };
+  // const handleCurrencyChange = (e) => {
+  //   setCurrency(e.target.value);
+  //   const queryParams = new URLSearchParams(location.search);
+  //   queryParams.set("currency", e.target.value);
+  //   navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
+  // };
 
   return (
     <div className="mt-24">
-      <div className="flex flex-row justify-between mb-4 ">
-        <label>
-          Currency:
-          <select value={currency} onChange={handleCurrencyChange}>
-            {Object.keys(exchangeRates).map((cur) => (
-              <option key={cur} value={cur}>
-                {cur}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
       <SearchBar categories={[{ name: "Name", value: "name" }]} />
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4">
+        <div className="w-full md:w-1/4 sticky top-16 h-full">
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
@@ -111,6 +101,7 @@ export function ProductsPage({ addToCart }) {
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
+              <div>{products.length} results</div>
               <ClearFilters />
             </div>
             <SortSelection />

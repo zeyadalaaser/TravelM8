@@ -32,7 +32,7 @@ async function fetchCities(cityName) {
 }
 
 export function FlightsPage() {
-    const { location } = useRouter();
+    const { location, searchParams } = useRouter();
     const [flights, setFlights] = useState([]);
     const [loading, setLoading] = useState(false);
     const requestCounter = useRef(0);
@@ -58,7 +58,7 @@ export function FlightsPage() {
         { value: 'duration-fastest', description: 'Fastest' },
     ];
 
-    const [currency, setCurrency] = useState("USD");
+    const currency = searchParams.get('currency') ?? "USD";
     const [exchangeRates, setExchangeRates] = useState({});
     useEffect(() => {
         async function fetchExchangeRates() {
@@ -67,16 +67,12 @@ export function FlightsPage() {
                     "https://api.exchangerate-api.com/v4/latest/USD"
                 );
                 setExchangeRates(response.data.rates);
-                console.log(exchangeRates);
             } catch (error) {
                 console.error("Error fetching exchange rates:", error);
             }
         }
         fetchExchangeRates();
     }, []);
-    const handleCurrencyChange = (e) => {
-        setCurrency(e.target.value);
-    };
 
     return <>
         <div className="flex justify-between space-x-6">
@@ -88,16 +84,6 @@ export function FlightsPage() {
         <div className="mt-6 flex flex-col md:flex-row gap-8">
             <div className="flex w-1/4 h-10 items-center">
                 {/* <PriceFilter /> */}
-                <label className="text-sm">
-                    Currency:
-                    <select value={currency} onChange={handleCurrencyChange}>
-                        {Object.keys(exchangeRates).map((cur) => (
-                            <option key={cur} value={cur}>
-                                {`${cur}`}
-                            </option>
-                        ))}
-                    </select>
-                </label>
             </div>
             <div className="w-full md:w-3/4">
                 <div className="flex justify-between items-center mb-4">

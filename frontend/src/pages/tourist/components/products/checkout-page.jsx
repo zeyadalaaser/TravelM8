@@ -255,13 +255,13 @@ export default function CheckoutPage() {
                 {cart.map((item) => (
                   <li key={item._id} className="py-2 flex justify-between">
                     <span>{item.name} x {item.quantity}</span>
-                    <span>{currency} {(item.price * item.quantity).toFixed(2)}</span>
+                    <span>{(item.price * item.quantity).formatCurrency(currency)}</span>
                   </li>
                 ))}
               </ul>
               <div className="mt-4 flex justify-between font-bold">
                 <span>Total</span>
-                <span>{currency} {totalAmount.toFixed(2)}</span>
+                <span>{totalAmount.formatCurrency(currency)}</span>
               </div>
             </div>
             <Separator />
@@ -304,7 +304,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="wallet" id="wallet" />
-                  <Label htmlFor="wallet">Wallet (Balance: {currency} {walletBalance.toFixed(2)})</Label>
+                  <Label htmlFor="wallet">Wallet (Balance: {walletBalance.formatCurrency(currency)})</Label>
                 </div>
               </RadioGroup>
             </div>
