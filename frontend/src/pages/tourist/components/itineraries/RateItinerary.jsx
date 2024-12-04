@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const RateItinerary = ({ entityId, entityType, touristId, onClose }) => {
   const [rating, setRating] = useState(0);
@@ -14,7 +15,7 @@ const RateItinerary = ({ entityId, entityType, touristId, onClose }) => {
         rating,
         comment
       });
-      alert("Rating submitted successfully!");
+      toast("Rating submitted successfully!");
       onClose();
     } catch (error) {
       console.error("Error submitting rating:", error);

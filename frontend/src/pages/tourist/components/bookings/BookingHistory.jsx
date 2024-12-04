@@ -50,6 +50,7 @@ import {
   Briefcase,
   Star,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const BookingHistory = () => {
   const token = localStorage.getItem("token");
@@ -233,7 +234,7 @@ const handleCancelBooking = async (type, bookingId) => {
     response = await cancelItineraryBooking(bookingId); // Await the response
     fetchDataAndFilter()
   }
-  alert(response.message); // Show the message once the response is received
+  toast(response.message); // Show the message once the response is received
 
 
 };

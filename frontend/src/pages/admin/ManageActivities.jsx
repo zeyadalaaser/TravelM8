@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/NavbarAdmin";
 import axios from "axios";
 import Footer from "@/components/Footer";
+import { toast } from "sonner";
 
 const ManageActivities = () => {
   const [activities, setActivities] = useState([]);
@@ -34,7 +35,7 @@ const ManageActivities = () => {
         }
       );
 
-      alert(
+      toast(
         isFlagged
           ? "Activity unflagged successfully!"
           : "Activity flagged successfully!"

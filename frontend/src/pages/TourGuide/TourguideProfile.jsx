@@ -7,6 +7,7 @@ import { fetchProfileInfo, updateProfile, changePassword } from '../TourGuide/ap
 import Logout from "@/hooks/logOut.jsx";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/navbarDashboard.jsx";
+import { toast } from 'sonner';
 
 const TourGuideProfilePage = () => {
 
@@ -56,16 +57,16 @@ const TourGuideProfilePage = () => {
       }
         const response = await updateProfile(updatedProfile, token);
         console.log(changes);
-        alert("Profile updated successfully", response);
+        toast("Profile updated successfully", {description: response});
       }
       else {
         const response = await updateProfile(changes, token);
         console.log(changes);
-        alert("Profile updated successfully", response);
+        toast("Profile updated successfully", {description: response});
       }
     } catch (error) {
       console.log(changes);
-      alert("Error updating profile");
+      toast("Error updating profile");
       console.error('Error updating:', error);
     }
   };
@@ -83,7 +84,7 @@ const TourGuideProfilePage = () => {
       return
     }
     if (newPassword.length < 8) {
-      alert("New password must be at least 8 characters long");
+      toast("New password must be at least 8 characters long");
       setError('New password must be at least 8 characters long')
       return
     }
@@ -95,7 +96,7 @@ const TourGuideProfilePage = () => {
       };
       console.log(passwordData);
       const response = await changePassword(passwordData, token);
-      alert('Password changed successfully');
+      toast('Password changed successfully');
       console.log("success");
       setIsPasswordModalOpen(false);
       setCurrentPassword(null);
@@ -143,11 +144,11 @@ const TourGuideProfilePage = () => {
           const data = await response.json();
   
           if (response.ok) {
-            alert('Deletion request created successfully:');
+            toast('Deletion request created successfully:');
             setShowDialog(false);
               console.log('Deletion request created successfully:' );
           } else {
-            alert(data.msg);
+            toast(data.msg);
             setShowDialog(false);
               console.error('Error creating deletion request:', data.msg);
           }

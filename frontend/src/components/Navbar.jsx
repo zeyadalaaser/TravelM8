@@ -19,7 +19,7 @@ import NotificationBell from "@/pages/tourist/components/Notifications";
 const pages = [
   { label: "Activities", value: "activities" },
   { label: "Itineraries", value: "itineraries" },
-  { label: "Historical Places", value: "museums" },
+  { label: "Places", value: "museums" },
   { label: "Products", value: "products" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
@@ -199,9 +199,10 @@ export default function Navbar({ profilePageString, children }) {
         style={{ height: "56px" }}
       >
         <div
-          className={`text-2xl font-semibold ${
+          className={`cursor-pointer text-2xl font-semibold ${
             (currentPage === "/" || currentPage === `/?currency=${currency}`) ? "text-white" : "text-black"
           }`}
+          onClick={() => navigate(`/?currency=${currency}`)}
         >
           TRAVELM8
         </div>
@@ -249,17 +250,6 @@ export default function Navbar({ profilePageString, children }) {
 
 
         <div className="hidden md:flex items-center justify-start ml-25 space-x-1">
-          <button
-            key="/"
-            className={`${
-              (currentPage === "/" || currentPage === `/?currency=${currency}`)
-                ? "text-white hover:text-white/70 py-2 px-4"
-                : "text-black hover:text-black/70 py-2 px-4"
-            }`}
-            onClick={() => navigate(`/?currency=${currency}`)}
-          >
-            Home
-          </button>
           {pages.map((page) => (
             <button
               key={page.value}
@@ -269,8 +259,8 @@ export default function Navbar({ profilePageString, children }) {
                   : "text-black hover:text-black/70"
               } ${
                 currentPage.includes(`/tourist-page?type=${page.value}`)
-                  ? "rounded-full py-2 px-4 border-[1px]"
-                  : "rounded-full py-2 px-4 border-[1px] border-transparent bg-transparent"
+                  ? "py-1 px-3 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-0.5 after:bg-primary"
+                  : "py-1 px-3"
               }`}
               onClick={() => navigate(`/tourist-page?type=${page.value}&currency=${currency}`)}
             >
@@ -298,7 +288,7 @@ export default function Navbar({ profilePageString, children }) {
                         <ShoppingCart className="h-5 w-5" />
                         {totalItems > 0 && (
                           <Badge
-                            className="absolute -top-2  bg-gray-800 hover:bg-gray-700 -right-2 h-4 w-4 flex items-center justify-center p-2"
+                            className="absolute -top-2  -right-2 h-4 w-4 flex items-center justify-center p-2"
                           >
                             {totalItems}
                           </Badge>
@@ -355,7 +345,7 @@ export default function Navbar({ profilePageString, children }) {
                         </div>
                         <Separator />
                         <div className="p-4">
-                          <Button className="w-full bg-gray-800 hover:bg-gray-700" onClick={handleCheckout}>
+                          <Button className="w-full" onClick={handleCheckout}>
                             Proceed to Checkout
                           </Button>
                         </div>
@@ -432,7 +422,7 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <button
                   className={`font-medium rounded-full px-8 py-2 ${
-                    (currentPage === "/" || currentPage === `/?currency=${currency}`)  ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+                    (currentPage === "/" || currentPage === `/?currency=${currency}`)  ? " bg-white text-black hover:bg-white/90" : "rounded-full px-8 text-white "
                   } `}
                 >
                   Register

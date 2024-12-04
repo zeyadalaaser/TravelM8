@@ -12,7 +12,7 @@ import { getItineraries, getMyPreferredTags } from "../../api/apiService";
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";
 import CircularProgress from '@mui/material/CircularProgress';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export function ItinerariesPage() {
   const [loading, setLoading] = useState(false);
@@ -57,8 +57,7 @@ export function ItinerariesPage() {
 
   const handleBookmark = async (itineraryId) => {
     if (!token) {
-      toast({
-        title: `Failed to bookmark itinerary`,
+      toast(`Failed to bookmark itinerary`, {
         description: `You need to be logged in first`,
       });
       return;
@@ -84,15 +83,11 @@ export function ItinerariesPage() {
         } else {
           setBookmarkedItineraries(prev => prev.filter(id => id !== itineraryId));
         }
-        toast({
-          title: `${data.message}`,
-        }
-
-        );
+        toast(`${data.message}`);
       }
     } catch (error) {
       console.error("Error while bookmarking:", error);
-      alert("Failed to update bookmark");
+      toast("Failed to update bookmark");
     }
   };
 

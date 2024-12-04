@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const RateTourGuide = ({ entityId, touristId, onClose }) => {
   const [rating, setRating] = useState(0);
@@ -15,14 +16,14 @@ const RateTourGuide = ({ entityId, touristId, onClose }) => {
         comment
       });
 
-      alert("Rating and comment submitted successfully!");
+      toast("Rating and comment submitted successfully!");
       onClose();
     } catch (error) {
       console.error("Error submitting rating:", error);
 
       if (error.response) {
         console.error("Error response data:", error.response.data);
-        alert(`Failed to submit rating: ${error.response.data.message}`);
+        toast(`Failed to submit rating: ${error.response.data.message}`);
       }
     }
   };

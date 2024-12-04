@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { X } from 'lucide-react'
 import { useState } from "react"
 import * as services from "@/pages/TourismGovernor/services.js";
+import { toast } from "sonner"
 
 export default function ChangePasswordDialog({ isOpen, onClose }) {
   const [currentPassword, setCurrentPassword] = useState('')
@@ -41,7 +42,7 @@ export default function ChangePasswordDialog({ isOpen, onClose }) {
       const response = await services.changePassword(passwordData, token);
   
       // Notify user of success
-      alert('Password changed successfully');
+      toast('Password changed successfully');
       
       // Clear input fields
       setCurrentPassword('');

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { createItineraryBooking } from "../../pages/tourist/api/apiService";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export const ChooseDate = ({ itinerary,token }) => {
   const [selectedDate, setSelectedDate] = useState();
@@ -22,8 +22,7 @@ export const ChooseDate = ({ itinerary,token }) => {
   const checkForToken = () => {
     console.log(token);
     if (!token) {
-      toast({
-        title: `Failed to book itinerary`,
+      toast(`Failed to book itinerary`, {
         description: `You need to be logged in first`,
       });
       setIsOpen(false);
@@ -52,13 +51,13 @@ export const ChooseDate = ({ itinerary,token }) => {
           token
         );
         setIsOpen(false);
-        alert(response.data.message);
+        toast(response.data.message);
       } catch (error) {
         setIsOpen(false);
-        alert("Failed to Book itinerary");
+        toast("Failed to Book itinerary");
       }
     } else {
-      alert("You need to be logged in to book an itinerary!");
+      toast("You need to be logged in to book an itinerary!");
     }
   };
 
@@ -68,13 +67,12 @@ export const ChooseDate = ({ itinerary,token }) => {
         <Button 
           onClick={() => {
             if (!token) {
-              toast({
-              title: `Failed to book itinerary`,
+              toast(`Failed to book itinerary`, {
               description: `You need to be logged in first`,
               });
             }
           }}
-        className="bg-gray-800 hover:bg-gray-700 text-white">Book itinerary</Button>
+        >Book itinerary</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -96,7 +94,7 @@ export const ChooseDate = ({ itinerary,token }) => {
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button className="bg-gray-800 hover:bg-gray-700 text-white"type="submit">Choose date</Button>
+            <Button className="text-white"type="submit">Choose date</Button>
           </DialogFooter>
         </form>
         {submitStatus && (

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { X } from "lucide-react"
 import { submitComplaint } from "@/pages/tourist/api/apiService.js"
+import { toast } from "sonner"
 
 
 export function ComplaintForm({ onClose }) {
@@ -28,16 +29,16 @@ export function ComplaintForm({ onClose }) {
     setIsSubmitting(true)
     try {
       await submitComplaint(formData,token)
-      alert("Complaint submitted successfully")
+      toast("Complaint submitted successfully")
       onClose()
     } catch (error) {
       console.error("Error submitting complaint:", error)
       if (error.response) {
-        alert(`Failed to submit complaint: ${error.response.data.message || error.response.statusText}`)
+        toast(`Failed to submit complaint: ${error.response.data.message || error.response.statusText}`)
       } else if (error.request) {
-        alert("Failed to submit complaint: No response from server")
+        toast("Failed to submit complaint: No response from server")
       } else {
-        alert(`Failed to submit complaint: ${error.message}`)
+        toast(`Failed to submit complaint: ${error.message}`)
       }
     } finally {
       setIsSubmitting(false)

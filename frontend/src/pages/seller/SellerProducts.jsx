@@ -16,7 +16,7 @@ import {
 } from "../../components/ui/dialog";
 import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
-import { useToast } from "./components/useToast";
+import { toast } from "sonner";
 import { SearchBar } from "./components/filters/search";
 import { PriceFilter } from "./components/filters/price-filter";
 import { getMyProducts, getProducts } from "./api/apiService";
@@ -35,7 +35,6 @@ export default function SellerProducts() {
   const [error, setError] = useState(null);
   const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
   const [editProductData, setEditProductData] = useState(null);
-  const { toast } = useToast();
 
   // const handleAddProduct = async (newProduct) => {
   //   try {
@@ -97,16 +96,13 @@ export default function SellerProducts() {
       }
 
       setProducts(products.filter((product) => product._id !== productId));
-      toast({
-        title: "Deleted Product",
+      toast("Deleted Product", {
         description: "Your product has been successfully deleted.",
       });
     } catch (error) {
       setError(error.message);
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to delete product. Please try again.",
-        variant: "destructive",
       });
     }
   };
@@ -162,16 +158,13 @@ export default function SellerProducts() {
       const savedProduct = await response.json();
       setProducts((prevProducts) => [...prevProducts, savedProduct]);
       setIsAddProductModalOpen(false);
-      toast({
-        title: "Success",
+      toast("Success", {
         description: "Product created successfully!",
         duration: 3000,
       });
     } catch (error) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: error.message || "Failed to create the product.",
-        variant: "destructive",
         duration: 3000,
       });
     }
@@ -202,16 +195,13 @@ export default function SellerProducts() {
           )
         );
         setIsEditProductModalOpen(false);
-        toast({
-          title: "Success",
+        toast("Success", {
           description: "Product updated successfully!",
           duration: 3000,
         });
       } catch (error) {
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: error.message || "Failed to update the product.",
-          variant: "destructive",
           duration: 3000,
         });
       }

@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import { PlusCircle, MinusCircle } from "lucide-react";
 import * as services from "@/pages/TourGuide/api/apiService.js";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 const TourGuideDashboard = () => {
   const navigate = useNavigate();
@@ -261,7 +262,7 @@ const TourGuideDashboard = () => {
       } else {
         try {
           response = await services.addItinerary(token, formData);
-          alert("Itinerary Added Successfully");
+          toast("Itinerary Added Successfully");
           console.log("Itinerary Added Successfully");
           setDialogOpen(false);
         } catch (error) {

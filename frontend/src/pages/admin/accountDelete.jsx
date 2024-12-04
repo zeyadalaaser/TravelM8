@@ -5,7 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/NavbarAdmin";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -42,7 +42,6 @@ const DeletionRequestsAdmin = () => {
     setIsDeleteDialogOpen(false); // Close the dialog
     setSelectedRequest(null); // Clear selected request
   };
-  const { toast } = useToast();
 
   // Fetch deletion requests on component mount
   useEffect(() => {
@@ -59,15 +58,13 @@ const DeletionRequestsAdmin = () => {
           setRequests(data);
         } else {
           console.error("Error fetching deletion requests:", data.message);
-          toast({
-            title: "Failed to load requests",
+          toast("Failed to load requests", {
             description: data.message,
           });
         }
       } catch (error) {
         console.error("Error:", error);
-        toast({
-          title: "Error",
+        toast("Error", {
           description: "Failed to fetch deletion requests",
         });
       }
@@ -122,10 +119,10 @@ const DeletionRequestsAdmin = () => {
       // Update UI: remove the request from the displayed list
       setRequests(requests.filter((request) => request.username !== username));
 
-      alert("User  deleted successfully");
+      toast("User  deleted successfully");
     } catch (error) {
       console.error("Error deleting the user and/or deletion request:", error);
-      alert("Failed to delete the user and/or deletion request");
+      toast("Failed to delete the user and/or deletion request");
     }
   };
 

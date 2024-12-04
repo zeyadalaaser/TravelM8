@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react'
   import { fetchProfileInfo ,updateProfile,changePassword} from '../Advertiser/api/apiService';
   import { Textarea } from "@/components/ui/textarea";
   import Logout from "@/hooks/logOut.jsx";
+import { toast } from 'sonner';
   
   const advertiserProfilePage = () => {
   
@@ -51,11 +52,11 @@ import React, { useState, useEffect } from 'react'
       
           const response = await updateProfile(changes, token);
           console.log(changes);
-          alert("Profile updated successfully", response);
+          toast("Profile updated successfully", { description: response });
         
       } catch (error) {
         console.log(changes);
-        alert("Error updating profile");
+        toast("Error updating profile");
         console.error('Error updating:', error);
       }
     };
@@ -73,7 +74,7 @@ import React, { useState, useEffect } from 'react'
         return
       }
       if (newPassword.length < 8) {
-        alert("New password must be at least 8 characters long");
+        toast("New password must be at least 8 characters long");
         setError('New password must be at least 8 characters long')
         return
       }
@@ -85,7 +86,7 @@ import React, { useState, useEffect } from 'react'
         };
         console.log(passwordData);
         const response = await changePassword(passwordData, token);
-        alert('Password changed successfully');
+        toast('Password changed successfully');
         console.log("success");
         setIsPasswordModalOpen(false);
         setCurrentPassword(null);
@@ -132,11 +133,11 @@ import React, { useState, useEffect } from 'react'
             const data = await response.json();
     
             if (response.ok) {
-              alert('Deletion request created successfully:');
+              toast('Deletion request created successfully:');
               setShowDialog(false);
                 console.log('Deletion request created successfully:' );
             } else {
-              alert(data.msg);
+              toast(data.msg);
               setShowDialog(false);
                 console.error('Error creating deletion request:', data.msg);
             }

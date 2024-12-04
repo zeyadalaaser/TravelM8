@@ -3,6 +3,7 @@ import './signup.css';
 import axios from 'axios';
 import backgroundImage from '@/assets/background.jpeg';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const FormPage = () => {
     const [formDataSeller, setFormDataSeller] = useState({
@@ -67,7 +68,7 @@ const FormPage = () => {
               { headers: { "Content-Type": "multipart/form-data" } }
           );
 
-            alert('Your Request Is Pending');
+            toast('Your Request Is Pending');
             setMessageType('success');
             navigate('/');
             }

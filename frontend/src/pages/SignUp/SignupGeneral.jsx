@@ -128,7 +128,7 @@ const [formData2, setformData2] = useState({
             );
             }
         }
-        alert('Your Request Is Pending');
+        toast('Your Request Is Pending');
         setMessageType('success');  
         navigate('/');
 
@@ -146,7 +146,7 @@ const [formData2, setformData2] = useState({
           const response = await axios.post('http://localhost:5001/api/tourists', formData);
         }
 
-        alert('success');
+        toast('success');
         setMessageType('success');  
       
     } catch (error) {

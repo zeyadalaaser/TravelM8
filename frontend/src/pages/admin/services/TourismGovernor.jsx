@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react"; // Removed Trash2 as per previous instructions
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const TourismGovernor1 = () => {
   const [sidebarState, setSidebarState] = useState(false);
@@ -30,7 +30,6 @@ const TourismGovernor1 = () => {
   const [password, setPassword] = useState("");
   const [governors, setGovernors] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const { toast } = useToast();
   const [error, setError] = useState(null);
 
   // Fetch governors when the component mounts
@@ -65,7 +64,7 @@ const TourismGovernor1 = () => {
           password,
         }
       );
-      toast({ title: response.data.message, duration: 3000 });
+      toast(response.data.message, { duration: 3000 });
       fetchGovernors(); // Refresh the governor list after registration
       setUsername("");
       setPassword("");
@@ -73,7 +72,7 @@ const TourismGovernor1 = () => {
       setError(null);
     } catch (error) {
       setError(error.response?.data?.message || "Registration failed.");
-      toast({ title: "Failed to add governor", duration: 3000 });
+      toast("Failed to add governor", { duration: 3000 });
     }
   };
 

@@ -16,6 +16,7 @@ import { Wishlist } from './wishlist';
 import  PreferencesPage  from './Preferences';
 import MyOrdersPage from "@/pages/tourist/components/orders.jsx";
 import { ComplaintForm } from "@/pages/tourist/components/complaints/complaint-form.jsx";
+import { toast } from 'sonner';
 
 const TouristProfilePage = () => {
 
@@ -71,16 +72,16 @@ const TouristProfilePage = () => {
         }
         const response = await updateProfile(updatedProfile, token);
         console.log(changes);
-        alert("Profile updated successfully", response);
+        toast("Profile updated successfully", {description: response});
       }
       else {
         const response = await updateProfile(changes, token);
         console.log(changes);
-        alert("Profile updated successfully", response);
+        toast("Profile updated successfully", {description: response});
       }
     } catch (error) {
       console.log(changes);
-      alert("Error updating profile");
+      toast("Error updating profile");
       console.error('Error updating:', error);
     }
   };
@@ -98,7 +99,7 @@ const TouristProfilePage = () => {
       return
     }
     if (newPassword.length < 8) {
-      alert("New password must be at least 8 characters long");
+      toast("New password must be at least 8 characters long");
       setError('New password must be at least 8 characters long')
       return
     }
@@ -110,7 +111,7 @@ const TouristProfilePage = () => {
       };
       console.log(passwordData);
       const response = await changePassword(passwordData, token);
-      alert('Password changed successfully');
+      toast('Password changed successfully');
       console.log("success");
       setIsPasswordModalOpen(false);
       setCurrentPassword(null);
@@ -167,11 +168,11 @@ const TouristProfilePage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Deletion request created successfully:');
+        toast('Deletion request created successfully:');
         setShowDialog(false);
         console.log('Deletion request created successfully:');
       } else {
-        alert(data.msg);
+        toast(data.msg);
         setShowDialog(false);
         console.error('Error creating deletion request:', data.msg);
       }
@@ -319,7 +320,7 @@ const TouristProfilePage = () => {
             <div className="flex justify-end">
               <button
                 onClick={handleFormSubmit}
-                className="rounded-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white">
+                className="rounded-full px-4 py-2 text-white">
                 Save changes
               </button>
             </div>
@@ -397,7 +398,7 @@ const TouristProfilePage = () => {
             </section>
             <div className="flex justify-end">
               <button
-                className="rounded-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white"
+                className="rounded-full px-4 py-2 text-white"
                 onClick={() => setIsPasswordModalOpen(true)}
               >
                 Change Password

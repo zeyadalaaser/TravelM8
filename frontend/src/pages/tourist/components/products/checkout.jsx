@@ -18,7 +18,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios"
 import { NumberStepper } from "@/components/ui/number-stepper"
 import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/components/ui/use-toast";
+
 import { CheckoutToast } from "@/pages/tourist/components/products/checkoutToast.jsx";
 import { loadStripe } from '@stripe/stripe-js'
 
@@ -63,7 +63,6 @@ function CheckoutForm({ clientSecret, handlePayment }) {
 
 
 export default function CheckoutPage() {
-  const { toast } = useToast();
   const [clientSecret, setClientSecret] = useState('')
   const location = useLocation();
   const navigate = useNavigate();
@@ -202,7 +201,7 @@ const checkout = async ()=> {
     const address = addresses.find((addr) => addr.fullName === selectedAddressId);
     try {
       const response = await services.checkout({address,paymentMethod,promoCode},token);
-        CheckoutToast(toast,(profile?.wallet-totalPrice-20).formatCurrency(currency),paymentMethod);
+        CheckoutToast((profile?.wallet-totalPrice-20).formatCurrency(currency),paymentMethod);
         setTimeout(() => {
           navigate("/"); 
         }, 1000);

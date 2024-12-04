@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DollarSign, Calendar, Users, Settings, Plus } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "./components/useToast";
+import { toast } from "sonner";
 import AddProductForm from "../seller/components/AddProductForm"; // Assuming AddProductForm is in the same folder
 import Logout from "@/hooks/logOut.jsx";
 import Header from "@/components/navbarDashboard.jsx";
@@ -28,7 +28,6 @@ const SellerDashboard = () => {
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [isEditProductModalOpen, setIsEditProductModalOpen] = useState(false);
   const [editProductData, setEditProductData] = useState(null);
-  const { toast } = useToast();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -69,16 +68,13 @@ const SellerDashboard = () => {
       }
 
       setProducts(products.filter((product) => product._id !== productId));
-      toast({
-        title: "Deleted Product",
+      toast("Deleted Product", {
         description: "Your product has been successfully deleted.",
       });
     } catch (error) {
       setError(error.message);
-      toast({
-        title: "Error",
-        description: "Failed to delete product. Please try again.",
-        variant: "destructive",
+      toast.error("Error", {
+        description: "Failed to delete product. Please try again."
       });
     }
   };
@@ -134,16 +130,13 @@ const SellerDashboard = () => {
       const savedProduct = await response.json();
       setProducts((prevProducts) => [...prevProducts, savedProduct]);
       setIsAddProductModalOpen(false);
-      toast({
-        title: "Success",
+      toast("Success", {
         description: "Product created successfully!",
         duration: 3000,
       });
     } catch (error) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: error.message || "Failed to create the product.",
-        variant: "destructive",
         duration: 3000,
       });
     }
@@ -174,16 +167,13 @@ const SellerDashboard = () => {
           )
         );
         setIsEditProductModalOpen(false);
-        toast({
-          title: "Success",
+        toast("Success", {
           description: "Product updated successfully!",
           duration: 3000,
         });
       } catch (error) {
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: error.message || "Failed to update the product.",
-          variant: "destructive",
           duration: 3000,
         });
       }

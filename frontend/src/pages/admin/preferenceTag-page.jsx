@@ -22,7 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import {
   createPreferenceTag,
@@ -37,7 +37,6 @@ const Preferencetag = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentTag, setCurrentTag] = useState(null);
   const [newTagName, setNewTagName] = useState("");
-  const { toast } = useToast();
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -58,8 +57,7 @@ const Preferencetag = () => {
       setTags((prevTags) => [...prevTags, newTag]);
       setNewTagName("");
       setIsOpen(false);
-      toast({
-        title: "Success",
+      toast("Success", {
         description: "Tag created successfully!",
         duration: 3000,
       });
@@ -78,8 +76,7 @@ const Preferencetag = () => {
       setNewTagName("");
       setCurrentTag(null);
       setIsOpen(false);
-      toast({
-        title: "Success",
+      toast("Success", {
         description: "Tag updated successfully!",
         duration: 3000,
       });
@@ -89,8 +86,7 @@ const Preferencetag = () => {
   const handleDelete = async (tagName) => {
     await deletePreferenceTag(tagName);
     setTags((prevTags) => prevTags.filter((tag) => tag.name !== tagName));
-    toast({
-      title: "Success",
+    toast("Success", {
       description: "Tag deleted successfully!",
       duration: 3000,
     });

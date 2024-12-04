@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X } from "lucide-react";
+import { toast } from "sonner";
 
 
 const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
@@ -156,11 +157,11 @@ const ActivityFormDialog = ({isOpen, onClose, onRefresh, dialogArgs}) => {
       const result = await response.json();
       console.log("Success:", result.message);
       onRefresh();
-      alert(result.message);
+      toast(result.message);
       onClose();
     } catch (error) {
       console.error("Error:", error);
-      alert('Failed to modify activities');
+      toast('Failed to modify activities');
       onClose();
       // isSuccess = false;
     }

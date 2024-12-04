@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { addToWishlist, removeFromWishlist } from '../../api/apiService';
+import { toast } from "sonner";
 
 export default function AnimatedLikeButton({ token, liked, productId }) {
   const [isLiked, setIsLiked] = useState(liked);
@@ -10,7 +11,10 @@ export default function AnimatedLikeButton({ token, liked, productId }) {
 
   const handleClick = async () => {
     if (!token)
+    {
+      toast("Failed to add to wishlist", {description: "Please log in first"});
       return;
+    }
 
     !isLiked ? addToWishlist(productId, token) : removeFromWishlist(productId, token);
     setIsLiked(!isLiked);

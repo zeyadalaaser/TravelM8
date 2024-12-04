@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { toast } from "sonner";
 
 
 const token = localStorage.getItem('token');
@@ -102,7 +103,7 @@ const ChooseDate = ({itinerary}) => {
         "Card",
         token);
       console.log(response.message);
-      alert(response.message);
+      toast(response.message);
 
   }
 

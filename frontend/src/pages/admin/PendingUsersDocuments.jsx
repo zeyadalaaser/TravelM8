@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
+import { toast } from "sonner";
 
 const PendingUserDocuments = () => {
   const [userDocuments, setUserDocuments] = useState([]);
@@ -62,7 +63,7 @@ const PendingUserDocuments = () => {
       }
     } catch (error) {
       console.error("Error rejecting user:", error);
-      alert("There was an issue rejecting the user.");
+      toast("There was an issue rejecting the user.");
     }
   };
 
@@ -80,13 +81,13 @@ const PendingUserDocuments = () => {
         setUserDocuments(
           userDocuments.filter((item) => item.user._id !== userId)
         );
-        alert("User approved and moved to the main collection.");
+        toast("User approved and moved to the main collection.");
       } else {
         throw new Error("Failed to approve the user");
       }
     } catch (error) {
       console.error("Error approving user:", error);
-      alert("There was an issue approving the user.");
+      toast("There was an issue approving the user.");
     }
   };
 

@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa';
 import { FaCompass, FaStore , FaAd  } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 
 export default function SignupDialog({children, isOpen, onOpenChange, onLoginClick }) {
   const [open, setOpen] = useState(false);
@@ -114,7 +115,7 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
         );
 
         // Success message
-        alert('Your Request Is Pending');
+        toast('Your Request Is Pending');
         setMessageType('success');
         window.location.reload();
       }
@@ -140,7 +141,7 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
         );
 
         // Success message
-        alert('Your Request Is Pending');
+        toast('Your Request Is Pending');
         setMessageType('success');
         window.location.reload();
       }
@@ -158,7 +159,7 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
       const response = await axios.post('http://localhost:5001/api/tourists', formData2);
 
       if (response.status === 200) {
-        alert('Your Tourist Registration is Successful');
+        toast('Your Tourist Registration is Successful');
         setMessageType('success');
         window.location.reload(); // Refresh after successful submission
       }
@@ -581,14 +582,14 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
                 {" "}I accept the{' '}
                 <span
                   className="text-blue-600 cursor-pointer"
-                  onClick={() => alert("read terms and consitions")}
+                  onClick={() => toast("read terms and consitions")}
                 >
                   Terms and Conditions
                 </span>
               </label>
             </div>
 
-            <Button type="submit" className="w-full bg-gray-800 hover:bg-gray-700">
+            <Button type="submit" className="w-full">
               Sign up
             </Button>
           </form>

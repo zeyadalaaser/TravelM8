@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import axios from "axios";
+import { toast } from "sonner";
 
 export  function RedeemPoints({ onClose }) {
   const token = localStorage.getItem('token');
@@ -26,7 +27,7 @@ export  function RedeemPoints({ onClose }) {
         setWalletBalance(wallet);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        alert(`Failed to fetch user data: ${error.response?.data?.message || error.message}`);
+        toast(`Failed to fetch user data: ${error.response?.data?.message || error.message}`);
       }
     };
 
@@ -35,7 +36,7 @@ export  function RedeemPoints({ onClose }) {
 
   const handleRedeemClick = async () => {
     if (totalPoints <= 0) {
-      alert("You don't have any points to redeem.");
+      toast("You don't have any points to redeem.");
       return;
     }
 
@@ -51,13 +52,13 @@ export  function RedeemPoints({ onClose }) {
 
       const { wallet   } = response.data;
 
-      alert(`Points redeemed successfully! You wallet balance is  ${wallet } EGP.`);
+      toast(`Points redeemed successfully! You wallet balance is  ${wallet } EGP.`);
       setWalletBalance(wallet);
       setTotalPoints(0); // Reset points after redeeming
       onClose();
     } catch (error) {
       console.error("Error redeeming points:", error);
-      alert(`Failed to redeem points: ${error.response?.data?.message || error.message}`);
+      toast(`Failed to redeem points: ${error.response?.data?.message || error.message}`);
     } finally {
       setIsRedeeming(false);
     }

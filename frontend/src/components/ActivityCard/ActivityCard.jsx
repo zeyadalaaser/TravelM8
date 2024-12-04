@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+import { toast } from "sonner";
 
 export default function ActivityCard({
   openDialog,
@@ -45,10 +45,10 @@ export default function ActivityCard({
 
       console.log("Success:", response);
       onRefresh();
-      alert("Successfully deleted the activity");
+      toast("Successfully deleted the activity");
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to delete the activity");
+      toast("Failed to delete the activity");
 
     }
 

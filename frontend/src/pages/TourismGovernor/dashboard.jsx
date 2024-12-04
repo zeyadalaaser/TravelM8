@@ -68,6 +68,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import ChangePasswordDialog from '@/pages/TourismGovernor/components/changePasswordDialog.jsx';
 import { jwtDecode } from 'jwt-decode';
+import { toast } from "sonner";
 
 const TourismGovernorDashboard = () => {
     const [isAlertOpen, setAlertOpen] = useState(false);
@@ -233,17 +234,17 @@ const TourismGovernorDashboard = () => {
       if (selectedPlace) {
         services.updatePlace(token, selectedPlace._id, updatedPlace);
         console.log(updatedPlace);
-        alert("Place updated successfully!");
+        toast("Place updated successfully!");
         window.location.reload();
       } else {
         if (missingFields.length > 0) {
-          alert(
+          toast(
             `Please fill in the following fields: ${missingFields.join(", ")}`
           );
           return;
         }
         services.postPlace(token, newPlace);
-        alert("Place Added Succesfully");
+        toast("Place Added Succesfully");
         console.log("form submitted");
         window.location.reload();
       }
@@ -251,7 +252,7 @@ const TourismGovernorDashboard = () => {
     } catch (error) {
       console.error("Error submitting form:", id);
       console.error("Error submitting form:", error);
-      alert("Failed to add place");
+      toast("Failed to add place");
     }
     setOpen(false);
   };

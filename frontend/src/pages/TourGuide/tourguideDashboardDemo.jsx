@@ -64,6 +64,7 @@ import Header from "@/components/navbarDashboard.jsx";
 import SalesReport from "./salesReport";
 import TouristReport from "./TouristReport";
 import axios from "axios";
+import { toast } from "sonner";
 
 const TourGuideDashboard = () => {
   const navigate = useNavigate();
@@ -264,7 +265,7 @@ const TourGuideDashboard = () => {
     try {
       await services.deleteItinerary(id);
     } catch (error) {
-      alert(error.message);
+      toast(error.message);
       console.error("Error deleting Itinerary:", error);
     }
     fetchItineraries();

@@ -105,7 +105,7 @@ const ForgotPassword = ({ isOpen, onOpenChange, onBackToLogin }) => {
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition duration-150"
+                  className="w-full text-white font-bold py-2 px-4 rounded-md transition duration-150"
                   disabled={isLoading}
                 >
                   {isLoading ? <CircularProgress size={24} color="inherit" /> : "Send OTP"}
@@ -126,7 +126,7 @@ const ForgotPassword = ({ isOpen, onOpenChange, onBackToLogin }) => {
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition duration-150"
+                  className="w-full text-white font-bold py-2 px-4 rounded-md transition duration-150"
                   disabled={isLoading}
                 >
                   {isLoading ? <CircularProgress size={24} color="inherit" /> : "Verify OTP"}
@@ -167,7 +167,7 @@ const ForgotPassword = ({ isOpen, onOpenChange, onBackToLogin }) => {
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition duration-150"
+                  className="w-full text-white font-bold py-2 px-4 rounded-md transition duration-150"
                   disabled={isLoading}
                 >
                   {isLoading ? <CircularProgress size={24} color="inherit" /> : "Reset Password"}

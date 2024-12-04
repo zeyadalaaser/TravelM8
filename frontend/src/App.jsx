@@ -340,7 +340,7 @@ export default function HeroSection() {
               </div>
               <div className="flex justify-center">
                 <Button
-                  className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white mt-12 "
+                  className="rounded-full px-8 text-white mt-12 "
                   onClick={() => navigate(`/tourist-page?type=museums`)}
                 >
                   View more
@@ -399,7 +399,7 @@ export default function HeroSection() {
 
 
               <div className="flex justify-center">
-                <Button className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+                <Button className="rounded-full px-8 text-white "
                   onClick={() => navigate(`/tourist-page?type=itineraries`)}
                 >
                   View more
@@ -445,7 +445,7 @@ export default function HeroSection() {
 
 
               <div className="flex justify-center">
-                <Button className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+                <Button className="rounded-full px-8 text-white "
                   onClick={() => navigate(`/tourist-page?type=products`)}
                 >
                   View more
@@ -559,7 +559,7 @@ export default function HeroSection() {
                 ))}
               </div>
               <div className="text-center">
-                <button className="bg-gray-800 hover:bg-gray-700 font-medium text-white  py-3 px-8 rounded-full transition-colors">
+                <button className="font-medium text-white  py-3 px-8 rounded-full transition-colors">
                   View more
                 </button>
               </div>

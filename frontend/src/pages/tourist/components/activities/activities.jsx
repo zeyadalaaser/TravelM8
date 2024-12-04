@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useEffect } from 'react';
 import ActivityDetails from "@/components/ActivityCard/activityDetails.jsx";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from "react-router-dom";
 function Activities({ token, bookActivity, activities, currency, exchangeRate }) {
@@ -18,14 +18,12 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
     if (token) {
       const response = await bookActivity(activity._id, activity.price, "Card", token);
       console.log(response.message);
-      toast({
-        title: `Success`,
+      toast(`Success`, {
         description: `Activity booked successfully`,
       });
     }
     else
-    toast({
-      title: `Failed to book activity`,
+    toast(`Failed to book activity`, {
       description: `You need to be logged in first`,
     });
   }
@@ -79,8 +77,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
 
   const handleBookmark = async (activityId) => {
     if (!token) {
-      toast({
-        title: `Failed to bookmark activity`,
+      toast(`Failed to bookmark activity`, {
         description: `You need to be logged in first`,
       });
       return;
@@ -114,15 +111,13 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
         } else {
           setBookmarkedActivities(prev => prev.filter(id => id !== activityId));
         }
-        toast({
-          title: `${data.message}`,
-        })
+        toast(`${data.message}`)
       } else {
         throw new Error(`Server responded with ${response.status}: ${responseText}`);
       }
     } catch (error) {
       console.error("Error while bookmarking:", error);
-      alert("Failed to update bookmark");
+      toast("Failed to update bookmark");
     }
   };
 

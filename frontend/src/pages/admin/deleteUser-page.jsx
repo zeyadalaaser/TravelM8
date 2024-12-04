@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 import {
   getAllUsers,
@@ -23,7 +23,6 @@ import {
 const DeleteUser = () => {
   const [sidebarState, setSidebarState] = useState(false);
   const [users, setUsers] = useState([]);
-  const { toast } = useToast();
 
   // Fetch users from the backend
   useEffect(() => {
@@ -32,8 +31,7 @@ const DeleteUser = () => {
         const fetchedUsers = await getAllUsers();
         setUsers(fetchedUsers);
       } catch (error) {
-        toast({
-          title: "Error",
+        toast("Error", {
           description: "Failed to load users.",
           duration: 3000,
         });
@@ -57,14 +55,12 @@ const DeleteUser = () => {
         setUsers((prevUsers) =>
           prevUsers.filter((user) => user.username !== username)
         );
-        toast({
-          title: "Success",
+        toast("Success", {
           description: `User "${username}" deleted successfully!`,
           duration: 3000,
         });
       } catch (error) {
-        toast({
-          title: "Error",
+        toast("Error", {
           description: "Failed to delete user.",
           duration: 3000,
         });

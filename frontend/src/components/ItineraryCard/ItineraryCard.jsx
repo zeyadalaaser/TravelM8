@@ -21,7 +21,7 @@ import {
 import { AlertCircle, CheckCircle2, MapPin } from "lucide-react";
 import ItineraryDetails from "@/components/ItineraryCard/ItineraryDetails.jsx";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 import { Stars } from "../Stars";
 import { useNavigate } from "react-router-dom";
@@ -56,15 +56,13 @@ export default function ItineraryCard({
       );
       if (!response.ok) {
         const data = await response.json();
-        toast({
-          title: `Failed to delete itinerary`,
+        toast(`Failed to delete itinerary`, {
           description: `${data.message}`,
         });
         return;
       }
       await onRefresh();
-      toast({
-        title: `Success`,
+      toast(`Success`, {
         description: `itinerary deleted successfully`,
       });
       console.log("Success:", response);
@@ -88,15 +86,13 @@ export default function ItineraryCard({
       );
       if (!response.ok) {
         const data = await response.json();
-        toast({
-          title: `Failed to update itinerary`,
+        toast(`Failed to update itinerary`, {
           description: `${data.message}`,
         });
         return;
       }
       onRefresh();
-      toast({
-        title: `Success`,
+      toast(`Success`, {
         description: `itinerary updated successfully`,
       });
       console.log("Success:", response);
@@ -148,7 +144,7 @@ export default function ItineraryCard({
       setFlaggedStatus((prev) => ({ ...prev, [id]: !isFlagged }));
 
       // Immediately show the alert after the update
-      alert(
+      toast(
         isFlagged
           ? "Itinerary unflagged successfully!"
           : "Itinerary flagged successfully!"
@@ -340,7 +336,7 @@ export default function ItineraryCard({
                     )}
                     {isAdmin && (
                       <Button
-                        className="w-100 mt-2 mb-2 bg-black hover:bg-gray-800"
+                        className="w-100 mt-2 mb-2"
                         variant="destructive"
                         onClick={() =>
                           toggleFlagItinerary(
@@ -407,13 +403,12 @@ const ChooseDate = ({ itinerary }) => {
           <Button 
                 onClick={() => {
                   if (!token) {
-                    toast({
-                      title: `Failed to book itinerary`,
+                    toast(`Failed to book itinerary`, {
                       description: `You need to be logged in first`,
                     });
                   }
                 }}
-          className="bg-gray-800 hover:bg-gray-700">Book itinerary</Button>
+          >Book itinerary</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -443,7 +438,10 @@ const ChooseDate = ({ itinerary }) => {
             })}
           </RadioGroup>
           <DialogFooter className="mt-4">
-            <Button className="bg-gray-800"onClick={() => { setIsOpen(false); setPaymentOpen(true) }} disabled={!selectedDate}>
+            <Button 
+                onClick={() => { setIsOpen(false); setPaymentOpen(true) }} 
+                disabled={!selectedDate}
+            >
               Select date
             </Button>
           </DialogFooter>

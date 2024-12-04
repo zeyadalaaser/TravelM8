@@ -17,7 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
 import { Timeline } from './Timeline';
 import { ChooseDate } from './ChooseDate';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
+
 export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTourGuide, onRefresh,currency,token }) {
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
@@ -27,8 +28,7 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
   // useState(() => {
   //   if (!token) {
   //     setToken(false);
-  //     toast({
-  //       title: `Failed to book itinerary`,
+  //     toast(`Failed to book itinerary`, {
   //       description: `You need to be logged in to book an itinerary`,
   //     });
   // }
@@ -45,11 +45,11 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
       );
       if (!response.ok) {
         const data = await response.json();
-        alert(data.message);
+        toast(data.message);
         return;
       }
       await onRefresh();
-      alert("Itinerary Deleted successfully");
+      toast("Itinerary Deleted successfully");
     } catch (error) {
       console.error("Error:", error);
     }
@@ -70,11 +70,11 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
       );
       if (!response.ok) {
         const data = await response.json();
-        alert(data.message);
+        toast(data.message);
         return;
       }
       onRefresh();
-      alert(`Itinerary ${state} successfully`);
+      ttoast(`Itinerary ${state} successfully`);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -83,10 +83,10 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
   const handleFlagItinerary = async (itineraryId) => {
     try {
       await flagItinerary(itineraryId);
-      alert("Itinerary flagged successfully");
+      toast("Itinerary flagged successfully");
     } catch (error) {
       console.error("Error flagging itinerary:", error);
-      alert("Failed to flag itinerary");
+      toast("Failed to flag itinerary");
     }
   };
 

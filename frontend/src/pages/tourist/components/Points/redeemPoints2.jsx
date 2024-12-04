@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import axios from "axios";
+import { toast } from "sonner";
 
 export default function RedeemPoints() {
   const token = localStorage.getItem('token');
@@ -34,7 +35,7 @@ export default function RedeemPoints() {
         setLevel(badgeLevel);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        alert(`Failed to fetch user data: ${error.response?.data?.message || error.message}`);
+        toast(`Failed to fetch user data: ${error.response?.data?.message || error.message}`);
       }
     };
 
@@ -69,7 +70,7 @@ export default function RedeemPoints() {
           },
         });
 
-        alert("points redeemed successfully");
+        toast("points redeemed successfully");
         const response = await axios.get('http://localhost:5001/api/tourists/myProfile', {
           headers: {
             'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ export default function RedeemPoints() {
         setIsOpen(false);
       } catch (error) {
         console.error("Error redeeming points:", error);
-        alert(`Failed to redeem points: ${error.response?.data?.message || error.message}`);
+        toast(`Failed to redeem points: ${error.response?.data?.message || error.message}`);
       }
     }
   };

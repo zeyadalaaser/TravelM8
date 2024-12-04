@@ -6,6 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Palmtree, ShoppingBag, Landmark, Users, Globe, Tag } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function PreferencesPage() {
   const { touristId } = useParams(); // Get the touristId from the URL
@@ -62,7 +63,7 @@ export default function PreferencesPage() {
       const token = localStorage.getItem('token');  // Get token from storage or context
 
       if (!token) {
-        alert('You are not authenticated. Please log in.');
+        toast('You are not authenticated. Please log in.');
         setLoading(false);  // Stop loading
         return;
       }
@@ -77,14 +78,14 @@ export default function PreferencesPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      alert('Preferences saved!');
+      toast('Preferences saved!');
       navigate('/tourist-page');  // Navigate to tourist page
     } catch (error) {
       console.error('Failed to save preferences', error);
       if (error.response?.status === 403) {
-        alert('You do not have permission to update preferences.');
+        toast('You do not have permission to update preferences.');
       } else {
-        alert('An error occurred while saving preferences.');
+        toast('An error occurred while saving preferences.');
       }
     } finally {
       setLoading(false);  // Stop loading

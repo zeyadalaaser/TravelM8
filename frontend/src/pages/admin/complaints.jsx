@@ -8,7 +8,7 @@ import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/NavbarAdmin";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
@@ -57,7 +57,6 @@ export default function ComplaintsPage() {
   const [sidebarState, setSidebarState] = useState(false);
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
-  const { toast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState("");
   const [reply, setReply] = useState("");
   const { searchParams, navigate, location } = useRouter();
@@ -102,15 +101,13 @@ export default function ComplaintsPage() {
       });
 
       setComplaints(filteredAndSortedComplaints);
-      toast({
-        title: "Success",
+      toast("Success", {
         description: "Success to load complaints.",
         duration: 3000,
       });
     } catch (error) {
       console.error("Error fetching complaints:", error);
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "Failed to load complaints.",
         duration: 3000,
       });
@@ -158,15 +155,13 @@ export default function ComplaintsPage() {
               : complaint
           )
         );
-        toast({
-          title: "Success",
+        toast("Success", {
           description: `Complaint status updated to ${selectedStatus}.`,
           duration: 10000,
         });
       } catch (error) {
         console.error("Error updating status:", error);
-        toast({
-          title: "Error",
+        toast("Error", {
           description: "Failed to update complaint status.",
           duration: 3000,
         });

@@ -7,7 +7,7 @@ import { ShareButton } from "@/components/ui/share-button";
 import AnimatedLikeButton from "./like";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export default function ProductCard({ product, currency, token, liked }) {
     const navigate = useNavigate();
@@ -21,8 +21,7 @@ export default function ProductCard({ product, currency, token, liked }) {
                 navigate(0); 
             }    
             else {
-                toast({
-                    title: `Failed to add product`,
+                toast(`Failed to add product`, {
                     description: "Please log in first",
                   });
             }
@@ -105,7 +104,7 @@ export default function ProductCard({ product, currency, token, liked }) {
                         </span>
                     </div>
                     <Button
-                        className={`w-full ${product.quantity > 0 ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-400 hover:bg-gray-500'} text-white`}
+                        className={`w-full text-white`}
                         size="sm"
                         onClick={() => product.quantity > 0 && addToCart(product._id)}
                         disabled={product.quantity <= 0}

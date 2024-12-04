@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { jwtDecode } from 'jwt-decode';
 
 export default function ActivityDetails({ activity, bookActivity,currency,token }) {
@@ -24,14 +24,12 @@ export default function ActivityDetails({ activity, bookActivity,currency,token 
     if (token) {
       const response = await bookActivity(activity._id, activity.price, "Card", token);
       console.log(response.message);
-      toast({
-        title: `Success`,
+      toast(`Success`, {
         description: `Activity booked successfully`,
       });
     }
     else
-    toast({
-        title: `Failed to book activity`,
+    toast(`Failed to book activity`, {
         description: `You need to be logged in first`,
       });
   }

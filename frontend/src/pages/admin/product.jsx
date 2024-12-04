@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import {
   getAllProducts,
   deleteProduct,
@@ -39,7 +39,6 @@ const ProductPage = () => {
   const location = useLocation();
   const [sidebarState, setSidebarState] = useState(false);
   const [products, setProducts] = useState([]);
-  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
@@ -57,8 +56,7 @@ const ProductPage = () => {
   //         throw new Error("Fetched data is not valid.");
   //       }
   //     } catch (error) {
-  //       toast({
-  //         title: "Error",
+  //       toast("Error", {
   //         description: "Failed to fetch products.",
   //         duration: 3000,
   //       });
@@ -94,16 +92,14 @@ const ProductPage = () => {
   const handleDeleteProduct = async (productId) => {
     try {
       const response = await deleteProduct(productId);
-      toast({
-        title: "Success",
+      toast("Success", {
         description: response.message,
         duration: 3000,
       });
 
       setProducts(products.filter((product) => product._id !== productId));
     } catch (error) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "Failed to delete the product.",
         duration: 3000,
       });
@@ -148,8 +144,7 @@ const ProductPage = () => {
         formData.append("description", updatedProductData.description); 
   
         const response = await updateProduct(currentProduct._id, formData);  // Pass FormData
-        toast({
-          title: "Success",
+        toast("Success", {
           description: "Product updated successfully!",
           duration: 3000,
         });
@@ -157,8 +152,7 @@ const ProductPage = () => {
         setIsOpen(false);
         setCurrentProduct(null);
       } catch (error) {
-        toast({
-          title: "Error",
+        toast("Error", {
           description: "Failed to update the product.",
           duration: 3000,
         });
@@ -196,8 +190,7 @@ const toggleArchive = async (productId, isArchived) => {
       }
       const response = await createProduct(formData);
   
-      toast({
-        title: "Success",
+      toast("Success", {
         description: "Product created successfully!",
         duration: 3000,
       });
@@ -207,8 +200,7 @@ const toggleArchive = async (productId, isArchived) => {
       setNewProductData({});
     } catch (error) {
       console.error(error.response);
-      toast({
-        title: "Error",
+      toast("Error", {
         description: error.response?.data?.message || "Failed to create the product.",
         duration: 3000,
       });

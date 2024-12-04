@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Share2, Copy, CircleCheck, Mail } from "lucide-react"
 
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 
 export function ShareButton({ className, id, name }) {
     let type = "";
@@ -23,7 +23,6 @@ export function ShareButton({ className, id, name }) {
     }
     
     const url = window.location.origin + "/tourist-page?type=" + type + "&id=" + id;
-    const { toast } = useToast();
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -49,13 +48,11 @@ export function ShareButton({ className, id, name }) {
                         className="h-fit w-fit space-x-2 items-center px-0 py-0 mt-2 hover:bg-transparent"
                         onClick={async () => {
                             await navigator.clipboard.writeText(url);
-                            toast({
-                                title: (
-                                    <div className="flex flex-row space-x-2 items-center">
-                                        <CircleCheck />
-                                        <span>Link copied!</span>
-                                    </div>),
-                                className: 'w-[185px]',
+                            toast((
+                                <div className="flex flex-row space-x-2 items-center">
+                                    <CircleCheck />
+                                    <span>Link copied!</span>
+                                </div>), {
                                 duration: 3000
                             })
                         }}>

@@ -43,8 +43,7 @@ import Sellerdashboard from "@/pages/seller/Sellerdashboard.jsx";
 import AccountDelete from "./pages/admin/accountDelete.jsx";
 //import PreferencesPage from "./pages/SignUp/PreferencesPage.jsx";
 import SignupsRoles from "./pages/SignUp/signupRoles.jsx";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as ToasterSonner } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner"
 import LoadingPage from "./components/loading.jsx";
 import CheckoutPage from "./pages/tourist/components/products/checkout-page";
 import NotificationsPage from "./pages/TourGuide/NotificationsPage.jsx";
@@ -112,11 +111,14 @@ createRoot(document.getElementById("root")).render(
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/order" element={<Order />} />
         <Route path="/admin/manage-activities" element={<ManageActivities />} />
-        <Route path="/bookmarks" element={<BookmarksPage ></BookmarksPage>}/>
-        <Route path="/preferences" element={<PreferencesPage />}/>
+        <Route path="/bookmarks" element={<BookmarksPage ></BookmarksPage>} />
+        <Route path="/preferences" element={<PreferencesPage />} />
       </Routes>
     </BrowserRouter>
-    <Toaster />
-    <ToasterSonner closeButton richColors />
+    <Toaster closeButton richColors toastOptions={{
+      classNames: {
+        toast: 'w-auto right-0',
+      },
+    }} />
   </StrictMode>
 );

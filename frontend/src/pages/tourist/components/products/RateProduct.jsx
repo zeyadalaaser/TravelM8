@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 export default function RateProduct({ isOpen, onClose, purchaseId, touristId, productId }) {
     const [rating, setRating] = useState('');
@@ -17,7 +18,7 @@ export default function RateProduct({ isOpen, onClose, purchaseId, touristId, pr
 
     const handleSubmit = async () => {
         if (!rating) {
-            alert("Please select a rating.");
+            toast("Please select a rating.");
             return;
         }
 
@@ -29,11 +30,11 @@ export default function RateProduct({ isOpen, onClose, purchaseId, touristId, pr
                 rating,
                 comment
             });
-            alert('Rating submitted successfully!');
+            toast('Rating submitted successfully!');
             onClose(); 
         } catch (error) {
             console.error("Error submitting rating:", error);
-            alert("Failed to submit rating.");
+            toast("Failed to submit rating.");
         }
     };
 

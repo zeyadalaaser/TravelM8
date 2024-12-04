@@ -7,6 +7,7 @@ import { Stars } from "@/components/Stars";
 import { ShareButton } from "@/components/ui/share-button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ItineraryCard from "@/components/ItineraryCard/ItineraryCard";
+import { toast } from "sonner";
 
 const BookmarksHistory = () => {
     const token = localStorage.getItem("token");
@@ -52,7 +53,7 @@ const BookmarksHistory = () => {
 
   const handleRemoveBookmark = async (itemId, itemType) => {
     if (!token) {
-        alert("Please login to manage bookmarks");
+        toast("Please login to manage bookmarks");
         return;
     }
     try {
@@ -73,14 +74,14 @@ const BookmarksHistory = () => {
 
         if (response.ok) {
             const data = JSON.parse(responseText);
-            alert(data.message);
+            toast(data.message);
             fetchBookmarks(); // Refresh the bookmarks list
         } else {
             throw new Error(`Server responded with ${response.status}: ${responseText}`);
         }
     } catch (error) {
         console.error("Error removing bookmark:", error);
-        alert("Failed to remove bookmark");
+        toast("Failed to remove bookmark");
     }
 
 };

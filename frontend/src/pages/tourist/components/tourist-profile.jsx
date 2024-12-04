@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import useRouter from "@/hooks/useRouter"
 
 import axios from "axios";
-import { useToast } from "../../Advertiser/components/useToast";
+import { toast } from "sonner";
 
 export default function TouristProfile() {
   const token = localStorage.getItem('token');
@@ -30,7 +30,6 @@ export default function TouristProfile() {
 
   const [tourist, setTourist] = useState(null); // Initialize state as null
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
 
@@ -147,7 +146,7 @@ export default function TouristProfile() {
     } catch (error) {
 
       console.error('Error updating profile', error);
-      toast({ title: "Error updating profile", description: error.message });
+      toast("Error updating profile", { description: error.message });
 
     } finally {
       setLoading(false);

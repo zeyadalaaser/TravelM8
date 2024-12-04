@@ -26,7 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 
 
@@ -34,7 +34,6 @@ export function MyComplaintsPage({ onComplaintClick}) {
     const [reply, setReply] = useState("");
     const token = localStorage.getItem('token');
     const [complaints, setComplaints] = useState([]);
-    const { toast } = useToast();
     const [selectedComplaint, setSelectedComplaint] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState(""); 
     useEffect(() => {
@@ -44,8 +43,7 @@ export function MyComplaintsPage({ onComplaintClick}) {
                 console.log("API Response Data:", data); // Log to inspect the structure of data
                 setComplaints(Array.isArray(data.complaints) ? data.complaints : []);
             } catch (error) {
-                toast({
-                    title: "Error",
+                toast("Error", {
                     description: "Failed to load complaints.",
                     duration: 3000,
                 });

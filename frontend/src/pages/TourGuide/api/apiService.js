@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const API_BASE_URL = 'http://localhost:5001/api/';
 const token = localStorage.getItem('token');
@@ -52,10 +53,10 @@ export async function fetchItineraries(){
 export async function deleteItinerary(id){
     try {
       await axios.delete(`http://localhost:5001/api/itineraries/${id}`);
-      alert('Itinerary deleted successfully!');
+      toast('Itinerary deleted successfully!');
     } catch (error) {
       console.error('Error deleting itinerary:', error);
-      alert('Failed to delete itinerary.');
+      toast('Failed to delete itinerary.');
     }
   };
 

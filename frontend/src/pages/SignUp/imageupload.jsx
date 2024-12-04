@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaUser, FaCompass, FaStore, FaAd } from 'react-icons/fa';
 import './signup.css'; 
+import { toast } from 'sonner';
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -128,7 +129,7 @@ const [formData2, setformData2] = useState({
             );
             }
         }
-        alert('Your Request Is Pending');
+        toast('Your Request Is Pending');
         setMessageType('success');  
         navigate('/');
 
@@ -146,7 +147,7 @@ const [formData2, setformData2] = useState({
           const response = await axios.post('http://localhost:5001/api/tourists', formData);
         }
 
-        alert('success');
+        toast('success');
         setMessageType('success');  
       
     } catch (error) {

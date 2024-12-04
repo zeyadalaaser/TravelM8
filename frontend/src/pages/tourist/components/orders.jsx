@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import * as services from "@/pages/tourist/api/apiService.js"
@@ -89,8 +89,7 @@ const MyOrdersPage = () => {
           orderrr._id === order._id ? { ...orderrr, status: 'Cancelled' } : orderrr
         )
       );
-      toast({
-        title: `Order #${order._id.slice(-6)} has been cancelled successfully`,
+      toast(`Order #${order._id.slice(-6)} has been cancelled successfully`, {
         description: (
           <>
             Amount added to wallet: ${order.totalAmount}
@@ -121,8 +120,7 @@ const MyOrdersPage = () => {
         order.id === orderId ? { ...order, status: 'Cancelled' } : order
       )
     );
-    toast({
-      title: 'Order Cancelled',
+    toast('Order Cancelled', {
       description: `Order ${orderId} has been cancelled successfully.`,
     });
   };

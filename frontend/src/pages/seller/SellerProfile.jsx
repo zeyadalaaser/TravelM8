@@ -9,6 +9,7 @@
   import { Textarea } from "@/components/ui/textarea";
   import SellerNavbar from '../../components/SellerNavbar';
   import Logout from "@/hooks/logOut.jsx";
+import { toast } from 'sonner';
   
   const SellerProfile = () => {
   
@@ -57,12 +58,12 @@
       
           const response = await updateProfile(changes, token);
           console.log(changes);
-          alert("Profile updated successfully", response);
+          toast("Profile updated successfully", { description: response });
           window.location.reload();
         
       } catch (error) {
         console.log(changes);
-        alert("Error updating profile");
+        toast("Error updating profile");
         console.error('Error updating:', error);
       }
     };
@@ -80,7 +81,7 @@
         return
       }
       if (newPassword.length < 8) {
-        alert("New password must be at least 8 characters long");
+        toast("New password must be at least 8 characters long");
         setError('New password must be at least 8 characters long')
         return
       }
@@ -92,7 +93,7 @@
         };
         console.log(passwordData);
         const response = await changePassword(passwordData, token);
-        alert('Password changed successfully');
+        toast('Password changed successfully');
         console.log("success");
         setIsPasswordModalOpen(false);
         setCurrentPassword(null);
@@ -142,11 +143,11 @@
             const data = await response.json();
     
             if (response.ok) {
-              alert('Deletion request created successfully:');
+              toast('Deletion request created successfully:');
               setShowDialog(false);
                 console.log('Deletion request created successfully:' );
             } else {
-              alert(data.msg);
+              toast(data.msg);
               setShowDialog(false);
                 console.error('Error creating deletion request:', data.msg);
             }

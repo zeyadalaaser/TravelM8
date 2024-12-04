@@ -154,7 +154,7 @@ function MyTabs() {
                     </SelectContent>
                     </Select>
                 </div>
-                <Button className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">Search</Button>
+                <Button className="rounded-full px-8 text-white ">Search</Button>
                 </div>
 
                 {/* Radio buttons container below */}
@@ -250,7 +250,7 @@ function MyTabs() {
                 </SelectContent>
               </Select>
             </div>
-            <Button className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">Search</Button>
+            <Button className="rounded-full px-8 text-white ">Search</Button>
           </div>
         </TabPanel>
   
@@ -302,7 +302,7 @@ function MyTabs() {
                             onChange={(e) => setTime(e.target.value)}
                         />
             </div>
-            <Button className="rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white ">Search</Button>
+            <Button className="rounded-full px-8 text-white ">Search</Button>
           </div>
         </TabPanel>
       </Box>

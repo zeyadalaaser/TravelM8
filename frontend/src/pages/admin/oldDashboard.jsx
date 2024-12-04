@@ -44,6 +44,7 @@ import {
   ArrowRight,
 } from "lucide-react"; // Import MapPin for Tourism Governor icon
 import { changePassword } from "../admin/services/apiService.js";
+import { toast } from "sonner";
 
 function AdminDashboard() {
   const [sidebarState, setSidebarState] = useState(false);
@@ -133,7 +134,7 @@ function AdminDashboard() {
       return;
     }
     if (newPassword.length < 8) {
-      alert("New password must be at least 8 characters long");
+      toast("New password must be at least 8 characters long");
       setError("New password must be at least 8 characters long");
       return;
     }
@@ -145,7 +146,7 @@ function AdminDashboard() {
       };
       console.log(passwordData);
       const response = await changePassword(passwordData, token);
-      alert("Password changed successfully");
+      toast("Password changed successfully");
       console.log("success");
       setIsPasswordModalOpen(false);
       setCurrentPassword(null);

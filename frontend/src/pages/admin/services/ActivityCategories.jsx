@@ -21,7 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const ActivityCategories = () => {
   const [sidebarState, setSidebarState] = useState(false);
@@ -30,7 +30,6 @@ const ActivityCategories = () => {
   const [currentCategory, setCurrentCategory] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     fetchCategories();
@@ -47,8 +46,7 @@ const ActivityCategories = () => {
       const data = await response.json();
       setCategories(data);
     } catch (error) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "Failed to load categories.",
         duration: 3000,
       });
@@ -71,15 +69,13 @@ const ActivityCategories = () => {
         fetchCategories();
         setIsOpen(false);
         setNewCategoryName("");
-        toast({
-          title: "Success",
+        toast("Success", {
           description: "Category created successfully!",
           duration: 3000,
         });
       }
     } catch (error) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "Error creating category.",
         duration: 3000,
       });
@@ -105,15 +101,13 @@ const ActivityCategories = () => {
         setIsOpen(false);
         setCurrentCategory(null);
         setNewCategoryName("");
-        toast({
-          title: "Success",
+        toast("Success", {
           description: "Category updated successfully!",
           duration: 3000,
         });
       }
     } catch (error) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "Error updating category.",
         duration: 3000,
       });
@@ -132,15 +126,13 @@ const ActivityCategories = () => {
       );
       if (response.ok) {
         fetchCategories();
-        toast({
-          title: "Success",
+        toast("Success", {
           description: "Category deleted successfully!",
           duration: 3000,
         });
       }
     } catch (error) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "Error deleting category.",
         duration: 3000,
       });

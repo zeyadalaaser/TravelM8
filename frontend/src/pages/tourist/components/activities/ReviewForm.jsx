@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const ReviewForm = ({ activityId, touristId, onClose }) => {
   const [rating, setRating] = useState(0);
@@ -29,7 +30,7 @@ const ReviewForm = ({ activityId, touristId, onClose }) => {
       });
 
       // If successful, alert the user and close the modal
-      alert("Rating submitted successfully!");
+      toast("Rating submitted successfully!");
       onClose();
     } catch (error) {
       console.error("Error submitting rating:", error);
@@ -73,7 +74,7 @@ const ReviewForm = ({ activityId, touristId, onClose }) => {
       <div className="flex justify-end space-x-2">
         <button
           onClick={submitRating}
-          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          className="px-4 py-2 text-white rounded"
         >
           Submit
         </button>

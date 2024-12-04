@@ -1,7 +1,7 @@
 import { toast } from "sonner"
 
 export function BookingToast(name, message, confirm = true) {
-    const confirmation = () => toast.success("Booking Confirmation", {
+    const confirmation = () => toast("Booking Confirmation", {
         description: message,
     });
 

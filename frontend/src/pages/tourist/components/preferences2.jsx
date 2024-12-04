@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tag } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function PreferencesPage({ token, touristId }) {
   const [preferences, setPreferences] = useState({});  // Change to object
@@ -76,11 +77,11 @@ export default function PreferencesPage({ token, touristId }) {
         { preferences: preferencesArray },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert('Preferences saved!');
+      toast('Preferences saved!');
       setShowPreferencesForm(false);
     } catch (error) {
       console.error('Failed to save preferences', error);
-      alert('An error occurred while saving preferences.');
+      toast('An error occurred while saving preferences.');
     }
   };
 

@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import * as services from "@/pages/TourGuide/api/apiService.js";
@@ -278,16 +278,14 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
           },
           body: JSON.stringify(formData),
         });
-        toast({
-          title: `Itinerary updated successfully`,
+        toast(`Itinerary updated successfully`, {
           description: "View itinerary in dashboard",
         });
         setDialogOpen(false);
       } else {
         try {
           response = await services.addItinerary(token, formData);
-          toast({
-            title: `Itinerary added successfully`,
+          toast(`Itinerary added successfully`, {
             description: "View itinerary in dashboard",
           });
           setDialogOpen(false);

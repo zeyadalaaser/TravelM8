@@ -25,7 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 
 const AdminPanel = () => {
@@ -35,7 +35,6 @@ const AdminPanel = () => {
   const [email, setEmail] = useState(""); // Added email state
   const [admins, setAdmins] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const { toast } = useToast();
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
@@ -79,7 +78,7 @@ const AdminPanel = () => {
       setPassword("");
       setEmail(""); // Clear email field
       setIsOpen(false);
-      toast({ title: "Admin added successfully!", duration: 3000 });
+      toast("Admin added successfully!", { duration: 3000 });
     } catch (error) {
       setError(error.response?.data?.message || "Registration failed");
       setSuccess(null);

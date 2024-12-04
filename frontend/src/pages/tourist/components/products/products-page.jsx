@@ -11,6 +11,7 @@ import Products from "./products";
 import { SearchBar } from "../filters/search";
 import CircularProgress from '@mui/material/CircularProgress';
 import { getProducts } from '../../api/apiService';
+import { toast } from 'sonner';
 
 const decodeToken = (token) => {
   try {
@@ -69,7 +70,7 @@ export function ProductsPage({ addToCart }) {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
-      alert("Failed to load products. Please try again.");
+      toast("Failed to load products. Please try again.");
     } finally {
       setLoading(false);
     }
