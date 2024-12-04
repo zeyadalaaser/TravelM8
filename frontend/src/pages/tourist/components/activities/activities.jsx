@@ -79,7 +79,10 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
 
   const handleBookmark = async (activityId) => {
     if (!token) {
-      alert("Please login to bookmark activities");
+      toast({
+        title: `Failed to bookmark activity`,
+        description: `You need to be logged in first`,
+      });
       return;
     }
     try {
@@ -111,7 +114,9 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
         } else {
           setBookmarkedActivities(prev => prev.filter(id => id !== activityId));
         }
-        alert(data.message);
+        toast({
+          title: `${data.message}`,
+        })
       } else {
         throw new Error(`Server responded with ${response.status}: ${responseText}`);
       }
