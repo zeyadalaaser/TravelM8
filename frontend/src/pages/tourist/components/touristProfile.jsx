@@ -320,7 +320,7 @@ const TouristProfilePage = () => {
             <div className="flex justify-end">
               <button
                 onClick={handleFormSubmit}
-                className="rounded-full px-4 py-2 text-white">
+                className="rounded-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white">
                 Save changes
               </button>
             </div>
@@ -398,7 +398,7 @@ const TouristProfilePage = () => {
             </section>
             <div className="flex justify-end">
               <button
-                className="rounded-full px-4 py-2 text-white"
+                className="rounded-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white"
                 onClick={() => setIsPasswordModalOpen(true)}
               >
                 Change Password

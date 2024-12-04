@@ -74,7 +74,7 @@ const ReviewForm = ({ activityId, touristId, onClose }) => {
       <div className="flex justify-end space-x-2">
         <button
           onClick={submitRating}
-          className="px-4 py-2 text-white rounded"
+          className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
         >
           Submit
         </button>

@@ -439,7 +439,7 @@ export default function Navbar({ children }) {
                   className={`font-medium rounded-full px-8 py-2 ${
                     currentPage === "/"
                       ? " bg-white text-black hover:bg-white/90"
-                      : "rounded-full px-8 text-white "
+                      : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
                   } `}
                 >
                   Register

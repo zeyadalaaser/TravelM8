@@ -559,7 +559,7 @@ export default function HeroSection() {
                 ))}
               </div>
               <div className="text-center">
-                <button className="font-medium text-white  py-3 px-8 rounded-full transition-colors">
+                <button className="bg-gray-800 hover:bg-gray-700 font-medium text-white  py-3 px-8 rounded-full transition-colors">
                   View more
                 </button>
               </div>
