@@ -141,12 +141,16 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
 
                   <button
                     onClick={() => handleBookmark(activity._id)}
-                    className={`text-gray-500 hover:text-black ${bookmarkedActivities.includes(activity._id) ? 'text-yellow-400' : ''
-                      }`}
+                    className="w-10 h-10 text-gray-500 hover:text-black"
                   >
-                    <Bookmark className="w-6 h-6" />
+                    <Bookmark
+                      className={`w-7 h-7 ${
+                        bookmarkedActivities.includes(activity._id)
+                          ? "fill-yellow-400 text-black"
+                          : "fill-none text-black"
+                      }`}
+                    />
                   </button>
-
                 </div>
               </div>
               <div className="flex items-center mb-2">
@@ -183,21 +187,27 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
               <div className="flex justify-between items-center">
                 <span className="text-xl font-bold">
                   {Array.isArray(activity.price) && activity.price.length === 2
-                    ? `${(activity.price[0] * exchangeRate).formatCurrency(currency)} - ${(
-                      activity.price[1] * exchangeRate
-                    ).formatCurrency(currency)}`
-                    : `${(activity.price * exchangeRate).formatCurrency(currency)}`}
+                    ? `${(activity.price[0] * exchangeRate).formatCurrency(
+                        currency
+                      )} - ${(activity.price[1] * exchangeRate).formatCurrency(
+                        currency
+                      )}`
+                    : `${(activity.price * exchangeRate).formatCurrency(
+                        currency
+                      )}`}
                 </span>
                 <div className="flex justify-end items-center">
-                <ActivityDetails 
-                        activity={activity} 
-                        bookActivity={bookActivity}
-                        currency={currency}
-                        token={token}
-                />
-                <div className="px-2">
-                <Button onClick={() => handleBook(activity)}>Book activity</Button>
-                </div>
+                  <ActivityDetails
+                    activity={activity}
+                    bookActivity={bookActivity}
+                    currency={currency}
+                    token={token}
+                  />
+                  <div className="px-2">
+                    <Button onClick={() => handleBook(activity)}>
+                      Book activity
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
