@@ -334,7 +334,7 @@ export default function Navbar({ children }) {
                 currentPage === "/admin/dashboard" ? "text-white" : "text-black"
               }`}
             >
-              Admin Dashboard
+              Dashboard
             </button>
           )}
         </div>
@@ -489,7 +489,12 @@ export default function Navbar({ children }) {
                   </div>
                 )}
                 {userRole === "Admin" && (
-                  <MenuItem onClick={() => {setIsPasswordModalOpen(true); handleClose();}}>
+                  <MenuItem
+                    onClick={() => {
+                      setIsPasswordModalOpen(true);
+                      handleClose();
+                    }}
+                  >
                     Change Password
                   </MenuItem>
                 )}
