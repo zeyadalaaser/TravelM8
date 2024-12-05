@@ -412,16 +412,16 @@ const TouristProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <Navbar profilePageString={"/tourist-profile"} />
 
 
       {/* Main Content */}
-      <main className="container  mx-auto px-4 py-8 mt-12">
+      <main className="container  mx-auto px-4 py-8 ">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <aside className="w-64 ">
+          <aside className="w-64 mt-12 ">
             <Card className="bg-background border-border">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center space-x-2">
@@ -550,7 +550,7 @@ const TouristProfilePage = () => {
           </aside>
 
           {/* Main Content */}
-          <div className="w-full md:w-3/4">{renderContent()}</div>
+          <div className="w-full mt-12 md:w-3/4">{renderContent()}</div>
         </div>
       </main>
 

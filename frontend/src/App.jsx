@@ -12,6 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import { SeeAllButton } from "@/components/ui/see-all-button"
+import { Arrow } from "@/components/ui/arrow"
 import Logout from "@/hooks/logOut.jsx";
 import { Link } from 'react-router-dom';
 import Navbar from "@/components/Navbar.jsx";
@@ -25,7 +34,6 @@ import { CircularProgress } from "@mui/material"
 const images = [
   "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=2020&ixlib=rb-4.0.3",
   "https://wallpapercave.com/wp/wp2481186.jpg",
-  // "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=2073&ixlib=rb-4.0.3",
   "https://images.unsplash.com/photo-1541628951107-a9af5346a3e4?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3", 
   "https://wallpaper.forfun.com/fetch/d5/d5c3e417f3b7121700fcb33d337c44ba.jpeg"
 ]
@@ -40,6 +48,7 @@ export default function HeroSection() {
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [itineraries, setItineraries] = useState([]);
   const [products, setProducts] = useState([]);
+  const [activities, setActivities] = useState([]);
   const isAdmin = false;
   const topFourMuseums = museums?.slice(0, 4);
   const topItineraries = itineraries?.slice(0, 3);
@@ -48,12 +57,6 @@ export default function HeroSection() {
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setIsLoading(false); 
-  //   }, 1000); 
-  // }, []);
-  
   // useEffect(() => {
 
   //   const decodedToken = jwtDecode(token);
@@ -108,10 +111,6 @@ export default function HeroSection() {
     fetchMuseums();
   }, [location.search, currency]);
 
-  const handleCurrencyChange = (e) => {
-    setCurrency(e.target.value);
-  };
-
   const fetchItineraries = useDebouncedCallback(async () => {
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("isAdmin", isAdmin);
@@ -127,7 +126,6 @@ export default function HeroSection() {
           (itinerary) => !itinerary.flagged
         );
       }
-
       setItineraries(fetchedItineraries);
     } catch (error) {
       console.error("Error fetching itineraries:", error);
@@ -173,6 +171,25 @@ export default function HeroSection() {
     fetchProducts();
   }, [location.search, currency]);
 
+
+  const fetchActivities = useDebouncedCallback(async () => {
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("currency", currency);
+
+    try {
+      const fetchedActivities = await services.getActivities(`?${queryParams.toString()}`);
+      console.log("Fetched activities:", fetchedActivities); // Log for debugging
+      setActivities(fetchedActivities);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } 
+  }, 200);
+
+
+  useEffect(() => {
+    fetchActivities();
+  }, [location.search, currency]);
+
   function getUserFromToken(token) {
     if (!token) return {};
     const decoded = JSON.parse(atob(token.split(".")[1])); // Decode the token
@@ -211,7 +228,7 @@ export default function HeroSection() {
     {
       icon: <RefreshCcw className="w-6 h-6" />,
       title: "Find your destination",
-      description: "Embark on a journey to discover your dream destination, where adventure and relaxation await.",
+      description: "Embark on an exciting journey by exploring our different itineraries and activities, where adventure and relaxation await.",
     },
     {
       icon: <Ticket className="w-6 h-6" />,
@@ -225,8 +242,8 @@ export default function HeroSection() {
     },
     {
       icon: <Map className="w-6 h-6" />,
-      title: "Explore destination",
-      description: "You'll be immersed in a captivating tapestry of sights, sounds and tastes, as you wind your way through the ancient streets",
+      title: "Explore different destinations",
+      description: "Get immersed in a captivating tapestry of sights, sounds and tastes, as you wind your way through the ancient streets",
     },
   ];
 
@@ -239,7 +256,9 @@ export default function HeroSection() {
         <CircularProgress/>
       </div>
     ) : (
-  <><Navbar /><div className="relative min-h-screen overflow-x-hidden">
+  <>
+  <Navbar />
+  <div className="relative min-h-screen overflow-x-hidden">
             {/* Background Image */}
             <AnimatePresence initial={false}>
               <motion.div
@@ -274,7 +293,8 @@ export default function HeroSection() {
                 </div>
               </div>
             </div>
-          </div><div className="max-w-7xl mx-auto p-6 ">
+          </div>
+          <div className="max-w-7xl mx-auto p-6 ">
               <div className="mb-2 text-xl font-medium text-gray-500">Discover</div>
               <div className="flex justify-between items-start mb-8">
                 <h2 className="text-5xl font-medium max-w-xl">Popular places </h2>
@@ -338,27 +358,33 @@ export default function HeroSection() {
                   </>
                 )}
               </div>
-              <div className="flex justify-center">
-                <Button
-                  className="rounded-full px-8 text-white mt-12 "
-                  onClick={() => navigate(`/tourist-page?type=museums`)}
-                >
-                  View more
-                </Button>
-              </div>
-            </div><div className="max-w-7xl mx-auto px-6 mt-8">
-              <div className="mb-16">
-                <p className="text-gray-500 text-xl mb-4">Tour packages</p>
-                <div className="flex justify-between items-start">
-                  <h2 className="text-5xl font-medium max-w-xl">Explore our itineraries</h2>
-                  <p className="text-gray-500 max-w-md">
-                    Our tourist destinations offer an unrivaled blend of natural beauty and cultural richness
+            </div>
+
+            <div className="max-w-7xl mx-auto px-6 mt-24">
+              <div className="mb-4">
+                {/* <p className="text-gray-500 text-xl mb-4">Online store</p> */}
+                <div className="flex justify-between items-start mt-4">
+                  <h2 className="text-5xl font-medium max-w-xl mt-4">Explore our itineraries</h2>
+                  <p className="text-gray-500 max-w-md mt-6">
+                  Our tourist destinations offer an unrivaled blend of natural beauty and cultural richness.
                   </p>
                 </div>
+                <div className="mt-2 flex justify-start">
+                      <SeeAllButton redirectTo="tourist-page?type=itineraries"
+                       currency={currency} className="mb-2" > See all itineraries</SeeAllButton>
+                  </div>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {topItineraries.map((tour, index) => (
+              <div className="relative ">
+              <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  className="w-full"
+                >
+              <CarouselContent>
+                {itineraries.map((tour, index) => (
+                  <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/3 ">
                   <div key={index} className="relative rounded-3xl overflow-hidden group cursor-pointer">
                     <div className="aspect-[3/4]">
                       <img
@@ -393,70 +419,135 @@ export default function HeroSection() {
                       </span>
                     </div>
                   </div>
+                  </CarouselItem>
                 ))}
+                </CarouselContent>
+                  <CarouselPrevious className="absolute top-1/2 -left-12 -translate-y-1/2 z-10" />
+                  <CarouselNext className="absolute top-1/2 -right-12 -translate-y-1/2 z-10" />
+                </Carousel>
+              </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-6 mt-24">
+              <div className="mb-4">
+                {/* <p className="text-gray-500 text-xl mb-4">Online store</p> */}
+                <div className="flex justify-between items-start">
+                  <h2 className="text-5xl font-medium max-w-xl">Explore different activities</h2>
+                  <p className="text-gray-500 max-w-md mt-2">
+                  Discover exciting activities tailored to your interests, from thrilling adventures to relaxing experiences.
+                  </p>
+                </div>
+                <div className="mt-2 flex justify-start">
+                       <SeeAllButton redirectTo="tourist-page?type=activities"
+                       currency={currency} className="mb-2" > See all activities</SeeAllButton>
+                  </div>
               </div>
 
-
-
-              <div className="flex justify-center">
-                <Button className="rounded-full px-8 text-white "
-                  onClick={() => navigate(`/tourist-page?type=itineraries`)}
+              <div className="relative">
+              <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  className="w-full"
                 >
-                  View more
-                </Button>
+                    <CarouselContent>
+                      {activities.map((activity, index) => (
+                        <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/4 ">
+                          <div className="relative rounded-3xl overflow-hidden group cursor-pointer">
+                            <div className="aspect-[1/1]">
+                              <img
+                                src={activity?.image}
+                                alt={activity.title}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                              />
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+                            <div className="absolute bottom-4 left-4 right-4">
+                              <div className="flex justify-between items-center">
+                                <span className="text-white text-xl font-medium">{activity.title}</span>
+                              </div>
+                              <span className="text-white text-xl">
+                                <span>{currency} </span>{activity.price}
+                              </span>
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+
+                    {/* Navigation Buttons */}
+                    <CarouselPrevious className="absolute top-1/2 -left-12 -translate-y-1/2 z-10" />
+                    <CarouselNext className="absolute top-1/2 -right-12 -translate-y-1/2 z-10" />
+                  </Carousel>
+                </div>
               </div>
-            </div><div className="max-w-7xl mx-auto px-6 mt-8">
-              <div className="mb-16">
-                <p className="text-gray-500 text-xl mb-4">Online store</p>
+            
+            <div className="max-w-7xl mx-auto px-6 mt-24">
+              <div className="mb-4">
+                {/* <p className="text-gray-500 text-xl mb-4">Online store</p> */}
                 <div className="flex justify-between items-start">
                   <h2 className="text-5xl font-medium max-w-xl">Explore our Shop</h2>
-                  <p className="text-gray-500 max-w-md">
+                  <p className="text-gray-500 max-w-md mt-2">
                     All you need in one place! From travel essentials to unique finds, shop with ease and enjoy great deals and quick delivery.
                   </p>
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                {topProducts.map((product, index) => (
-                  <div key={index} className="relative rounded-3xl overflow-hidden group cursor-pointer">
-                    <div className="aspect-[1/1]">
-                      <img
-                        src={product?.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-                    </div>
-
-                    {/* Overlays */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-
-                    {/* Bottom content */}
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-white text-xl font-medium">{product.name}</span>
-                      </div>
-                      <span className="text-white text-xl">
-                        <span>{currency} </span>{product.price}
-                      </span>
-                    </div>
+                <div className="mt-2 flex justify-start">
+                       <SeeAllButton redirectTo="tourist-page?type=products"
+                       currency={currency} className="mb-2" > See all products</SeeAllButton>
                   </div>
-                ))}
               </div>
 
-
-
-              <div className="flex justify-center">
-                <Button className="rounded-full px-8 text-white "
-                  onClick={() => navigate(`/tourist-page?type=products`)}
+              <div className="relative">
+              <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  className="w-full"
                 >
-                  View more
-                </Button>
+                    <CarouselContent>
+                      {products.map((product, index) => (
+                        <CarouselItem key={index} className="pl-2 md:pl-4 md:basis-1/3 ">
+                          <div className="relative rounded-3xl overflow-hidden group cursor-pointer">
+                            <div className="aspect-[1/1]">
+                              <img
+                                src={product?.image}
+                                alt={product.name}
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                              />
+                            </div>
+
+                            {/* Overlays */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+
+                            {/* Bottom content */}
+                            <div className="absolute bottom-4 left-4 right-4">
+                              <div className="flex justify-between items-center">
+                                <span className="text-white text-xl font-medium">{product.name}</span>
+                              </div>
+                              <span className="text-white text-xl">
+                                <span>{currency} </span>{product.price}
+                              </span>
+                            </div>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+
+                    {/* Navigation Buttons */}
+                    <CarouselPrevious className="absolute top-1/2 -left-12 -translate-y-1/2 z-10" />
+                    <CarouselNext className="absolute top-1/2 -right-12 -translate-y-1/2 z-10" />
+                  </Carousel>
+                </div>
               </div>
-            </div><div className="flex flex-col lg:flex-row gap-12 max-w-7xl mx-auto p-6 mt-20">
+
+            <div className="flex flex-col lg:flex-row gap-12 max-w-7xl mx-auto p-6 mt-32">
               {/* Left side - Image and Search */}
               <div className="lg:w-2/5">
                 <div className="relative rounded-3xl overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJhdmVsJTIwcGVvcGxlfGVufDB8fDB8fHww"
+                    src="https://i.pinimg.com/736x/93/c5/dd/93c5dded5d825784eefa73a068c7fe16.jpg"
                     alt="Person in yellow raincoat on beach"
                     className="w-full h-[600px] object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -467,50 +558,12 @@ export default function HeroSection() {
                       Embark on a journey to find your dream destination, where adventure and relaxation await, creating unforgettable memories along the way
                     </p>
 
-                    <div className="flex flex-wrap gap-3">
-                      <Select>
-                        <SelectTrigger className="w-[140px] bg-white/10 border-white/20 text-white backdrop-blur-sm">
-                          <SelectValue placeholder="Date" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="today">Today</SelectItem>
-                          <SelectItem value="tomorrow">Tomorrow</SelectItem>
-                          <SelectItem value="next-week">Next Week</SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      <Select>
-                        <SelectTrigger className="w-[140px] bg-white/10 border-white/20 text-white backdrop-blur-sm">
-                          <SelectValue placeholder="Budget" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">$0 - $500</SelectItem>
-                          <SelectItem value="medium">$501 - $1000</SelectItem>
-                          <SelectItem value="high">$1000+</SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      <Select>
-                        <SelectTrigger className="w-[140px] bg-white/10 border-white/20 text-white backdrop-blur-sm">
-                          <SelectValue placeholder="Guest" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1">1 Person</SelectItem>
-                          <SelectItem value="2">2 People</SelectItem>
-                          <SelectItem value="3">3+ People</SelectItem>
-                        </SelectContent>
-                      </Select>
-
-                      <Button className="bg-white text-black hover:bg-white/90">
-                        Search
-                      </Button>
-                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Right side - How it works */}
-              <div className="lg:w-1/2">
+              <div className="lg:w-1/2 mt-8">
                 <div className="space-y-8">
                   <div>
                     <p className="text-gray-600 mb-2">How it works</p>
@@ -534,7 +587,6 @@ export default function HeroSection() {
               </div>
             </div><section className="container mx-auto px-4 py-12">
               <div className="text-center mb-12">
-                <h2 className="text-gray-500 mb-2">Our Blog</h2>
                 <h1 className="text-4xl md:text-5xl font-medium font-bold tracking-tight">Our travel memories</h1>
               </div>
 
@@ -558,12 +610,8 @@ export default function HeroSection() {
                   </div>
                 ))}
               </div>
-              <div className="text-center">
-                <button className="bg-gray-800 hover:bg-gray-700 font-medium text-white  py-3 px-8 rounded-full transition-colors">
-                  View more
-                </button>
-              </div>
-            </section><Footer /></>
+            </section>
+            <Footer /></>
   )}
     </div>
 
