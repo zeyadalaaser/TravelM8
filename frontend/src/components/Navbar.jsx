@@ -194,7 +194,7 @@ export default function Navbar({ profilePageString, children }) {
               ? isScrolled 
                 ? "bg-gray-800/50 backdrop-blur-md" 
                 : "bg-transparent" 
-              : "bg-white text-black shadow-md"
+              : "bg-white text-black shadow-sm"
           }`
         }
         style={{ height: "56px" }}
