@@ -41,25 +41,25 @@ function MyTabs() {
     }}>
     <TabContext value={value}>
       {/* Top Tabs, Centered, Rounded, and Shadowed */}
-      <Box
-        sx={{
-          borderBottom: 1,
-          borderColor: "divider",
-          bgcolor: "white",
-          display: "flex",
-          justifyContent: "center",
-          borderRadius: "16px 16px 0 0", // Rounded top corners
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 1.0)", // Add shadow
-        }}
-      >
-        <TabList onChange={handleChange} aria-label="booking tabs">
-          <Tab label="Flights" 
-          value="flights" />
-          <Tab label="Stays" value="stays" />
-          <Tab label="Cars" value="cars" />
-        </TabList>
-      </Box>
-    <Box
+            <Box
+              sx={{
+                borderBottom: 1,
+                borderColor: "divider",
+                bgcolor: "white",
+                display: "flex",
+                justifyContent: "center",
+                borderRadius: "16px 16px 0 0", // Rounded top corners
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 1.0)", // Add shadow
+              }}
+            >
+              <TabList onChange={handleChange} aria-label="booking tabs">
+                <Tab label="Flights" 
+                value="flights" />
+                <Tab label="Stays" value="stays" />
+                <Tab label="Cars" value="cars" />
+              </TabList>
+            </Box>
+          <Box
         sx={{
           bgcolor: "#FFFFFF",
           p: 2,
@@ -68,30 +68,16 @@ function MyTabs() {
         }}
       >
         <TabPanel value="flights">
-            <div className="flex flex-col gap-4 w-full">
+            <div className="flex mb-4 flex-col gap-4 w-full">
                 <FlightsPage/>
-
-
-                {/* Radio buttons container below */}
-                <div className="flex justify-start gap-4">
-                    <RadioGroup defaultValue="roundtrip" className="flex gap-4" onValueChange={setFlightType}>
-                        <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="roundtrip" id="roundtrip" />
-                        <Label htmlFor="roundtrip">Round-trip</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="oneway" id="oneway" />
-                        <Label htmlFor="oneway">One-way</Label>
-                        </div>
-                    </RadioGroup>
-                </div>
+            
             </div>
         </TabPanel>
 
   
         {/* Stays Tab Content */}
         <TabPanel value="stays">
-          <div className="flex items-end gap-2 w-full">
+          <div className="flex mb-4 items-end gap-2 w-full">
             <div className="flex-1 min-w-[200px]">
               <Label htmlFor="destination" className="mb-2 block text-s">Where to?</Label>
               <Input id="destination" placeholder="Enter destination" className="h-9" />
@@ -171,7 +157,7 @@ function MyTabs() {
   
         {/* Cars Tab Content */}
         <TabPanel value="cars">
-          <div className="flex items-end gap-2 w-full">
+          <div className="flex items-end mb-4 gap-2 w-full">
             <div className="flex-1 min-w-[200px]">
               <Label htmlFor="pickup-location" className="mb-2 block text-s">Pick-up location</Label>
               <Input id="pickup-location" placeholder="Enter location" className="h-9" />
