@@ -251,7 +251,7 @@ export default function Navbar({ profilePageString, children }) {
           </label> */}
 
 
-        <div className="hidden md:flex items-center justify-start ml-25 space-x-1">
+        <div className="hidden md:flex items-center justify-start ml-32 space-x-1">
           {pages.map((page) => (
             <button
               key={page.value}

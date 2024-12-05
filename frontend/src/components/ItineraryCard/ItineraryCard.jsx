@@ -311,7 +311,7 @@ export default function ItineraryCard({
                           currency={currency}
                         />
                         <div className="px-2">
-                          <ChooseDate itinerary={itinerary} />
+                          <ChooseDate itinerary={itinerary} currency={currency} />
                         </div>
                       </div>
                     )}
@@ -364,7 +364,7 @@ export default function ItineraryCard({
   );
 }
 
-const ChooseDate = ({ itinerary }) => {
+const ChooseDate = ({ itinerary, currency }) => {
   const navigate = useNavigate();
   let remainingSpots;
   const [selectedDate, setSelectedDate] = useState(null);
