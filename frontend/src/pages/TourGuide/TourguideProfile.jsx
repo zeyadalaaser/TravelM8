@@ -434,7 +434,7 @@ const TourGuideProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <Header />
+      <Header dashboard="/tourguideDashboard" />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
