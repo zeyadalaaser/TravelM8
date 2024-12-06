@@ -49,6 +49,10 @@ const touristSchema = new Schema(
       required: true,
     },
 
+    countryCode: {
+      type:String
+    },
+
     nationality: {
       type: String,
       required: true,

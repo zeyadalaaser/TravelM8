@@ -17,6 +17,7 @@ import  PreferencesPage  from './Preferences';
 import MyOrdersPage from "@/pages/tourist/components/orders.jsx";
 import { ComplaintForm } from "@/pages/tourist/components/complaints/complaint-form.jsx";
 import { toast } from 'sonner';
+import { Label } from "@/components/ui/label"
 
 const TouristProfilePage = () => {
 
@@ -37,17 +38,12 @@ const TouristProfilePage = () => {
   const token = localStorage.getItem('token');
   const [profile, setProfile] = useState(null);
   const [changes, setChanges] = useState([]);
-  const [countryCode, setCountryCode] = useState(profile ? profile.mobileNumber.slice(0, 2) : '+1'); // Default to '+1'
-  const [mobileNumber, setMobileNumber] = useState(profile ? profile.mobileNumber.slice(2) : ''); // Default to empty
   const [showDialog, setShowDialog] = useState(false);
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'mobileNumber')
-      setMobileNumber(value);
     setProfile((prevData) => ({
       ...prevData,
       [name]: value,
@@ -58,30 +54,17 @@ const TouristProfilePage = () => {
     }));
   };
 
-  const handleCountryCodeChange = (value) => {
-    setCountryCode(value);
-  };
 
   const handleFormSubmit = async () => {
     try {
-      if ("mobileNumber" in changes) {
-        const fullMobileNumber = countryCode + " " + mobileNumber;
-        const updatedProfile = {
-          ...changes,
-          mobileNumber: fullMobileNumber,
-        }
-        const response = await updateProfile(updatedProfile, token);
-        console.log(changes);
-        toast("Profile updated successfully", {description: response});
-      }
-      else {
+
         const response = await updateProfile(changes, token);
         console.log(changes);
-        toast("Profile updated successfully", {description: response});
-      }
+        toast("Profile updated successfully");
+
     } catch (error) {
       console.log(changes);
-      toast("Error updating profile");
+      toast("Error updating profile",{description: error.message});
       console.error('Error updating:', error);
     }
   };
@@ -255,61 +238,63 @@ const TouristProfilePage = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Phone number</label>
-                  <div className="flex items-center space-x-2">
-                    <Select
-                      onValueChange={(value) => {
-                        handleCountryCodeChange(value);
-                        // handleInputChange({ target: { name: 'mobileNumber', value: mobileNumber } }); // Keep mobile number intact
-                      }}
-                    >
-                      <SelectTrigger className="w-20 rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <SelectValue placeholder={profile ? profile.mobileNumber.split(" ")[0] : ''} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="+1">+1</SelectItem>
-                        <SelectItem value="+44">+44</SelectItem>
-                        <SelectItem value="+91">+91</SelectItem>
-                        <SelectItem value="+20">+20</SelectItem>
-                        <SelectItem value="+33">+33</SelectItem>
-                        <SelectItem value="+34">+34</SelectItem>
-                        <SelectItem value="+39">+39</SelectItem>
-                        <SelectItem value="+49">+49</SelectItem>
-                        <SelectItem value="+55">+55</SelectItem>
-                        <SelectItem value="+61">+61</SelectItem>
-                        <SelectItem value="+81">+81</SelectItem>
-                        <SelectItem value="+86">+86</SelectItem>
-                        <SelectItem value="+971">+971</SelectItem>
-                        <SelectItem value="+353">+353</SelectItem>
-                        <SelectItem value="+358">+358</SelectItem>
-                        <SelectItem value="+64">+64</SelectItem>
-                        <SelectItem value="+7">+7</SelectItem>
-                        <SelectItem value="+82">+82</SelectItem>
-                        <SelectItem value="+47">+47</SelectItem>
-                        <SelectItem value="+46">+46</SelectItem>
-                        <SelectItem value="+27">+27</SelectItem>
-                        <SelectItem value="+34">+34</SelectItem>
-                        <SelectItem value="+31">+31</SelectItem>
-                        <SelectItem value="+63">+63</SelectItem>
-                        <SelectItem value="+62">+62</SelectItem>
-                        <SelectItem value="+52">+52</SelectItem>
-                        <SelectItem value="+60">+60</SelectItem>
-                        <SelectItem value="+234">+234</SelectItem>
-                        <SelectItem value="+92">+92</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      name="mobileNumber"
-                      onChange={handleInputChange}
-                      type="tel"
-                      value={profile ? profile.mobileNumber.split(" ")[1] : ''} // Controlled input
-                      placeholder="Enter mobile number"
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                    />
-                  </div>
-                </div>
-                <div>
+                <div className="space-y-2">
+                                              <Label htmlFor="mobileNumber">Mobile number</Label>
+                                              <div className="flex gap-2">
+                                                <Select name="countryCode" 
+                                                onValueChange={(value) => handleInputChange({ target: { name: 'countryCode', value } })}
+                                                >
+                                                  <SelectTrigger className="w-[120px]">
+                                                  <SelectValue 
+                                                      placeholder={
+                                                         `${countryCodeMap[profile?.countryCode] || ''} ${profile?.countryCode || 'Select a country'}`
+                                                      }
+                                                    />
+                                                  </SelectTrigger>
+                                                  <SelectContent>
+                                                  <SelectItem value="+966">🇸🇦 +966</SelectItem> {/* Saudi Arabia */}
+                                                      <SelectItem value="+971">🇦🇪 +971</SelectItem> {/* United Arab Emirates */}
+                                                      <SelectItem value="+965">🇰🇼 +965</SelectItem> {/* Kuwait */}
+                                                      <SelectItem value="+1">🇺🇸 +1</SelectItem> {/* United States */}
+                                                      <SelectItem value="+44">🇬🇧 +44</SelectItem> {/* United Kingdom */}
+                                                      <SelectItem value="+91">🇮🇳 +91</SelectItem> {/* India */}
+                                                      <SelectItem value="+92">🇵🇰 +92</SelectItem> {/* Pakistan */}
+                                                      <SelectItem value="+20">🇪🇬 +20</SelectItem> {/* Egypt */}
+                                                      <SelectItem value="+27">🇿🇦 +27</SelectItem> {/* South Africa */}
+                                                      <SelectItem value="+49">🇩🇪 +49</SelectItem> {/* Germany */}
+                                                      <SelectItem value="+33">🇫🇷 +33</SelectItem> {/* France */}
+                                                      <SelectItem value="+86">🇨🇳 +86</SelectItem> {/* China */}
+                                                      <SelectItem value="+81">🇯🇵 +81</SelectItem> {/* Japan */}
+                                                      <SelectItem value="+82">🇰🇷 +82</SelectItem> {/* South Korea */}
+                                                      <SelectItem value="+55">🇧🇷 +55</SelectItem> {/* Brazil */}
+                                                      <SelectItem value="+52">🇲🇽 +52</SelectItem> {/* Mexico */}
+                                                      <SelectItem value="+39">🇮🇹 +39</SelectItem> {/* Italy */}
+                                                      <SelectItem value="+34">🇪🇸 +34</SelectItem> {/* Spain */}
+                                                      <SelectItem value="+7">🇷🇺 +7</SelectItem> {/* Russia */}
+                                                      <SelectItem value="+90">🇹🇷 +90</SelectItem> {/* Turkey */}
+                                                      <SelectItem value="+62">🇮🇩 +62</SelectItem> {/* Indonesia */}
+                                                      <SelectItem value="+60">🇲🇾 +60</SelectItem> {/* Malaysia */}
+                                                      <SelectItem value="+65">🇸🇬 +65</SelectItem> {/* Singapore */}
+                                                      <SelectItem value="+61">🇦🇺 +61</SelectItem> {/* Australia */}
+                                                      <SelectItem value="+1">🇨🇦 +1</SelectItem> {/* Canada */}
+                                                      <SelectItem value="+48">🇵🇱 +48</SelectItem> {/* Poland */}
+                                                      <SelectItem value="+63">🇵🇭 +63</SelectItem> {/* Philippines */}
+                                                      <SelectItem value="+94">🇱🇰 +94</SelectItem> {/* Sri Lanka */}
+                                                      <SelectItem value="+880">🇧🇩 +880</SelectItem> {/* Bangladesh */}
+
+                                                  </SelectContent>
+                                                </Select>
+                                                <Input 
+                                                onChange={handleInputChange}
+                                                className="flex-1" 
+                                                id="mobileNumber" 
+                                                name="mobileNumber" 
+                                                value={profile ? profile.mobileNumber : ''}
+                                                placeholder="e.g. 05XXXXXXXX" 
+                                                required />
+                                              </div>
+                                            </div>
+                <div className="mt-2">
                   <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
                   <Input
                     type="date"
@@ -412,16 +397,16 @@ const TouristProfilePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <Navbar profilePageString={"/tourist-profile"} />
 
 
       {/* Main Content */}
-      <main className="container  mx-auto px-4 py-8 ">
+      <main className="container  mx-auto px-4 py-8 mt-12">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <aside className="w-64 mt-12 ">
+          <aside className="w-64 ">
             <Card className="bg-background border-border">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center space-x-2">
@@ -550,7 +535,7 @@ const TouristProfilePage = () => {
           </aside>
 
           {/* Main Content */}
-          <div className="w-full mt-12 md:w-3/4">{renderContent()}</div>
+          <div className="w-full md:w-3/4">{renderContent()}</div>
         </div>
       </main>
 
@@ -655,3 +640,36 @@ const TouristProfilePage = () => {
 }
 
 export default TouristProfilePage;
+
+const countryCodeMap = {
+  "+966": "🇸🇦", // Saudi Arabia
+  "+971": "🇦🇪", // United Arab Emirates
+  "+965": "🇰🇼", // Kuwait
+  "+1": "🇺🇸", // United States
+  "+44": "🇬🇧", // United Kingdom
+  "+91": "🇮🇳", // India
+  "+92": "🇵🇰", // Pakistan
+  "+20": "🇪🇬", // Egypt
+  "+27": "🇿🇦", // South Africa
+  "+49": "🇩🇪", // Germany
+  "+33": "🇫🇷", // France
+  "+86": "🇨🇳", // China
+  "+81": "🇯🇵", // Japan
+  "+82": "🇰🇷", // South Korea
+  "+55": "🇧🇷", // Brazil
+  "+52": "🇲🇽", // Mexico
+  "+39": "🇮🇹", // Italy
+  "+34": "🇪🇸", // Spain
+  "+7": "🇷🇺", // Russia
+  "+90": "🇹🇷", // Turkey
+  "+62": "🇮🇩", // Indonesia
+  "+60": "🇲🇾", // Malaysia
+  "+65": "🇸🇬", // Singapore
+  "+61": "🇦🇺", // Australia
+  "+1-CA": "🇨🇦", // Canada (differentiating +1 for Canada and the US)
+  "+48": "🇵🇱", // Poland
+  "+63": "🇵🇭", // Philippines
+  "+94": "🇱🇰", // Sri Lanka
+  "+880": "🇧🇩", // Bangladesh
+};
+

@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaUser, FaCompass, FaStore, FaAd } from 'react-icons/fa';
 import './signup.css'; 
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input.tsx";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -22,7 +25,7 @@ const [formData2, setformData2] = useState({
   username: formData.username,
   email: formData.email,
   password: formData.password,
-  mobileNumber: '',
+  mobileNumber:'',
   nationality: '',
   dob: '',
   occupation: 'student',
@@ -39,7 +42,7 @@ const [formData2, setformData2] = useState({
   const [certificatesfile,setcertificatesfile]=useState();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange =  (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({...prevState,[name]: value,}));
     setformData2(prevState => ({...prevState,[name]: value,}));
@@ -50,9 +53,18 @@ const [formData2, setformData2] = useState({
 
   };
 
+  const handleSelectChange = (field) => (value) => {
+    setFormData(prevState => ({...prevState, [field]: value}));
+    setformData2(prevState => ({...prevState, [field]: value}));
+  
+    if (field === 'username') {
+      setDocumentData((prev) => ({ ...prev, username: value }));
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
-    const { email, username, password, idfile, type, dob, mobileNumber, nationality, occupation, taxfile, certificatesfile } = formData;
+    const { email, username, password, idfile, type, dob, mobileNumber, countryCode, nationality, occupation, taxfile, certificatesfile } = formData;
 
     if (!email) newErrors.email = 'Email is required';
     if (!username) newErrors.username = 'Username is required';
@@ -64,6 +76,7 @@ const [formData2, setformData2] = useState({
        if (!dob) newErrors.DOB = 'Date of Birth is required';
        if (!nationality) newErrors.nationality = 'Nationality is required';
        if (!occupation) newErrors.occupation = 'occupation is required';
+       if (!countryCode) newErrors.countryCode = 'country code is required';
 
     }
     if (type === 'Tour Guide'){
@@ -140,6 +153,7 @@ const [formData2, setformData2] = useState({
             formDataToSend.append("email", formData.email);
             formDataToSend.append("password", formData.password);
             formDataToSend.append("mobile", mobileNumber);  
+            formDataToSend.append("countryCode", formData2.countryCode);
             formDataToSend.append("nationality", nationality);
             formDataToSend.append("DOB", dob); 
             formDataToSend.append("occupation", occupation); 
@@ -268,18 +282,61 @@ const closeModal = () => setIsModalOpen(false);
                     />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                   </div>
-                  <div>
-                    <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700">Mobile Number</label>
-                    <input
-                      type="text"
-                      id="mobileNumber"
-                      name="mobileNumber"
-                      value={formData2.mobileNumber}
-                      onChange={handleChange}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                      required
-                    />
-                    {errors.mobileNumber && <p className="text-red-500 text-xs mt-1">{errors.mobileNumber}</p>}
+                  <div className="space-y-2">
+                    <Label htmlFor="mobileNumber">Mobile number</Label>
+                    <div className="flex gap-2">
+                    <Select name="countryCode" 
+                      onValueChange={handleSelectChange('countryCode')}
+                      id="countryCode"
+                      >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue 
+                        placeholder={
+                        "country code"
+                        }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="+966">🇸🇦 +966</SelectItem> {/* Saudi Arabia */}
+                        <SelectItem value="+971">🇦🇪 +971</SelectItem> {/* United Arab Emirates */}
+                        <SelectItem value="+965">🇰🇼 +965</SelectItem> {/* Kuwait */}
+                        <SelectItem value="+1">🇺🇸 +1</SelectItem> {/* United States */}
+                        <SelectItem value="+44">🇬🇧 +44</SelectItem> {/* United Kingdom */}
+                        <SelectItem value="+91">🇮🇳 +91</SelectItem> {/* India */}
+                        <SelectItem value="+92">🇵🇰 +92</SelectItem> {/* Pakistan */}
+                        <SelectItem value="+20">🇪🇬 +20</SelectItem> {/* Egypt */}
+                        <SelectItem value="+27">🇿🇦 +27</SelectItem> {/* South Africa */}
+                        <SelectItem value="+49">🇩🇪 +49</SelectItem> {/* Germany */}
+                        <SelectItem value="+33">🇫🇷 +33</SelectItem> {/* France */}
+                        <SelectItem value="+86">🇨🇳 +86</SelectItem> {/* China */}
+                        <SelectItem value="+81">🇯🇵 +81</SelectItem> {/* Japan */}
+                        <SelectItem value="+82">🇰🇷 +82</SelectItem> {/* South Korea */}
+                        <SelectItem value="+55">🇧🇷 +55</SelectItem> {/* Brazil */}
+                        <SelectItem value="+52">🇲🇽 +52</SelectItem> {/* Mexico */}
+                        <SelectItem value="+39">🇮🇹 +39</SelectItem> {/* Italy */}
+                        <SelectItem value="+34">🇪🇸 +34</SelectItem> {/* Spain */}
+                        <SelectItem value="+7">🇷🇺 +7</SelectItem> {/* Russia */}
+                        <SelectItem value="+90">🇹🇷 +90</SelectItem> {/* Turkey */}
+                        <SelectItem value="+62">🇮🇩 +62</SelectItem> {/* Indonesia */}
+                        <SelectItem value="+60">🇲🇾 +60</SelectItem> {/* Malaysia */}
+                        <SelectItem value="+65">🇸🇬 +65</SelectItem> {/* Singapore */}
+                        <SelectItem value="+61">🇦🇺 +61</SelectItem> {/* Australia */}
+                        <SelectItem value="+1">🇨🇦 +1</SelectItem> {/* Canada */}
+                        <SelectItem value="+48">🇵🇱 +48</SelectItem> {/* Poland */}
+                        <SelectItem value="+63">🇵🇭 +63</SelectItem> {/* Philippines */}
+                        <SelectItem value="+94">🇱🇰 +94</SelectItem> {/* Sri Lanka */}
+                        <SelectItem value="+880">🇧🇩 +880</SelectItem> {/* Bangladesh */}
+                      </SelectContent>
+                    </Select>
+                    <Input 
+                    onChange={handleChange}
+                    className="flex-1" 
+                    id="mobileNumber" 
+                    name="mobileNumber" 
+                    value={formData2.mobileNumber}
+                    placeholder="e.g. 01XXXXXXXX" 
+                    required />
+                    </div>
                   </div>
                   <div>
                     <label htmlFor="dob" className="block text-sm font-medium text-gray-700">Date of Birth</label>
@@ -419,3 +476,36 @@ const closeModal = () => setIsModalOpen(false);
       </div>
   );
 }
+
+const countryCodeMap = {
+  "+966": "🇸🇦", // Saudi Arabia
+  "+971": "🇦🇪", // United Arab Emirates
+  "+965": "🇰🇼", // Kuwait
+  "+1": "🇺🇸", // United States
+  "+44": "🇬🇧", // United Kingdom
+  "+91": "🇮🇳", // India
+  "+92": "🇵🇰", // Pakistan
+  "+20": "🇪🇬", // Egypt
+  "+27": "🇿🇦", // South Africa
+  "+49": "🇩🇪", // Germany
+  "+33": "🇫🇷", // France
+  "+86": "🇨🇳", // China
+  "+81": "🇯🇵", // Japan
+  "+82": "🇰🇷", // South Korea
+  "+55": "🇧🇷", // Brazil
+  "+52": "🇲🇽", // Mexico
+  "+39": "🇮🇹", // Italy
+  "+34": "🇪🇸", // Spain
+  "+7": "🇷🇺", // Russia
+  "+90": "🇹🇷", // Turkey
+  "+62": "🇮🇩", // Indonesia
+  "+60": "🇲🇾", // Malaysia
+  "+65": "🇸🇬", // Singapore
+  "+61": "🇦🇺", // Australia
+  "+1-CA": "🇨🇦", // Canada (differentiating +1 for Canada and the US)
+  "+48": "🇵🇱", // Poland
+  "+63": "🇵🇭", // Philippines
+  "+94": "🇱🇰", // Sri Lanka
+  "+880": "🇧🇩", // Bangladesh
+};
+

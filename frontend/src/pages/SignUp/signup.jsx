@@ -13,6 +13,7 @@ import { FaCompass, FaStore , FaAd  } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
+
 export default function SignupDialog({children, isOpen, onOpenChange, onLoginClick }) {
   const [open, setOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false); 
@@ -32,6 +33,7 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
     email: '',
     password: '',
     mobileNumber:'',
+    countryCode:'',
     nationality:'',
     dob:'',
     occupation:'student'
@@ -56,6 +58,7 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
         name: '',
         username: '',
         email: '',
+        countryCode:'',
         mobile: '',
         dob: '', // Ensure dob is reset
         nationality: '',
@@ -73,6 +76,15 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setFormData2((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (field) => (value) => {
+    setFormData(prevState => ({...prevState, [field]: value}));
+    setFormData2(prevState => ({...prevState, [field]: value}));
+  
+    if (field === 'username') {
+      setDocumentData((prev) => ({ ...prev, username: value }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -196,8 +208,7 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
           </DialogDescription>
         </DialogHeader>
         <div className="bg-white bg-opacity-80 rounded-xl shadow-2xl p-8">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Select Your Role</label>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid mb-4 grid-cols-2 gap-4">
             {roles.map((role) => (
               <motion.button
                 key={role.name}
@@ -256,19 +267,57 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
                     required
                   />
                 </div>
-
-    <div className="space-y-2">
-      <Label htmlFor="mobileNumber">Mobile Number</Label>
-      <Input
-        id="mobileNumber"
-        type="text"
-        name="mobileNumber"
-        value={formData2.mobileNumber}
-        onChange={handleChange}
-        placeholder="Enter your mobile number"
-        required
-      />
-    </div>
+                <div className="space-y-2">
+                    <Label htmlFor="mobileNumber">Mobile number</Label>
+                    <div className="flex gap-2">
+                    <Select name="countryCode" defaultValue="+20"
+                      onValueChange={(value) => handleChange({ target: { name: 'countryCode', value } })}
+                      >
+                      <SelectTrigger className="w-[120px]">
+                      <SelectValue placeholder="countryCode" /> 
+                      </SelectTrigger>
+                      <SelectContent >
+                        <SelectItem value="+966">🇸🇦 +966</SelectItem> {/* Saudi Arabia */}
+                        <SelectItem value="+971">🇦🇪 +971</SelectItem> {/* United Arab Emirates */}
+                        <SelectItem value="+965">🇰🇼 +965</SelectItem> {/* Kuwait */}
+                        <SelectItem value="+1">🇺🇸 +1</SelectItem> {/* United States */}
+                        <SelectItem value="+44">🇬🇧 +44</SelectItem> {/* United Kingdom */}
+                        <SelectItem value="+91">🇮🇳 +91</SelectItem> {/* India */}
+                        <SelectItem value="+92">🇵🇰 +92</SelectItem> {/* Pakistan */}
+                        <SelectItem value="+20">🇪🇬 +20</SelectItem> {/* Egypt */}
+                        <SelectItem value="+27">🇿🇦 +27</SelectItem> {/* South Africa */}
+                        <SelectItem value="+49">🇩🇪 +49</SelectItem> {/* Germany */}
+                        <SelectItem value="+33">🇫🇷 +33</SelectItem> {/* France */}
+                        <SelectItem value="+86">🇨🇳 +86</SelectItem> {/* China */}
+                        <SelectItem value="+81">🇯🇵 +81</SelectItem> {/* Japan */}
+                        <SelectItem value="+82">🇰🇷 +82</SelectItem> {/* South Korea */}
+                        <SelectItem value="+55">🇧🇷 +55</SelectItem> {/* Brazil */}
+                        <SelectItem value="+52">🇲🇽 +52</SelectItem> {/* Mexico */}
+                        <SelectItem value="+39">🇮🇹 +39</SelectItem> {/* Italy */}
+                        <SelectItem value="+34">🇪🇸 +34</SelectItem> {/* Spain */}
+                        <SelectItem value="+7">🇷🇺 +7</SelectItem> {/* Russia */}
+                        <SelectItem value="+90">🇹🇷 +90</SelectItem> {/* Turkey */}
+                        <SelectItem value="+62">🇮🇩 +62</SelectItem> {/* Indonesia */}
+                        <SelectItem value="+60">🇲🇾 +60</SelectItem> {/* Malaysia */}
+                        <SelectItem value="+65">🇸🇬 +65</SelectItem> {/* Singapore */}
+                        <SelectItem value="+61">🇦🇺 +61</SelectItem> {/* Australia */}
+                        <SelectItem value="+1">🇨🇦 +1</SelectItem> {/* Canada */}
+                        <SelectItem value="+48">🇵🇱 +48</SelectItem> {/* Poland */}
+                        <SelectItem value="+63">🇵🇭 +63</SelectItem> {/* Philippines */}
+                        <SelectItem value="+94">🇱🇰 +94</SelectItem> {/* Sri Lanka */}
+                        <SelectItem value="+880">🇧🇩 +880</SelectItem> {/* Bangladesh */}
+                      </SelectContent>
+                    </Select>
+                    <Input 
+                    onChange={handleChange}
+                    className="flex-1" 
+                    id="mobileNumber" 
+                    name="mobileNumber" 
+                    value={formData2.mobileNumber}
+                    placeholder="e.g. 01XXXXXXXX" 
+                    required />
+                    </div>
+                  </div>
 
     <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>

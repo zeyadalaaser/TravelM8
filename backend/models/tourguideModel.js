@@ -43,6 +43,9 @@ const tourGuideSchema = new mongoose.Schema({
     }
   },
 
+  countryCode: {
+    type: String,
+  },
 
   mobileNumber: {
     type: String,

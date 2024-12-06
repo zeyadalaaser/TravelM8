@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 
 export const createTourist = async (req, res) => {
   //add a new Tourist to the database with 
-  const { username, name, email, password, mobileNumber, nationality, dob, occupation } = req.body;
+  const { username, name, email, password, mobileNumber, countryCode, nationality, dob, occupation } = req.body;
   const isNotUnique = await checkUniqueUsernameEmail(username, email);
 
   if (isNotUnique) {
@@ -14,7 +14,7 @@ export const createTourist = async (req, res) => {
   }
   try {
 
-    const tourist = await Tourist.create({ username, name, email, password, mobileNumber, nationality, dob, occupation });
+    const tourist = await Tourist.create({ username, name, email, password, mobileNumber, countryCode, nationality, dob, occupation });
     res.status(200).json({ id: tourist.id, ...tourist.toObject() });
   } catch (error) {
     res.status(400).json({ error: error.message });

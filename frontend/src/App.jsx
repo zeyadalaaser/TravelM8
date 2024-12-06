@@ -555,7 +555,7 @@ export default function HeroSection() {
                   {/* Search filters */}
                   <div className="absolute bottom-0 left-0 right-0 p-6">
                     <p className="text-white mb-4 max-w-md">
-                      Embark on a journey to find your dream destination, where adventure and relaxation await, creating unforgettable memories along the way
+                    Embark on a journey to find your dream destination, where adventure and relaxation await
                     </p>
 
                   </div>
