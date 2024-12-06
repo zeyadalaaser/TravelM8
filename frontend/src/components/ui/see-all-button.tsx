@@ -26,7 +26,7 @@ const SeeAllButton = React.forwardRef<HTMLButtonElement, SeeAllButtonProps>(
         ref={ref}
         onClick={handleClick}  // Trigger navigation on click
         className={cn(
-          "inline-flex items-center gap-2 text-[15px] font-medium text-blue-600 hover:text-blue-700 transition-colors",
+          "inline-flex items-center gap-2 text-[15px] font-medium text-gray-500 hover:text-gray-400 transition-colors",
           className
         )}
         {...props}
