@@ -18,8 +18,8 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
   const [open, setOpen] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false); 
   const [termsAccepted, setTermsAccepted] = useState(false);
-  const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [formData, setFormData] = useState({
     username: '',
@@ -103,7 +103,6 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
 
     try {
 
@@ -128,8 +127,9 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
 
         // Success message
         toast('Your Request Is Pending');
+        onOpenChange(false) 
         setMessageType('success');
-        window.location.reload();
+        // window.location.reload();
       }
       
     }
@@ -137,15 +137,12 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
       const response = await axios.post('http://localhost:5001/api/pending-users', formData);
 
       if (response.status === 200) {
-        // Prepare FormData for file uploads
         const formDataToSend = new FormData();
         formDataToSend.append("image", image);
         formDataToSend.append("idfile", idfile);
         formDataToSend.append("certificatesfile",certificatesfile);
-        formDataToSend.append("username", formData.username); // Add username here
+        formDataToSend.append("username", formData.username); 
         formDataToSend.append("type", formData.type);
-
-        // POST request to upload files
         await axios.post(
           'http://localhost:5001/api/upload-files2',
           formDataToSend,
@@ -154,8 +151,9 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
 
         // Success message
         toast('Your Request Is Pending');
+        onOpenChange(false) 
         setMessageType('success');
-        window.location.reload();
+        // window.location.reload();
       }
       
     }
@@ -164,27 +162,64 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
       const dob = new Date(formData2.dob);
       const age = new Date().getFullYear() - dob.getFullYear();
       if (age < 18) {
-        setMessage('You must be at least 18 years old.');
-        setMessageType('error');
+        setErrorMessage(
+          "You must be over 18 years old to register"
+        );
         return; // Prevent submission if under 18
       }
       const response = await axios.post('http://localhost:5001/api/tourists', formData2);
-
       if (response.status === 200) {
         toast('Your Tourist Registration is Successful');
-        setMessageType('success');
-        window.location.reload(); // Refresh after successful submission
+        await handleSignin(formData2.username, formData2.password);
+        window.location.reload(); 
       }
     }
     } catch (error) {
-      console.log("Error:", error);
-      setMessage('Error during signup. Please try again.');
+      if (error.response && error.response.status === 400) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage("Register failed, please try again later");
+      }
       setMessageType('error');
     }
   };
 
   const handleTermsChange = (e) => {
     setTermsAccepted(e.target.checked);
+  };
+
+  const handleSignin = async (username, password) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/api/auth/login",
+        {
+          username,
+          password,
+        }
+      );
+      const { token, role, needsPreferences } = response.data;
+      localStorage.setItem("token", token);
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.id || decodedToken.userId;
+      console.log("User ID:", userId);
+      localStorage.setItem("userId", userId);
+      console.log("Login successful. Role:", role);
+      console.log("token:", token);
+      console.log("pref: ", needsPreferences);
+      onOpenChange(false);
+      onLogin();
+      switch (role) {
+        case "Tourist":
+          navigate("/");
+        default:
+          navigate("/default-page");
+      }
+      //window.location.reload();
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.msg || "Login failed. Please try again."
+      );
+    }
   };
 
   return (
@@ -230,32 +265,32 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
 
           <form onSubmit={handleSubmit} className="space-y-4">
           {formData.type === "Tourist" && (
-  <>
-    <div className="space-y-2">
-      <Label htmlFor="name">Full Name</Label>
-      <Input
-        id="name"
-        type="text"
-        name="name"
-        value={formData2.name}
-        onChange={handleChange}
-        placeholder="Enter your full name"
-        required
-      />
-    </div>
-    <div className="space-y-2">
-      <Label htmlFor="username">Username</Label>
-      <Input
-        id="username"
-        type="text"
-        name="username"
-        value={formData2.username}
-        onChange={handleChange}
-        placeholder="Enter your user name"
-        required
-      />
-    </div>
-    <div className="space-y-2">
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      name="name"
+                      value={formData2.name}
+                      onChange={handleChange}
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      type="text"
+                      name="username"
+                      value={formData2.username}
+                      onChange={handleChange}
+                      placeholder="Enter your user name"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
@@ -641,6 +676,9 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
             <Button type="submit" className="w-full">
               Sign up
             </Button>
+            {errorMessage && (
+                  <p className="text-red-500 font-medium">{errorMessage}</p>
+                )}
           </form>
         </div>
       </DialogContent>

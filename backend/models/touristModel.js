@@ -65,9 +65,9 @@ const touristSchema = new Schema(
       validate: {
         validator: function (value) {
           const age = moment().diff(moment(value), "years");
-          return age >= 21; // Returns false if the age is less than 21
+          return age >= 18; // Returns false if the age is less than 21
         },
-        message: "You must be at least 21 years old to register.",
+        message: "You must be at least 18 years old to register.",
       },
     },
 

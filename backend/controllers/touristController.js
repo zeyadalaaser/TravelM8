@@ -17,7 +17,7 @@ export const createTourist = async (req, res) => {
     const tourist = await Tourist.create({ username, name, email, password, mobileNumber, countryCode, nationality, dob, occupation });
     res.status(200).json({ id: tourist.id, ...tourist.toObject() });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 }
 
