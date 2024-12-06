@@ -105,18 +105,18 @@ const Header = ({ name = "Jane Doe", editProfile, type = "Tour Guide" }) => {
           <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center relative">
           {/* Borderless Notification Button */}
           <Button
-            variant="link" // Borderless button style
+            variant="link"
             size="icon"
             className="p-0 mr-4 flex items-center"
-            onClick={() => setIsNotificationsOpen(true)} // Open sidebar on bell click
+            onClick={() => setIsNotificationsOpen(true)}
           >
             <Bell className="h-4 w-4" />
             <span className="sr-only">Notifications</span>
             {unreadCount > 0 && (
-              <span className="bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center absolute top-[12.5px] right-[182px] transform -translate-x-2">
+              <span className="bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center absolute top-0 right-30">
                 {unreadCount}
               </span>
             )}
@@ -137,13 +137,25 @@ const Header = ({ name = "Jane Doe", editProfile, type = "Tour Guide" }) => {
               <DropdownMenuLabel>Options</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="w-full"
+                className="w-full cursor-pointer"
+                onClick={() => navigate("/tourGuideDashboard")}
+              >
+                My Dashboard
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                className="w-full cursor-pointer"
                 onClick={() => navigate(editProfile)}
               >
                 Edit Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogoutClick}>
+              <DropdownMenuItem className="cursor-pointer">
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={handleLogoutClick}
+              >
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>

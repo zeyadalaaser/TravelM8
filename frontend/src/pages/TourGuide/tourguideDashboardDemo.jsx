@@ -293,47 +293,6 @@ const TourGuideDashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 h-full bg-white drop-shadow-xl flex flex-col justify-between">
-        <div>
-          <div className="p-4">
-            <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
-          </div>
-          <nav className="mt-6">
-            <button
-              className={`flex items-center px-4 py-2 text-gray-700 w-full text-left ${
-                activeTab === "itineraries" ? "bg-gray-200" : ""
-              }`}
-              onClick={() => setActiveTab("itineraries")}
-            >
-              <Map className="mr-3" />
-              Itineraries
-            </button>
-            <button
-              className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
-                activeTab === "sales" ? "bg-gray-200" : ""
-              }`}
-              onClick={() => setActiveTab("sales")}
-            >
-              <DollarSign className="mr-3" />
-              Sales Reports
-            </button>
-            <button
-              className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
-                activeTab === "tourists" ? "bg-gray-200" : ""
-              }`}
-              onClick={() => setActiveTab("tourists")}
-            >
-              <Users className="mr-3" />
-              Tourist Reports
-            </button>
-          </nav>
-        </div>
-        <div className="p-4">
-          <Logout />
-        </div>
-      </aside>
-
       {/* Main Content */}
 
       <main className="flex-1 overflow-y-auto">
