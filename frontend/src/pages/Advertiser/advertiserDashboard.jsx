@@ -189,46 +189,8 @@ const AdvertiserDashboard = () => {
   return (
     <>
       <div className="flex h-screen bg-gray-100">
-        {/* Sidebar */}
-        <aside className="w-64 h-full bg-white drop-shadow-xl flex flex-col justify-between">
-          <div>
-            <div className="p-4">
-              <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
-            </div>
-            <nav className="mt-6">
-              <button
-                className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
-                  activeTab === "activities" ? "bg-gray-200" : ""
-                }`}
-                onClick={() => setActiveTab("activities")}
-              >
-                <Map className="mr-3" />
-                Activities
-              </button>
-              <button
-                className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
-                  activeTab === "sales" ? "bg-gray-200" : ""
-                }`}
-                onClick={() => setActiveTab("sales")}
-              >
-                <DollarSign className="mr-3" />
-                Sales Reports
-              </button>
-              <button
-                className={`flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left ${
-                  activeTab === "tourists" ? "bg-gray-200" : ""
-                }`}
-                onClick={() => setActiveTab("tourists")}
-              >
-                <Users className="mr-3" />
-                Tourist Reports
-              </button>
-            </nav>
-          </div>
-          <div className="p-4">
-            <Logout />
-          </div>
-        </aside>
+        
+
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
@@ -236,6 +198,7 @@ const AdvertiserDashboard = () => {
             name={"samla121212"}
             type="Advertiser"
             editProfile="/advertiserProfile"
+            dashboard="/advertiserDashboard"
           />
           <div className="p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -307,8 +270,7 @@ const AdvertiserDashboard = () => {
                 <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
               </TabsList>
               <TabsContent value="activities" className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold">Manage Activities</h2>
+              <div className="flex justify-end items-center">
                   <Button onClick={() => openDialog(null)} variant="primary">
                     <Plus className="mr-2 h-4 w-4" /> Create Activity
                   </Button>

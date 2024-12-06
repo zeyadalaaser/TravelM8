@@ -21,7 +21,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const Header = ({ name = "Jane Doe", editProfile, type = "Tour Guide" }) => {
+const Header = ({   
+  name = "Jane Doe",
+  editProfile,
+  type = "Tour Guide",
+  dashboard, }) => {
+
   const [isAlertOpen, setAlertOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -105,7 +110,7 @@ const Header = ({ name = "Jane Doe", editProfile, type = "Tour Guide" }) => {
           <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center relative">
           {/* Borderless Notification Button */}
           <Button
             variant="link" // Borderless button style
@@ -113,13 +118,15 @@ const Header = ({ name = "Jane Doe", editProfile, type = "Tour Guide" }) => {
             className="p-0 mr-4 flex items-center"
             onClick={() => setIsNotificationsOpen(true)} // Open sidebar on bell click
           >
-            <Bell className="h-4 w-4" />
-            <span className="sr-only">Notifications</span>
-            {unreadCount > 0 && (
-              <span className="bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center absolute top-[12.5px] right-[182px] transform -translate-x-2">
-                {unreadCount}
-              </span>
-            )}
+            <div className="relative inline-block">
+              <Bell className="h-4 w-4" />
+              <span className="sr-only">Notifications</span>
+              {unreadCount > 0 && (
+                <span className="bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
           </Button>
 
           {/* "Hi, {name}" Greeting */}
@@ -137,13 +144,24 @@ const Header = ({ name = "Jane Doe", editProfile, type = "Tour Guide" }) => {
               <DropdownMenuLabel>Options</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="w-full"
+                className="w-full cursor-pointer"
+                onClick={() => navigate(dashboard)}
+              >
+                My Dashboard
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="w-full cursor-pointer"
                 onClick={() => navigate(editProfile)}
               >
                 Edit Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLogoutClick}>
+              <DropdownMenuItem className="cursor-pointer">
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={handleLogoutClick}
+              >
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>

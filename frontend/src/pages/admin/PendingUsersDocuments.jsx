@@ -58,6 +58,7 @@ const PendingUserDocuments = () => {
         setUserDocuments(
           userDocuments.filter((item) => item.user._id !== userId)
         );
+        toast("User rejected");
       } else {
         throw new Error("Failed to delete the user and documents");
       }
@@ -119,13 +120,6 @@ const PendingUserDocuments = () => {
                         {item.user.type}
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      className="text-red-500 hover:bg-red-100"
-                      onClick={() => handleReject(item.user._id)}
-                    >
-                      <X size={16} />
-                    </Button>
                   </CardHeader>
                   <CardContent>
                     <h4 className="text-md font-semibold mb-3">
