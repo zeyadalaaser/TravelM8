@@ -14,6 +14,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer.jsx"
 import {
   Card,
   CardContent,
@@ -297,7 +298,7 @@ const TourGuideDashboard = () => {
 
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
-        <Header editProfile="/tourGuideProfile" />
+        <Header editProfile="/tourGuideProfile" dashboard="/tourGuideDashboard"/>
         {/* Dashboard Content */}
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -361,17 +362,18 @@ const TourGuideDashboard = () => {
             onValueChange={setActiveTab}
             className="space-y-4"
           >
-            <TabsList>
-              <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
-              <TabsTrigger value="sales">Sales Report</TabsTrigger>
-              <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
-              {/* <TabsTrigger value="notifications">Notifications</TabsTrigger> */}
-            </TabsList>
+            <div className="flex mb-4 justify-between items-center">
+              <TabsList>
+                <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
+                <TabsTrigger value="sales">Sales Report</TabsTrigger>
+                <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
+              </TabsList>
+              <ItineraryDialog onRefresh={fetchItineraries} />
+            </div>
 
             <TabsContent value="itineraries" className="space-y-4">
               <div className="flex justify-between items-center">
       
-                <ItineraryDialog onRefresh={fetchItineraries} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {itineraries?.map((itinerary) => (
@@ -522,6 +524,7 @@ const TourGuideDashboard = () => {
             </TabsContent>
           </Tabs>
         </div>
+        <Footer/>
       </main>
     </div>
   );

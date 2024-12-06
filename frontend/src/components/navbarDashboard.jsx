@@ -106,8 +106,8 @@ const Header = ({
     <header className="bg-white shadow-sm">
       <div className="flex items-center justify-between px-7 py-3">
         {/* Title and Notifications */}
-        <div className="flex-1 flex justify-center">
-          <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-semibold text-gray-800">TravelM8</h1>
         </div>
 
         <div className="flex items-center relative">

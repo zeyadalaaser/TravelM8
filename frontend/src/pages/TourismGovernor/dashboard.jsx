@@ -317,46 +317,13 @@ const TourismGovernorDashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 h-full bg-white drop-shadow-xl flex flex-col justify-between">
-        <div>
-          <div className="p-4">
-            <h2 className="text-2xl font-bold text-gray-800">TravelM8</h2>
-          </div>
-          <nav className="mt-6">
-            <button className="flex items-center w-full px-4 py-2 text-gray-700 bg-gray-100">
-              <Layout className="mr-3" />
-              Dashboard
-            </button>
-            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-              <Map className="mr-3" />
-              Locations
-            </button>
-            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-              <Tag className="mr-3" />
-              Tags
-            </button>
-            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-              <List className="mr-3" />
-              Itineraries
-            </button>
-            <button className="flex items-center w-full px-4 py-2 mt-2 text-gray-600 hover:bg-gray-100">
-              <Settings className="mr-3" />
-              Settings
-            </button>
-          </nav>
-        </div>
-        <div className="p-4">
-          <Logout />
-        </div>
-      </aside>
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
         <header className="bg-white shadow-sm">
       <div className="flex items-center justify-between px-7 py-3">
         {/* Title and Notifications */}
-        <h1 className="text-2xl font-semibold text-gray-800">Tour Guide Dashboard</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 ">TravelM8</h1>
 
         <div className="flex items-center">
           {/* Borderless Notification Button */}
@@ -365,7 +332,6 @@ const TourismGovernorDashboard = () => {
             size="icon"
             className="p-0 mr-4 flex items-center"
           >
-            <Bell className="h-4 w-4" />
             <span className="sr-only">Notifications</span>
           </Button>
 
@@ -403,6 +369,7 @@ const TourismGovernorDashboard = () => {
     </header>
         {/* Dashboard Content */}
         <div className="p-8">
+        {/* <h2 className="text-2xl font-semibold text-gray-800 mb-4">Dashboard</h2> */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -447,16 +414,9 @@ const TourismGovernorDashboard = () => {
               <div className="flex justify-between items-center mb-4">
                 <Tabs defaultValue="all" className="w-full">
                   <div className="flex justify-between items-center">
-                    <TabsList>
-                      <TabsTrigger value="all">All Locations</TabsTrigger>
-                      <TabsTrigger value="museums">Museums</TabsTrigger>
-                      <TabsTrigger value="historical">
-                        Historical Sites
-                      </TabsTrigger>
-                    </TabsList>
                     <Dialog open={open} onOpenChange={setOpen}>
                       <DialogTrigger asChild>
-                        <Button>
+                        <Button className="bg-transparent font-lg text-black hover:text-gray ml-auto hover:bg-transparent">
                           <Plus className="mr-2 h-4 w-4" /> Add New Location
                         </Button>
                       </DialogTrigger>
