@@ -100,7 +100,7 @@ const actions = [
     description: "Generate and manage discount codes for users.", 
     buttonText: "Manage Promo Codes", 
     icon: Percent, 
-    path: "/" 
+    path: "/AdminPromoCode" 
   }
 ];
 
