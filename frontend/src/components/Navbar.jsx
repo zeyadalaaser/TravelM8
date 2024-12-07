@@ -12,7 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Globe, ShoppingCart, Store } from 'lucide-react';
+import { ChevronDown, Globe, ShoppingCart, Store, UserCircle } from 'lucide-react';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Cart from "../pages/tourist/components/products/cart.jsx";
@@ -326,7 +326,6 @@ export default function Navbar({ profilePageString, children }) {
                             key={item?._id}
                             className="flex items-center justify-between space-x-4"
                           >
-                            {/* Left Section: Image and Name */}
                             <div className="flex items-center space-x-4">
                               <img
                                 src={
@@ -351,8 +350,6 @@ export default function Navbar({ profilePageString, children }) {
                                 />
                               </div>
                             </div>
-
-                            {/* Right Section: Price */}
                             <span className="font-medium mb-10 text-lg">
                               {(
                                 item.productId.price *
@@ -386,25 +383,18 @@ export default function Navbar({ profilePageString, children }) {
                   )}
                 </SheetContent>
               </Sheet>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={handleClick}
-                className={`${
-                  currentPage === "/" ||
-                  currentPage === `/?currency=${currency}`
-                    ? "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2"
-                    : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"
-                }`}
+                className={
+                  currentPage === "/" || currentPage === `/?currency=${currency}`
+                    ? "text-white hover:bg-transparent hover:text-white"
+                    : "text-black"
+                }
               >
-                <span>Hello, {userName}</span>
-                <ChevronDown
-                  className={`h-4 w-4 ${
-                    currentPage === "/" ||
-                    currentPage === `/?currency=${currency}`
-                      ? "text-white"
-                      : "text-gray-500"
-                  }`}
-                />
-              </button>
+                <UserCircle className="h-7 w-7" />
+              </Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -420,24 +410,32 @@ export default function Navbar({ profilePageString, children }) {
                   },
                 }}
               >
-                <MenuItem onClick={() => navigate("/tourist-profile")}>
+                <MenuItem>
+                  <span className="font-medium">Hello, {userName}</span>
+                </MenuItem>
+                <Separator />
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/tourist-profile");
+                }}>
                   My profile
                 </MenuItem>
-                <MenuItem onClick={handleClose}>My Wishlist</MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    navigate("/wallet");
-                  }}
-                >
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/wishlist");
+                }}>
+                  My Wishlist
+                </MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/bookmarks");
+                }}>
                   My Bookmarks
                 </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    navigate("/order");
-                  }}
-                >
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/preferences");
+                }}>
                   My Preferences
                 </MenuItem>
                 <Separator />
