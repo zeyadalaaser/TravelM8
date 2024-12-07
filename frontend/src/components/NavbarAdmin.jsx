@@ -76,7 +76,7 @@ export default function Navbar({ profilePageString, children }) {
               currentPage === "/" ? "text-white" : "text-black"
             }`}
           >
-            This is admin dashboard
+            Dashboard
           </span>
         </div>
 

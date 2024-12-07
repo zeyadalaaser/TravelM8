@@ -1,8 +1,8 @@
-'use client'
-
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react'
+import Sidebar from "@/components/Sidebar";
+import Navbar from "@/components/NavbarAdmin";
 
 export default function AdminPromoCode() {
   const [promoCodes, setPromoCodes] = useState([])
@@ -11,27 +11,26 @@ export default function AdminPromoCode() {
   const [newValue, setNewValue] = useState('')
   const [editingId, setEditingId] = useState(null)
   const [editValue, setEditValue] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [sidebarState, setSidebarState] = useState(false);
 
-  // Display 6 promo codes per page
-  const itemsPerPage = 6
 
   useEffect(() => {
     fetchPromoCodes()
-  }, [currentPage])
+  }, [])
+  const toggleSidebar = () => {
+    setSidebarState(!sidebarState);
+  };
 
   const fetchPromoCodes = async () => {
     setIsLoading(true)
     setError(null)
     try {
       const response = await axios.get(
-        `http://localhost:5001/api/promo-codes?page=${currentPage}&limit=${itemsPerPage}`
+        `http://localhost:5001/api/promo-codes`
       )
-      setPromoCodes(response.data.promoCodes || [])
-      setTotalPages(response.data.totalPages || 1)
+      setPromoCodes(response.data || [])
     } catch (error) {
       console.error('Error fetching promo codes:', error)
       setError('Failed to fetch promo codes. Please try again later.')
@@ -53,8 +52,8 @@ export default function AdminPromoCode() {
       value: Number(newValue), // Ensure value is a number
     });
 
-    if (response.data && response.data.promoCode) {
-      setPromoCodes([response.data.promoCode, ...promoCodes]);
+    if (response.data) {
+      setPromoCodes([response.data, ...promoCodes]);
       setNewPromoCode('');
       setNewValue('');
       setError(null); // Clear any previous errors
@@ -70,7 +69,7 @@ export default function AdminPromoCode() {
 
   const updatePromoCode = async (id) => {
     try {
-      const response = await axios.put(`http://localhost:5001/api/promo-codes/${id}`, {
+      await axios.put(`http://localhost:5001/api/promo-codes/${id}`, {
         value: editValue,
       })
       fetchPromoCodes() // Refresh promo codes after update
@@ -105,8 +104,17 @@ export default function AdminPromoCode() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Manage Promo Codes</h1>
+    <div  style={{ display: "flex" }}>
+      {/* <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} /> */}
+      <div
+        style={{
+          transition: "margin-left 0.3s ease",
+          marginLeft: sidebarState ? "250px" : "0",
+          width: "100%",
+        }}
+      >
+        <Navbar toggleSidebar={toggleSidebar} />
+    <div className="container mt-20 mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
         <div className="relative w-full md:w-1/3">
           <input
@@ -209,28 +217,9 @@ export default function AdminPromoCode() {
           </table>
         </div>
       )}
-
-      <div className="mt-4 flex justify-center">
-        <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-          >
-            Previous
-          </button>
-          <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-          >
-            Next
-          </button>
-        </nav>
-      </div>
     </div>
+    </div>
+    </div>
+
   )
 }
