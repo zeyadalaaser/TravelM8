@@ -23,6 +23,7 @@ import useRouter from "@/hooks/useRouter";
 import { NumberStepper } from "@/components/ui/number-stepper";
 import NotificationBell from "@/pages/tourist/components/Notifications";
 import logo from "../assets/lb.png";
+import logo2 from "../assets/lw.png";
 
 const pages = [
   { label: "Activities", value: "activities" },
@@ -234,7 +235,15 @@ export default function Navbar({ profilePageString, children }) {
           onClick={() => navigate(`/?currency=${currency}`)}
         >
           <div className="flex items-center">
-            <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
+            <img
+              src={
+                currentPage === "/" || currentPage === `/?currency=${currency}`
+                  ? logo2 // Use white logo if scrolled on homepage
+                  : logo // Use white logo if on homepage without scrolling
+              }
+              alt="TravelM8 Logo"
+              className="h-20 w-auto -mr-4"
+            />
             <span>TRAVELM8</span>
           </div>
         </div>
