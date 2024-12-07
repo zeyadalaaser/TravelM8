@@ -1,48 +1,57 @@
 import React from 'react';
 import {Facebook, Instagram, Youtube } from "lucide-react"; // Adjust this import if necessary
+import { Link } from 'react-router-dom';
+import { Twitter,  Mail, MapPin, Phone } from 'lucide-react'
+import { useNavigate } from "react-router-dom";
+import useRouter from "@/hooks/useRouter";
+
 
 export default function Footer() {
+  const { location } = useRouter();
+  const searchParams = new URLSearchParams(location.search);
+  const currency = searchParams.get("currency") ??"USD";
   return (
     <footer className="bg-gray-800 text-gray-300 py-12 px-4">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Section */}
           <div>
-            <h2 className="text-white text-xl font-semibold mb-4">About</h2>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Jobs</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">In Press</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Gallery</a></li>
-            </ul>
+          <h3 className="font-bold text-lg mb-4">About Us</h3>
+            <p className="text-md">
+              We are a passionate travel website dedicated to helping adventurers explore the world's most beautiful destinations. From exotic getaways to local hidden gems, we're here to inspire your next journey.
+            </p>
           </div>
 
           {/* Support Section */}
           <div>
-            <h2 className="text-white text-xl font-semibold mb-4">Support</h2>
+            <h2 className="text-white text-xl font-semibold mb-4">Explore</h2>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-white transition-colors">Contact us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Online Chat</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Whatsapp</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Telegram</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Ticketing</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Call Center</a></li>
+              <li><Link to={`/tourist-page?type=activities&currency=${currency}`} className="hover:text-white transition-colors">activities</Link></li>
+              <li><Link to={`/tourist-page?type=itineraries&currency=${currency}`} className="hover:text-white transition-colors">itineraries</Link></li>
+              <li><Link to={`/tourist-page?type=hotels&currency=${currency}`} className="hover:text-white transition-colors">hotels</Link></li>
+              <li><Link to={`/tourist-page?type=flights&currency=${currency}`} className="hover:text-white transition-colors">flights</Link></li>
+              <li><Link to={`/tourist-page?type=activities&currency=${currency}`} className="hover:text-white transition-colors">transportation</Link></li>
+              <li><Link to={`/tourist-page?type=products&currency=${currency}`} className="hover:text-white transition-colors">shop</Link></li>
             </ul>
           </div>
 
           {/* FAQ Section */}
           <div>
-            <h2 className="text-white text-xl font-semibold mb-4">FAQ</h2>
-            <ul className="space-y-2">
-              <li><a href="#" className="hover:text-white transition-colors">Account</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Booking</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Payments</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Returns</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms & Condition</a></li>
-            </ul>
+            <h3 className="font-bold text-lg mb-4">Contact Us</h3>
+            <address className="not-italic space-y-8">
+              <p className="flex items-center">
+                <MapPin size={18} className="mr-2" />
+                123 Traveler's Way, Adventure City
+              </p>
+              <p className="flex items-center">
+                <Mail size={18} className="mr-2" />
+                <a href="mailto:info@travelwebsite.com" className="hover:text-blue-600 transition-colors">info@travelwebsite.com</a>
+              </p>
+              <p className="flex items-center">
+                <Phone size={18} className="mr-2" />
+                (123) 456-7890
+              </p>
+            </address>
           </div>
 
           {/* Newsletter Section */}

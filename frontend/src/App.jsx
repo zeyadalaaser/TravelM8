@@ -34,8 +34,10 @@ import { CircularProgress } from "@mui/material"
 const images = [
   "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=2020&ixlib=rb-4.0.3",
   "https://wallpapercave.com/wp/wp2481186.jpg",
+  "https://wallpapers.com/images/hd/beautiful-travel-1920-x-1200-wallpaper-r81g5fvll8ztaaa5.jpg",
   "https://images.unsplash.com/photo-1541628951107-a9af5346a3e4?auto=format&fit=crop&q=80&w=2070&ixlib=rb-4.0.3", 
-  "https://wallpaper.forfun.com/fetch/d5/d5c3e417f3b7121700fcb33d337c44ba.jpeg"
+  "https://wallpaper.forfun.com/fetch/d5/d5c3e417f3b7121700fcb33d337c44ba.jpeg",
+  "https://wallpapers.com/images/hd/beautiful-travel-2048-x-1366-wallpaper-bckyb9x9h6vxy5ff.jpg"
 ]
 
 export default function HeroSection() {
