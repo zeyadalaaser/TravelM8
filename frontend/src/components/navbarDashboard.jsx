@@ -21,12 +21,12 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-const Header = ({   
+const Header = ({
   name = "Jane Doe",
   editProfile,
   type = "Tour Guide",
-  dashboard, }) => {
-
+  dashboard,
+}) => {
   const [isAlertOpen, setAlertOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -154,9 +154,6 @@ const Header = ({
                 onClick={() => navigate(editProfile)}
               >
                 Edit Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                Settings
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"
