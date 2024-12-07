@@ -11,6 +11,10 @@ import { SearchBar } from "../filters/search";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Button } from "@/components/ui/button";
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
+import { WalkthroughButton } from '@/components/WalkthroughButton';
+
 
 export function MuseumsPage() {
   const [loading, setLoading] = useState(false);
@@ -29,6 +33,34 @@ export function MuseumsPage() {
   const totalPages = Math.ceil(museums.length / itemsPerPage);
   // Paginated activities
   const paginatedPlaces = museums.slice(startIndex, endIndex);
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
+  useEffect(() => {
+    if (walkthroughPage === 'museums') {
+      clearSteps();
+      addSteps([
+        {
+          target: '[data-tour="museums-search"]',
+          content: 'Use the search bar to find museums by name or tag.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-filters"]',
+          content: 'Use these filters to refine your search results.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-list"]',
+          content: 'Browse through the list of available museums.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-pagination"]',
+          content: 'Navigate through different pages of museums.',
+          disableBeacon: true,
+        }
+      ], 'museums');
+    }
+  }, [addSteps, clearSteps, walkthroughPage]);
 
   // Fetch latest exchange rates on mount
   useEffect(() => {
@@ -74,7 +106,7 @@ export function MuseumsPage() {
   return (
     <div className="mt-24">
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-16 mt-6 h-full">
+        <div className="w-full md:w-1/4 sticky top-16 mt-6 h-full"data-tour="museums-search">
         <SearchBar categories={searchCategories} />
         <Separator className="mt-5" />
           <PriceFilter
@@ -128,9 +160,9 @@ export function MuseumsPage() {
                   </Button>
                 </div></div>
           )}
-
         </div>
       </div>
+      <Walkthrough/>
     </div>
   );
 }

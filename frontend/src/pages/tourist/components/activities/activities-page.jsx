@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import useRouter from "@/hooks/useRouter";
 import { useDebouncedCallback } from "use-debounce";
@@ -18,6 +18,9 @@ import {
 } from "../../api/apiService";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Button } from "@/components/ui/button";
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
+import { WalkthroughButton } from '@/components/WalkthroughButton';
 
 export function ActivitiesPage() {
   const token = localStorage.getItem("token");
@@ -32,6 +35,42 @@ export function ActivitiesPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 4; // Adjust how many items per page you want
+
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
+
+  useEffect(() => {
+    if (walkthroughPage === 'activities') {
+      clearSteps();
+      addSteps([
+        {
+          target: '[data-tour="search-bar"]',
+          content: 'Use the search bar to find activities by name, category, or tag.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="sort-selection"]',
+          content: 'Sort activities based on different criteria.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="filters"]',
+          content: 'Use these filters to refine your search results.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="activities-list"]',
+          content: 'Browse through the list of available activities.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="pagination"]',
+          content: 'Navigate through different pages of activities.',
+          disableBeacon: true,
+        },
+
+      ], 'activities');
+    }
+  }, [addSteps, clearSteps, walkthroughPage]);
 
   // Fetch the latest exchange rates from the API
   useEffect(() => {
@@ -63,7 +102,7 @@ export function ActivitiesPage() {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching activities:", error);
-      setLoading(false); // Ensure loading is set to false if there’s an error
+      setLoading(false); // Ensure loading is set to false if there's an error
     }
   }, 200);
 
@@ -92,19 +131,31 @@ export function ActivitiesPage() {
     setCurrentPage(pageNumber);
     window.scrollTo(0, 0); // Scroll to the top of the page when changing pages
   };
+
   return (
     <div className="mt-24">
+      {/* Header Section */}
       <div className="flex justify-between items-center mb-4">
-        <div className="flex-grow">
-        </div>
-        <div className="ml-4 mb-8">
-          <SortSelection />
-        </div>
+        <div className="flex-grow"></div>
       </div>
+
+      {/* Sort Selection */}
+      <div className="ml-4 mb-8" data-tour="sort-selection">
+        <SortSelection />
+      </div>
+
+      {/* Walkthrough Button */}
+      <WalkthroughButton />
+
+      {/* Main Content */}
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full -mt-16 md:w-1/4 sticky top-16 h-full">
-        <SearchBar categories={searchCategories} />
-        <Separator className="mb-8" />
+        {/* Sidebar Section */}
+        <div
+          className="w-full -mt-16 md:w-1/4 sticky top-16 h-full"
+          data-tour="search-bar"
+        >
+          <SearchBar categories={searchCategories} />
+          <Separator className="mb-8" />
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -120,61 +171,78 @@ export function ActivitiesPage() {
             getOptions={getCategories}
           />
         </div>
+
+        {/* Main Activities Section */}
         <div className="w-full md:w-3/4 -mt-4">
+          {/* Filter Section */}
           <div className="flex justify-between items-center mb-24 -mt-3">
             <div className="flex h-5 items-center -mt-8 space-x-4 text-sm">
-              {/* <div>{activities.length} results</div> */}
               <ClearFilters />
             </div>
           </div>
+
+          {/* Activities and Pagination */}
           {loading ? (
             <div className="flex justify-center items-center mt-48">
               <CircularProgress />
             </div>
           ) : (
-            <div className="-mt-24">
-              <Activities
-                token={token}
-                bookActivity={createActivityBooking}
-                activities={paginatedActivities}
-                currency={currency}
-                exchangeRate={exchangeRates[currency] || 1} /><div className="flex justify-center mt-6 space-x-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Previous
-                  </Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <>
+              {/* Activities List */}
+              <div data-tour="activities-list">
+                <Activities
+                  token={token}
+                  bookActivity={createActivityBooking}
+                  activities={paginatedActivities}
+                  currency={currency}
+                  exchangeRate={exchangeRates[currency] || 1}
+                />
+              </div>
+
+              {/* Pagination */}
+              <div
+                className="flex justify-center mt-6 space-x-2"
+                data-tour="pagination"
+              >
+                <Button
+                  variant="outline"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
                     <Button
                       key={page}
-                      variant={currentPage === page ? "default" : "outline"}
+                      variant={currentPage === page ? 'default' : 'outline'}
                       onClick={() => {
                         setCurrentPage(page);
                         window.scroll(0, 0);
-                      } }
+                      }}
                     >
                       {page}
                     </Button>
-                  ))}
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </Button>
-                </div></div>
-          
-          
+                  )
+                )}
+                <Button
+                  variant="outline"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </>
           )}
-
-
         </div>
       </div>
+
+      {/* Walkthrough Component */}
+      <Walkthrough />
     </div>
   );
-}
+};
 
 export default ActivitiesPage;
+
