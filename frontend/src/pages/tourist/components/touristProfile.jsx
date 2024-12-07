@@ -18,6 +18,7 @@ import MyOrdersPage from "@/pages/tourist/components/orders.jsx";
 import { ComplaintForm } from "@/pages/tourist/components/complaints/complaint-form.jsx";
 import { toast } from 'sonner';
 import { Label } from "@/components/ui/label"
+import useRouter from "@/hooks/useRouter";
 
 const TouristProfilePage = () => {
 
@@ -39,8 +40,12 @@ const TouristProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [changes, setChanges] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
-  const navigate = useNavigate();
-
+  const { location, searchParams, navigate } = useRouter();
+  useEffect(() => {
+  if (searchParams.has("page"))
+  setActiveView(searchParams.get("page"));
+  }, [location.search]);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -454,28 +459,7 @@ const TouristProfilePage = () => {
                 <BookCheck className="mr-3" />
                 My bookings
               </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView('wishlist')}
-              >
-                <Heart className="mr-3" />
-                My wishlist
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView('bookmarks')} // Changed from 'bookings'
-              >
-                <Bookmark className="mr-3" />
-                My Bookmarks
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView('preferences')} 
-              >
-                <Star className="mr-3 " />
-                My Preferences
-              </button>
-              
+  
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('points')}
@@ -530,7 +514,7 @@ const TouristProfilePage = () => {
                 </div>
 
               )}
-              <Logout />
+            
             </nav>
           </aside>
 
