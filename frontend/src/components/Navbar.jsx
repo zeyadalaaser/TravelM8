@@ -26,7 +26,6 @@ import logo from "../assets/lb.png";
 import logo2 from "../assets/lw.png";
 import { WalkthroughButton } from './WalkthroughButton';
 import { useLocation } from 'react-router-dom';
-
 const pages = [
   { label: "Activities", value: "activities" },
   { label: "Itineraries", value: "itineraries" },
@@ -50,13 +49,13 @@ export default function Navbar({ profilePageString, children }) {
   const [userName, setUserName] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAlertOpen, setAlertOpen] = useState(false);
-  const locations = useLocation();
-  const currency = searchParams.get("currency") ?? "USD";
-  
 
+  const currency = searchParams.get("currency") ?? "USD";
+  const locations = useLocation();
   const getCurrentPageType = () => {
     const path = locations.pathname;
     const searchParams = new URLSearchParams(locations.search);
+  const currency = searchParams.get("currency") ?? "USD";
     const type = searchParams.get('type');
     if (type) return type.toLowerCase();
     if (path.includes('activities')) return 'activities';
@@ -67,7 +66,6 @@ export default function Navbar({ profilePageString, children }) {
     if (path.includes('museums')) return 'museums';
     return 'activities'; // default
   };
-
 
 
   useEffect(() => {
@@ -290,7 +288,6 @@ export default function Navbar({ profilePageString, children }) {
           ))}
         </div>
         <WalkthroughButton currentPageType={getCurrentPageType()} />
-
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
@@ -512,8 +509,6 @@ export default function Navbar({ profilePageString, children }) {
               </SignupDialog>
             </>
           )}
-          
-        
         </div>
       </nav>
       {React.Children.map(children, (child) =>

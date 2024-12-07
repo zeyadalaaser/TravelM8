@@ -253,8 +253,7 @@ export function ItinerariesPage() {
               <CircularProgress />
             </div>
           ) : (
-            <div className="-mt-24">
-              <ItineraryCard
+            <><ItineraryCard
                 itineraries={paginatedItineraries}
                 isTourist={true}
                 currency={currency}
@@ -287,7 +286,7 @@ export function ItinerariesPage() {
                   >
                     Next
                   </Button>
-                </div></div>
+                </div></>
         
           )}
 

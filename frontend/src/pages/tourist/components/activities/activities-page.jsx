@@ -67,7 +67,7 @@ export function ActivitiesPage() {
           content: 'Navigate through different pages of activities.',
           disableBeacon: true,
         },
-       
+
       ], 'activities');
     }
   }, [addSteps, clearSteps, walkthroughPage]);
@@ -134,19 +134,28 @@ export function ActivitiesPage() {
 
   return (
     <div className="mt-24">
+      {/* Header Section */}
       <div className="flex justify-between items-center mb-4">
-        <div className="flex-grow">
-        </div>
-        </div>
-        <div className="ml-4 mb-8" data-tour="sort-selection">
-          <SortSelection />
-        </div>
-        <WalkthroughButton />
+        <div className="flex-grow"></div>
       </div>
+
+      {/* Sort Selection */}
+      <div className="ml-4 mb-8" data-tour="sort-selection">
+        <SortSelection />
+      </div>
+
+      {/* Walkthrough Button */}
+      <WalkthroughButton />
+
+      {/* Main Content */}
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full -mt-16 md:w-1/4 sticky top-16 h-full"data-tour="search-bar">
-        <SearchBar categories={searchCategories} />
-        <Separator className="mb-8" />
+        {/* Sidebar Section */}
+        <div
+          className="w-full -mt-16 md:w-1/4 sticky top-16 h-full"
+          data-tour="search-bar"
+        >
+          <SearchBar categories={searchCategories} />
+          <Separator className="mb-8" />
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -162,19 +171,24 @@ export function ActivitiesPage() {
             getOptions={getCategories}
           />
         </div>
+
+        {/* Main Activities Section */}
         <div className="w-full md:w-3/4 -mt-4">
+          {/* Filter Section */}
           <div className="flex justify-between items-center mb-24 -mt-3">
             <div className="flex h-5 items-center -mt-8 space-x-4 text-sm">
-              {/* <div>{activities.length} results</div> */}
               <ClearFilters />
             </div>
           </div>
+
+          {/* Activities and Pagination */}
           {loading ? (
             <div className="flex justify-center items-center mt-48">
               <CircularProgress />
             </div>
           ) : (
             <>
+              {/* Activities List */}
               <div data-tour="activities-list">
                 <Activities
                   token={token}
@@ -184,7 +198,12 @@ export function ActivitiesPage() {
                   exchangeRate={exchangeRates[currency] || 1}
                 />
               </div>
-              <div className="flex justify-center mt-6 space-x-2" data-tour="pagination">
+
+              {/* Pagination */}
+              <div
+                className="flex justify-center mt-6 space-x-2"
+                data-tour="pagination"
+              >
                 <Button
                   variant="outline"
                   onClick={() => handlePageChange(currentPage - 1)}
@@ -192,18 +211,20 @@ export function ActivitiesPage() {
                 >
                   Previous
                 </Button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    onClick={() => {
-                      setCurrentPage(page);
-                      window.scroll(0, 0);
-                    }}
-                  >
-                    {page}
-                  </Button>
-                ))}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? 'default' : 'outline'}
+                      onClick={() => {
+                        setCurrentPage(page);
+                        window.scroll(0, 0);
+                      }}
+                    >
+                      {page}
+                    </Button>
+                  )
+                )}
                 <Button
                   variant="outline"
                   onClick={() => handlePageChange(currentPage + 1)}
@@ -216,10 +237,12 @@ export function ActivitiesPage() {
           )}
         </div>
       </div>
+
+      {/* Walkthrough Component */}
       <Walkthrough />
     </div>
   );
-}
+};
 
 export default ActivitiesPage;
 
