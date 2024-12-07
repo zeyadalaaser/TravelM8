@@ -105,11 +105,10 @@ export function MuseumsPage() {
   
   return (
     <div className="mt-24">
-      <div className="mb-6 w-[360px]" data-tour="museums-search">
-        <SearchBar categories={searchCategories} />
-      </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-16 h-full" data-tour="museums-filters">
+        <div className="w-full md:w-1/4 sticky top-16 mt-6 h-full"data-tour="museums-search">
+        <SearchBar categories={searchCategories} />
+        <Separator className="mt-5" />
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
@@ -120,7 +119,7 @@ export function MuseumsPage() {
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
-              <div>{museums.length} results</div>
+              {/* <div>{museums.length} results</div> */}
               <ClearFilters />
             </div>
           </div>
@@ -129,43 +128,37 @@ export function MuseumsPage() {
               <CircularProgress />
             </div>
           ) : (
-            <>
-              <div data-tour="museums-list">
-                <Museums
-                  museums={paginatedPlaces}
-                  currency={currency}
-                  exchangeRate={exchangeRates[currency] || 1}
-                />
-              </div>
-              <div className="flex justify-center mt-6 space-x-2" data-tour="museums-pagination">
-                <Button
-                  variant="outline"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <div className="mt-8"><Museums
+                museums={paginatedPlaces}
+                currency={currency}
+                exchangeRate={exchangeRates[currency] || 1} /><div className="flex justify-center mt-6 space-x-2">
                   <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "outline"}
-                    onClick={() => {
-                      setCurrentPage(page);
-                      window.scroll(0, 0);
-                    }}
+                    variant="outline"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
                   >
-                    {page}
+                    Previous
                   </Button>
-                ))}
-                <Button
-                  variant="outline"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </Button>
-              </div>
-            </>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      onClick={() => {
+                        setCurrentPage(page);
+                        window.scroll(0, 0);
+                      } }
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div></div>
           )}
         </div>
       </div>

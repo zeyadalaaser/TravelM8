@@ -29,6 +29,7 @@ import ForgotPassword from "./pages/signIn/ForgetPassword.jsx";
 import ResetPassword from "./pages/signIn/otpPage.jsx";
 import Wallet from "./pages/tourist/components/wallet.jsx";
 import Order from "./pages/tourist/components/order.jsx";
+import AdminPromoCode from "./pages/admin/adminPromoCode.jsx";
 import { WalkthroughProvider } from './contexts/WalkthroughContext';
 
 //import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
@@ -74,6 +75,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/viewComplaints" element={<ComplaintsPage />} />
         <Route path="/preferenceTag" element={<PreferenceTag />} />
         <Route path="/Admindashboard" element={<AdminDashboard />} />
+        <Route path="/AdminPromoCode" element={<AdminPromoCode />} />
         <Route path="/product" element={<Product />} />
         <Route path="/admin/addAdmin" element={<Admin />} />
         <Route path="/deleteAccount" element={<AccountDelete />} />

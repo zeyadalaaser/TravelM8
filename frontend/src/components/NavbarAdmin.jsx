@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import useRouter from "@/hooks/useRouter";
 import LoginPage from "../pages/signIn/signin";
 import SignupDialog from "../pages/SignUp/signup";
+import logo from "../assets/lb.png";
 
 export default function Navbar({ profilePageString, children }) {
   const router = useRouter();
@@ -67,7 +68,10 @@ export default function Navbar({ profilePageString, children }) {
             currentPage === "/" ? "text-white" : "text-black"
           }`}
         >
-          TRAVELM8
+          <div className="flex items-center">
+            <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
+            <span>TRAVELM8</span>
+          </div>
         </div>
 
         <div className="flex-1 text-center">
@@ -76,7 +80,7 @@ export default function Navbar({ profilePageString, children }) {
               currentPage === "/" ? "text-white" : "text-black"
             }`}
           >
-            This is admin dashboard
+            Dashboard
           </span>
         </div>
 

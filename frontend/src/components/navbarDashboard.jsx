@@ -20,7 +20,7 @@ import {
   SheetDescription,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
+import logo from "../assets/lb.png";
 const Header = ({
   name = "Jane Doe",
   editProfile,
@@ -104,9 +104,10 @@ const Header = ({
 
   return (
     <header className="bg-white shadow-sm">
-      <div className="flex items-center justify-between px-7 py-3">
+      <div className="flex items-center justify-between px-7 py-0">
         {/* Title and Notifications */}
         <div className="flex justify-between items-center">
+          <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
           <h1 className="text-2xl font-semibold text-gray-800">TravelM8</h1>
         </div>
 
