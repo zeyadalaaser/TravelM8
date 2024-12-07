@@ -32,7 +32,7 @@ export function SearchBar({ categories }) {
   };
 
   return (
-    <div className="mb-6 w-[360px]">
+    <div className="mb-6 ">
       <div className="relative flex items-center">
         <div className="relative flex-grow">
           <Input

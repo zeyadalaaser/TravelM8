@@ -172,14 +172,15 @@ export function ItinerariesPage() {
     <div className="mt-24">
       <div className="flex justify-between items-center mb-4">
         <div className="flex-grow">
-          <SearchBar categories={searchCategories} />
         </div>
         <div className="ml-4 mb-8">
           <SortSelection />
         </div>
       </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full -mt-3 md:w-1/4 sticky top-16 h-full">
+        <div className="w-full -mt-16  md:w-1/4 sticky top-16 h-full">
+        <SearchBar categories={searchCategories} />
+        <Separator className="mb-8" />
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -203,10 +204,10 @@ export function ItinerariesPage() {
             </>
           )}
         </div>
-        <div className="w-full md:w-3/4 -mt-7">
-          <div className="flex justify-between items-center mb-2 -mt-3">
-            <div className="flex h-5 items-center space-x-4 text-sm">
-              <div>{itineraries.length} results</div>
+        <div className="w-full md:w-3/4 -mt-4">
+          <div className="flex justify-between items-center mb-24 -mt-3">
+            <div className="flex h-5 items-center -mt-8 space-x-4 text-sm">
+              {/* <div>{itineraries.length} results</div> */}
               <ClearFilters />
             </div>
           </div>
@@ -215,7 +216,8 @@ export function ItinerariesPage() {
               <CircularProgress />
             </div>
           ) : (
-            <><ItineraryCard
+            <div className="-mt-24">
+              <ItineraryCard
                 itineraries={paginatedItineraries}
                 isTourist={true}
                 currency={currency}
@@ -248,7 +250,7 @@ export function ItinerariesPage() {
                   >
                     Next
                   </Button>
-                </div></>
+                </div></div>
         
           )}
 

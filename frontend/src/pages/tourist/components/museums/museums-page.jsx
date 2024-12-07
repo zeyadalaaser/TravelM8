@@ -73,9 +73,10 @@ export function MuseumsPage() {
   
   return (
     <div className="mt-24">
-      <SearchBar categories={searchCategories} />
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-16 h-full">
+        <div className="w-full md:w-1/4 sticky top-16 mt-6 h-full">
+        <SearchBar categories={searchCategories} />
+        <Separator className="mt-5" />
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
@@ -86,7 +87,7 @@ export function MuseumsPage() {
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
-              <div>{museums.length} results</div>
+              {/* <div>{museums.length} results</div> */}
               <ClearFilters />
             </div>
           </div>
@@ -95,7 +96,7 @@ export function MuseumsPage() {
               <CircularProgress />
             </div>
           ) : (
-            <><Museums
+            <div className="mt-8"><Museums
                 museums={paginatedPlaces}
                 currency={currency}
                 exchangeRate={exchangeRates[currency] || 1} /><div className="flex justify-center mt-6 space-x-2">
@@ -125,7 +126,7 @@ export function MuseumsPage() {
                   >
                     Next
                   </Button>
-                </div></>
+                </div></div>
           )}
 
         </div>
