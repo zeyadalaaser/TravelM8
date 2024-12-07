@@ -3,7 +3,7 @@ import {
   getActivityBookings,
   getItineraryBookings,
   cancelActivityBooking,
-  cancelItineraryBooking
+  cancelItineraryBooking,
 } from "../../api/apiService";
 
 // import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -74,6 +74,14 @@ const BookingHistory = () => {
   const [subTab, setSubTab] = useState("all");
 
   const [loading, setLoading] = useState(true); // Loading state to track data fetching completion
+
+  const statusColors = {
+    Completed: "bg-green-600",
+    Paid: "bg-blue-600",
+
+    Pending: "bg-yellow-600",
+    Cancelled: "bg-red-600",
+  };
 
   const fetchDataAndFilter = async () => {
     try {
@@ -218,255 +226,162 @@ const BookingHistory = () => {
     }
   };
 
-  
-const handleRateActivity = () => {};
+  const handleRateActivity = () => {};
 
-const handleRateItinerary = () => {};
+  const handleRateItinerary = () => {};
 
-const handleRateTourGuide = () => {};
+  const handleRateTourGuide = () => {};
 
-const handleCancelBooking = async (type, bookingId) => {
-  let response;
-  if (type === "activity") {
-    response = await cancelActivityBooking(bookingId); // Await the response
-    fetchDataAndFilter();
-  } else {
-    response = await cancelItineraryBooking(bookingId); // Await the response
-    fetchDataAndFilter()
-  }
-  toast(response.message); // Show the message once the response is received
+  const handleCancelBooking = async (type, bookingId) => {
+    let response;
+    if (type === "activity") {
+      response = await cancelActivityBooking(bookingId); // Await the response
+      fetchDataAndFilter();
+    } else {
+      response = await cancelItineraryBooking(bookingId); // Await the response
+      fetchDataAndFilter();
+    }
+    toast(response.message); // Show the message once the response is received
+  };
 
+  const getIcon = (type) => {
+    switch (type) {
+      case "products":
+        return <ShoppingCart className="h-5 w-5" />;
+      case "activities":
+        return <Compass className="h-5 w-5" />;
+      case "itineraries":
+        return <Briefcase className="h-5 w-5" />;
+      default:
+        return null;
+    }
+  };
 
-};
+  const renderCards = () => {
+    if (mainTab === "activities" && showingActivities) {
+      return showingActivities
+        .filter((a) => a.activityId != null)
+        .map((activityBooking) => (
+          <ActivitiesCard
+            key={activityBooking.id}
+            activityBooking={activityBooking}
+          />
+        ));
+    } else {
+      return showingItineraries
+        .filter((a) => a.itinerary != null)
+        .map((itineraryBooking) => (
+          <ItinerariesCard
+            key={itineraryBooking.id}
+            itineraryBooking={itineraryBooking}
+          />
+        ));
+    }
+  };
 
-const getIcon = (type) => {
-  switch (type) {
-    case "products":
-      return <ShoppingCart className="h-5 w-5" />;
-    case "activities":
-      return <Compass className="h-5 w-5" />;
-    case "itineraries":
-      return <Briefcase className="h-5 w-5" />;
-    default:
-      return null;
-  }
-};
-
-
-const renderCards = () => {
-  if (mainTab === "activities" && showingActivities) {
-    return showingActivities.filter(a => a.activityId != null).map((activityBooking) => ( 
-      <ActivitiesCard key={activityBooking.id} activityBooking={activityBooking} />
-    ));
-  } else {
-    return showingItineraries.filter(a => a.itinerary != null).map((itineraryBooking) => (
-      <ItinerariesCard key={itineraryBooking.id} itineraryBooking={itineraryBooking} />
-    ));
-  }
-};
-
-  const ActivitiesCard = ({activityBooking}) => {
+  const ActivitiesCard = ({ activityBooking }) => {
     return (
       <Card
-        className="w-full max-w-6xl overflow-hidden"
+        key={activityBooking._id}
+        className="h-[200px] w-[500px] overflow-hidden"
       >
         <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            <span className="flex items-center gap-2">
+          <div className="flex items-center justify-between">
+            <div className="items-center flex gap-2">
               {getIcon("activities")}
-              {activityBooking.activityId.title}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 w-full">
-          <div className="flex flex-wrap justify-between items-start mb-4">
-            <div>
-              <p className="text-sm text-gray-600 mb-2">
-                {activityBooking.activityId.description}
-              </p>
+              <span className="text-xl font-bold truncate max-w-[15rem] md:max-w-[20rem]">
+                {activityBooking.activityId.title}
+              </span>
             </div>
-            <Badge>
-              {activityBooking.status && (activityBooking.status.charAt(0).toUpperCase() +
-                activityBooking.status.slice(1))}
+            <Badge
+              className={`${
+                statusColors[activityBooking.completionStatus]
+              } text-white`}
+            >
+              {activityBooking.completionStatus &&
+                activityBooking.completionStatus.charAt(0).toUpperCase() +
+                  activityBooking.completionStatus.slice(1)}
             </Badge>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <CardDescription className="flex items-center mt-1">
+            <CalendarIcon className="w-4 h-4 mr-1 flex-shrink-0" />
+            <span>
+              Date: {new Date(activityBooking.activityId.date).toLocaleString()}
+            </span>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-600 mb-4 truncate">
+            {activityBooking.activityId.description}
+          </p>
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-gray-600">
-              <CalendarIcon className="w-4 h-4" />
-              <span>
-                Date: {new Date(activityBooking.activityId.date).toLocaleString()}
+              <MapPinIcon className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate max-w-[15rem] md:max-w-[20rem]">
+                Location: {`${activityBooking.activityId?.location?.name}`}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <MapPinIcon className="w-4 h-4" />
-              {/* <span>
-                      Location: {activityBooking.activityId?.location.name !== ""
-                        ? activityBooking.activityId?.location.name
-                        : `${activityBooking.activityId?.location.lat}, ${activityBooking.activityId?.location.lng}`}
-                    </span> */}
-              <span>
-                Location:{" "}
-                {`${activityBooking.activityId.location.lat}, ${activityBooking.activityId.location.lng}`}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <DollarSignIcon className="w-4 h-4" />
-              <span>
-                Price:{" "}
-                {activityBooking.activityId.price -
-                  activityBooking.activityId.price *
-                    activityBooking.activityId.discount}
-              </span>
-            </div>
-            {/* <div className="flex items-center gap-2 text-sm text-gray-600">
-              <StarIcon className="w-4 h-4" />
-              <span>
-                Average Rating: {activityBooking.activityId.averageRating}
-              </span>
-            </div>
-          </div>
-          <div className="border-t pt-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-              <ClockIcon className="w-4 h-4" />
-              <span>
-                Booked on:{" "}
-                {new Date(activityBooking.bookingDate).toLocaleString()}
-              </span>
-            </div>
-            {activityBooking.rating && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                <StarIcon className="w-4 h-4" />
-                <span>Your Rating: {activityBooking.rating}/5</span>
-              </div>
-            )}
-            {activityBooking.comment && (
-              <div className="text-sm text-gray-600">
-                <p className="font-semibold">Your Comment:</p>
-                <p className="italic">&quot;{activityBooking.comment}&quot;</p>
-              </div>
-            )} */}
+            <p className="text-2xl font-semibold">
+              ${activityBooking.activityId.price}
+            </p>
           </div>
         </CardContent>
-        <CardFooter className="p-6 flex flex-wrap gap-4">
-          {activityBooking.status === "booked" && (
-            <Button
-              variant="destructive"
-              onClick={()=>handleCancelBooking("activity", activityBooking._id)}
-            >
-              Cancel Booking
-            </Button>
-          )}
-          {activityBooking.status === "completed" &&
-            !activityBooking.comment && !activityBooking.rating && (
-              <>
-                <Button variant="outline" onClick={()=>handleRateActivity}>
-                  Rate Activity
-                </Button>
-              </>
-            )}
-        </CardFooter>
       </Card>
     );
   };
-  
-  const ItinerariesCard = ({itineraryBooking}) => {
+
+  const ItinerariesCard = ({ itineraryBooking }) => {
     return (
       <Card
-        className="w-full max-w-6xl overflow-hidden"
+        key={itineraryBooking._id}
+        className=" h-[200px] w-[500px] overflow-hidden"
       >
         <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            <span className="flex items-center gap-2">
+          <div className="flex items-center justify-between">
+            <div className="items-center flex gap-2">
               {getIcon("itineraries")}
-              {itineraryBooking.itinerary.name}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 w-full">
-          <div className="flex flex-wrap justify-between items-start mb-4">
-            <div>
-              <p className="text-sm text-gray-600 mb-2">
-                {itineraryBooking.itinerary.description}
-              </p>
+              <span className="text-xl font-bold truncate max-w-[15rem] md:max-w-[20rem]">
+                {itineraryBooking.itinerary.name}
+              </span>
             </div>
             <Badge
-            // className={`${statusColor[itineraryBooking.completionStatus]} text-white`}
+              className={`${
+                statusColors[itineraryBooking.completionStatus]
+              } text-white`}
             >
-              {itineraryBooking && (itineraryBooking.completionStatus.charAt(0).toUpperCase() +
-                itineraryBooking.completionStatus.slice(1))}
+              {itineraryBooking.completionStatus}
             </Badge>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {/*<div className="flex items-center gap-2 text-sm text-gray-600">
-            <CalendarIcon className="w-4 h-4" />
+          <CardDescription className="flex items-center mt-1">
+            <CalendarIcon className="w-4 h-4 mr-1 flex-shrink-0" />
             <span>
               Date:{" "}
               {new Date(itineraryBooking.itinerary?.date).toLocaleString()}
             </span>
-          </div>*/}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-600 mb-4 truncate">
+            {itineraryBooking.itinerary.description}
+          </p>
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-gray-600">
-              <MapPinIcon className="w-4 h-4" />
-              <span>
+              <MapPinIcon className="w-4 h-4 flex-shrink-0" />
+              <span className="truncate max-w-[15rem] md:max-w-[20rem]">
                 Sites: {itineraryBooking.itinerary.historicalSites.join(", ")}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <DollarSignIcon className="w-4 h-4" />
-              <span>Price: {itineraryBooking.itinerary.price}</span>
-            </div>
-            {/* <div className="flex items-center gap-2 text-sm text-gray-600">
-            <StarIcon className="w-4 h-4" />
-            <span>Average Rating: {activityBooking.activityId?.averageRating.toFixed(1)}</span>
-          </div> */}
-          </div>
-  
-          <div className="border-t pt-4">
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-              <ClockIcon className="w-4 h-4" />
-              <span>
-                Booked on:{" "}
-                {new Date(itineraryBooking.bookingDate).toLocaleString()}
-              </span>
-            </div>
-            {/* {itineraryBooking.rating && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-              <StarIcon className="w-4 h-4" />
-              <span>Your Rating: {itineraryBooking.ratingGiven}/5</span>
-            </div>
-          )} */}
-            {/* {booking.comment && (
-            <div className="text-sm text-gray-600">
-              <p className="font-semibold">Your Comment:</p>
-              <p className="italic">&quot;{activityBooking.comment}&quot;</p>
-            </div>
-          )} */}
+            <p className="text-2xl font-semibold">
+              ${itineraryBooking.itinerary.price}
+            </p>
           </div>
         </CardContent>
-        <CardFooter className=" p-6 flex flex-wrap gap-4">
-          {itineraryBooking.completionStatus === "Pending" && (
-            <Button
-              variant="destructive"
-              onClick={()=>handleCancelBooking("itinerary", itineraryBooking._id)}
-            >
-              Cancel Booking
-            </Button>
-          )}
-          {itineraryBooking.completionStatus === "Completed" &&
-            !itineraryBooking.ratingGiven && (
-              <>
-                <Button variant="outline" onClick={()=>handleRateTourGuide}>
-                  Rate Tour Guide
-                </Button>
-                <Button variant="outline" onClick={()=>handleRateItinerary}>
-                  Rate Itinerary
-                </Button>
-              </>
-            )}
+        <CardFooter className="p-6 flex flex-wrap gap-4">
+              
         </CardFooter>
       </Card>
     );
   };
-  
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -485,7 +400,7 @@ const renderCards = () => {
             {renderSubTabs()}
           </Tabs>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {renderCards()}
           </div>
         </TabsContent>
@@ -494,5 +409,3 @@ const renderCards = () => {
   );
 };
 export default BookingHistory;
-
-
