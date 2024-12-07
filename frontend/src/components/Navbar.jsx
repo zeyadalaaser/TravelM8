@@ -12,7 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Globe, ShoppingCart } from "lucide-react";
+import { ChevronDown, Globe, ShoppingCart, Store } from 'lucide-react';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Cart from "../pages/tourist/components/products/cart.jsx";
@@ -29,7 +29,6 @@ const pages = [
   { label: "Activities", value: "activities" },
   { label: "Itineraries", value: "itineraries" },
   { label: "Places", value: "museums" },
-  { label: "Products", value: "products" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
   { label: "Transportation", value: "hotels" },
@@ -248,48 +247,6 @@ export default function Navbar({ profilePageString, children }) {
           </div>
         </div>
 
-        {/* <label
-      htmlFor="currency"
-      style={{
-        display: 'flex',
-        width: 96.5,
-        alignItems: 'center',
-        backgroundColor: 'transparent',
-       color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black', // Set color based on currentPage
-      }}
-    >
-      <Globe
-        style={{
-          marginRight: '8px',
-          fontSize: '20px',
-          color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black' // Set icon color based on currentPage
-        }}
-      />
-      <select
-              id="currency"
-              value={currency}
-              onChange={handleCurrencyChange}
-              style={{
-                padding: '5px',
-                fontSize: '14px',
-                backgroundColor: 'transparent',
-                color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black' // Set text color based on currentPage
-              }}
-            >
-              {Object.keys(exchangeRates).map((cur) => (
-                <option
-                  key={cur}
-                  value={cur}
-                  style={{
-                    color: 'black', // Option elements usually inherit color, explicitly set if needed
-                  }}
-                >
-                  {cur}
-                </option>
-              ))}
-            </select>
-          </label> */}
-
         <div className="hidden md:flex items-center justify-start ml-32 space-x-1">
           {pages.map((page) => (
             <button
@@ -317,6 +274,20 @@ export default function Navbar({ profilePageString, children }) {
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={
+                  currentPage === "/" || currentPage === `/?currency=${currency}`
+                    ? "text-white hover:bg-transparent hover:text-white"
+                    : "text-black"
+                }
+                onClick={() =>
+                  navigate(`/tourist-page?type=products&currency=${currency}`)
+                }
+              >
+                <Store className="h-5 w-5" />
+              </Button>
               <NotificationBell currency={currency} currentPage={currentPage} />
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
@@ -452,14 +423,14 @@ export default function Navbar({ profilePageString, children }) {
                 <MenuItem onClick={() => navigate("/tourist-profile")}>
                   My profile
                 </MenuItem>
-                <MenuItem onClick={handleClose}>My bookings</MenuItem>
+                <MenuItem onClick={handleClose}>My Wishlist</MenuItem>
                 <MenuItem
                   onClick={() => {
                     handleClose();
                     navigate("/wallet");
                   }}
                 >
-                  Wallet
+                  My Bookmarks
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -467,7 +438,7 @@ export default function Navbar({ profilePageString, children }) {
                     navigate("/order");
                   }}
                 >
-                  Orders
+                  My Preferences
                 </MenuItem>
                 <Separator />
                 <MenuItem
@@ -531,3 +502,4 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
+
