@@ -8,6 +8,7 @@ import TouristRegistration from "@/pages/SignUp/signupTourist.jsx";
 import FormPage from "@/pages/SignUp/signupTourguide.jsx";
 import FormPageSeller from "@/pages/SignUp/signupSeller.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router } from 'react-router-dom';
 import "./index.css";
 import TourismGovernor from "@/pages/TourismGovernor/dashboard.jsx";
 import ActivityCategories from "@/pages/admin/services/ActivityCategories.jsx"; // Ensure this path is correct
@@ -28,6 +29,7 @@ import ForgotPassword from "./pages/signIn/ForgetPassword.jsx";
 import ResetPassword from "./pages/signIn/otpPage.jsx";
 import Wallet from "./pages/tourist/components/wallet.jsx";
 import Order from "./pages/tourist/components/order.jsx";
+import { WalkthroughProvider } from './contexts/WalkthroughContext';
 
 //import { ProductsPage } from "./pages/tourist/components/products/products-page.jsx";
 //import PurchasedProductsPage from "@/pages/tourist/components/products/PurchasedProductsPage.jsx";
@@ -57,6 +59,7 @@ import "@/lib/formatter.js";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+      <WalkthroughProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
@@ -120,5 +123,6 @@ createRoot(document.getElementById("root")).render(
         toast: 'w-auto right-0',
       },
     }} />
+    </WalkthroughProvider>
   </StrictMode>
 );

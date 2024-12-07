@@ -11,6 +11,10 @@ import { SearchBar } from "../filters/search";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Button } from "@/components/ui/button";
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
+import { WalkthroughButton } from '@/components/WalkthroughButton';
+
 
 export function MuseumsPage() {
   const [loading, setLoading] = useState(false);
@@ -29,6 +33,34 @@ export function MuseumsPage() {
   const totalPages = Math.ceil(museums.length / itemsPerPage);
   // Paginated activities
   const paginatedPlaces = museums.slice(startIndex, endIndex);
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
+  useEffect(() => {
+    if (walkthroughPage === 'museums') {
+      clearSteps();
+      addSteps([
+        {
+          target: '[data-tour="museums-search"]',
+          content: 'Use the search bar to find museums by name or tag.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-filters"]',
+          content: 'Use these filters to refine your search results.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-list"]',
+          content: 'Browse through the list of available museums.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-pagination"]',
+          content: 'Navigate through different pages of museums.',
+          disableBeacon: true,
+        }
+      ], 'museums');
+    }
+  }, [addSteps, clearSteps, walkthroughPage]);
 
   // Fetch latest exchange rates on mount
   useEffect(() => {
@@ -73,9 +105,11 @@ export function MuseumsPage() {
   
   return (
     <div className="mt-24">
-      <SearchBar categories={searchCategories} />
+      <div className="mb-6 w-[360px]" data-tour="museums-search">
+        <SearchBar categories={searchCategories} />
+      </div>
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-16 h-full">
+        <div className="w-full md:w-1/4 sticky top-16 h-full" data-tour="museums-filters">
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
@@ -95,41 +129,47 @@ export function MuseumsPage() {
               <CircularProgress />
             </div>
           ) : (
-            <><Museums
-                museums={paginatedPlaces}
-                currency={currency}
-                exchangeRate={exchangeRates[currency] || 1} /><div className="flex justify-center mt-6 space-x-2">
+            <>
+              <div data-tour="museums-list">
+                <Museums
+                  museums={paginatedPlaces}
+                  currency={currency}
+                  exchangeRate={exchangeRates[currency] || 1}
+                />
+              </div>
+              <div className="flex justify-center mt-6 space-x-2" data-tour="museums-pagination">
+                <Button
+                  variant="outline"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      window.scroll(0, 0);
+                    }}
                   >
-                    Previous
+                    {page}
                   </Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      onClick={() => {
-                        setCurrentPage(page);
-                        window.scroll(0, 0);
-                      } }
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </Button>
-                </div></>
+                ))}
+                <Button
+                  variant="outline"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            </>
           )}
-
         </div>
       </div>
+      <Walkthrough/>
     </div>
   );
 }

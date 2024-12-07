@@ -15,6 +15,8 @@ import LogoutAlertDialog from "@/hooks/logoutAlert";
 import useRouter from "@/hooks/useRouter";
 import { NumberStepper } from "@/components/ui/number-stepper"
 import NotificationBell from "@/pages/tourist/components/Notifications";
+import { WalkthroughButton } from './WalkthroughButton';
+import { useLocation } from 'react-router-dom';
 
 const pages = [
   { label: "Activities", value: "activities" },
@@ -40,8 +42,25 @@ export default function Navbar({ profilePageString, children }) {
   const [userName, setUserName] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAlertOpen, setAlertOpen] = useState(false);
-
+  const locations = useLocation();
   const currency = searchParams.get("currency") ?? "USD";
+  
+
+  const getCurrentPageType = () => {
+    const path = locations.pathname;
+    const searchParams = new URLSearchParams(locations.search);
+    const type = searchParams.get('type');
+    if (type) return type.toLowerCase();
+    if (path.includes('activities')) return 'activities';
+    if (path.includes('itineraries')) return 'itineraries';
+    if (path.includes('products')) return 'products';
+    if (path.includes('flights')) return 'flights';
+    if (path.includes('hotels')) return 'hotels';
+    if (path.includes('museums')) return 'museums';
+    return 'activities'; // default
+  };
+
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -271,6 +290,7 @@ export default function Navbar({ profilePageString, children }) {
           ))}
 
         </div>
+        <WalkthroughButton currentPageType={getCurrentPageType()} />
 
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
@@ -432,6 +452,8 @@ export default function Navbar({ profilePageString, children }) {
               </SignupDialog>
             </>
           )}
+          
+        
         </div>
       </nav>
       {React.Children.map(children, child =>
