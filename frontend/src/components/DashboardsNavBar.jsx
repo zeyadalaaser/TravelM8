@@ -22,6 +22,7 @@ import { Eye, EyeOff, X } from "lucide-react";
 import { changePassword } from "../pages/admin/services/apiService.js";
 import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
+import logo from "../assets/lb.png";
 
 const ContentWrapper = ({ children }) => (
   <div className="pt-[76px]">{children}</div>
@@ -324,7 +325,10 @@ export default function Navbar({ children }) {
           onClick={() => navigate("/")}
           style={{ cursor: "pointer" }}
         >
-          TRAVELM8
+          <div className="flex items-center">
+            <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
+            <span>TRAVELM8</span>
+          </div>
         </div>
         <div className="flex-grow flex justify-center">
           {userRole === "Admin" && (
