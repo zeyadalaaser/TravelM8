@@ -104,9 +104,10 @@ export function ProductsPage({ addToCart }) {
 
   return (
     <div className="mt-24">
-      <SearchBar categories={[{ name: "Name", value: "name" }]} />
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-16 h-full">
+        <div className="w-full md:w-1/4 mt-6 sticky top-16 h-full">
+        <SearchBar categories={[{ name: "Name", value: "name" }]} />
+        <Separator className="mt-5" />
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
@@ -117,7 +118,7 @@ export function ProductsPage({ addToCart }) {
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
-              <div>{products.length} results</div>
+              {/* <div>{products.length} results</div> */}
               <ClearFilters />
             </div>
             <SortSelection />

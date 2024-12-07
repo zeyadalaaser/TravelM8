@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Footer from "@/components/Footer.jsx"
+import Footer from "@/components/Footer.jsx";
 
 import {
   Card,
@@ -190,9 +190,6 @@ const AdvertiserDashboard = () => {
   return (
     <>
       <div className="flex h-screen bg-gray-100">
-        
-
-
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
           <Header
@@ -261,23 +258,22 @@ const AdvertiserDashboard = () => {
               </Card>
             </div>
             <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="space-y-4 mb-12"
-          >
-            <div className="flex mt-4 justify-between items-center">
-              <TabsList>
-                <TabsTrigger value="activities">Activities</TabsTrigger>
-                <TabsTrigger value="sales">Sales Report</TabsTrigger>
-                <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
-              </TabsList>
-              <Button onClick={() => openDialog(null)} variant="primary">
-                <Plus className="mr-2 h-4 w-4" /> Create Activity
-              </Button>
-            </div>
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="space-y-4 mb-12"
+            >
+              <div className="flex mt-4 justify-between items-center">
+                <TabsList>
+                  <TabsTrigger value="activities">Activities</TabsTrigger>
+                  <TabsTrigger value="sales">Sales Report</TabsTrigger>
+                  <TabsTrigger value="tourists">Tourist Report</TabsTrigger>
+                </TabsList>
+                <Button onClick={() => openDialog(null)} variant="primary">
+                  <Plus className="mr-2 h-4 w-4" /> Create Activity
+                </Button>
+              </div>
 
               <TabsContent value="activities" className="space-y-4">
-
                 <ActivityCard
                   onRefresh={getActivities}
                   activities={activities}
@@ -316,12 +312,9 @@ const AdvertiserDashboard = () => {
               </TabsContent>
             </Tabs>
           </div>
-          <Footer/>
+          <Footer />
         </main>
-        
       </div>
-
-
     </>
   );
 };
