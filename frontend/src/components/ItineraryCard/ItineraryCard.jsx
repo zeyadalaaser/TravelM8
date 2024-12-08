@@ -459,7 +459,7 @@ const ChooseDate = ({
                     }}
                 >
                     <DialogTrigger asChild>
-                        <Button>Book Now</Button>
+                        <Button className="w-[116px]">Book Now</Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
@@ -525,10 +525,10 @@ const ChooseDate = ({
                                     return;
                                 }
                             }}
-                            className={`flex items-center gap-2 ${
+                            className={`w-[116px] flex items-center gap-2 ${
                                 notifiedItineraries.includes(itinerary._id)
                                     ? "bg-background hover:bg-accent text-yellow-500 border border-input"
-                                    : "bg-[#020817] hover:bg-[#020817]/90 text-white"
+                                    : ""
                             }`}
                         >
                             <Bell className={`w-4 h-4 ${
