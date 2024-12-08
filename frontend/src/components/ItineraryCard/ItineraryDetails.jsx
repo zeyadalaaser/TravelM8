@@ -95,14 +95,14 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
     <DialogTrigger asChild>
       <Button variant="outline">View Details</Button>
     </DialogTrigger>
-    <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
+    <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden">
       <DialogHeader>
         <DialogTitle className="text-2xl font-bold">
           {itinerary.name}
         </DialogTitle>
       </DialogHeader>
       <div className="flex gap-4 h-full">
-        <div className="w-1/3 flex-shrink-0">
+        <div className="w-2/5 flex-shrink-0">
           <div className="aspect-square overflow-hidden rounded-lg mb-2">
             <img
               src={
@@ -131,7 +131,7 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
             ))}
           </div>
         </div>
-        <div className="w-2/3 overflow-y-auto pr-4" style={{ maxHeight: "calc(80vh - 180px)" }}>
+        <div className="w-2/3 overflow-y-auto pr-4" style={{ maxHeight: "calc(80vh - 150px)" }}>
           <div className="space-y-4">
             <div className="flex flex-wrap gap-2">
               <Globe className="w-4 h-4" />
