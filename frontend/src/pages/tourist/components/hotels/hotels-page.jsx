@@ -160,7 +160,7 @@ export function HotelsPage() {
 
   return (
     <>
-      <div className="flex justify-between space-x-6">
+      <div className="flex justify-between space-x-3">
         <CityFilter className="flex-1" name="Where" getData={fetchLocations} />
         <SingleDateFilter className="flex-1" name="Check in" param="checkin" />
         <SingleDateFilter
