@@ -76,7 +76,10 @@ export function FlightsPage() {
     const currentRequestId = ++requestCounter.current;
     const flights = await getFlights(location.search);
 
-    if (currentRequestId === requestCounter.current) setFlights(flights);
+    if (currentRequestId === requestCounter.current) {
+      setFlights(flights);
+      setCurrentPage(1);
+    }
 
     setLoading(false);
   }, 200);

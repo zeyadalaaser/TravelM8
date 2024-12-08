@@ -175,6 +175,7 @@ export function ItinerariesPage() {
         );
       }
       setItineraries(fetchedItineraries);
+      setCurrentPage(1);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching itineraries:", error);

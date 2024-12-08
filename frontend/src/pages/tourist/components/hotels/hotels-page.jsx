@@ -118,7 +118,10 @@ export function HotelsPage() {
       })
       .filter((item) => item !== null);
 
-    if (currentRequestId === requestCounter.current) setHotels(mapped);
+    if (currentRequestId === requestCounter.current) {
+      setHotels(mapped);
+      setCurrentPage(1);
+    }
 
     setLoading(false);
   }, 200);
