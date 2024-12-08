@@ -370,8 +370,15 @@ export const payWithCash = async (req, res) => {
   };
   export const getOrdersReport = async (req, res) => {
     try {
-      const sellerId = req.user?.userId; // Assuming `userId` is the seller's ID.
-      if (!sellerId) {
+      const { userId, role } = req.user; // Assuming `userId` and `role` are part of the user object.
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+  
+      // Only filter by sellerId if the user has a seller role
+      const sellerId = role === 'Seller' ? userId : null;
+      if (role === 'Seller' && !sellerId) {
         return res.status(400).json({ message: "Seller ID is required" });
       }
   
@@ -386,6 +393,12 @@ export const payWithCash = async (req, res) => {
           ],
         },
       } : {};
+  
+      // Build the query pipeline
+      const matchConditions = {
+        ...dateConditions,
+        ...(sellerId ? { "productDetails.sellerId": new mongoose.Types.ObjectId(sellerId) } : {}),
+      };
   
       const results = await Order.aggregate([
         {
@@ -403,10 +416,7 @@ export const payWithCash = async (req, res) => {
           $unwind: "$productDetails", // Flatten the productDetails array
         },
         {
-          $match: {
-            ...dateConditions,
-            "productDetails.sellerId": new mongoose.Types.ObjectId(sellerId), // Match sellerId
-          },
+          $match: matchConditions, // Apply dynamic match conditions
         },
         {
           $group: {
@@ -425,7 +435,9 @@ export const payWithCash = async (req, res) => {
           },
         },
       ]);
-  console.log(results);
+  
+      console.log(results);
+  
       if (results.length === 0) {
         return res.status(200).json({ message: "No data to show" });
       }
@@ -439,6 +451,7 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: "Failed to fetch orders report", error: error.message });
     }
   };
+  
   
   
 

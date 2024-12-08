@@ -75,16 +75,16 @@ export default function ActivityDetails({ activity, bookActivity,currency,token 
 };
 
   return (
-    <Dialog>
+    <Dialog >
       <DialogTrigger asChild>
         <Button variant="outline">View Details</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">{activity.title}</DialogTitle>
         </DialogHeader>
-        <div className="flex gap-4">
-          <div className="w-1/2">
+        <div className="flex gap-4 h-full">
+          <div className="w-2/5 flex-shrink-0">
             <div className="aspect-square overflow-hidden rounded-lg mb-2">
               <img
                 src={activity.image || "/placeholder.svg?height=300&width=300"}
@@ -93,77 +93,44 @@ export default function ActivityDetails({ activity, bookActivity,currency,token 
               />
             </div>
           </div>
-          <div className="w-2/3 space-y-4">
-          <div className="flex items-center mt-2 gap-2">
-            <Clock className="w-4 h-4 mr-1" />
-            {new Date(activity.date).toLocaleDateString('en-GB')}
-          </div>
-            <div className="flex flex-wrap gap-2">
-            <Tag className="w-4 h-4" />
-            {activity.tags.map((tag, tagIndex) => (
-                <Badge key={tagIndex}
-                className="space-x-12" 
-                variant="secondary">
-                  {tag?.name ?? tag}
-                </Badge>
-              ))}
-             </div>
-             <div className="flex items-center gap-2">
-                <ChartColumnStacked className="w-4 h-4 mr-1" />
-                <Badge 
-                className="space-x-12" 
-                variant="secondary">
-                {activity.category.name}
-                </Badge>
-          </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Description</h3>
-              <div className="grid gap-2">
-                <div>
-                  <div className="flex flex-wrap gap-2 ">
-                  <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </div>
-                </div>
+          <div className="w-2/3 overflow-y-auto pr-4" style={{ maxHeight: "calc(80vh - 150px)" }}>
+            <div className="space-y-4">
+              <div className="flex items-center mt-2 gap-2">
+                <Clock className="w-4 h-4 mr-1" />
+                {new Date(activity.date).toLocaleDateString('en-GB')}
               </div>
-            </div>
-            <Separator/>
-            <div>
-            <h3 className="text-lg font-semibold mb-2">Location</h3>
-              <div className="grid gap-2">
-                <div>
-                  <div className="flex flex-wrap gap-2 ">
-                  <p className="text-sm text-muted-foreground">{activity?.location?.name}</p>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-            <Separator/>
-            {/* <div>
-            <h3 className="text-lg font-semibold mb-2">Category</h3>
-              <div className="grid gap-2">
-                <div>
-                  <div className="flex flex-wrap gap-2 ">
-                  <Badge variant="secondary" >
-                    {activity.category.name}
+              <div className="flex flex-wrap gap-2">
+                <Tag className="w-4 h-4" />
+                {activity.tags.map((tag, tagIndex) => (
+                  <Badge key={tagIndex} className="space-x-12" variant="secondary">
+                    {tag?.name ?? tag}
                   </Badge>
-                  </div>
-                </div>
+                ))}
               </div>
-            </div> */}
-            {/* <Separator/> */}
+              <div className="flex items-center gap-2">
+                <ChartColumnStacked className="w-4 h-4 mr-1" />
+                <Badge className="space-x-12" variant="secondary">
+                  {activity.category.name}
+                </Badge>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                <p className="text-sm text-muted-foreground">{activity.description}</p>
+              </div>
+              <Separator />
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Location</h3>
+                <p className="text-sm text-muted-foreground">{activity?.location?.name}</p>
+              </div>
+              <Separator />
+            </div>
           </div>
         </div>
-        <div className="flex items-center mt-8 bg-gray-100 justify-between w-full p-4 rounded-lg">
-          {/* Price on the far left */}
+        <div className="flex items-center mt-4 bg-gray-100 justify-between w-full p-4 rounded-lg">
           <span className="text-2xl font-bold">
           {`${(activity.price * 1).formatCurrency(currency)}`}
           </span>
-
-          {/* Right-aligned components (Timeline and ChooseDate) */}
-          <div className="flex items-center space-x-4">
           <Button onClick={() => handleBook(activity)}>Book activity</Button>
-          </div>
         </div>
       </DialogContent>
     </Dialog>

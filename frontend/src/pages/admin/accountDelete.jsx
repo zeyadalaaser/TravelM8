@@ -81,7 +81,7 @@ const DeletionRequestsAdmin = () => {
   const handleDelete = async (username, type) => {
     try {
       // Step 1: Delete the user
-      const userResponse = await fetch("http://localhost:5001/api/users", {
+      const userResponse = await fetch("http://localhost:5001/api/usersOnly", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -179,7 +179,7 @@ const DeletionRequestsAdmin = () => {
                       >
                         <DialogTrigger asChild>
                           <Button
-                            variant="destructive"
+                             
                             onClick={() => openDeleteDialog(request)}
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
