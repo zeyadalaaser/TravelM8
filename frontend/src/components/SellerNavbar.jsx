@@ -162,7 +162,7 @@ export default function SellerNavbar({ children }) {
           onClick={() => navigate("/")}
           style={{ cursor: "pointer" }}
         >
-          <div className="flex items-center">
+          <div className="flex items-center -ml-8">
             <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
             <span>TRAVELM8</span>
           </div>
