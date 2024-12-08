@@ -231,6 +231,7 @@ const PendingUserDocuments = () => {
       <div className="flex-1">
         <Navbar />
         <div className="container mx-auto p-6 mt-8 w-4/5">
+
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">Pending User Verifications</h1>
             <span className="text-sm text-gray-500">
@@ -392,6 +393,7 @@ const PendingUserDocuments = () => {
                           <Button
                             variant="outline"
                             className="flex-1 h-9 px-3 bg-green-50 text-green-600 border-green-200 hover:bg-green-600 hover:text-white transition-all duration-200 shadow-sm hover:shadow-md"
+
                           >
                             <div className="flex items-center justify-center w-full">
                               <CheckCircle className="mr-1 h-4 w-4" />
