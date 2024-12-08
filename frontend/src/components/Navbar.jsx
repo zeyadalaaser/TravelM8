@@ -65,7 +65,8 @@ export default function Navbar({ profilePageString, children }) {
     if (path.includes('flights')) return 'flights';
     if (path.includes('hotels')) return 'hotels';
     if (path.includes('museums')) return 'museums';
-    return 'activities'; // default
+    
+    //return 'activities'; // default
   };
 
 
@@ -289,10 +290,13 @@ export default function Navbar({ profilePageString, children }) {
           ))}
           <BookTransportation change={location.pathname === "/"} />
         </div>
-        <WalkthroughButton currentPageType={getCurrentPageType()} />
+        
         <div className="flex items-center space-x-4">
-          {isLoggedIn ? (
+          {isLoggedIn  ? (
             <>
+            <div className="flex items-center space-x-4">
+        {isLoggedIn && <WalkthroughButton currentPageType={getCurrentPageType()} />}
+      </div>
               <Button
                 variant="ghost"
                 size="icon"
