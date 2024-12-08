@@ -31,6 +31,7 @@ import { BookTransportation } from "@/pages/tourist/components/bookings/book-tra
 const pages = [
   { label: "Activities", value: "activities" },
   { label: "Itineraries", value: "itineraries" },
+  { label: "Products", value: "products", visibleWhenLoggedOut: true }, // Added Products here
   { label: "Places", value: "museums" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
@@ -56,7 +57,6 @@ export default function Navbar({ profilePageString, children }) {
   const getCurrentPageType = () => {
     const path = locations.pathname;
     const searchParams = new URLSearchParams(locations.search);
-  const currency = searchParams.get("currency") ?? "USD";
     const type = searchParams.get('type');
     if (type) return type.toLowerCase();
     if (path.includes('activities')) return 'activities';
@@ -65,9 +65,9 @@ export default function Navbar({ profilePageString, children }) {
     if (path.includes('flights')) return 'flights';
     if (path.includes('hotels')) return 'hotels';
     if (path.includes('museums')) return 'museums';
-    return 'activities'; // default
+    
+    //return 'activities'; // default
   };
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -234,12 +234,11 @@ export default function Navbar({ profilePageString, children }) {
     <>
       <nav
         className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300  
-          ${
-            location.pathname === "/"
-              ? isScrolled
-                ? "bg-gray-800/50 backdrop-blur-md"
-                : "bg-transparent"
-              : "bg-white text-black shadow-sm"
+          ${location.pathname === "/"
+            ? isScrolled
+              ? "bg-gray-800/50 backdrop-blur-md"
+              : "bg-transparent"
+            : "bg-white text-black shadow-sm"
           }`}
         style={{ height: "56px" }}
       >
@@ -266,33 +265,35 @@ export default function Navbar({ profilePageString, children }) {
         </div>
 
         <div className="hidden md:flex items-center justify-start ml-32 space-x-1">
-          {pages.map((page) => (
-            <button
-              key={page.value}
-              className={`${
-                location.pathname === "/"
-                  ? "text-white hover:text-white/70"
-                  : "text-black hover:text-black/70"
-              } ${
-                currentPage.includes(`/tourist-page?type=${page.value}`)
-                  ? "py-1 px-3 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-0.5 after:bg-primary"
-                  : "py-1 px-3"
-              }`}
-              onClick={() =>
-                navigate(
-                  `/tourist-page?type=${page.value}&currency=${currency}`
-                )
-              }
-            >
-              {page.label}
-            </button>
-          ))}
-          <BookTransportation change={location.pathname === "/"} />
-        </div>
-        <WalkthroughButton currentPageType={getCurrentPageType()} />
+  {pages.filter(page => !(isLoggedIn && page.value === "products") || (page.visibleWhenLoggedOut && !isLoggedIn)).map((page) => ( // Adjusted filter logic
+    <button
+      key={page.value}
+      className={`${
+        location.pathname === "/"
+          ? "text-white hover:text-white/70"
+          : "text-black hover:text-black/70"
+      } ${
+        currentPage.includes(`/tourist-page?type=${page.value}`)
+          ? "py-1 px-3 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-0.5 after:bg-primary"
+          : "py-1 px-3"
+      }`}
+      onClick={() =>
+        navigate(
+          `/tourist-page?type=${page.value}&currency=${currency}`
+        )
+      }
+    >
+      {page.label}
+    </button>
+  ))}
+  <BookTransportation change={location.pathname === "/"} />
+</div>
         <div className="flex items-center space-x-4">
-          {isLoggedIn ? (
+          {isLoggedIn  ? (
             <>
+            <div className="flex items-center space-x-4">
+        {isLoggedIn && <WalkthroughButton currentPageType={getCurrentPageType()} />}
+      </div>
               <Button
                 variant="ghost"
                 size="icon"
@@ -516,4 +517,3 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
-

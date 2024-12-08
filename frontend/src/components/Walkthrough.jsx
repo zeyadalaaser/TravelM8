@@ -10,14 +10,18 @@ export function Walkthrough() {
   } = useWalkthrough();
 
   useEffect(() => {
+    const setBodyOverflow = (value) => {
+      document.body.style.overflow = value;
+    };
+
     if (isWalkthroughActive) {
-      document.body.style.overflow = 'hidden';
+      setBodyOverflow('hidden');
     } else {
-      document.body.style.overflow = 'auto';
+      setBodyOverflow('auto');
     }
 
     return () => {
-      document.body.style.overflow = 'auto';
+      setBodyOverflow('auto');
     };
   }, [isWalkthroughActive]);
 
@@ -31,6 +35,10 @@ export function Walkthrough() {
         top: 0,
         behavior: 'smooth'
       });
+      // Ensure body overflow is reset after scrolling
+      setTimeout(() => {
+        document.body.style.overflow = 'auto';
+      }, 100);
     }
 
     if (action === 'update' && type === 'step:after') {

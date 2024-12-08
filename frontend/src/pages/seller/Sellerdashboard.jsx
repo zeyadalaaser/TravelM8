@@ -20,7 +20,7 @@ import SalesReport from './components/SalesReport.jsx';
 import axios from 'axios';
 import { SearchBar } from "./components/filters/search";
 import { PriceFilter } from "./components/filters/price-filter";
-
+import Footer from "@/components/Footer.jsx";
 const SellerDashboard = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -388,20 +388,9 @@ const SellerDashboard = () => {
 </Dialog>
           </TabsContent>  
          </Tabs>
-         
-         
-         
-         
-         
-         
-         
-         
-         
-         
-
-
-
+  
         </div>
+        <Footer />
       </main>
     </div>
   );

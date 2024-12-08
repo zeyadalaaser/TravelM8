@@ -42,3 +42,39 @@ export const createReview = async (req, res) => {
         res.status(500).json({ message: 'Server error. Please try again later.', error });
     }
 };
+
+export const getReviews = async (req, res) => {
+    const { entityId, entityType, touristId } = req.query;
+
+    if (!entityId || !entityType) {
+        return res.status(400).json({
+            message: 'Please provide both entityId and entityType.'
+        });
+    }
+
+    try {
+        let reviews;
+
+        if (touristId) {
+            // If touristId is provided, filter reviews by touristId as well
+            reviews = await Rating.find({ entityId, entityType, userId: touristId });
+        } else {
+            // If touristId is not provided, fetch all reviews for the entity and type
+            reviews = await Rating.find({ entityId, entityType });
+        }
+
+        if (reviews.length === 0) {
+            return res.status(404).json({
+                message: 'No reviews found for the provided entity.'
+            });
+        }
+
+        // Calculate the average rating for the entity
+        const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
+        const averageRating = totalRating / reviews.length;
+
+        res.status(200).json({ reviews, averageRating });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error. Please try again later.', error });
+    }
+};

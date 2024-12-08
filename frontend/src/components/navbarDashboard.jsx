@@ -105,15 +105,15 @@ const Header = ({
   };
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white h-16 shadow-sm">
       <div className="flex items-center justify-between px-7 py-0">
         {/* Title and Notifications */}
-        <div className="flex items-center -ml-8">
+        <div className="flex items-center -ml-8 -mt-2">
           <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
           <h1 className="text-2xl font-semibold text-gray-800">TravelM8</h1>
         </div>
 
-        <div className="flex items-center relative">
+        <div className="flex items-center -mt-2 relative">
           {/* Notification Button */}
           <Button
             variant="link" // Borderless button style

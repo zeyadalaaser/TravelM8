@@ -362,27 +362,6 @@ const TourGuideProfilePage = () => {
             </div>
           </div>
         );
-      case "locations":
-        return (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Locations</h1>
-            {/* Locations content */}
-          </div>
-        );
-      case "tags":
-        return (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Tags</h1>
-            {/* Tags content */}
-          </div>
-        );
-      case "itineraries":
-        return (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Itineraries</h1>
-            {/* Itineraries content */}
-          </div>
-        );
       case "settings":
         return (
           <div className="bg-white shadow rounded-lg p-6">
@@ -464,27 +443,6 @@ const TourGuideProfilePage = () => {
               >
                 <User className="mr-3" />
                 Account Info
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView("locations")}
-              >
-                <Map className="mr-3" />
-                Locations
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView("tags")}
-              >
-                <Tag className="mr-3" />
-                Tags
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView("itineraries")}
-              >
-                <List className="mr-3" />
-                Itineraries
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
