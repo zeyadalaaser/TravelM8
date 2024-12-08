@@ -59,7 +59,7 @@ const ManageActivities = () => {
           {activities.map((activity) => (
             <div
               key={activity._id}
-              className="p-4 border border-gray-300 rounded-lg shadow-md"
+              className="p-4 border border-gray-300 rounded-lg shadow-md flex flex-col"
             >
               <h2 className="text-lg font-bold">{activity.title}</h2>
               <p className="text-sm text-gray-600 mb-2">
@@ -79,7 +79,7 @@ const ManageActivities = () => {
                   : activity.price}
               </p>
               <Button
-                className="w-full mb-2"
+                className="w-full mb-2 mt-auto"
                 onClick={() =>
                   toggleFlagActivity(activity._id, activity.flagged)
                 }
