@@ -222,7 +222,7 @@ export function ItinerariesPage() {
           </div>
         </div>
         <div className="w-full md:w-3/4" data-tour="itinerary-cards">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-6">
             <div className="flex h-5 items-center space-x-4 text-sm">
               {loading ? (
                 <div>Loading...</div>
