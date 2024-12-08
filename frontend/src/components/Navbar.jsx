@@ -289,8 +289,8 @@ export default function Navbar({ profilePageString, children }) {
           ))}
           <BookTransportation change={location.pathname === "/"} />
         </div>
-        <WalkthroughButton currentPageType={getCurrentPageType()} />
         <div className="flex items-center space-x-4">
+        <WalkthroughButton currentPageType={getCurrentPageType()} currency={currency}  currentPage={currentPage} />
           {isLoggedIn ? (
             <>
               <Button
