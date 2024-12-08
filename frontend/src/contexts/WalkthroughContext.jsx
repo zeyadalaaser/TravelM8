@@ -178,17 +178,22 @@ export const pageSteps = {
   museums: [
     {
       target: '[data-tour="museums-search"]',
-      content: 'Search for museums by name or tag.',
+      content: 'Use the search bar to find museums by name or tag.',
       disableBeacon: true,
     },
     {
       target: '[data-tour="museums-filters"]',
-      content: 'Filter museums by price and category.',
+      content: 'Use these filters to refine your search results.',
       disableBeacon: true,
     },
     {
       target: '[data-tour="museums-list"]',
-      content: 'Browse through available museums.',
+      content: 'Browse through the list of available museums.',
+      disableBeacon: true,
+    },
+    {
+      target: '[data-tour="museums-pagination"]',
+      content: 'Navigate through different pages of museums.',
       disableBeacon: true,
     }
   ]

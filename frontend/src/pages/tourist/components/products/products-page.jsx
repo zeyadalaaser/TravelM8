@@ -141,8 +141,11 @@ export function ProductsPage({ addToCart }) {
   return (
     <div className="mt-24">
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 mt-6 sticky top-16 h-full"data-tour="search-bar">
+        <div className="w-full md:w-1/4 mt-6 sticky top-16 h-full">
+        <div data-tour="search-bar">
         <SearchBar categories={[{ name: "Name", value: "name" }]} />
+        </div>
+        <div data-tour="sort-selection">
         <Separator className="mt-5" />
           <PriceFilter
             currency={currency}
@@ -151,6 +154,7 @@ export function ProductsPage({ addToCart }) {
           <Separator className="mt-5" />
           <RatingFilter />
         </div>
+        </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
@@ -158,12 +162,12 @@ export function ProductsPage({ addToCart }) {
               <ClearFilters />
          
             </div>
-            <div className="w-[180px] " data-tour="sort-selection" >
+            <div className="w-[180px] " data-tour="filters" >
             <SortSelection />
             </div >
           </div>
           <div >
-          <div data-tour="pagination">
+          <div data-tour="Product-list">
           {loading ? (
             <div className="flex justify-center items-center mt-36">
               <CircularProgress />
@@ -173,6 +177,7 @@ export function ProductsPage({ addToCart }) {
                 products={paginatedProducts}
                 currency={currency}
                 token={token} /><div className="flex justify-center mt-6 space-x-2">
+                  <div className="flex justify-center mt-6 "data-tour="pagination">
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -199,7 +204,7 @@ export function ProductsPage({ addToCart }) {
                   >
                     Next
                   </Button>
-                </div></>
+                </div></div></>
           )}  </div>
 
         </div>

@@ -106,32 +106,43 @@ export function MuseumsPage() {
   return (
     <div className="mt-24">
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-16 mt-6 h-full"data-tour="museums-search">
+        <div className="w-full md:w-1/4 sticky top-16 mt-6 h-full">
+        <div className="mb-6 " data-tour="museums-search">
         <SearchBar categories={searchCategories} />
+        </div>
         <Separator className="mt-5" />
+        <div className="mt-4" data-tour="museums-filters">
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
-          />
+          />  
           <Separator className="mt-5" />
           <SelectFilter name="Tags" paramName="tag" getOptions={getPlaceTags} />
         </div>
-        <div className="w-full md:w-3/4">
+        </div>
+        <div className="w-full md:w-3/4" data-tour="museums-list">
+  
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
               {/* <div>{museums.length} results</div> */}
               <ClearFilters />
+         
             </div>
           </div>
+         
           {loading ? (
             <div className="flex justify-center items-center mt-36">
               <CircularProgress />
             </div>
+            
           ) : (
             <div className="mt-8"><Museums
                 museums={paginatedPlaces}
                 currency={currency}
-                exchangeRate={exchangeRates[currency] || 1} /><div className="flex justify-center mt-6 space-x-2">
+                exchangeRate={exchangeRates[currency] || 1} />
+                
+                <div className="flex justify-center mt-6 space-x-2">
+                  <div className="flex justify-center mt-6 "data-tour="museums-pagination">
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -158,7 +169,7 @@ export function MuseumsPage() {
                   >
                     Next
                   </Button>
-                </div></div>
+                </div></div></div>
           )}
         </div>
       </div>

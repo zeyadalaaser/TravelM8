@@ -124,7 +124,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
   return (
     <div className="space-y-4">
       {activities.map((activity, index) => (
-        <Card key={index} className="overflow-hidden">
+        <Card key={index} className="overflow-hidden h-[260px]">
           <div className="flex flex-col md:flex-row">
             <div className="w-full md:w-1/3">
               <img

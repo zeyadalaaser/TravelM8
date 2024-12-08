@@ -54,7 +54,7 @@ const ManageActivities = () => {
   return (
     <div className="flex-1 p-4">
       <Navbar />
-      <div className="container mx-auto p-4  mt-8">
+      <div className="container mx-auto p-4  mt-8 w-4/5">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {activities.map((activity) => (
             <div
