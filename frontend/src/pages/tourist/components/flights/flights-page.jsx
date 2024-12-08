@@ -140,7 +140,7 @@ export function FlightsPage() {
 
   return (
     <>
-      <div className="flex justify-between space-x-6" >
+      <div className="flex justify-between space-x-3" >
         <div className="flex-1" data-tour="flight-search">
         <CityFilter className="flex-1" name="From" getData={fetchCities}   />
         </div>
