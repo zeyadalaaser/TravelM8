@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react"; // Removed Trash2 as per previous instructions
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 const TourismGovernor1 = () => {
@@ -90,7 +90,7 @@ const TourismGovernor1 = () => {
         }}
       >
         <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
-        <div className="container mx-auto p-4 w-4/5">
+        <div className="container mx-auto p-6 w-4/5">
           <h1 className="text-2xl font-bold mb-4">
             Tourism Governors Management
           </h1>
@@ -107,7 +107,7 @@ const TourismGovernor1 = () => {
             }}
           >
             <DialogTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className="mb-4 bg-gray-800 text-white hover:bg-blue-600">
                 <Plus className="mr-2 h-4 w-4" /> Add Governor
               </Button>
             </DialogTrigger>
@@ -149,30 +149,32 @@ const TourismGovernor1 = () => {
                 )}
               </div>
               <div className="flex justify-end">
-                <Button onClick={registerGovernor}>Add Governor</Button>
+                <Button className="bg-blue-500 text-white hover:bg-blue-600" onClick={registerGovernor}>Add Governor</Button>
               </div>
             </DialogContent>
           </Dialog>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Username</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {governors.map((governor, index) => (
-                <TableRow key={index}>
-                  <TableCell>{governor.username}</TableCell>
+          <div className="bg-white shadow-md rounded-lg p-4 mt-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Username</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {governors.length === 0 && (
-            <p className="text-center text-muted-foreground mt-4">
-              No governors found.
-            </p>
-          )}
+              </TableHeader>
+              <TableBody>
+                {governors.map((governor, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{governor.username}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {governors.length === 0 && (
+              <p className="text-center text-muted-foreground mt-4">
+                No governors found.
+              </p>
+            )}
+          </div>
         </div>
         <Footer />
       </div>

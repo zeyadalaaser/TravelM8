@@ -626,34 +626,11 @@ export default function HeroSection() {
                   </div>
                 </div>
               </div>
-            </div><section className="container mx-auto px-4 py-12">
-              <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-medium font-bold tracking-tight">Our travel memories</h1>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                {blogPosts.map((post, index) => (
-                  <div key={index} className="bg-white rounded-xl overflow-hidden shadow-lg">
-                    <Link href={post.href}>
-                      <div className="relative h-[300px] overflow-hidden">
-                        <img
-                          src={post.image}
-                          alt={post.title}
-                          fill
-                          className="object-cover transition-transform hover:scale-105 duration-300" />
-                      </div>
-                      <div className="p-6">
-                        <p className="text-gray-500 mb-4 font-medium">{post.date}</p>
-                        <h3 className="text-2xl font-bold mb-4 leading-tight font-medium">{post.title}</h3>
-                        <p className="text-gray-600 font-medium">{post.description}</p>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-                <Walkthrough />
-              </div>
-            </section>
-            <Footer /></>
+            </div>
+            <div className="mt-36">
+            <Footer />
+            </div>
+</>
   )}
     </div>
 
