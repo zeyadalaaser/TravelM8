@@ -98,7 +98,7 @@ export function AdminItinerariesPage() {
     <div className="min-h-screen bg-white text-black">
       <Navbar />
       <div className="container mx-auto px-4 py-8 mt-8 w-4/5">
-        <h1 className="text-3xl font-bold mb-8">Itineraries</h1>
+        <h1 className="text-3xl font-bold mb-8 mt-8">Itineraries</h1>
         <div className="mb-6">
           <input
             type="text"
