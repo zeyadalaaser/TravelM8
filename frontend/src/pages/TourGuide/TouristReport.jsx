@@ -119,8 +119,36 @@ export default function TouristReport() {
         }
     };
 
-    const filteredReportData = Array.isArray(reportData)
-        ? reportData.filter((item) =>
+    const combinedData = [...itineraries, ...activities].map((item) => {
+        let reportItem;
+      
+        // Check if the item is from the itineraries (TourGuide)
+        if (itineraries.includes(item)) {
+          reportItem = reportData.find((report) => report.name === item.name);
+        } 
+        // Check if the item is from the activities (Advertiser)
+        else if (activities.includes(item)) {
+          reportItem = reportData.find((report) => report.name === item.title);
+        }
+      
+        // Return the found report item or a default object with zero values
+        return reportItem || { name: item.name || item.title, revenue: 0, bookingCount: 0 };
+      });
+      
+      // Add any reportData entries that are not in itineraries or activities
+      reportData.forEach((reportItem) => {
+        const existsInCombinedData = combinedData.some(
+          (data) => data.name === reportItem.name
+        );
+        
+        if (!existsInCombinedData) {
+          combinedData.push(reportItem); // Add missing reportItem to the combinedData
+        }
+      });
+      
+
+    const filteredReportData = Array.isArray(combinedData)
+        ? combinedData.filter((item) =>
               selectedItineraryOrActivity
                   ? item.name === selectedItineraryOrActivity
                   : true
@@ -198,13 +226,16 @@ export default function TouristReport() {
             <BarChart data={filteredReportData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
-                    dataKey="name"
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                    interval={0}
-                    tick={{ fontSize: 13 }}
-                />
+          dataKey="name"
+          angle={-30}  // Make the text horizontal (no rotation)
+          textAnchor="middle"  // Center the text under the bars
+          height={120}  // Ensure there's enough space between the bars and the labels
+          interval={0}
+          tick={{ fontSize: 13 }}
+          tickLine={false}  // Disable tick line for cleaner appearance
+          dy={53}  // Adjust the vertical position (downward) of the labels
+          dx={-10}  // Shift the labels slightly to the left, if needed
+        />
                 <YAxis
                    // ticks={[0, 10, 20, 30, 40, 50]}
                     tickFormatter={(value) => `${value}`}

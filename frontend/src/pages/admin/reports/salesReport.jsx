@@ -3,113 +3,102 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Receipt, DollarSign, TrendingUp } from "lucide-react";
 import { DatePicker } from "../components/date-picker";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import axios from "axios";
 
 const SalesReport = () => {
   const [date, setDate] = useState();
   const [allActivities, setAllActivities] = useState([]);
   const [allItineraries, setAllItineraries] = useState([]);
+  const [allProducts, setAllProducts] = useState([]); // New state for products
   const [salesData, setSalesData] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [activitiesRevenue, setActivitiesRevenue] = useState(0);
   const [itinerariesRevenue, setItinerariesRevenue] = useState(0);
+  const [productsRevenue, setProductsRevenue] = useState(0); // New state for product revenue
   const [activeTab, setActiveTab] = useState("all");
   const token = localStorage.getItem("token");
+
   const fetchData = async () => {
     try {
-    if (date) {
-     
-        const [itineraries, activities] = await Promise.all([
+      if (date) {
+        const [itineraries, activities, products] = await Promise.all([
           axios.get("http://localhost:5001/api/itinerariesReport", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: {
-              year: date.getFullYear(),
-              month: date.getMonth() + 1,
-              day: date.getDate(),
-            },
+            headers: { Authorization: `Bearer ${token}` },
+            params: { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() },
           }),
           axios.get("http://localhost:5001/api/activitiesReport", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: {
-              year: date.getFullYear(),
-              month: date.getMonth() + 1,
-              day: date.getDate(),
-            },
+            headers: { Authorization: `Bearer ${token}` },
+            params: { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() },
+          }),
+          axios.get("http://localhost:5001/api/productsReport", {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() },
           }),
         ]);
         setAllItineraries(itineraries.data.data || []);
         setAllActivities(activities.data.data || []);
-    }
-    else{
-      const [itineraries, activities] = await Promise.all([
-        axios.get("http://localhost:5001/api/itinerariesReport",{
-          headers: {
-          Authorization: `Bearer ${token}`,
-        }}),
-        axios.get("http://localhost:5001/api/activitiesReport", {
-          headers: {
-          Authorization: `Bearer ${token}`,
-        }}),
-      ]);
-      setAllItineraries(itineraries.data.data || []);
-      setAllActivities(activities.data.data || []);
-    }
+        setAllProducts(products.data.data || []); // Set product data
+      } else {
+        const [itineraries, activities, products] = await Promise.all([
+          axios.get("http://localhost:5001/api/itinerariesReport", { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get("http://localhost:5001/api/activitiesReport", { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get("http://localhost:5001/api/ordersReport", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        setAllItineraries(itineraries.data.data || []);
+        setAllActivities(activities.data.data || []);
+        setAllProducts(products.data.data || []); // Set product data
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
-  const refreshContet = () => {
+  const refreshContent = () => {
     if (activeTab === "activities") {
       setSalesData(allActivities);
       setTotalRevenue(activitiesRevenue);
     } else if (activeTab === "itineraries") {
       setSalesData(allItineraries);
       setTotalRevenue(itinerariesRevenue);
+    } else if (activeTab === "products") {
+      setSalesData(allProducts); // Show products data
+      setTotalRevenue(productsRevenue); // Show product revenue
     } else if (activeTab === "all") {
-      setSalesData([]);
-      setTotalRevenue(activitiesRevenue + itinerariesRevenue);
+      setSalesData([]); // Clear sales data for the "all" tab
+      setTotalRevenue(activitiesRevenue + itinerariesRevenue + productsRevenue); // Sum all revenues
     }
-  }
+  };
+
   const calculateRevenue = () => {
     const activitiesRev = allActivities.reduce((acc, { revenue }) => acc + revenue, 0) * 0.1;
     const itinerariesRev = allItineraries.reduce((acc, { revenue }) => acc + revenue, 0) * 0.1;
-    console.log("itineraries revenue" ,itinerariesRev );
-    console.log("activities revenue" ,activitiesRev );
+    const productsRev = allProducts.reduce((acc, { revenue }) => acc + revenue, 0) * 0.1; // Calculate product revenue
+    console.log("itineraries revenue", itinerariesRev);
+    console.log("activities revenue", activitiesRev);
+    console.log("products revenue", productsRev);
 
     setActivitiesRevenue(activitiesRev);
     setItinerariesRevenue(itinerariesRev);
+    setProductsRevenue(productsRev); // Set product revenue
 
-    console.log("itineraries revenue after setting" ,itinerariesRevenue );
-    console.log("activities revenue after setting" ,activitiesRevenue );
-
-    setTotalRevenue(activitiesRevenue + itinerariesRevenue);
-    console.log("total revenue" ,totalRevenue );
-
+    setTotalRevenue(activitiesRev + itinerariesRev + productsRev);
+    console.log("total revenue", totalRevenue);
   };
 
   useEffect(() => {
     fetchData();
   }, [date]);
 
-  useEffect(()=>{
-    // calculateRevenue();
-    refreshContet();
-
-  }, [activitiesRevenue,itinerariesRevenue]);
+  useEffect(() => {
+    refreshContent();
+  }, [activitiesRevenue, itinerariesRevenue, productsRevenue]);
 
   useEffect(() => {
     calculateRevenue();
-  }, [allActivities, allItineraries]);
-
+  }, [allActivities, allItineraries, allProducts]);
 
   useEffect(() => {
-    refreshContet();
+    refreshContent();
   }, [activeTab]);
 
   const handleTabChange = (value) => setActiveTab(value);
@@ -119,14 +108,13 @@ const SalesReport = () => {
       <CardHeader className="w-full gap-2 ">
         <div className="flex items-center justify-between">
           <div className="flex-col">  
-          <CardTitle className="text-2xl font-bold">Sales Report</CardTitle>
-          {date
-            ? <span className="text-sm  text-muted-foreground">Displaying Data of {date.toLocaleDateString()}</span>
-            : <span className="text-sm  text-muted-foreground">Displaying All Data</span>
-          }
+            <CardTitle className="text-2xl font-bold">Sales Report</CardTitle>
+            {date
+              ? <span className="text-sm text-muted-foreground">Displaying Data of {date.toLocaleDateString()}</span>
+              : <span className="text-sm text-muted-foreground">Displaying All Data</span>
+            }
           </div>
           <div className="flex items-center gap-2">
-            {/* <Receipt className="h-8 w-8 text-green-300" /> */}
             <DatePicker date={date} setDate={setDate} />
           </div>
         </div>
@@ -136,7 +124,7 @@ const SalesReport = () => {
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="activities">Activities</TabsTrigger>
               <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
-              <TabsTrigger value="products">Products</TabsTrigger>
+              <TabsTrigger value="products">Products</TabsTrigger> {/* New Tab */}
             </TabsList>
           </Tabs>
         </div>
@@ -181,6 +169,17 @@ const SalesReport = () => {
                   <DollarSign className="h-5 w-5 mr-1" />
                   <span className="font-bold">
                     {itinerariesRevenue.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              <div className=" text-md text-black bg-stone-50 p-6 rounded-lg flex items-center justify-between">
+                <div>
+                  <p className="text-black">Products</p> {/* New Product Display */}
+                </div>
+                <div className="flex">
+                  <DollarSign className="h-5 w-5 mr-1" />
+                  <span className="font-bold">
+                    {productsRevenue.toFixed(2)} {/* Product Revenue */}
                   </span>
                 </div>
               </div>
