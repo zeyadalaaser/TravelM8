@@ -137,32 +137,45 @@ export const getAllActivityBookings = async (req, res) => {
 
 export const cancelBooking = async (req, res) => {
   try {
-    // const touristId = req.user.userId;
     const bookingId = req.params.id;
-    const bookingToCancel = await BookingActivity.findById(bookingId).populate(
-      "activityId"
-    );
+    const bookingToCancel = await BookingActivity.findById(bookingId).populate("activityId");
+
+    if (!bookingToCancel) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
 
     const currentDate = new Date();
     const slotDateObj = new Date(bookingToCancel.activityId.date);
-
     const hoursDifference = (slotDateObj - currentDate) / (1000 * 60 * 60);
 
     if (hoursDifference < 48) {
       return res.status(400).json({
-        message:
-          "Cancellations are only allowed 48 hours before the activity date",
+        message: "Cancellations are only allowed 48 hours before the activity date",
       });
     }
 
+    // Update booking status
     bookingToCancel.completionStatus = "Cancelled";
     await bookingToCancel.save();
-    res.status(201).json({
+
+    // Refund logic
+    const touristId = bookingToCancel.touristId; 
+    const touristData = await tourist.findById(touristId); // Fetch the tourist data
+    const refundAmount = bookingToCancel.price; // Assuming 'price' is the amount paid for the booking
+
+    // Update user's wallet balance
+    touristData.wallet += refundAmount; // Add the refund amount to the wallet
+    await touristData.save(); // Save the updated wallet balance
+
+    res.status(200).json({
       bookingToCancel,
       message: "Successfully cancelled your booking!",
+      amountRefunded: refundAmount,
+      newBalance: touristData.wallet,
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error cancelling booking:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
 

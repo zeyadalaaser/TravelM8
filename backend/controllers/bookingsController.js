@@ -124,40 +124,45 @@ export const getAllTourBookings = async (req, res) => {
 
 export const cancelBooking = async (req, res) => {
   try {
-    // const touristId = req.user.userId;
-    const bookingId = req.params.id;
+      const userId = req.user?.userId;
+      const bookingId = req.params.id;
 
-    const bookingToCancel = await Booking.findById(bookingId);
+      const bookingToCancel = await Booking.findById(bookingId).populate('tourist'); // Assuming 'tourist' is the reference to the user
 
-    const currentDate = new Date();
-    const slotDateObj = new Date(bookingToCancel.tourDate);
+      if (!bookingToCancel) {
+          return res.status(404).json({ message: "Booking not found" });
+      }
 
-    const hoursDifference = (slotDateObj - currentDate) / (1000 * 60 * 60);
+      const currentDate = new Date();
+      const slotDateObj = new Date(bookingToCancel.tourDate);
+      const hoursDifference = (slotDateObj - currentDate) / (1000 * 60 * 60);
 
-    if (hoursDifference < 48) {
-      return res.status(400).json({
-        message:
-          "Cancellations are only allowed 48 hours before the activity date",
+      if (hoursDifference < 48) {
+          return res.status(400).json({
+              message: "Cancellations are only allowed 48 hours before the activity date",
+          });
+      }
+
+      // Update booking status
+      bookingToCancel.completionStatus = "Cancelled";
+      await bookingToCancel.save();
+
+      // Refund logic
+      const tourist = bookingToCancel.tourist; // Assuming the booking has a reference to the tourist
+      const refundAmount = bookingToCancel.price; // Assuming 'price' is the amount paid for the booking
+
+      // Update user's wallet balance
+      tourist.wallet += refundAmount; // Add the refund amount to the wallet
+      await tourist.save(); // Save the updated wallet balance
+
+      res.status(200).json({
+          success: true,
+          message: "Successfully cancelled your booking!",
+          amountRefunded: refundAmount,
+          newBalance: tourist.wallet,
       });
-    }
-
-    bookingToCancel.completionStatus = "Cancelled";
-    await bookingToCancel.save();
-    const result = await updateItineraryUponBookingModification(
-      bookingToCancel.itinerary,
-      bookingToCancel.tourDate,
-      "cancel"
-    );
-
-    res.status(200).json({
-      bookingToCancel,
-      success: result.success,
-      message: result.success
-        ? "Successfully cancelled your booking!"
-        : result.message,
-    });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+      res.status(400).json({ message: error.message });
   }
 };
 

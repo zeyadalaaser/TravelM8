@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/NavbarAdmin";
-
-//import Navbar from "@/components/NavbarAdmin";
-
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +28,7 @@ const AdminPanel = () => {
   const [sidebarState, setSidebarState] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState(""); // Added email state
+  const [email, setEmail] = useState("");
   const [admins, setAdmins] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState(null);
@@ -75,7 +72,7 @@ const AdminPanel = () => {
       fetchAdmins();
       setUsername("");
       setPassword("");
-      setEmail(""); // Clear email field
+      setEmail("");
       setIsOpen(false);
       toast("Admin added successfully!", { duration: 3000 });
     } catch (error) {
@@ -98,7 +95,7 @@ const AdminPanel = () => {
         }}
       >
         <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
-        <div className="container mx-auto p-4 w-4/5">
+        <div className="container mx-auto p-6 w-4/5">
           <h1 className="text-2xl font-bold mb-4">Admin Management</h1>
 
           <Dialog
@@ -110,13 +107,13 @@ const AdminPanel = () => {
                 setSuccess(null);
                 setUsername("");
                 setPassword("");
-                setEmail(""); // Clear email field when opening dialog
+                setEmail("");
               }
             }}
           >
             <DialogTrigger asChild>
-              <Button variant="outline">
-                <Plus className="mr-2 h-4 w-4" /> Create Admin
+              <Button variant="outline" className="mb-4 bg-gray-800 text-white hover:bg-blue-600">
+                <Plus className="mr-2 h-4 w-4" /> Add New Admin
               </Button>
             </DialogTrigger>
             <DialogContent>
@@ -175,32 +172,34 @@ const AdminPanel = () => {
                 )}
               </div>
               <div className="flex justify-end">
-                <Button onClick={registerAdmin}>Create</Button>
+                <Button className="bg-gray-800 text-white hover:bg-blue-600" onClick={registerAdmin}>Create</Button>
               </div>
             </DialogContent>
           </Dialog>
 
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Username</TableHead>
-                <TableHead>Email</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {admins.map((admin) => (
-                <TableRow key={admin.username}>
-                  <TableCell>{admin.username}</TableCell>
-                  <TableCell>{admin.email}</TableCell>
+          <div className="bg-white shadow-md rounded-lg p-4 mt-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Username</TableHead>
+                  <TableHead>Email</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {admins.length === 0 && (
-            <p className="text-center text-muted-foreground mt-4">
-              No admins found.
-            </p>
-          )}
+              </TableHeader>
+              <TableBody>
+                {admins.map((admin) => (
+                  <TableRow key={admin.username}>
+                    <TableCell>{admin.username}</TableCell>
+                    <TableCell>{admin.email}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {admins.length === 0 && (
+              <p className="text-center text-muted-foreground mt-4">
+                No admins found.
+              </p>
+            )}
+          </div>
         </div>
         <Footer />
       </div>

@@ -165,7 +165,7 @@ export function ItinerariesPage() {
 
     try {
       let fetchedItineraries = (
-        await getItineraries(`?${queryParams.toString()}`)
+        await getItineraries(`?${queryParams.toString()}`, token)
       );
 
       // Filter out flagged itineraries if the user is a tourist
@@ -190,6 +190,13 @@ export function ItinerariesPage() {
     { name: "Tag", value: "tag" },
   ];
 
+  const sortOptions = [
+    ...(token ? [{ value: "tags-pref", description: "My Preferences" }] : []),
+    { value: "price-asc", description: "Price: Low to High" },
+    { value: "price-desc", description: "Price: High to High" },
+    { value: "averageRating-desc", description: "Rating" },
+];
+
   // Handle page change
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -203,21 +210,21 @@ export function ItinerariesPage() {
           <div data-tour="itinerary-search">
             <SearchBar categories={searchCategories} />
           </div>
-          <Separator className="mb-6" />
+          <Separator className="mb-5" />
           <div data-tour="itinerary-filters">
             <DateFilter />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <PriceFilter
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <SelectFilter
               name="Languages"
               paramName="language"
               getOptions={async () => ["Arabic", "English", "German"]}
             />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <SelectFilter name="Tags" paramName="tag" getOptions={getPreferenceTags} />
           </div>
         </div>
@@ -232,7 +239,7 @@ export function ItinerariesPage() {
               <ClearFilters />
             </div>
             <div data-tour="itinerary-sort">
-              <SortSelection />
+              <SortSelection options={sortOptions} />
             </div>
           </div>
           {loading ? (

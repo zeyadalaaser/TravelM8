@@ -29,6 +29,9 @@ import BookingComponent from "@/components/bookingCard/bookingCard.jsx";
 import { motion, AnimatePresence } from 'framer-motion'
 import * as services from "@/pages/tourist/api/apiService.js";
 import { jwtDecode } from 'jwt-decode';
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
+import { WalkthroughButton } from '@/components/WalkthroughButton';
 import axios from "axios";
 import { CircularProgress } from "@mui/material"
 const images = [
@@ -58,6 +61,40 @@ export default function HeroSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
+  useEffect(() => {
+    if (walkthroughPage === 'home') {
+      clearSteps();
+      addSteps([
+        {
+          target: '[data-tour="flights"]',
+          content: 'flights.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="sort-selection"]',
+          content: 'Sort activities based on different criteria.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="filters"]',
+          content: 'Use these filters to refine your search results.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="activities-list"]',
+          content: 'Browse through the list of available activities.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="pagination"]',
+          content: 'Navigate through different pages of activities.',
+          disableBeacon: true,
+        },
+
+      ], 'home');
+    }
+  }, [addSteps, clearSteps, walkthroughPage]);
 
   // useEffect(() => {
 
@@ -252,7 +289,7 @@ export default function HeroSection() {
   return (
 
 
- <div className="bg-gray-50 min-h-screen">
+ <div className="bg-gray-50 min-h-screen" >
       {isLoading ? (
       <div style={spinnerStyle}>
         <CircularProgress/>
@@ -289,9 +326,11 @@ export default function HeroSection() {
                 </p>
               </div>
               {/* Booking Component */}
-              <div className="mt-auto mb-10 flex flex-wrap items-center justify-center p-6 w-full">
+              <div className="mt-auto mb-10 flex flex-wrap items-center justify-center p-6 w-full" >
                 <div className="w-full max-w-6xl rounded-2xl p-6">
+                  <div >
                   <BookingComponent />
+                  </div>
                 </div>
               </div>
             </div>
@@ -587,33 +626,11 @@ export default function HeroSection() {
                   </div>
                 </div>
               </div>
-            </div><section className="container mx-auto px-4 py-12">
-              <div className="text-center mb-12">
-                <h1 className="text-4xl md:text-5xl font-medium font-bold tracking-tight">Our travel memories</h1>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                {blogPosts.map((post, index) => (
-                  <div key={index} className="bg-white rounded-xl overflow-hidden shadow-lg">
-                    <Link href={post.href}>
-                      <div className="relative h-[300px] overflow-hidden">
-                        <img
-                          src={post.image}
-                          alt={post.title}
-                          fill
-                          className="object-cover transition-transform hover:scale-105 duration-300" />
-                      </div>
-                      <div className="p-6">
-                        <p className="text-gray-500 mb-4 font-medium">{post.date}</p>
-                        <h3 className="text-2xl font-bold mb-4 leading-tight font-medium">{post.title}</h3>
-                        <p className="text-gray-600 font-medium">{post.description}</p>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </section>
-            <Footer /></>
+            </div>
+            <div className="mt-36">
+            <Footer />
+            </div>
+</>
   )}
     </div>
 

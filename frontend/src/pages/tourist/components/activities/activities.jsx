@@ -218,7 +218,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                           className={`w-10 h-10 hover:bg-transparent ${
                             notifiedActivities.includes(activity._id)
                               ? "text-yellow-500 hover:text-yellow-600"
-                              : "text-gray-500 hover:text-gray-600"
+                              : "text-black hover:text-gray-600"
                           }`}
                         >
                           <Bell className={`w-6 h-6 ${
@@ -229,7 +229,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                         />
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px] bg-white">
+                      <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
                           <DialogTitle>Stay Updated</DialogTitle>
                           <DialogDescription className="pt-2">

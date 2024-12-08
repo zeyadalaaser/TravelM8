@@ -81,7 +81,7 @@ const advertiserProfilePage = () => {
     try {
       const response = await updateProfile(changes, token);
       console.log(changes);
-      toast("Profile updated successfully", { description: response });
+      toast("Profile updated successfully", { description: response.data });
     } catch (error) {
       console.log(changes);
       toast("Error updating profile");
@@ -278,27 +278,6 @@ const advertiserProfilePage = () => {
             </div>
           </div>
         );
-      case "locations":
-        return (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Locations</h1>
-            {/* Locations content */}
-          </div>
-        );
-      case "tags":
-        return (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Tags</h1>
-            {/* Tags content */}
-          </div>
-        );
-      case "itineraries":
-        return (
-          <div className="bg-white shadow rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Activities</h1>
-            {/* Itineraries content */}
-          </div>
-        );
       case "settings":
         return (
           <div className="bg-white shadow rounded-lg p-6">
@@ -335,8 +314,8 @@ const advertiserProfilePage = () => {
               </div>
             </section>
             <div className="flex justify-end">
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            <button
+                className="rounded-full px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white"
                 onClick={() => setIsPasswordModalOpen(true)}
               >
                 Change Password
@@ -366,27 +345,6 @@ const advertiserProfilePage = () => {
               >
                 <User className="mr-3" />
                 Account Info
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView("locations")}
-              >
-                <Map className="mr-3" />
-                Locations
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView("tags")}
-              >
-                <Tag className="mr-3" />
-                Tags
-              </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView("itineraries")}
-              >
-                <List className="mr-3" />
-                Activities
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
@@ -572,7 +530,7 @@ const advertiserProfilePage = () => {
               <button
                 onClick={handlePasswordChange}
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 Change Password
               </button>

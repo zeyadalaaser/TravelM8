@@ -52,9 +52,10 @@ export async function getMyAddresses(token) {
 
 }
 
-export async function getItineraries(query) {
+export async function getItineraries(query, token = null) {
   const searchParams = new URLSearchParams(query);
   searchParams.delete('type');
+  searchParams.set("token", token);
 
 
   return (await apiClient.get('FilterItineraries?' + searchParams.toString())).data;
@@ -237,7 +238,13 @@ export async function getFlights(query) // source, dest, departureDate, arrivalD
   const arrivalDate = searchParams.get("return");
   const price = searchParams.get("price");
   const sortBy = searchParams.get("sortBy");
+  const stops = searchParams.get("stops");
 
+  const outDep = searchParams.get("outDep");
+  const outArr = searchParams.get("outArr");
+
+  const inDep = searchParams.get("inDep");
+  const inArr = searchParams.get("inArr");
 
   const createDepartureDates = (date) => ({
     start: `${date}T00:00:00`,
@@ -262,6 +269,31 @@ export async function getFlights(query) // source, dest, departureDate, arrivalD
 
   if (sortBy)
     variablesJson["options"]["sortBy"] = sortBy.toUpperCase();
+
+  if (stops)
+    variablesJson["filter"]["maxStopsCount"] = stops == "Direct" ? 0 : stops === "Up to 1 stop" ? 1 : 2;
+
+  if (outDep || outArr)
+    variablesJson["filter"]["outbound"] = {};
+
+  if (inDep || inArr)
+    variablesJson["filter"]["inbound"] = {};
+
+  if (outDep)
+    variablesJson["filter"]["outbound"]["departureHours"] =
+      { end: Number(outDep.split('-')[1]), start: Number(outDep.split('-')[0]) };
+
+  if (outArr)
+    variablesJson["filter"]["outbound"]["arrivalHours"] =
+      { end: Number(outArr.split('-')[1]), start: Number(outArr.split('-')[0]) };
+
+  if (inDep)
+    variablesJson["filter"]["inbound"]["departureHours"] =
+      { end: Number(inDep.split('-')[1]), start: Number(inDep.split('-')[0]) };
+
+  if (inArr)
+    variablesJson["filter"]["inbound"]["arrivalHours"] =
+      { end: Number(inArr.split('-')[1]), start: Number(inArr.split('-')[0]) };
 
   flightDetails["source"]["ids"] = ["City:" + source];
   flightDetails["destination"]["ids"] = ["City:" + dest];

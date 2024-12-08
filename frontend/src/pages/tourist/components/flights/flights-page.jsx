@@ -1,7 +1,7 @@
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect, useRef } from "react";
 import useRouter from "@/hooks/useRouter";
-
+import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
@@ -13,8 +13,12 @@ import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent } from "@/components/ui/card"
 
 import axios from "axios";
+import { SelectFilter } from "../filters/select-filter";
+import { TimeFilter } from "../filters/time-filter";
 
 const query = encodeURIComponent(
   "query UmbrellaPlacesQuery( $search: PlacesSearchInput $filter: PlacesFilterInput $options: PlacesOptionsInput ) { places(search: $search, filter: $filter, options: $options, first: 20) { __typename ... on AppError { error: message } ... on PlaceConnection { edges { rank distance { __typename distance } isAmbiguous node { __typename __isPlace: __typename id legacyId name slug slugEn gps { lat lng } rank ... on City { code autonomousTerritory { legacyId id } subdivision { legacyId name id } country { legacyId name slugEn region { legacyId continent { legacyId id } id } id } airportsCount groundStationsCount } ... on Station { type code gps { lat lng } city { legacyId name slug autonomousTerritory { legacyId id } subdivision { legacyId name id } country { legacyId name region { legacyId continent { legacyId id } id } id } id } } ... on Region { continent { legacyId id } } ... on Country { code region { legacyId continent { legacyId id } id } } ... on AutonomousTerritory { country { legacyId name region { legacyId continent { legacyId id } id } id } } ... on Subdivision { country { legacyId name region { legacyId continent { legacyId id } id } id } } } } } } }"
@@ -160,8 +164,35 @@ export function FlightsPage() {
         </div>
       </div>
       <div className="mt-6 flex flex-col md:flex-row gap-8">
-        <div className="flex w-1/4 h-10 items-center" data-tour="flight-filters">
-          {/* <PriceFilter /> */}
+        <div className="w-full md:w-1/4 sticky top-11 h-full">
+          <Separator />
+          <div data-tour="flight-filters">
+            <PriceFilter
+              currency={currency}
+              exchangeRate={exchangeRates[currency] || 1}
+            />
+            <Separator className="mt-5" />
+            <SelectFilter name="Stops" paramName="stops" getOptions={async () => ["Direct", "Up to 1 stop", "Up to 2 stops"]} />
+            <Separator className="mt-5" />
+
+            <Tabs defaultValue="dep" className="mt-4">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="dep" className="flex-1 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Departure</TabsTrigger>
+                <TabsTrigger value="ret" className="flex-1 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Return</TabsTrigger>
+              </TabsList>
+              <TabsContent value="dep">
+                <TimeFilter name="Departure" paramName="outDep" />
+                <Separator className="mt-4" />
+                <TimeFilter name="Arrival" paramName="outArr" />
+              </TabsContent>
+              <TabsContent value="ret">
+                <TimeFilter name="Departure" paramName="inDep" />
+                <Separator className="mt-4" />
+                <TimeFilter name="Arrival" paramName="inArr" />
+              </TabsContent>
+            </Tabs>
+
+          </div>
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">

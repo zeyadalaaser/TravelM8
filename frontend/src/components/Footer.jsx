@@ -34,15 +34,15 @@ export default function Footer() {
 
           {/* Contact Us Section */}
           <div>
-            <h3 className="font-bold text-lg mb-4">Contact Us</h3>
+            <h3 className="font-bold text-lg mr-32 mb-4">Contact Us</h3>
             <address className="not-italic space-y-2 text-sm">
               <p className="flex items-center">
                 <MapPin size={16} className="mr-2" />
-                123 Traveler's Way, Adventure City
+                5th settlement, New Cairo
               </p>
               <p className="flex items-center">
                 <Mail size={16} className="mr-2" />
-                <a href="mailto:info@travelwebsite.com" className="hover:text-blue-400 transition-colors">info@travelwebsite.com</a>
+                <a href="mailto:info@travelM8.com" className="hover:text-blue-400 transition-colors">info@travelm8.com</a>
               </p>
               <p className="flex items-center">
                 <Phone size={16} className="mr-2" />
