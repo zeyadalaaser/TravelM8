@@ -85,18 +85,6 @@ export default function Navbar({ profilePageString, children }) {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Button
-            variant="outline"
-            className={`bg-transparent rounded-full px-8 py-2 ${
-              currentPage === "/"
-                ? "text-white hover:bg-white/10 hover:text-white"
-                : "text-black"
-            }`}
-            onClick={() => navigate("/")}
-          >
-            Home
-          </Button>
-
           {showDashboardButton && (
             <Button
               variant="outline"
