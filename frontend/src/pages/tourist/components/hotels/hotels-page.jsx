@@ -55,9 +55,8 @@ async function fetchLocations(name) {
           {location.displayType.displayName}
         </p>
       ),
-      value: `${location.displayname}--${
-        location.entityKey.split(":")[0]
-      }:${searchKey}`,
+      value: `${location.displayname}--${location.entityKey.split(":")[0]
+        }:${searchKey}`,
       image: createImage(location),
     };
   });
@@ -180,7 +179,7 @@ export function HotelsPage() {
           content: 'Browse through the list of available activities.',
           disableBeacon: true,
         }
-      
+
 
       ], 'hotels');
     }
@@ -188,18 +187,18 @@ export function HotelsPage() {
   return (
     <>
       <div className="flex justify-between space-x-3">
-      <div className="flex-1"data-tour="search-bar">
-        <CityFilter className="flex-1" name="Where" getData={fetchLocations} />
+        <div className="flex-1" data-tour="search-bar">
+          <CityFilter className="flex-1" name="Where" getData={fetchLocations} />
         </div>
-        <div className="flex-1"data-tour="sort-selection">
-        <SingleDateFilter className="flex-1" name="Check in" param="checkin" />
+        <div className="flex-1" data-tour="sort-selection">
+          <SingleDateFilter className="flex-1" name="Check in" param="checkin" />
         </div>
-        <div className="flex-1"data-tour="filters">
-        <SingleDateFilter
-          className="flex-1"
-          name="Check out"
-          param="checkout"
-        />
+        <div className="flex-1" data-tour="filters">
+          <SingleDateFilter
+            className="flex-1"
+            name="Check out"
+            param="checkout"
+          />
         </div>
       </div>
       <div className="mt-6 flex flex-col md:flex-row gap-8">
@@ -217,16 +216,16 @@ export function HotelsPage() {
               <ClearFilters />
             </div>
             <div data-tour="activities-list">
-            <SortSelection options={sortOptions} />
+              <SortSelection options={sortOptions} />
             </div>
           </div>
-          {hotels.length !==0 ? (
+          {hotels.length !== 0 ? (
 
-              <>
+            <>
               <Hotels
-              hotels={paginatedHotels}
-              currency={currency}
-              exchangeRate={exchangeRates[currency]} />
+                hotels={paginatedHotels}
+                currency={currency}
+                exchangeRate={exchangeRates[currency]} />
               <div className="flex justify-center mt-6 space-x-2">
                 <Button
                   variant="outline"
@@ -242,7 +241,7 @@ export function HotelsPage() {
                     onClick={() => {
                       setCurrentPage(page);
                       window.scroll(0, 0);
-                    } }
+                    }}
                   >
                     {page}
                   </Button>
@@ -256,16 +255,16 @@ export function HotelsPage() {
                 </Button>
               </div></>
 
-          ) : (             
-             <Hotels
-            hotels={paginatedHotels}
-            currency={currency}
-            exchangeRate={exchangeRates[currency]} />)}
+          ) : (
+            <Hotels
+              hotels={paginatedHotels}
+              currency={currency}
+              exchangeRate={exchangeRates[currency]} />)}
 
         </div>
-        <Walkthrough />
-      </div>
 
+      </div>
+      <Walkthrough />
     </>
   );
 }
