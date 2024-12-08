@@ -235,7 +235,7 @@ export default function Navbar({ profilePageString, children }) {
       <nav
         className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300  
           ${
-            currentPage === "/" || currentPage === `/?currency=${currency}`
+            location.pathname === "/"
               ? isScrolled
                 ? "bg-gray-800/50 backdrop-blur-md"
                 : "bg-transparent"
@@ -245,7 +245,7 @@ export default function Navbar({ profilePageString, children }) {
       >
         <div
           className={`cursor-pointer text-2xl font-semibold ${
-            currentPage === "/" || currentPage === `/?currency=${currency}`
+            location.pathname === "/"
               ? "text-white"
               : "text-black"
           }`}
@@ -254,7 +254,7 @@ export default function Navbar({ profilePageString, children }) {
           <div className="flex items-center -ml-8">
             <img
               src={
-                currentPage === "/" || currentPage === `/?currency=${currency}`
+                location.pathname === "/"
                   ? logo2 // Use white logo if scrolled on homepage
                   : logo // Use white logo if on homepage without scrolling
               }
@@ -270,7 +270,7 @@ export default function Navbar({ profilePageString, children }) {
             <button
               key={page.value}
               className={`${
-                currentPage === "/" || currentPage === `/?currency=${currency}`
+                location.pathname === "/"
                   ? "text-white hover:text-white/70"
                   : "text-black hover:text-black/70"
               } ${
@@ -287,7 +287,7 @@ export default function Navbar({ profilePageString, children }) {
               {page.label}
             </button>
           ))}
-          <BookTransportation change={currentPage === "/" || currentPage === `/?currency=${currency}`} />
+          <BookTransportation change={location.pathname === "/"} />
         </div>
         <WalkthroughButton currentPageType={getCurrentPageType()} />
         <div className="flex items-center space-x-4">
@@ -297,7 +297,7 @@ export default function Navbar({ profilePageString, children }) {
                 variant="ghost"
                 size="icon"
                 className={
-                  currentPage === "/" || currentPage === `/?currency=${currency}`
+                  location.pathname === "/"
                     ? "text-white hover:bg-transparent hover:text-white"
                     : "text-black"
                 }
@@ -314,8 +314,7 @@ export default function Navbar({ profilePageString, children }) {
                     variant="ghost"
                     size="icon"
                     className={
-                      currentPage === "/" ||
-                      currentPage === `/?currency=${currency}`
+                      location.pathname === "/"
                         ? "text-white hover:bg-transparent hover:text-white "
                         : "text-black"
                     }
@@ -407,7 +406,7 @@ export default function Navbar({ profilePageString, children }) {
                 size="icon"
                 onClick={handleClick}
                 className={
-                  currentPage === "/" || currentPage === `/?currency=${currency}`
+                  location.pathname === "/"
                     ? "text-white hover:bg-transparent hover:text-white"
                     : "text-black"
                 }
@@ -484,8 +483,7 @@ export default function Navbar({ profilePageString, children }) {
                 <Button
                   variant="outline"
                   className={`bg-transparent rounded-full px-8 py-2 ${
-                    currentPage === "/" ||
-                    currentPage === `/?currency=${currency}`
+                    location.pathname === "/"
                       ? "text-white hover:bg-white/10 hover:text-white"
                       : "text-black"
                   } `}
@@ -500,8 +498,7 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <button
                   className={`font-medium rounded-full px-8 py-2 ${
-                    currentPage === "/" ||
-                    currentPage === `/?currency=${currency}`
+                    location.pathname === "/"
                       ? " bg-white text-black hover:bg-white/90"
                       : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
                   } `}
