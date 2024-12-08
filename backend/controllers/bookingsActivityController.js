@@ -5,6 +5,7 @@ import { updatePoints } from "./touristController.js";
 import { getActivityPrice } from "./activityController.js";
 import tourist from "../models/touristModel.js";
 import nodemailer from "nodemailer";
+import { getTouristReviews } from "./ratingController.js"
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -102,12 +103,31 @@ export const createBooking = async (req, res) => {
 
 export const getAllActivityBookings = async (req, res) => {
   try {
+
     const touristId = req.user.userId;
+
+    // Fetch all activity bookings
     const allBookings = await BookingActivity.find({
       touristId: touristId,
     }).populate("activityId");
+
+    // Fetch all reviews for the tourist
+    const reviews = await getTouristReviews(touristId, "Activity");
+    const bookingsWithRatings = allBookings.map((booking) => {
+      const activityIdBooking = new mongoose.Types.ObjectId(booking.activityId);
+      const activityReview = reviews.find(
+        (review) => activityIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Use .equals() for ObjectId comparison
+      );
+      console.log("activity review is: ", activityReview);
+      return {
+        ...booking.toObject(),
+        review: activityReview || null, // Include the review or set to null if not found
+      };
+    });
+    // console.log(bookingsWithRatings);
+
     res.status(201).json({
-      allBookings,
+      bookingsWithRatings,
       message: "Successfully fetched all your activity bookings!",
     });
   } catch (error) {
@@ -266,11 +286,9 @@ export const addRatingAndComment = async (req, res) => {
   // }
 };
 
-
-
 export const getActivitiesReport = async (req, res) => {
   const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user
-//  const advertiserId = req.body.id;
+  //  const advertiserId = req.body.id;
   const { year, month, day } = req.query;
 
   try {
