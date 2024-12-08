@@ -67,7 +67,7 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Placed', 'Shipped', 'Delivered', 'Cancelled'],
+    enum: ['Placed', 'Cancelled'],
     default: 'Placed'
   },
   stripePaymentIntentId: {

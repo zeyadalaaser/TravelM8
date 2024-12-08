@@ -68,7 +68,7 @@ export function ReviewDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Rate this Activity</DialogTitle>
+          <DialogTitle>Rating Form</DialogTitle>
         </DialogHeader>
         {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <div className="grid gap-4 py-4">

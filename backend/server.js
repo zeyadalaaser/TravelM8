@@ -33,7 +33,6 @@ import "./services/Reminders/reminderjob.js";
 import authRoute from './routes/authRoute.js';
 import orderRoutes from './routes/orderRoute.js';
 import bookmarksRoutes from './routes/BookmarkRoute.js';
-
 import promoControlRoute from './routes/promoControlRoute.js';
 import { sendBirthdayPromoCodes } from './controllers/promoCodeController.js'
 

@@ -26,6 +26,11 @@ export function Walkthrough() {
 
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       toggleWalkthrough();
+      // Scroll to the top of the page after finishing or skipping the walkthrough
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     }
 
     if (action === 'update' && type === 'step:after') {
@@ -89,6 +94,9 @@ export function Walkthrough() {
       }}
       floaterProps={{
         disableAnimation: true,
+        hideArrow: false,
+        offset: 16,
+        placement: 'auto',
         styles: {
           floater: {
             filter: 'drop-shadow(0 0 5px rgba(0, 0, 0, 0.2))',

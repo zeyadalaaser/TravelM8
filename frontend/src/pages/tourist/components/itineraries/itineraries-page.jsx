@@ -166,7 +166,7 @@ export function ItinerariesPage() {
     try {
       let fetchedItineraries = (
         await getItineraries(`?${queryParams.toString()}`)
-      ).filter((i) => i.isBookingOpen);
+      );
 
       // Filter out flagged itineraries if the user is a tourist
       if (!isAdmin) {
@@ -199,7 +199,7 @@ export function ItinerariesPage() {
   return (
     <div className="mt-24">
       <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/4 sticky top-16 h-full" data-tour="itinerary-filters">
+        <div className="w-full md:w-1/4 sticky top-16 h-full" >
           <div data-tour="itinerary-search">
             <SearchBar categories={searchCategories} />
           </div>
