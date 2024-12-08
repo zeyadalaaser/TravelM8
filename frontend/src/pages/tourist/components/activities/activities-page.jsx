@@ -18,6 +18,7 @@ import {
 } from "../../api/apiService";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Button } from "@/components/ui/button";
+import ActivityCard from "./activity-card";
 
 export function ActivitiesPage() {
   const token = localStorage.getItem("token");
@@ -103,8 +104,8 @@ export function ActivitiesPage() {
       </div>
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full -mt-16 md:w-1/4 sticky top-16 h-full">
-        <SearchBar categories={searchCategories} />
-        <Separator className="mb-8" />
+          <SearchBar categories={searchCategories} />
+          <Separator className="mb-8" />
           <DateFilter />
           <Separator className="mt-7" />
           <PriceFilter
@@ -133,41 +134,46 @@ export function ActivitiesPage() {
             </div>
           ) : (
             <div className="-mt-24">
-              <Activities
-                token={token}
-                bookActivity={createActivityBooking}
-                activities={paginatedActivities}
-                currency={currency}
-                exchangeRate={exchangeRates[currency] || 1} /><div className="flex justify-center mt-6 space-x-2">
+              <div className="space-y-4">
+                {paginatedActivities.map((activity) => (
+                  <ActivityCard
+                    token={token}
+                    bookActivity={createActivityBooking}
+                    activity={activity}
+                    currency={currency}
+                    exchangeRate={exchangeRates[currency] || 1} />
+                ))}
+              </div>
+              <div className="flex justify-center mt-6 space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                   <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
+                    key={page}
+                    variant={currentPage === page ? "default" : "outline"}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      window.scroll(0, 0);
+                    }}
                   >
-                    Previous
+                    {page}
                   </Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      onClick={() => {
-                        setCurrentPage(page);
-                        window.scroll(0, 0);
-                      } }
-                    >
-                      {page}
-                    </Button>
-                  ))}
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
-                  </Button>
-                </div></div>
-          
-          
+                ))}
+                <Button
+                  variant="outline"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </div></div>
+
+
           )}
 
 

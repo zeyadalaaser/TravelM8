@@ -45,8 +45,10 @@ export const createBooking2 = async (req, res) => {
       if (!touristData) {
         return res.status(404).json({ message: "Tourist not found." });
       }
-      if (paymentMethod === "wallet")
+      if (paymentMethod === "Wallet") {
         touristData.wallet -= itineraryPrice;
+        await touristData.save();
+      }
       const emailSubject = "Booking Confirmation";
       const emailBody = `
         <h1>Thank you for booking with us!</h1>

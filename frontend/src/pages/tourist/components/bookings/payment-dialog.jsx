@@ -20,19 +20,35 @@ export default function PaymentDialog(props) {
 }
 
 function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
+  const [loading, setLoading] = useState(false);
+  const [stripeReady, setStripeReady] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("card")
   const [profile, setProfile] = useState();
   const elements = useElements();
   const t = useStripe();
 
   useEffect(() => {
-    fetchProfileInfo(token).then(setProfile);
-  }, []);
+    if (isOpen)
+      fetchProfileInfo(token).then(setProfile);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => setStripeReady(true), 150);
+    }
+    else {
+      setStripeReady(false);
+    }
+  }, [isOpen]);
 
 
   const Pay = async () => {
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     if (paymentMethod === "wallet") {
       await onPaid("Wallet", profile.wallet - amount);
+      setLoading(false);
       onOpenChange(false);
       return;
     }
@@ -40,13 +56,14 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
     const amountInCents = Math.round(amount * 100);
     const cardNumberElement = elements.getElement("cardNumber");
 
-    const { error, payment } = await t.createPaymentMethod({
+    const result = await t.createPaymentMethod({
       type: "card",
       card: cardNumberElement
     });
 
-    if (error) {
-      toast(error.message);
+    if (result.error) {
+      toast(result.error.message);
+      setLoading(false);
       return;
     }
 
@@ -54,18 +71,20 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
       await stripe.paymentIntents.create({
         amount: amountInCents,
         currency: 'usd',
-        payment_method: payment.id,
+        payment_method: result.paymentMethod.id,
         confirm: true,
         return_url: "https://google.com",
       });
     }
     catch (error) {
       toast(error.message);
+      setLoading(false);
       return;
     }
 
     await onPaid("Card");
     onOpenChange(false);
+    setLoading(false);
   }
 
   return (
@@ -112,16 +131,16 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
               <div className="space-y-4">
                 <div className="relative">
                   <div className="flex flex-col justify-center relative h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                    <CardNumberElement className="pt-0.5 pl-6" />
+                    {stripeReady && <CardNumberElement className="pt-0.5 pl-6" />}
                     <CreditCard className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex flex-col justify-center relative h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                    <CardExpiryElement className="pt-0.5" />
+                    {stripeReady && <CardExpiryElement className="pt-0.5" />}
                   </div>
                   <div className="flex flex-col justify-center relative h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                    <CardCvcElement className="pt-0.5" />
+                    {stripeReady && <CardCvcElement className="pt-0.5" />}
                   </div>
                 </div>
               </div>
@@ -133,8 +152,8 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
             )}
           </div>
 
-          <Button className="w-full mt-4" onClick={() => Pay()}>
-            Pay {(amount * 1)?.formatCurrency(currency)}
+          <Button disabled={profile?.wallet < amount || loading} className="w-full mt-4" onClick={() => Pay()}>
+            {!loading ? `Pay ${(amount * 1)?.formatCurrency(currency)}` : <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           </Button>
         </div>
       </DialogContent>

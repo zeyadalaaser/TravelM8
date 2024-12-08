@@ -116,18 +116,16 @@ export async function getMyComplaints(token) {
 export async function createActivityBooking(activityId, price, paymentMethod, token) {
   // const token = localStorage.getItem('token');
   console.log(token);
-  return (
-    await apiClient.post(
-      '/activity-bookings',
-      { activityId, price, paymentMethod }, // Body payload goes here
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-  ).data
+  return await apiClient.post(
+    '/activity-bookings',
+    { activityId, price, paymentMethod }, // Body payload goes here
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 }
 
 export async function getActivityBookings() {
