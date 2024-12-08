@@ -166,7 +166,7 @@ export function ItinerariesPage() {
     try {
       let fetchedItineraries = (
         await getItineraries(`?${queryParams.toString()}`)
-      ).filter((i) => i.isBookingOpen);
+      );
 
       // Filter out flagged itineraries if the user is a tourist
       if (!isAdmin) {

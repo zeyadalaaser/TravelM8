@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Clock, Globe, Tag, Bookmark } from "lucide-react";
+import { Clock, Globe, Tag, Bookmark, Bell } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -40,11 +40,37 @@ export default function ItineraryCard({
   exchangeRate,
   onRefresh,
   isTourGuide,
-  bookmarkedItineraries = [], // Add this prop
+  bookmarkedItineraries = [],
   handleBookmark = () => { },
 }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const [flaggedStatus, setFlaggedStatus] = useState({});
+  const [notifiedItineraries, setNotifiedItineraries] = useState([]);
+  const [activeDialogId, setActiveDialogId] = useState(null);
+
+  useEffect(() => {
+    const initialFlaggedStatus = itineraries.reduce((acc, itinerary) => {
+      acc[itinerary._id] = itinerary.flagged;
+      return acc;
+    }, {});
+    setFlaggedStatus(initialFlaggedStatus);
+  }, [itineraries]);
+
+  const handleNotifyMe = (itineraryId) => {
+    if (notifiedItineraries.includes(itineraryId)) {
+      toast(`Success`, {
+        description: `Notification removed for this itinerary`,
+      });
+      setNotifiedItineraries(prev => prev.filter(id => id !== itineraryId));
+    } else {
+      toast(`Success`, {
+        description: `You will be notified when this itinerary becomes available for booking`,
+      });
+      setNotifiedItineraries(prev => [...prev, itineraryId]);
+    }
+    setActiveDialogId(null);
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -113,16 +139,6 @@ export default function ItineraryCard({
     }
   };
 
-  const [flaggedStatus, setFlaggedStatus] = useState({});
-
-  useEffect(() => {
-    const initialFlaggedStatus = itineraries.reduce((acc, itinerary) => {
-      acc[itinerary._id] = itinerary.flagged;
-      return acc;
-    }, {});
-    setFlaggedStatus(initialFlaggedStatus);
-  }, [itineraries]);
-
   const toggleFlagItinerary = async (id, isFlagged) => {
     try {
       const endpoint = isFlagged
@@ -183,7 +199,7 @@ export default function ItineraryCard({
                     <h3 className="text-xl font-semibold mb-2">
                       {itinerary.name}
                     </h3>
-                    <div className="flex items-center gap-2 ">
+                    <div className="flex items-center gap-2">
                       {isTourGuide && itinerary.isBookingOpen && (
                         <Button
                           className="w-[150px] h-[38px] bg-sky-800 hover:bg-sky-900"
@@ -210,12 +226,65 @@ export default function ItineraryCard({
                       {isTourist && (
                         <>
                           <ShareButton id={itinerary._id} name="itinerary" />
+                          {!itinerary.isBookingOpen && (
+                            <Dialog 
+                              open={activeDialogId === itinerary._id && !notifiedItineraries.includes(itinerary._id)}
+                              onOpenChange={(open) => {
+                                setActiveDialogId(open ? itinerary._id : null);
+                              }}
+                            >
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  onClick={(e) => {
+                                    if (!token) {
+                                      e.preventDefault();
+                                      toast(`Failed to set notification`, {
+                                        description: `You need to be logged in first`,
+                                      });
+                                      return;
+                                    }
+                                    if (notifiedItineraries.includes(itinerary._id)) {
+                                      e.preventDefault();
+                                      handleNotifyMe(itinerary._id);
+                                      return;
+                                    }
+                                  }}
+                                  className={`w-10 h-10 hover:bg-transparent ${
+                                    notifiedItineraries.includes(itinerary._id)
+                                      ? "text-yellow-500 hover:text-yellow-600"
+                                      : "text-black hover:text-gray-600"
+                                  }`}
+                                >
+                                  <Bell className={`w-6 h-6 ${
+                                    notifiedItineraries.includes(itinerary._id)
+                                      ? "fill-yellow-500 stroke-black"
+                                      : "fill-none stroke-black"
+                                  } stroke-2`} />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle>Stay Updated</DialogTitle>
+                                  <DialogDescription className="pt-2">
+                                    Get notified when this itinerary opens for booking so you don't miss out on this amazing experience!
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter className="mt-4">
+                                  <Button onClick={() => handleNotifyMe(itinerary._id)}>
+                                    Get Notified
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          )}
                           <button
                             onClick={() => handleBookmark(itinerary._id)}
                             className="text-gray-500 hover:text-black"
                           >
                             <Bookmark
-                              className={`w-7 h-7 ${
+                              className={`w-6 h-6 ${
                                 bookmarkedItineraries.includes(itinerary._id)
                                   ? "fill-yellow-400 text-black"
                                   : "fill-none text-black"
@@ -393,7 +462,7 @@ const ChooseDate = ({ itinerary, currency }) => {
     if (!token) return; 
     try {
       const decodedToken = jwtDecode(token);
-      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+      const currentTime = Math.floor(Date.now() / 1000);
 
       if (decodedToken.exp < currentTime) {
         localStorage.removeItem("token"); 
@@ -415,63 +484,68 @@ const ChooseDate = ({ itinerary, currency }) => {
 
   return (
     <>
-      <Dialog 
-        open={isOpen && !!token} 
-        onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button 
-                onClick={() => {
-                  if (!token) {
-                    toast('Please login to perform this action');
-                  }
-                }}
-          >Book itinerary</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Choose Date</DialogTitle>
-          </DialogHeader>
-          <RadioGroup
-            onValueChange={(value) => setSelectedDate(value)}
-            className="space-y-2"
-          >
-            {itinerary.availableSlots.map((slot, index) => {
-              const slotDate = new Date(slot.date).toLocaleDateString();
-              const booked = slot.numberOfBookings >= slot.maxNumberOfBookings || new Date() > slotDate;
-              return (
-                <div className="flex items-center space-x-2" key={index}>
-                  <RadioGroupItem
-                    disabled={booked}
-                    value={slot.date}
-                    id={`slot-${index}`} />
-                  <Label
-                    className={`${booked && "line-through text-gray-500"}`}
-                    htmlFor={`slot-${index}`}
-                  >
-                    {slotDate}
-                  </Label>
-                </div>
-              );
-            })}
-          </RadioGroup>
-          <DialogFooter className="mt-4">
-            <Button 
+      {itinerary.isBookingOpen ? (
+        <Dialog 
+          open={isOpen}
+          onOpenChange={(open) => {
+            if (!token && open) {
+              toast.error("Authentication Required", {
+                description: "You need to be logged in first",
+              });
+              return;
+            }
+            setIsOpen(open);
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button>Book Now</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Choose Date</DialogTitle>
+            </DialogHeader>
+            <RadioGroup
+              onValueChange={(value) => setSelectedDate(value)}
+              className="space-y-2"
+            >
+              {itinerary.availableSlots.map((slot, index) => {
+                const slotDate = new Date(slot.date).toLocaleDateString();
+                const booked = slot.maxNumberOfBookings == 0;
+                return (
+                  <div className="flex items-center space-x-2" key={index}>
+                    <RadioGroupItem
+                      disabled={booked}
+                      value={slot.date}
+                      id={`slot-${index}`} />
+                    <Label
+                      className={`${booked && "line-through text-gray-500"}`}
+                      htmlFor={`slot-${index}`}
+                    >
+                      {slotDate}
+                    </Label>
+                  </div>
+                );
+              })}
+            </RadioGroup>
+            <DialogFooter className="mt-4">
+              <Button 
                 onClick={() => { setIsOpen(false); setPaymentOpen(true) }} 
                 disabled={!selectedDate}
-            >
-              Select date
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <PaymentDialog 
+              >
+                Select date
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ) : null}
+      {itinerary.isBookingOpen && (
+        <PaymentDialog 
           isOpen={paymentOpen} 
           currency={currency} 
           onOpenChange={setPaymentOpen} 
           amount={itinerary.price} 
-          token={token}
-          onPaid={handleSubmit}
-      />
+        />
+      )}
     </>
   );
 };

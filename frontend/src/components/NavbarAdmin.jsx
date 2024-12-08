@@ -68,7 +68,7 @@ export default function Navbar({ profilePageString, children }) {
             currentPage === "/" ? "text-white" : "text-black"
           }`}
         >
-          <div className="flex items-center">
+          <div className="flex items-center -ml-8">
             <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
             <span>TRAVELM8</span>
           </div>

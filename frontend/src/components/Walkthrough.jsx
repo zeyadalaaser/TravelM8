@@ -56,6 +56,8 @@ export function Walkthrough() {
       scrollToFirstStep={true}
       scrollOffset={100}
       disableOverlayClose={true}
+      disableCloseOnEsc={true}
+      hideCloseButton={true}
       spotlightClicks={true}
       styles={{
         options: {
@@ -75,7 +77,7 @@ export function Walkthrough() {
           maxWidth: '300px',
         },
         tooltipContainer: {
-          textAlign: 'left'
+          textAlign: 'center'
         },
         buttonNext: {
           backgroundColor: '#007bff',
