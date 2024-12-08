@@ -165,7 +165,7 @@ export function ItinerariesPage() {
 
     try {
       let fetchedItineraries = (
-        await getItineraries(`?${queryParams.toString()}`)
+        await getItineraries(`?${queryParams.toString()}`, token)
       );
 
       // Filter out flagged itineraries if the user is a tourist
@@ -189,6 +189,13 @@ export function ItinerariesPage() {
     { name: "Name", value: "name" },
     { name: "Tag", value: "tag" },
   ];
+
+  const sortOptions = [
+    ...(token ? [{ value: "tags-pref", description: "My Preferences" }] : []),
+    { value: "price-asc", description: "Price: Low to High" },
+    { value: "price-desc", description: "Price: High to High" },
+    { value: "averageRating-desc", description: "Rating" },
+];
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
@@ -232,7 +239,7 @@ export function ItinerariesPage() {
               <ClearFilters />
             </div>
             <div data-tour="itinerary-sort">
-              <SortSelection />
+              <SortSelection options={sortOptions} />
             </div>
           </div>
           {loading ? (

@@ -52,9 +52,10 @@ export async function getMyAddresses(token) {
 
 }
 
-export async function getItineraries(query) {
+export async function getItineraries(query, token = null) {
   const searchParams = new URLSearchParams(query);
   searchParams.delete('type');
+  searchParams.set("token", token);
 
 
   return (await apiClient.get('FilterItineraries?' + searchParams.toString())).data;
