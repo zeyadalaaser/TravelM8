@@ -135,31 +135,13 @@ export function ActivitiesPage() {
 
   return (
     <div className="mt-24">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex-grow"></div>
-      </div>
-
-      {/* Sort Selection */}
-      <div className="flex justify-end ml-4 mb-8" >
-        <div className="w-[180px] !ring-0" data-tour="sort-selection">
-          <SortSelection />
-        </div>
-      </div>
-
-
-
-      {/* Main Content */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar Section */}
-        <div
-          className="w-full -mt-16 md:w-1/4 sticky top-16 h-full"
-
-        ><div data-tour="search-bar">
+        <div className="w-full md:w-1/4 sticky top-16 h-full">
+          <div data-tour="search-bar">
             <SearchBar categories={searchCategories} />
           </div>
+          <Separator className="mb-6" />
           <div data-tour="filters">
-            <Separator className="mb-8" />
             <DateFilter />
             <Separator className="mt-7" />
             <PriceFilter
@@ -176,23 +158,26 @@ export function ActivitiesPage() {
             />
           </div>
         </div>
-        {/* Main Activities Section */}
-        <div className="w-full md:w-3/4 -mt-4">
-          {/* Filter Section */}
-          <div className="flex justify-between items-center mb-24 -mt-3">
-            <div className="flex h-5 items-center -mt-8 space-x-4 text-sm">
+        <div className="w-full md:w-3/4 ">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex h-5 items-center space-x-4 text-sm">
+              {loading ? (
+                <div>Loading...</div>
+              ) : (
+                <div>{activities.length} results</div>
+              )}
               <ClearFilters />
             </div>
+            <div data-tour="sort-selection">
+              <SortSelection />
+            </div>
           </div>
-
-          {/* Activities and Pagination */}
           {loading ? (
             <div className="flex justify-center items-center mt-48">
               <CircularProgress />
             </div>
           ) : (
             <>
-              {/* Activities List */}
               <div data-tour="activities-list">
                 <div className="space-y-4">
                   {paginatedActivities.map((activity) => (
@@ -206,11 +191,7 @@ export function ActivitiesPage() {
                 </div>
               </div>
 
-              {/* Pagination */}
-              <div
-                className="flex justify-center mt-6 space-x-2"
-
-              >
+              <div className="flex justify-center mt-6 space-x-2">
                 <div
                   className="flex justify-center mt-6 "
                   data-tour="pagination"

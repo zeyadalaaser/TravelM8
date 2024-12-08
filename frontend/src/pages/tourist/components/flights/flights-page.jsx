@@ -111,28 +111,28 @@ export function FlightsPage() {
     if (walkthroughPage === 'flights') {
       clearSteps();
       addSteps([
-      
-          {
-            target: '[data-tour="flight-search"]',
-            content: 'Write departure country.',
-            disableBeacon: true,
-          },
-          {
-            target: '[data-tour="flight-filters"]',
-            content: 'Write destination country.',
-            disableBeacon: true,
-          },
-          {
-            target: '[data-tour="flight-list"]',
-            content: 'Select Departure Date.',
-            disableBeacon: true,
-          },
-          {
-            target: '[data-tour="flight"]',
-            content: 'Select Arrival Date.',
-            disableBeacon: true,
-          }
-       
+
+        {
+          target: '[data-tour="flight-search"]',
+          content: 'Write departure country.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight-filters"]',
+          content: 'Write destination country.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight-list"]',
+          content: 'Select Departure Date.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight"]',
+          content: 'Select Arrival Date.',
+          disableBeacon: true,
+        }
+
       ], 'flights');
     }
   }, [addSteps, clearSteps, walkthroughPage]);
@@ -142,25 +142,24 @@ export function FlightsPage() {
     <>
       <div className="flex justify-between space-x-3" >
         <div className="flex-1" data-tour="flight-search">
-        <CityFilter className="flex-1" name="From" getData={fetchCities}   />
+          <CityFilter className="flex-1" name="From" getData={fetchCities} />
         </div>
         <div className="flex-1" data-tour="flight-filters">
-       
-        <CityFilter className="flex-1" name="To" getData={fetchCities} />
+          <CityFilter className="flex-1" name="To" getData={fetchCities} />
         </div>
         <div className="flex-1" data-tour="flight-list">
-        <SingleDateFilter
-          className="flex-1"
-          name="Departure"
-          param="departure"
-        />
-         </div>
-         <div className="flex-1" data-tour="flight">
-        <SingleDateFilter className="flex-1" name="Return" param="return" />
+          <SingleDateFilter
+            className="flex-1"
+            name="Departure"
+            param="departure"
+          />
+        </div>
+        <div className="flex-1" data-tour="flight">
+          <SingleDateFilter className="flex-1" name="Return" param="return" />
         </div>
       </div>
       <div className="mt-6 flex flex-col md:flex-row gap-8">
-        <div className="flex w-1/4 h-10 items-center"data-tour="flight-filters">
+        <div className="flex w-1/4 h-10 items-center" data-tour="flight-filters">
           {/* <PriceFilter /> */}
         </div>
         <div className="w-full md:w-3/4">
@@ -175,7 +174,7 @@ export function FlightsPage() {
             </div>
             <SortSelection options={sortOptions} />
           </div>
-          {flights.length!==0 ? (
+          {flights.length !== 0 ? (
 
             <><Flights
               flights={paginatedFlights}
@@ -196,7 +195,7 @@ export function FlightsPage() {
                     onClick={() => {
                       setCurrentPage(page);
                       window.scroll(0, 0);
-                    } }
+                    }}
                   >
                     {page}
                   </Button>
@@ -212,15 +211,14 @@ export function FlightsPage() {
 
           ) : (
             <Flights
-            flights={paginatedFlights}
-            currency={currency}
-            exchangeRate={exchangeRates[currency]} />
+              flights={paginatedFlights}
+              currency={currency}
+              exchangeRate={exchangeRates[currency]} />
           )}
 
         </div>
-        <Walkthrough />
       </div>
-
+      <Walkthrough />
     </>
   );
 }
