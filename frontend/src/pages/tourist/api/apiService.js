@@ -139,7 +139,7 @@ export async function getActivityBookings() {
   });
   const data = await response.data
   return (
-    data.allBookings
+    data.bookingsWithRatings
   );
 }
 
@@ -169,7 +169,7 @@ export async function getItineraryBookings() {
   });
   const data = await response.data
   return (
-    data.allBookings
+    data.bookingsWithRatings
   );
 }
 
