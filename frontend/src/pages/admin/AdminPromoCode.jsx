@@ -160,7 +160,7 @@ export default function AdminPromoCode() {
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mt-20 mx-auto px-4 py-8">
+        <div className="container mt-20 mx-auto px-4 py-8 w-4/5">
           <div className="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
             <div className="relative w-full md:w-1/3">
               <input
