@@ -14,7 +14,6 @@ import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
 
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";
@@ -77,7 +76,10 @@ export function FlightsPage() {
     const currentRequestId = ++requestCounter.current;
     const flights = await getFlights(location.search);
 
-    if (currentRequestId === requestCounter.current) setFlights(flights);
+    if (currentRequestId === requestCounter.current) {
+      setFlights(flights);
+      setCurrentPage(1);
+    }
 
     setLoading(false);
   }, 200);

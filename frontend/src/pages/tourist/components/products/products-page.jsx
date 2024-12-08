@@ -113,6 +113,7 @@ export function ProductsPage({ addToCart }) {
 
     try {
       setProducts(await getProducts(queryParams.toString()));
+      setCurrentPage(1);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);

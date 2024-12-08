@@ -86,6 +86,7 @@ export function MuseumsPage() {
     const fetchedMuseums = await getMuseums(`?${queryParams.toString()}`);
 
     setMuseums(fetchedMuseums);
+    setCurrentPage(1);
     setLoading(false);
   }, 200);
 
