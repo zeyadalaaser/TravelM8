@@ -1,6 +1,6 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { toast } from "sonner";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
@@ -12,13 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "sonner";
-import {
-  getAllProducts,
-  deleteProduct,
-  updateProduct,
-  createProduct,
-} from "@/pages/admin/services/productService.js"; // Import the product service
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,12 +21,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ToggleLeft, ToggleRightIcon } from "lucide-react";
-import axios from "axios";
+import { Slider } from "@/components/ui/slider";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search } from 'lucide-react';
+import { getAllProducts, deleteProduct, updateProduct, createProduct } from "@/pages/admin/services/productService.js";
 import { getProducts } from "../seller/api/apiService";
-import { useLocation } from "react-router-dom";
-import { SearchBar } from "../seller/components/filters/search";
-import { PriceFilter } from "../seller/components/filters/price-filter";
 
 const ProductPage = () => {
   const location = useLocation();
@@ -46,39 +38,24 @@ const ProductPage = () => {
   const [newProductData, setNewProductData] = useState({});
   const [image, setImage] = useState();
   const [loading, setLoading] = useState(false);
-  // useEffect(() => {
-  //   const fetchProducts = async () => {
-  //     try {
-  //       const response = await getAllProducts();
-  //       if (response && response.success && Array.isArray(response.data)) {
-  //         setProducts(response.data);
-  //       } else {
-  //         throw new Error("Fetched data is not valid.");
-  //       }
-  //     } catch (error) {
-  //       toast("Error", {
-  //         description: "Failed to fetch products.",
-  //         duration: 3000,
-  //       });
-  //     }
-  //   };
-
-  //   fetchProducts();
-  // }, [toast]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 50000]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       const queryParams = new URLSearchParams(location.search);
-      setLoading(true); // Set loading state
+      setLoading(true);
       try {
         const response = await getProducts(queryParams);
-        // Fetch products from the API
-        setProducts(response.data); // Update products state
+        setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
-        setError(error.message); // Handle error state
+        toast("Error", {
+          description: "Failed to fetch products.",
+          duration: 3000,
+        });
       } finally {
-        setLoading(false); // Clear loading state
+        setLoading(false);
       }
     };
 
@@ -109,8 +86,6 @@ const ProductPage = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
-    console.log("imageeee", file);
-    console.Conso;
     setNewProductData((prev) => ({
       ...prev,
       image: file,
@@ -143,7 +118,7 @@ const ProductPage = () => {
         formData.append("quantity", updatedProductData.quantity);
         formData.append("description", updatedProductData.description);
 
-        const response = await updateProduct(currentProduct._id, formData); // Pass FormData
+        const response = await updateProduct(currentProduct._id, formData);
         toast("Success", {
           description: "Product updated successfully!",
           duration: 3000,
@@ -223,27 +198,61 @@ const ProductPage = () => {
     }
   };
 
+  const filteredProducts = products.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      product.price >= priceRange[0] &&
+      product.price <= priceRange[1]
+  );
+
   return (
     <>
-      <h1 className="text-3xl font-bold mb-4">All Products</h1>
-      <SearchBar />
-      <PriceFilter />
-      <div style={{ display: "flex" }}>
+      <div className="flex">
         <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
         <div
+          className="flex-1 transition-all duration-300 ease-in-out"
           style={{
-            transition: "margin-left 0.3s ease",
             marginLeft: sidebarState ? "250px" : "0",
-            width: "100%",
           }}
         >
           <Navbar toggleSidebar={toggleSidebar} />
-          <div className="container mx-auto p-4 w-4/5">
+          <div className="container mx-auto p-4 w-full max-w-7xl">
+            <h1 className="text-3xl font-bold mb-6">All Products</h1>
+            
+            <Card className="mb-6">
+              <CardContent className="p-4">
+                <div className="flex flex-col md:flex-row gap-4 items-center">
+                  <div className="relative w-full md:w-1/2">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 w-full"
+                    />
+                  </div>
+                  <div className="w-full md:w-1/2">
+                    <Label htmlFor="price-range" className="mb-2 block">
+                      Price Range: ${priceRange[0]} - ${priceRange[1]}
+                    </Label>
+                    <Slider
+                      id="price-range"
+                      min={0}
+                      max={1000}
+                      step={10}
+                      value={priceRange}
+                      onValueChange={setPriceRange}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <Button onClick={() => setIsCreateOpen(true)} className="mb-4">
               Create Product
             </Button>
 
-            {/* Create Product Dialog */}
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
               <DialogContent>
                 <DialogHeader>
@@ -324,12 +333,11 @@ const ProductPage = () => {
                     </Label>
                     <Input
                       id="newProductDescription"
-                      type="number"
                       value={newProductData.description || ""}
                       onChange={(e) =>
                         setNewProductData({
                           ...newProductData,
-                          quantity: e.target.value,
+                          description: e.target.value,
                         })
                       }
                       className="col-span-3"
@@ -342,7 +350,6 @@ const ProductPage = () => {
               </DialogContent>
             </Dialog>
 
-            {/* Edit Product Dialog */}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogContent>
                 <DialogHeader>
@@ -449,7 +456,7 @@ const ProductPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <TableRow key={product._id}>
                     <TableCell>{product.name}</TableCell>
                     <TableCell>
@@ -463,17 +470,16 @@ const ProductPage = () => {
                         }}
                       />
                     </TableCell>
-                    <TableCell>{product.price}</TableCell>
+                    <TableCell>${product.price}</TableCell>
                     <TableCell>{product.quantity}</TableCell>
                     <TableCell>{product.sales}</TableCell>
                     <TableCell>{product.description}</TableCell>
                     <TableCell>
-                      {/* //toggle to archive / unarchive a p */}
                       <div className="flex flex-col space-y-2">
                         <Button
                           onClick={() => openEditModal(product)}
                           variant="outline"
-                          className="w-[80px]  hover: bg-grey-900 mr-2 ml-2 "
+                          className="w-full hover:bg-gray-100"
                         >
                           Edit
                         </Button>
@@ -481,13 +487,13 @@ const ProductPage = () => {
                           onClick={() =>
                             toggleArchive(product._id, product.archived)
                           }
-                          className=" w-[80px] mr-2 ml-2"
+                          className="w-full"
                         >
                           {product.archived ? "Unarchive" : "Archive"}
                         </Button>
                         <Button
                           onClick={() => handleDeleteProduct(product._id)}
-                          className="w-[80px] bg-red-500 text-white ml-2"
+                          className="w-full bg-red-500 text-white hover:bg-red-600"
                         >
                           Delete
                         </Button>
@@ -506,3 +512,4 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+

@@ -100,13 +100,13 @@ const PendingUserDocuments = () => {
       <Sidebar />
       <div className="flex-1 p-4">
         <Navbar />
-        <div className="container mx-auto p-6  mt-8 w-4/5">
+        <div className="container mx-auto p-6 mt-8 w-4/5">
           {userDocuments.length === 0 ? (
             <p>No pending user documents found.</p>
           ) : (
             <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {userDocuments.map((item, index) => (
-                <Card key={index} className="shadow-lg rounded-lg">
+                <Card key={index} className="shadow-lg rounded-lg flex flex-col">
                   <CardHeader className="flex justify-between items-center">
                     <div>
                       <h3 className="text-lg font-bold">
@@ -118,7 +118,7 @@ const PendingUserDocuments = () => {
                       </p>
                     </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-grow">
                     <h4 className="text-md font-semibold mb-3">
                       Uploaded Documents
                     </h4>
