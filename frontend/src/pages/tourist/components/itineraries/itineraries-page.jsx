@@ -259,7 +259,8 @@ export function ItinerariesPage() {
                 currency={currency}
                 exchangeRate={exchangeRates[currency] || 1}
                 bookmarkedItineraries={bookmarkedItineraries} // Add this prop
-                handleBookmark={handleBookmark} /><div className="flex justify-center mt-6 space-x-2"data-tour="itinerary-pagination">
+                handleBookmark={handleBookmark} /><div className="flex justify-center mt-6 space-x-2">
+                  <div className="flex justify-center mt-6 "data-tour="itinerary-pagination">
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -286,7 +287,7 @@ export function ItinerariesPage() {
                   >
                     Next
                   </Button>
-                </div></>
+                </div></div></>
         
           )}
 
