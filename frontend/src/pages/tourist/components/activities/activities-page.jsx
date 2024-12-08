@@ -182,11 +182,12 @@ export function ActivitiesPage() {
                 <div className="space-y-4">
                   {paginatedActivities.map((activity) => (
                     <ActivityCard
-                      token={token}
-                      bookActivity={createActivityBooking}
-                      activity={activity}
-                      currency={currency}
-                      exchangeRate={exchangeRates[currency] || 1} />
+                    key={activity._id}  // Add this unique key prop
+                    token={token}
+                    bookActivity={createActivityBooking}
+                    activity={activity}
+                    currency={currency}
+                    exchangeRate={exchangeRates[currency] || 1} />
                   ))}
                 </div>
               </div>
@@ -206,12 +207,12 @@ export function ActivitiesPage() {
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                     (page) => (
                       <Button
-                        key={page}
-                        variant={currentPage === page ? 'default' : 'outline'}
-                        onClick={() => {
-                          setCurrentPage(page);
-                          window.scroll(0, 0);
-                        }}
+                      key={`page-${page}`}  // Make the key more explicit
+                      variant={currentPage === page ? 'default' : 'outline'}
+                      onClick={() => {
+                        setCurrentPage(page);
+                        window.scroll(0, 0);
+                      }}
                       >
                         {page}
                       </Button>

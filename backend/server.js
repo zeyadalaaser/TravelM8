@@ -35,7 +35,7 @@ import orderRoutes from './routes/orderRoute.js';
 import bookmarksRoutes from './routes/BookmarkRoute.js';
 import promoControlRoute from './routes/promoControlRoute.js';
 import { sendBirthdayPromoCodes } from './controllers/promoCodeController.js'
-
+import buttonActionRoutes from './routes/buttonAction.js';
 
 import notificationRoutesTourist from './routes/NotificationTouristRouter.js';
 
@@ -95,6 +95,7 @@ app.use('/api', promoControlRoute);
 app.use('/api/notifications', notificationRoutesTourist);
 app.use(express.json());
 
+app.use('/api/button-actions', buttonActionRoutes);
 
 cron.schedule('0 0 * * *', async () => {
   try {
