@@ -52,9 +52,10 @@ export async function getMyAddresses(token) {
 
 }
 
-export async function getItineraries(query) {
+export async function getItineraries(query, token = null) {
   const searchParams = new URLSearchParams(query);
   searchParams.delete('type');
+  searchParams.set("token", token);
 
 
   return (await apiClient.get('FilterItineraries?' + searchParams.toString())).data;
@@ -138,7 +139,7 @@ export async function getActivityBookings() {
   });
   const data = await response.data
   return (
-    data.allBookings
+    data.bookingsWithRatings
   );
 }
 
@@ -168,7 +169,7 @@ export async function getItineraryBookings() {
   });
   const data = await response.data
   return (
-    data.allBookings
+    data.bookingsWithRatings
   );
 }
 
@@ -319,6 +320,20 @@ export async function getToken() {
 const hotelsBody = `{"mapParams":{"estimateBoundingBox":true},"filterParams":{},"sortParams":{"sortMode":"rank_a"},"userSearchParams":{"searchLocation":{"locationType":"place","locationQuery":"2800"},"adults":"4","checkin":"2024-11-09","checkout":"2024-11-16","rooms":"3","childAges":[0]},"priceMode":"nightly-base","pageNumber":1,"metadata":{"impressionCount":1}}`;
 
 export async function getHotels(query) {
+  const getScoreFilter = (score) => {
+    let result = "extendedrating=~"
+    if (score === "6+")
+      return result + "okay;";
+    else if (score === "7+")
+      return result + "good;";
+    else if (score === "8+")
+      return result + "great;";
+    else if (score === "9+")
+      return result + "excellent;";
+  }
+
+  const getStarsFilter = (stars) => "stars~" + stars.charAt(0) + ";";
+
   const searchParams = new URLSearchParams(query);
   if (!searchParams.has("checkin") || !searchParams.has("checkout") || !searchParams.has("where"))
     return [];
@@ -330,6 +345,9 @@ export async function getHotels(query) {
   const price = searchParams.get("price");
   const sort = searchParams.get("order");
 
+  const hotelScore = searchParams.get("review");
+  const hotelClass = searchParams.get("class");
+
   const requestBody = JSON.parse(hotelsBody);
 
   requestBody.userSearchParams.checkin = checkin;
@@ -338,8 +356,17 @@ export async function getHotels(query) {
   requestBody.userSearchParams.searchLocation.locationType = location[0];
   requestBody.userSearchParams.searchLocation.locationQuery = location[1];
 
+  if (price || hotelScore || hotelClass)
+    requestBody.filterParams["fs"] = "";
+
   if (price)
-    requestBody.filterParams["fs=price"] = price;
+    requestBody.filterParams["fs"] += `price=${price};`;
+
+  if (hotelScore)
+    requestBody.filterParams["fs"] += getScoreFilter(hotelScore);
+
+  if (hotelClass)
+    requestBody.filterParams["fs"] += getStarsFilter(hotelClass);
 
   if (sort)
     requestBody.sortParams.sortMode = sort;

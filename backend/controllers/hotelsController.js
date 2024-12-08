@@ -97,7 +97,7 @@ export const getHotels = async (req, res) => {
             if (!token)
             {
                 token = await getToken();
-                await setCurrency(currency, token);
+                //await setCurrency(currency, token);
             }
             
             response = await axios.post(
@@ -130,11 +130,15 @@ export const getHotels = async (req, res) => {
                 res.status(200).send([]);
                 return;
             }
+            if (errorStr?.includes("The user has sent too many requests in a given amount of time")) {
+                res.sendStatus(204);
+                return;
+            }
         }
         console.log(response?.data?.results?.length);
         await sleep(600);
     }
-    while (!response || response.data?.results?.length < 20);
+    while (!response || (response.data?.results?.length < 20 && response.data?.status !== "complete"));
 
     console.log("done");
 

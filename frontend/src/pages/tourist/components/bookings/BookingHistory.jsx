@@ -6,7 +6,8 @@ import {
   cancelActivityBooking,
   cancelItineraryBooking,
 } from "../../api/apiService";
-
+import { Stars } from "@/components/Stars.jsx";
+import axios from "axios";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Card,
@@ -69,13 +70,12 @@ const BookingHistory = () => {
   //////////////////////////////////////////////////////////////////////////
   const [mainTab, setMainTab] = useState("activities");
   const [subTab, setSubTab] = useState("all");
-
+  // const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(true); // Loading state to track data fetching completion
 
   let completed = false;
   let pending = false;
   let cancelled = false;
-
 
   const fetchDataAndFilter = async () => {
     try {
@@ -90,11 +90,15 @@ const BookingHistory = () => {
       // Set state for main lists
       if (activitiesResponse && itinerariesResponse) {
         const filteredActivities = activitiesResponse.filter(
-          (activity) => activity.completionStatus === "Paid" || activity.completionStatus === "Cancelled"
+          (activity) =>
+            activity.completionStatus === "Paid" ||
+            activity.completionStatus === "Cancelled"
         );
 
         const filteredItineraries = itinerariesResponse.filter(
-          (itinerary) => itinerary.completionStatus === "Paid" || itinerary.completionStatus === "Cancelled"
+          (itinerary) =>
+            itinerary.completionStatus === "Paid" ||
+            itinerary.completionStatus === "Cancelled"
         );
 
         // Set the state with filtered data
@@ -102,7 +106,6 @@ const BookingHistory = () => {
         setAllItinerariesList(filteredItineraries);
         setShowingActivities(filteredActivities);
         setShowingItineraries(filteredItineraries);
-
 
         console.log("Activities Set State:", filteredActivities);
         console.log("Itineraries Set State:", filteredItineraries);
@@ -220,25 +223,6 @@ const BookingHistory = () => {
     loading,
   ]);
 
-  const getReviews = async (entityId, entityType, touristId) => {
-    try {
-      // Construct query parameters
-      const params = {
-        entityId,
-        entityType,
-        touristId,
-      };
-
-      const response = await axios.get('/api/ratings', { params });
-
-      console.log('Reviews:', response.data.reviews);
-      console.log('Average Rating:', response.data.averageRating);
-      setReviews(response.data);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    }
-  };
-
   const renderSubTabs = () => {
     if (mainTab === "products") {
       return (
@@ -264,6 +248,7 @@ const BookingHistory = () => {
       ...prev,
       isOpen: false,
     }));
+    fetchDataAndFilter();
   };
   const openDialog = ({ touristId, entityId, entityType }) => {
     setDialogData({
@@ -347,8 +332,8 @@ const BookingHistory = () => {
   };
 
   const ActivitiesCard = ({ activityBooking }) => {
-    const reviews = reviews.reviews;
-    const averageRating = reviews.averageRating;
+    // console.log(getReviews(activityBooking.activityId, "Activity", activityBooking.touristId));
+    //const averageRating = ratings.averageRating;
     pending =
       activityBooking.completionStatus == "Paid" &&
       new Date(activityBooking.activityId?.date) > today;
@@ -361,7 +346,7 @@ const BookingHistory = () => {
         key={activityBooking._id}
         className="w-full overflow-hidden"
         style={{
-          height: !completed && !pending ? "200px" : "250px",
+          height: !completed && !pending ? "200px" : "290px",
         }}
       >
         <CardHeader>
@@ -374,13 +359,14 @@ const BookingHistory = () => {
             </div>
             <Badge
               className={`
-                ${cancelled
-                  ? "bg-red-600"
-                  : pending
+                ${
+                  cancelled
+                    ? "bg-red-600"
+                    : pending
                     ? "bg-yellow-600"
                     : completed
-                      ? "bg-green-600"
-                      : "bg-gray-800"
+                    ? "bg-green-600"
+                    : "bg-gray-800"
                 } 
                 text-white
               `}
@@ -388,9 +374,9 @@ const BookingHistory = () => {
               {activityBooking.completionStatus === "Paid"
                 ? "Paid"
                 : activityBooking.completionStatus === "Cancelled"
-                  ? activityBooking.completionStatus.charAt(0).toUpperCase() +
+                ? activityBooking.completionStatus.charAt(0).toUpperCase() +
                   activityBooking.completionStatus.slice(1)
-                  : "Unknown Status"}
+                : "Unknown Status"}
             </Badge>
           </div>
           <CardDescription className="flex items-center mt-1">
@@ -405,10 +391,10 @@ const BookingHistory = () => {
           <p className="text-sm text-gray-600 mb-4 truncate">
             {activityBooking.activityId?.description}
           </p>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPinIcon className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">
+              <span className="truncate max-w-[200px]-">
                 Location: {`${activityBooking.activityId?.location?.name}`}
               </span>
             </div>
@@ -418,65 +404,63 @@ const BookingHistory = () => {
                 activityBooking.activityId?.price[0]}
             </p>
           </div>
-            {/* <div className="flex items-center gap-2 text-sm text-gray-600">
-              <StarIcon className="w-4 h-4" />
-              <span>
-                Average Rating: {averageRating}
-              </span>
+          {!cancelled && (<Separator></Separator>)}
+          <div className="w-full items-center flex justify-between mt-5">
+            <div className="">
+              {activityBooking.review && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                  <span className="font-semibold">Your Rating :</span>
+                  <Stars rating={activityBooking.review.rating} />
+                </div>
+              )}
+              {activityBooking.review && (
+                <div className="gap-2 text-sm flex text-gray-600">
+                  <p className="font-semibold">Your Comment :</p>
+                  <p className="italic">
+                    &quot;{activityBooking.review?.comment}&quot;
+                  </p>
+                </div>
+              )}
             </div>
-          <div className="border-t pt-4">
-            {reviews && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                <StarIcon className="w-4 h-4" />
-                <span>Your Rating: {activityBooking.rating}/5</span>
-              </div>
-            )}
-            {activityBooking.comment && (
-              <div className="text-sm text-gray-600">
-                <p className="font-semibold">Your Comment:</p>
-                <p className="italic">&quot;{activityBooking.comment}&quot;</p>
-              </div>
-            )}
-            </div> */}
+            <div>
+              {activityBooking.completionStatus == "Paid" &&
+                new Date(activityBooking.activityId.date) < today && (
+                  <div className="flex flex-col justify-between space-y-1.5">
+                    <Button
+                      onClick={() => {
+                        openDialog({
+                          touristId: activityBooking.touristId,
+                          entityId: activityBooking.activityId || null,
+                          entityType: "Activity",
+                        });
+                      }}
+                      disabled={activityBooking.activityId === null}
+                    >
+                      <Star className="mr-2 h-4 w-4" />
+                      Rate Activity
+                    </Button>
+                  </div>
+                )}
+              {activityBooking.completionStatus == "Paid" &&
+                new Date(activityBooking.activityId?.date) > today && (
+                  <div className="flex flex-col justify-between m-2">
+                    {/* <Separator></Separator> */}
+                    <Button
+                      variant="destructive"
+                      className="mr-auto"
+                      size="sm"
+                      onClick={() =>
+                        handleCancelBooking("activity", activityBooking._id)
+                      }
+                      disabled={activityBooking.activityId === null}
+                    >
+                      Cancel Booking
+                    </Button>
+                  </div>
+                )}
+            </div>
+          </div>
         </CardContent>
-        <CardFooter>
-          {activityBooking.completionStatus == "Paid" &&
-            new Date(activityBooking.activityId.date) < today && (
-              <div className="flex flex-col justify-between space-y-1.5">
-                {/* <Separator></Separator> */}
-                <Button
-                  onClick={() =>
-                    openDialog({
-                      touristId: activityBooking.touristId,
-                      entityId: activityBooking.activityId || null,
-                      entityType: "Activity",
-                    })
-                  }
-                  disabled={activityBooking.activityId === null}
-                >
-                  <Star className="mr-2 h-4 w-4" />
-                  Rate Activity
-                </Button>
-              </div>
-            )}
-          {activityBooking.completionStatus == "Paid" &&
-            new Date(activityBooking.activityId?.date) > today && (
-              <div className="flex flex-col justify-between space-y-1.5">
-                {/* <Separator></Separator> */}
-                <Button
-                  variant="destructive"
-                  className="mr-auto"
-                  size="sm"
-                  onClick={() =>
-                    handleCancelBooking("activity", activityBooking._id)
-                  }
-                  disabled={activityBooking.activityId === null}
-                >
-                  Cancel Booking
-                </Button>
-              </div>
-            )}
-        </CardFooter>
       </Card>
     );
   };
@@ -495,7 +479,7 @@ const BookingHistory = () => {
       <Card
         key={itineraryBooking._id}
         style={{
-          height: !completed && !pending ? "200px" : "250px",
+          height: !completed && !pending ? "200px" : "290px",
         }}
         className="w-full overflow-hidden"
       >
@@ -509,13 +493,14 @@ const BookingHistory = () => {
             </div>
             <Badge
               className={`
-                ${cancelled
-                  ? "bg-red-600"
-                  : pending
+                ${
+                  cancelled
+                    ? "bg-red-600"
+                    : pending
                     ? "bg-yellow-600"
                     : completed
-                      ? "bg-green-600"
-                      : "bg-gray-800"
+                    ? "bg-green-600"
+                    : "bg-gray-800"
                 } 
                 text-white
               `}
@@ -523,17 +508,10 @@ const BookingHistory = () => {
               {itineraryBooking.completionStatus === "Paid"
                 ? "Paid"
                 : itineraryBooking.completionStatus === "Cancelled"
-                  ? itineraryBooking.completionStatus.charAt(0).toUpperCase() +
+                ? itineraryBooking.completionStatus.charAt(0).toUpperCase() +
                   itineraryBooking.completionStatus.slice(1)
-                  : "Unknown Status"}
+                : "Unknown Status"}
             </Badge>
-            {/* <Badge
-              className={`${
-                statusColors[itineraryBooking.completionStatus]
-              } text-white`}
-            >
-              {itineraryBooking.completionStatus}
-            </Badge> */}
           </div>
           <CardDescription className="flex items-center mt-1">
             <CalendarIcon className="w-4 h-4 m-1 flex-shrink-0" />
@@ -547,7 +525,7 @@ const BookingHistory = () => {
           <p className="text-sm text-gray-600 mb-4 truncate">
             {itineraryBooking.itinerary?.description}
           </p>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPinIcon className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">
@@ -558,65 +536,80 @@ const BookingHistory = () => {
               ${itineraryBooking.itinerary?.price}
             </p>
           </div>
+          {!cancelled && (<Separator></Separator>)}
+          <div className="w-full items-center flex justify-between mt-5">
+            <div className="">
+              {itineraryBooking.review && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                  <span className="font-semibold">Your Rating :</span>
+                  <Stars rating={itineraryBooking.review.rating} />
+                </div>
+              )}
+              {itineraryBooking.review && (
+                <div className="gap-2 text-sm flex text-gray-600">
+                  <p className="font-semibold">Your Comment :</p>
+                  <p className="italic">
+                    &quot;{itineraryBooking.review?.comment}&quot;
+                  </p>
+                </div>
+              )}
+            </div>
+            <div>
+              {completed && (
+                <div className="flex flex-col justify-between space-y-1.5">
+                  <div className="flex mr-auto gap-4">
+                    <Button
+                      onClick={() =>
+                        openDialog({
+                          touristId: itineraryBooking.tourist,
+                          entityId: itineraryBooking.tourGuide || null,
+                          entityType: "TourGuide",
+                        })
+                      }
+                      disabled={itineraryBooking.tourGuide === null}
+                      variant="secondary"
+                      size="sm"
+                      className="mr-auto flex-1 items-center justify-center"
+                    >
+                      <Star className="mr-1 h-4 w-4" />
+                      Rate Tourguide
+                    </Button>
+                    <Button
+                      onClick={() =>
+                        openDialog({
+                          touristId: itineraryBooking.tourist,
+                          entityId: itineraryBooking.itinerary || null,
+                          entityType: "Itinerary",
+                        })
+                      }
+                      disabled={itineraryBooking.itinerary === null}
+                      size="sm"
+                      className="mr-auto flex-1 items-center justify-center"
+                    >
+                      <Star className="mr-1 h-4 w-4" />
+                      Rate Itinerary
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {pending && (
+                <div className="flex flex-col justify-between space-y-1.5 ">
+                  <Button
+                    variant="destructive"
+                    className="mr-auto"
+                    size="sm"
+                    onClick={() =>
+                      handleCancelBooking("itinerary", itineraryBooking._id)
+                    }
+                    disabled={itineraryBooking.itinerary === null}
+                  >
+                    Cancel Booking
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </CardContent>
-        <CardFooter>
-          {completed && (
-            <div className="flex flex-col justify-between space-y-1.5">
-              {/* <Separator></Separator> */}
-              <div className="flex mr-auto gap-4">
-                <Button
-                  onClick={() =>
-                    openDialog({
-                      touristId: itineraryBooking.tourist,
-                      entityId: itineraryBooking.tourGuide || null,
-                      entityType: "TourGuide",
-                    })
-                  }
-                  disabled={itineraryBooking.tourGuide === null}
-                  variant="secondary"
-                  size="sm"
-                  className="mr-auto flex-1 items-center justify-center"
-                >
-                  <Star className="mr-1 h-4 w-4" />
-                  Rate Tourguide
-                </Button>
-                <Button
-                  onClick={() =>
-                    openDialog({
-                      touristId: itineraryBooking.tourist,
-                      entityId: itineraryBooking.itinerary || null,
-                      entityType: "Itinerary",
-                    })
-                  }
-                  disabled={itineraryBooking.itinerary === null}
-                  size="sm"
-                  className="mr-auto flex-1 items-center justify-center"
-                >
-                  <Star className="mr-1 h-4 w-4" />
-                  Rate Itinerary
-                </Button>
-              </div>
-            </div>
-          )}
-          {/* {itineraryBooking.completionStatus == "Paid" &&
-            new Date(itineraryBooking.tourDate) > today && ( */}
-          {pending && (
-            <div className="flex flex-col justify-between space-y-1.5 ">
-              {/* <Separator></Separator> */}
-              <Button
-                variant="destructive"
-                className="mr-auto"
-                size="sm"
-                onClick={() =>
-                  handleCancelBooking("itinerary", itineraryBooking._id)
-                }
-                disabled={itineraryBooking.itinerary === null}
-              >
-                Cancel Booking
-              </Button>
-            </div>
-          )}
-        </CardFooter>
       </Card>
     );
   };

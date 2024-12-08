@@ -15,6 +15,8 @@ import {
   notifyTourGuide2,
   sendEmailNotification2,
 } from "./notificationController.js";
+import jwt from 'jsonwebtoken';
+import Tourist from "../models/touristModel.js";
 
 export const createItinerary = async (req, res) => {
   try {
@@ -283,6 +285,7 @@ export const filterItineraries = async (req, res) => {
       sortBy,
       order,
       currency = "USD",
+      token
     } = req.query;
 
     // Fetch exchange rates for price conversion
@@ -326,9 +329,23 @@ export const filterItineraries = async (req, res) => {
 
     if (language) filters.tourLanguage = language;
 
-    const sortCondition = sortBy
+    let sortCondition = (sortBy && sortBy !== "tags")
       ? [{ $sort: { [sortBy]: order === "desc" ? -1 : 1 } }]
       : [];
+
+
+    if (sortBy === "tags" && token !== "null") {
+      const secret = "a$T8#fGz!x7%kH4q";
+      const decoded = jwt.verify(token, secret);
+      const { userId } = decoded;
+      const preferenceTags = (await Tourist.findById(userId)).preferences;
+      sortCondition = [
+        { $addFields: { matchCount: { $size: { $setIntersection: ["$tags.name", preferenceTags] } } } },
+        { $sort: { matchCount: -1 } },
+        { $project: { matchCount: 0 } }
+      ];
+    }
+
     const addRatingStage = createRatingStage("Itinerary", true, 0);
     const advertiserStage = createPopulationStage(
       "advertisers",
@@ -439,8 +456,8 @@ export const searchItems2 = async (req, res) => {
     const itineraries =
       Object.keys(itineraryFilter).length > 0
         ? await Itinerary.find(itineraryFilter)
-            .populate("activities")
-            .populate("historicalSites")
+          .populate("activities")
+          .populate("historicalSites")
         : [];
 
     const results = { activities, historicalPlaces, itineraries };

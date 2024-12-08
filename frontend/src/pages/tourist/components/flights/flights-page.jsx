@@ -14,7 +14,6 @@ import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
 
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";

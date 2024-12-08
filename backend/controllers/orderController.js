@@ -5,6 +5,7 @@ import Purchase from '../models/purchaseModel.js';
 import Product from '../models/productModel.js';
 import mongoose from "mongoose";
 import axios from "axios"
+import { getTouristReviews } from "./ratingController.js"
 
 
 const stripe = new Stripe('sk_test_51QNwSmLNUgOldllO81Gcdv4m60Pf04huhn0DcH2jm0NedAn6xh3krj5GyJ9PEojkKCJYmGJGojBK12S52FktB5Jc00dYqr1Ujo');
@@ -297,22 +298,53 @@ export const payWithCash = async (req, res) => {
     try {
       const userId = req.user?.userId; // Assumes user ID is extracted from token
   
-      // Find orders for the logged-in user
-      const orders = await Order.find({ user: userId })
+      // Fetch all orders for the logged-in user
+      const allOrders = await Order.find({ user: userId })
         .sort({ createdAt: -1 })
         .populate({
           path: "items.product",
           model: "Product", // Populates product details
         })
-        .select("items totalAmount deliveryFee deliveryAddress paymentMethod status createdAt"); // Explicitly select the fields you want
+        .select("items totalAmount deliveryFee deliveryAddress paymentMethod status createdAt");
   
-      if (!orders || orders.length === 0) {
+      if (!allOrders || allOrders.length === 0) {
         return res.status(404).json({ message: "No orders found" });
       }
   
-      res.status(200).json({ orders });
+      // Fetch all reviews for products in the user's orders
+      const productIds = allOrders
+        .flatMap((order) => order.items.map((item) => item.product?._id))
+        .filter(Boolean); // Ensure valid IDs
+
+      const productReviews = await getTouristReviews(userId, "Product");
+      const ordersWithProductReviews = allOrders.map((order) => {
+        const updatedItems = order.items.map((item) => {
+          const productId = new mongoose.Types.ObjectId(item.product?._id);
+          const productReview = productReviews.find(
+            (review) => productId.equals(new mongoose.Types.ObjectId(review.entityId)) // Use .equals() for ObjectId comparison
+          );
+  
+          return {
+            ...item.toObject(),
+            review: productReview || null, // Include the review or set to null if not found
+          };
+        });
+  
+        return {
+          ...order.toObject(),
+          items: updatedItems, // Update the items with reviews
+        };
+      });
+  
+      res.status(200).json({
+        orders: ordersWithProductReviews,
+        message: "Successfully fetched all your orders with product reviews!",
+      });
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch orders", error: error.message });
+      res.status(500).json({
+        message: "Failed to fetch orders",
+        error: error.message,
+      });
     }
   };
   
