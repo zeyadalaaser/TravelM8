@@ -165,7 +165,7 @@ export default function ItineraryCard({
     <>
       <div className="space-y-5">
         {itineraries?.map((itinerary) => (
-          <Card key={itinerary._id} className="overflow-hidden">
+          <Card key={itinerary._id} className="overflow-hidden h-[260px]">
             <div className="flex flex-row ">
               <div className="w-1/3">
                 <img
