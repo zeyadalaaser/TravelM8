@@ -124,7 +124,6 @@ const TourGuideDashboard = () => {
     }
   }, [token, navigate]);
 
-  // Fetch itineraries from the server
 
   const fetchReport = async () => {
     setIsLoading(true);
@@ -284,11 +283,6 @@ const TourGuideDashboard = () => {
       console.log("Booking status updated successfully");
     } catch (error) {
       console.error("Error updating booking status:", error);
-      // setItineraries((prevItineraries) =>
-      //   prevItineraries.map((item) =>
-      //     item._id === id ? { ...item, isBookingOpen: !newStatus } : item
-      //   )
-      // );
     }
   };
 
@@ -297,11 +291,11 @@ const TourGuideDashboard = () => {
 
 
       <main className="flex-1 overflow-y-auto">
-        {/* Header */}
+
         <Header editProfile="/tourGuideProfile" dashboard="/tourGuideDashboard"/>
-        {/* Dashboard Content */}
+
         <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -342,17 +336,6 @@ const TourGuideDashboard = () => {
                         .toFixed(2)
                     : "0.00"}
                 </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Tourists
-                </CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">1,234</div>
               </CardContent>
             </Card>
           </div>
