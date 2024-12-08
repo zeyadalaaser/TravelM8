@@ -45,6 +45,10 @@ export const createBooking2 = async (req, res) => {
       if (!touristData) {
         return res.status(404).json({ message: "Tourist not found." });
       }
+      if (paymentMethod === "Wallet") {
+        touristData.wallet -= itineraryPrice;
+        await touristData.save();
+      }
       const emailSubject = "Booking Confirmation";
       const emailBody = `
         <h1>Thank you for booking with us!</h1>
@@ -72,7 +76,7 @@ export const createBooking2 = async (req, res) => {
 
       res.status(201).json({
         savedBooking,
-        message: `Successful Booking of Itinerary! You gained ${points} points and currently have ${current} loyality points`,
+        message: `You gained ${points} points and currently have ${current} loyality points.`,
       });
     } else
       res.status(203).json({

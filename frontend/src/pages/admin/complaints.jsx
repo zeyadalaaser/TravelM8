@@ -180,7 +180,7 @@ export default function ComplaintsPage() {
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 w-4/5">
           <h1 className="text-2xl font-bold mb-4">Complaints Management</h1>
           <div className="flex justify-start mb-4">
             <div className="flex items-center space-x-4">

@@ -2,13 +2,10 @@ import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect, useRef } from "react";
 import useRouter from "@/hooks/useRouter";
 import { SingleDateFilter } from "@/components/bookingCard/single-date-filter.jsx";
-import { Flights } from "@/components/bookingCard/flights.jsx";
 import { getFlights } from "@/pages/tourist/api/apiService.js";
 import { CityFilter } from "@/components/bookingCard/city-filter.jsx";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label"
-
-import axios from "axios";
 
 const query = encodeURIComponent(
   "query UmbrellaPlacesQuery( $search: PlacesSearchInput $filter: PlacesFilterInput $options: PlacesOptionsInput ) { places(search: $search, filter: $filter, options: $options, first: 20) { __typename ... on AppError { error: message } ... on PlaceConnection { edges { rank distance { __typename distance } isAmbiguous node { __typename __isPlace: __typename id legacyId name slug slugEn gps { lat lng } rank ... on City { code autonomousTerritory { legacyId id } subdivision { legacyId name id } country { legacyId name slugEn region { legacyId continent { legacyId id } id } id } airportsCount groundStationsCount } ... on Station { type code gps { lat lng } city { legacyId name slug autonomousTerritory { legacyId id } subdivision { legacyId name id } country { legacyId name region { legacyId continent { legacyId id } id } id } id } } ... on Region { continent { legacyId id } } ... on Country { code region { legacyId continent { legacyId id } id } } ... on AutonomousTerritory { country { legacyId name region { legacyId continent { legacyId id } id } id } } ... on Subdivision { country { legacyId name region { legacyId continent { legacyId id } id } id } } } } } } }"
@@ -46,125 +43,73 @@ async function fetchCities(cityName) {
 }
 
 export function FlightsPage() {
-  const { location, searchParams } = useRouter();
-  const { navigate} = useRouter();
-  const [flights, setFlights] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const requestCounter = useRef(0);
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3; // Adjust how many items per page you want
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const totalPages = Math.ceil(flights.length / itemsPerPage);
-  // Paginated activities
-  const paginatedFlights = flights.slice(startIndex, endIndex);
-
-  const fetchFlights = useDebouncedCallback(async () => {
-    setLoading(true);
-
-    const currentRequestId = ++requestCounter.current;
-    const flights = await getFlights(location.search);
-
-    if (currentRequestId === requestCounter.current) setFlights(flights);
-
-    setLoading(false);
-  }, 200);
-
-  useEffect(() => {
-    fetchFlights();
-  }, [location.search]); // Only run when location.search changes
-
+  const { navigate, searchParams } = useRouter();
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
   const [departureCity, setDepartureCity] = useState(null);
   const [arrivalCity, setArrivalCity] = useState(null);
-  const currency = searchParams.get("currency") ?? "USD";
-  const [exchangeRates, setExchangeRates] = useState({});
 
   const formatDateToISOString = (date) => {
     if (!date)
-        return null;
+      return null;
 
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
     const day = String(date.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
-};
+  };
 
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
+  const handleSearch = () => {
+
+    if (departureDate) {
+      searchParams.set("departure", formatDateToISOString(departureDate));
+    } else {
+      searchParams.delete("departure");
     }
-    fetchExchangeRates();
-  }, []);
-  
-    const handleSearch = () => {
-
-        if (departureDate) {
-            searchParams.set("departure", formatDateToISOString(departureDate));
-        } else {
-            searchParams.delete("departure");
-        }
-        if (returnDate) {
-            searchParams.set("return", formatDateToISOString(returnDate));
-        } else {
-            searchParams.delete("return");
-        }
-        if (departureCity) {
-            searchParams.set("from", departureCity) 
-        }
-        else {
-            searchParams.delete("from");
-        }
-        if (arrivalCity) {
-            searchParams.set("to", arrivalCity) 
-        }
-        else {
-            searchParams.delete("to");
-        }
-        navigate(`tourist-page?type=flights&${searchParams.toString()}`, { replace: true });
-    };
+    if (returnDate) {
+      searchParams.set("return", formatDateToISOString(returnDate));
+    } else {
+      searchParams.delete("return");
+    }
+    if (departureCity) {
+      searchParams.set("from", departureCity)
+    }
+    else {
+      searchParams.delete("from");
+    }
+    if (arrivalCity) {
+      searchParams.set("to", arrivalCity)
+    }
+    else {
+      searchParams.delete("to");
+    }
+    navigate(`tourist-page?type=flights&${searchParams.toString()}`, { replace: true });
+  };
 
   return (
-    <>
-      <div className="flex mb-2 justify-between space-x-6">
-        <div className="flex-1 min-w-[200px]">
-            <Label htmlFor="departureCity" className="mb-2 block text-s">Leaving from </Label>
-            <CityFilter className="flex-1" name="From" getData={fetchCities} onCitySelect={setDepartureCity}/>
+      <div className="flex w-full justify-between space-x-3 items-end">
+        <div className="flex-1">
+          <Label htmlFor="departureCity" className="mb-2 block text-s">Leaving from </Label>
+          <CityFilter className="flex-1" name="From" getData={fetchCities} onCitySelect={setDepartureCity} />
         </div>
-        <div className="flex-1 min-w-[200px]">
-            <Label htmlFor="arrivalCity" className="mb-2 block text-s">Going to </Label>
-            <CityFilter className="flex-1" name="To" getData={fetchCities} onCitySelect={setArrivalCity}/>
-        </div>   
-        <div className="flex-1 min-w-[200px]">
-        <Label htmlFor="departureDate" className="mb-2 block text-s">Departure date </Label> 
-            <SingleDateFilter
-            className="flex-1 "
-            
+        <div className="flex-1">
+          <Label htmlFor="arrivalCity" className="mb-2 block text-s">Going to </Label>
+          <CityFilter className="flex-1" name="To" getData={fetchCities} onCitySelect={setArrivalCity} />
+        </div>
+        <div className="flex-1">
+          <Label htmlFor="departureDate" className="mb-2 block text-s">Departure date </Label>
+          <SingleDateFilter
+            className="flex-1"
+
             onDateSelect={setDepartureDate}
-            />
-        </div>   
-        <div className="flex-1 min-w-[200px]">
-            <Label htmlFor="returnDate" className="mb-2 block text-s">Return date </Label>  
-            <SingleDateFilter className="flex-1"  param="return" onDateSelect={setReturnDate}  />
-        </div>   
+          />
+        </div>
+        <div className="flex-1">
+          <Label htmlFor="returnDate" className="mb-2 block text-s">Return date </Label>
+          <SingleDateFilter className="flex-1" param="return" onDateSelect={setReturnDate} />
+        </div>
         <Button className="rounded-full px-8 mt-5 text-white " onClick={handleSearch}>Search</Button>
       </div>
-          <Flights
-            flights={paginatedFlights}
-            currency={currency}
-            exchangeRate={exchangeRates[currency]}
-          />
-          
-    </>
   );
 }

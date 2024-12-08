@@ -22,9 +22,7 @@ export const ChooseDate = ({ itinerary,token }) => {
   const checkForToken = () => {
     console.log(token);
     if (!token) {
-      toast(`Failed to book itinerary`, {
-        description: `You need to be logged in first`,
-      });
+      toast('Please login to perform this action');
       setIsOpen(false);
     }
     else {
@@ -57,7 +55,7 @@ export const ChooseDate = ({ itinerary,token }) => {
         toast("Failed to Book itinerary");
       }
     } else {
-      toast("You need to be logged in to book an itinerary!");
+      toast('Please login to perform this action');
     }
   };
 
@@ -67,9 +65,7 @@ export const ChooseDate = ({ itinerary,token }) => {
         <Button 
           onClick={() => {
             if (!token) {
-              toast(`Failed to book itinerary`, {
-              description: `You need to be logged in first`,
-              });
+              toast('Please login to perform this action');
             }
           }}
         >Book itinerary</Button>

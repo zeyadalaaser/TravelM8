@@ -153,7 +153,7 @@ const ActivityCategories = () => {
         }}
       >
         <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 w-4/5">
           <h1 className="text-2xl font-bold mb-4">
             Activity Categories Management
           </h1>

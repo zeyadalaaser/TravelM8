@@ -12,7 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, Globe, ShoppingCart } from "lucide-react";
+import { ChevronDown, Globe, ShoppingCart, Store, UserCircle } from 'lucide-react';
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Cart from "../pages/tourist/components/products/cart.jsx";
@@ -24,15 +24,16 @@ import { NumberStepper } from "@/components/ui/number-stepper";
 import NotificationBell from "@/pages/tourist/components/Notifications";
 import logo from "../assets/lb.png";
 import logo2 from "../assets/lw.png";
+import { WalkthroughButton } from './WalkthroughButton';
+import { useLocation } from 'react-router-dom';
+import { BookTransportation } from "@/pages/tourist/components/bookings/book-transportation.jsx"
 
 const pages = [
   { label: "Activities", value: "activities" },
   { label: "Itineraries", value: "itineraries" },
   { label: "Places", value: "museums" },
-  { label: "Products", value: "products" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
-  { label: "Transportation", value: "hotels" },
 ];
 
 export default function Navbar({ profilePageString, children }) {
@@ -51,6 +52,22 @@ export default function Navbar({ profilePageString, children }) {
   const [isAlertOpen, setAlertOpen] = useState(false);
 
   const currency = searchParams.get("currency") ?? "USD";
+  const locations = useLocation();
+  const getCurrentPageType = () => {
+    const path = locations.pathname;
+    const searchParams = new URLSearchParams(locations.search);
+  const currency = searchParams.get("currency") ?? "USD";
+    const type = searchParams.get('type');
+    if (type) return type.toLowerCase();
+    if (path.includes('activities')) return 'activities';
+    if (path.includes('itineraries')) return 'itineraries';
+    if (path.includes('products')) return 'products';
+    if (path.includes('flights')) return 'flights';
+    if (path.includes('hotels')) return 'hotels';
+    if (path.includes('museums')) return 'museums';
+    return 'activities'; // default
+  };
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -234,7 +251,7 @@ export default function Navbar({ profilePageString, children }) {
           }`}
           onClick={() => navigate(`/?currency=${currency}`)}
         >
-          <div className="flex items-center">
+          <div className="flex items-center -ml-8">
             <img
               src={
                 currentPage === "/" || currentPage === `/?currency=${currency}`
@@ -247,48 +264,6 @@ export default function Navbar({ profilePageString, children }) {
             <span>TRAVELM8</span>
           </div>
         </div>
-
-        {/* <label
-      htmlFor="currency"
-      style={{
-        display: 'flex',
-        width: 96.5,
-        alignItems: 'center',
-        backgroundColor: 'transparent',
-       color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black', // Set color based on currentPage
-      }}
-    >
-      <Globe
-        style={{
-          marginRight: '8px',
-          fontSize: '20px',
-          color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black' // Set icon color based on currentPage
-        }}
-      />
-      <select
-              id="currency"
-              value={currency}
-              onChange={handleCurrencyChange}
-              style={{
-                padding: '5px',
-                fontSize: '14px',
-                backgroundColor: 'transparent',
-                color: (currentPage === "/" || currentPage === `/?currency=${currency}`) ? 'white' : 'black' // Set text color based on currentPage
-              }}
-            >
-              {Object.keys(exchangeRates).map((cur) => (
-                <option
-                  key={cur}
-                  value={cur}
-                  style={{
-                    color: 'black', // Option elements usually inherit color, explicitly set if needed
-                  }}
-                >
-                  {cur}
-                </option>
-              ))}
-            </select>
-          </label> */}
 
         <div className="hidden md:flex items-center justify-start ml-32 space-x-1">
           {pages.map((page) => (
@@ -312,11 +287,26 @@ export default function Navbar({ profilePageString, children }) {
               {page.label}
             </button>
           ))}
+          <BookTransportation change={currentPage === "/" || currentPage === `/?currency=${currency}`} />
         </div>
-
+        <WalkthroughButton currentPageType={getCurrentPageType()} />
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={
+                  currentPage === "/" || currentPage === `/?currency=${currency}`
+                    ? "text-white hover:bg-transparent hover:text-white"
+                    : "text-black"
+                }
+                onClick={() =>
+                  navigate(`/tourist-page?type=products&currency=${currency}`)
+                }
+              >
+                <Store className="h-5 w-5" />
+              </Button>
               <NotificationBell currency={currency} currentPage={currentPage} />
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
@@ -355,7 +345,6 @@ export default function Navbar({ profilePageString, children }) {
                             key={item?._id}
                             className="flex items-center justify-between space-x-4"
                           >
-                            {/* Left Section: Image and Name */}
                             <div className="flex items-center space-x-4">
                               <img
                                 src={
@@ -380,8 +369,6 @@ export default function Navbar({ profilePageString, children }) {
                                 />
                               </div>
                             </div>
-
-                            {/* Right Section: Price */}
                             <span className="font-medium mb-10 text-lg">
                               {(
                                 item.productId.price *
@@ -415,25 +402,18 @@ export default function Navbar({ profilePageString, children }) {
                   )}
                 </SheetContent>
               </Sheet>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={handleClick}
-                className={`${
-                  currentPage === "/" ||
-                  currentPage === `/?currency=${currency}`
-                    ? "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2"
-                    : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"
-                }`}
+                className={
+                  currentPage === "/" || currentPage === `/?currency=${currency}`
+                    ? "text-white hover:bg-transparent hover:text-white"
+                    : "text-black"
+                }
               >
-                <span>Hello, {userName}</span>
-                <ChevronDown
-                  className={`h-4 w-4 ${
-                    currentPage === "/" ||
-                    currentPage === `/?currency=${currency}`
-                      ? "text-white"
-                      : "text-gray-500"
-                  }`}
-                />
-              </button>
+                <UserCircle className="h-7 w-7" />
+              </Button>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -449,25 +429,33 @@ export default function Navbar({ profilePageString, children }) {
                   },
                 }}
               >
-                <MenuItem onClick={() => navigate("/tourist-profile")}>
-                  My profile
+                <MenuItem>
+                  <span className="font-medium">Hello, {userName}</span>
                 </MenuItem>
-                <MenuItem onClick={handleClose}>My bookings</MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    navigate("/wallet");
-                  }}
-                >
-                  Wallet
+                <Separator />
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/tourist-profile");
+                }}>
+                  My Profile
                 </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    navigate("/order");
-                  }}
-                >
-                  Orders
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/tourist-profile?page=wishlist");
+                }}>
+                  Wishlist
+                </MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/tourist-profile?page=bookmarks");
+                }}>
+                  Bookmarks
+                </MenuItem>
+                <MenuItem onClick={() => {
+                  handleClose();
+                  navigate("/tourist-profile?page=preferences");
+                }}>
+                  Preferences
                 </MenuItem>
                 <Separator />
                 <MenuItem
@@ -531,3 +519,4 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
+

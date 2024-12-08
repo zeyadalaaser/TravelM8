@@ -66,26 +66,6 @@ export default function TouristPage() {
     }
   };
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-
-  //   if (!token) {
-  //     navigate("/"); // Redirect to login page if no token
-  //     return;
-  //   }
-
-  //   const { role, id } = getUserFromToken(token);
-  //   if (role !== "Tourist") {
-  //     navigate("/"); // Redirect if the role is not 'tourist'
-  //     return;
-  //   }
-  //   setTouristId(id);
-  //   // Fetch badge information once the token is verified
-  //   fetchBadgeInfo();
-
-  // }, [navigate]);
-
-
 
   useEffect(() => {
     if (!searchParams.has("type")) {

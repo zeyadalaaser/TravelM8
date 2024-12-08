@@ -10,6 +10,9 @@ import { Flights } from "../flights/flights";
 import { getFlights } from "../../api/apiService";
 import { CityFilter } from "../filters/city-filter";
 import { Button } from "@/components/ui/button";
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
+import { WalkthroughButton } from '@/components/WalkthroughButton';
 
 import axios from "axios";
 
@@ -61,6 +64,7 @@ export function FlightsPage() {
   const totalPages = Math.ceil(flights.length / itemsPerPage);
   // Paginated activities
   const paginatedFlights = flights.slice(startIndex, endIndex);
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
 
   const fetchFlights = useDebouncedCallback(async () => {
     setLoading(true);
@@ -103,20 +107,59 @@ export function FlightsPage() {
     window.scrollTo(0, 0); // Scroll to the top of the page when changing pages
   };
 
+  useEffect(() => {
+    if (walkthroughPage === 'flights') {
+      clearSteps();
+      addSteps([
+
+        {
+          target: '[data-tour="flight-search"]',
+          content: 'Write departure country.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight-filters"]',
+          content: 'Write destination country.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight-list"]',
+          content: 'Select Departure Date.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight"]',
+          content: 'Select Arrival Date.',
+          disableBeacon: true,
+        }
+
+      ], 'flights');
+    }
+  }, [addSteps, clearSteps, walkthroughPage]);
+
+
   return (
     <>
-      <div className="flex justify-between space-x-6">
-        <CityFilter className="flex-1" name="From" getData={fetchCities} />
-        <CityFilter className="flex-1" name="To" getData={fetchCities} />
-        <SingleDateFilter
-          className="flex-1"
-          name="Departure"
-          param="departure"
-        />
-        <SingleDateFilter className="flex-1" name="Return" param="return" />
+      <div className="flex justify-between space-x-3" >
+        <div className="flex-1" data-tour="flight-search">
+          <CityFilter className="flex-1" name="From" getData={fetchCities} />
+        </div>
+        <div className="flex-1" data-tour="flight-filters">
+          <CityFilter className="flex-1" name="To" getData={fetchCities} />
+        </div>
+        <div className="flex-1" data-tour="flight-list">
+          <SingleDateFilter
+            className="flex-1"
+            name="Departure"
+            param="departure"
+          />
+        </div>
+        <div className="flex-1" data-tour="flight">
+          <SingleDateFilter className="flex-1" name="Return" param="return" />
+        </div>
       </div>
       <div className="mt-6 flex flex-col md:flex-row gap-8">
-        <div className="flex w-1/4 h-10 items-center">
+        <div className="flex w-1/4 h-10 items-center" data-tour="flight-filters">
           {/* <PriceFilter /> */}
         </div>
         <div className="w-full md:w-3/4">
@@ -131,7 +174,7 @@ export function FlightsPage() {
             </div>
             <SortSelection options={sortOptions} />
           </div>
-          {flights.length!==0 ? (
+          {flights.length !== 0 ? (
 
             <><Flights
               flights={paginatedFlights}
@@ -152,7 +195,7 @@ export function FlightsPage() {
                     onClick={() => {
                       setCurrentPage(page);
                       window.scroll(0, 0);
-                    } }
+                    }}
                   >
                     {page}
                   </Button>
@@ -168,14 +211,14 @@ export function FlightsPage() {
 
           ) : (
             <Flights
-            flights={paginatedFlights}
-            currency={currency}
-            exchangeRate={exchangeRates[currency]} />
+              flights={paginatedFlights}
+              currency={currency}
+              exchangeRate={exchangeRates[currency]} />
           )}
 
         </div>
       </div>
-
+      <Walkthrough />
     </>
   );
 }

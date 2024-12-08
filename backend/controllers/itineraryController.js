@@ -12,6 +12,8 @@ import {
 import {
   notifyTourGuide,
   sendEmailNotification,
+  notifyTourGuide2,
+  sendEmailNotification2,
 } from "./notificationController.js";
 
 export const createItinerary = async (req, res) => {
@@ -543,6 +545,7 @@ export const unflagItinerary = async (req, res) => {
     // Update the itinerary to set 'flagged' to false
     itinerary.flagged = false;
     await itinerary.save(); // Save the changes
+    const notificationResult = await handleunFlaggedItinerary(itinerary);
 
     res.status(200).json({
       message: "Itinerary unflagged successfully",
@@ -640,6 +643,49 @@ export const handleFlaggedItinerary = async (itinerary) => {
 
     // Notify via email
     const emailResult = await sendEmailNotification(
+      email,
+      username,
+      itinerary.name
+    );
+
+    console.log("Notification Result:", notificationResult);
+    console.log("Email Result:", emailResult);
+
+    return { success: true, notificationResult, emailResult };
+  } catch (error) {
+    console.error("Error handling flagged itinerary:", error.message);
+    return { success: false, error: error.message };
+  }
+};
+export const handleunFlaggedItinerary = async (itinerary) => {
+  try {
+    if (itinerary.flagged) {
+      console.log("Itinerary is not flagged."); // Debug log
+      return { success: false, message: "Itinerary is not flagged." };
+    }
+
+    console.log("Fetching TourGuide details...");
+    const populatedItinerary = await Itinerary.findById(itinerary._id).populate(
+      "tourGuideId",
+      "email username"
+    );
+
+    if (!populatedItinerary || !populatedItinerary.tourGuideId) {
+      console.error("Tour guide not found for itinerary");
+      return { success: false, message: "Tour guide not found." };
+    }
+
+    const { email, username } = populatedItinerary.tourGuideId;
+    console.log("TourGuide Details:", { email, username });
+
+    // Notify tour guide via system notification
+    const notificationResult = await notifyTourGuide2(
+      populatedItinerary.tourGuideId._id,
+      itinerary.name
+    );
+
+    // Notify via email
+    const emailResult = await sendEmailNotification2(
       email,
       username,
       itinerary.name

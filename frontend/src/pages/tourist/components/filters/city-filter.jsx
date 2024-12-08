@@ -29,7 +29,7 @@ export function CityFilter({ className, name, getData }) {
         navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
     };
 
-    return <Combobox placeholder={<div className="flex space-x-2 items-center"><MapPin /><span>{name}</span></div>}
+    return <Combobox placeholder={<div className="flex space-x-1.5 items-center"><MapPin /><span>{name}</span></div>}
         data={data}
         onChange={fetchCities}
         onSelect={handleSelect}

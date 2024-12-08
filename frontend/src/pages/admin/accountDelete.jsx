@@ -142,7 +142,7 @@ const DeletionRequestsAdmin = () => {
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mx-auto p-6 bg-background shadow-lg rounded-lg  mt-8">
+        <div className="container mx-auto p-6 bg-background shadow-lg rounded-lg  mt-8 w-4/5">
           <h1 className="text-3xl font-bold mb-6 text-primary"></h1>
           <div className="border rounded-lg overflow-hidden">
             <Table>
