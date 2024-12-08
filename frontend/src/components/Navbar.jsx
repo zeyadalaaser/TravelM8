@@ -65,6 +65,7 @@ export default function Navbar({ profilePageString, children }) {
     if (path.includes('flights')) return 'flights';
     if (path.includes('hotels')) return 'hotels';
     if (path.includes('museums')) return 'museums';
+    if (path.includes('home')) return 'home';
     
     //return 'activities'; // default
   };
