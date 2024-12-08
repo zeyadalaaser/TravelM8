@@ -336,7 +336,7 @@ const BookingHistory = () => {
             <div className="items-center flex gap-2">
               {getIcon("activities")}
               <span className="text-xl font-bold truncate">
-                {activityBooking.activityId.title}
+                {activityBooking.activityId?.title}
               </span>
             </div>
             <Badge
@@ -359,7 +359,7 @@ const BookingHistory = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-600 mb-4 truncate">
-            {activityBooking.activityId.description}
+            {activityBooking.activityId?.description}
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -369,7 +369,7 @@ const BookingHistory = () => {
               </span>
             </div>
             <p className="text-2xl font-semibold">
-              ${activityBooking.activityId.price}
+              ${activityBooking.activityId?.price || activityBooking.activityId?.price[0] }
             </p>
           </div>
         </CardContent>
@@ -382,7 +382,7 @@ const BookingHistory = () => {
                   onClick={() =>
                     openDialog({
                       touristId: activityBooking.touristId,
-                      entityId: activityBooking.activityId ,
+                      entityId: activityBooking.activityId || null ,
                       entityType: "Activity",
                     })
                   }>
@@ -392,7 +392,7 @@ const BookingHistory = () => {
               </div>
             )}
           {activityBooking.completionStatus == "Paid" &&
-            new Date(activityBooking.activityId.date) > today && (
+            new Date(activityBooking.activityId?.date) > today && (
               <div className="flex flex-col justify-between space-y-1.5">
                 {/* <Separator></Separator> */}
                 <Button
@@ -432,7 +432,7 @@ const BookingHistory = () => {
             <div className="items-center flex gap-2">
               {getIcon("itineraries")}
               <span className="text-xl font-bold truncate">
-                {itineraryBooking.itinerary.name}
+                {itineraryBooking.itinerary?.name}
               </span>
             </div>
             <Badge
@@ -453,17 +453,17 @@ const BookingHistory = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-600 mb-4 truncate">
-            {itineraryBooking.itinerary.description}
+            {itineraryBooking.itinerary?.description}
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPinIcon className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">
-                Sites: {itineraryBooking.itinerary.historicalSites.join(", ")}
+                Sites: {itineraryBooking.itinerary?.historicalSites.join(", ")}
               </span>
             </div>
             <p className="text-2xl font-semibold">
-              ${itineraryBooking.itinerary.price}
+              ${itineraryBooking.itinerary?.price}
             </p>
           </div>
         </CardContent>
@@ -491,7 +491,7 @@ const BookingHistory = () => {
                   onClick={() =>
                     openDialog({
                       touristId: itineraryBooking.tourist,
-                      entityId:itineraryBooking.itinerary ,
+                      entityId: itineraryBooking.itinerary || null ,
                       entityType: "Itinerary",
                     })
                   }
