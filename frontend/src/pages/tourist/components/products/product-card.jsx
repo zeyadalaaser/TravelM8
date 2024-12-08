@@ -1,4 +1,3 @@
-// products.jsx
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,10 +7,14 @@ import AnimatedLikeButton from "./like";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from 'react';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ProductCard({ product, currency, token, liked }) {
     const navigate = useNavigate();
-    console.log(product);
+    const [isDialogOpen, setDialogOpen] = useState(false);
+
     const addToCart = async (productId) => {
         try {
             if (token) {
@@ -89,7 +92,6 @@ export default function ProductCard({ product, currency, token, liked }) {
                     </p>
                 </div>
 
-
                 <div className="!mt-auto flex flex-col">
                     <div className="mt-1.5 mb-4 flex justify-between items-center">
                         <span className="text-lg font-bold">
@@ -102,7 +104,14 @@ export default function ProductCard({ product, currency, token, liked }) {
                         </span>
                     </div>
                     <Button
-                        className={`w-full text-white`}
+                        className={`w-full mt-2 bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors duration-200`}
+                        size="sm"
+                        onClick={() => setDialogOpen(true)}
+                    >
+                        View Details
+                    </Button>
+                    <Button
+                        className={`w-full text-white mt-2`}
                         size="sm"
                         onClick={() => product.quantity > 0 && addToCart(product._id)}
                         disabled={product.quantity <= 0}
@@ -111,7 +120,60 @@ export default function ProductCard({ product, currency, token, liked }) {
                     </Button>
                 </div>
             </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold">{product.name}</DialogTitle>
+                    </DialogHeader>
+                    <ScrollArea className="flex-grow">
+                        <div className="flex flex-col md:flex-row gap-4 p-4">
+                            <div className="w-full md:w-1/2">
+                                <div className="aspect-square overflow-hidden rounded-lg mb-4">
+                                    <img
+                                        src={product.image || "/placeholder.svg?height=300&width=300"}
+                                        alt={product.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-2">Description</h3>
+                                    <p className="text-sm text-muted-foreground">{product.description || "No description available"}</p>
+                                </div>
+                            </div>
+                            <div className="w-full md:w-1/2 space-y-4">
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-2">Price</h3>
+                                    <p className="text-sm text-muted-foreground">{(product.price * 1).formatCurrency(currency)}</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-2">Seller</h3>
+                                    <p className="text-sm text-muted-foreground">{product.seller?.name || "Unknown Seller"}</p>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-2">Reviews and Comments</h3>
+                                    {product.reviews && product.reviews.length > 0 ? (
+                                        <ul className="space-y-4">
+                                            {product.reviews.map((review, index) => (
+                                                <li key={index} className="border-b pb-4 last:border-b-0">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <span className="font-medium">{review.user}</span>
+                                                        <Stars rating={review.rating} />
+                                                    </div>
+                                                    <p className="text-sm text-muted-foreground">{review.comment}</p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">No reviews yet.</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </ScrollArea>
+                </DialogContent>
+            </Dialog>
         </Card>
-    )
+    );
 }
 

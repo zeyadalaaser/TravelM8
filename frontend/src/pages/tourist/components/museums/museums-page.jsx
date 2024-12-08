@@ -11,6 +11,10 @@ import { SearchBar } from "../filters/search";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Button } from "@/components/ui/button";
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
+import { WalkthroughButton } from '@/components/WalkthroughButton';
+
 
 export function MuseumsPage() {
   const [loading, setLoading] = useState(false);
@@ -29,6 +33,34 @@ export function MuseumsPage() {
   const totalPages = Math.ceil(museums.length / itemsPerPage);
   // Paginated activities
   const paginatedPlaces = museums.slice(startIndex, endIndex);
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
+  useEffect(() => {
+    if (walkthroughPage === 'museums') {
+      clearSteps();
+      addSteps([
+        {
+          target: '[data-tour="museums-search"]',
+          content: 'Use the search bar to find museums by name or tag.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-filters"]',
+          content: 'Use these filters to refine your search results.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-list"]',
+          content: 'Browse through the list of available museums.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="museums-pagination"]',
+          content: 'Navigate through different pages of museums.',
+          disableBeacon: true,
+        }
+      ], 'museums');
+    }
+  }, [addSteps, clearSteps, walkthroughPage]);
 
   // Fetch latest exchange rates on mount
   useEffect(() => {
@@ -75,31 +107,42 @@ export function MuseumsPage() {
     <div className="mt-24">
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-1/4 sticky top-16 mt-6 h-full">
+        <div className="mb-6 " data-tour="museums-search">
         <SearchBar categories={searchCategories} />
+        </div>
         <Separator className="mt-5" />
+        <div className="mt-4" data-tour="museums-filters">
           <PriceFilter
             currency={currency}
             exchangeRate={exchangeRates[currency] || 1}
-          />
+          />  
           <Separator className="mt-5" />
           <SelectFilter name="Tags" paramName="tag" getOptions={getPlaceTags} />
         </div>
-        <div className="w-full md:w-3/4">
+        </div>
+        <div className="w-full md:w-3/4" data-tour="museums-list">
+  
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
               {/* <div>{museums.length} results</div> */}
               <ClearFilters />
+         
             </div>
           </div>
+         
           {loading ? (
             <div className="flex justify-center items-center mt-36">
               <CircularProgress />
             </div>
+            
           ) : (
             <div className="mt-8"><Museums
                 museums={paginatedPlaces}
                 currency={currency}
-                exchangeRate={exchangeRates[currency] || 1} /><div className="flex justify-center mt-6 space-x-2">
+                exchangeRate={exchangeRates[currency] || 1} />
+                
+                <div className="flex justify-center mt-6 space-x-2">
+                  <div className="flex justify-center mt-6 "data-tour="museums-pagination">
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -126,11 +169,11 @@ export function MuseumsPage() {
                   >
                     Next
                   </Button>
-                </div></div>
+                </div></div></div>
           )}
-
         </div>
       </div>
+      <Walkthrough/>
     </div>
   );
 }
