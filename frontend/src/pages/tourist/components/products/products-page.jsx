@@ -63,7 +63,7 @@ export function ProductsPage({ addToCart }) {
         },
         {
           target: '[data-tour="sort-selection"]',
-          content: 'Sort products based on different Price or Ratings.',
+          content: 'Sort products based on different prices or ratings.',
           disableBeacon: true,
         },
         {
@@ -73,14 +73,9 @@ export function ProductsPage({ addToCart }) {
         },
         {
           target: '[data-tour="Product-list"]',
-          content: 'Browse through the list of available Products and add to cart.',
+          content: 'Browse through the list of available products and add to cart.',
           disableBeacon: true,
-        },
-        {
-          target: '[data-tour="pagination"]',
-          content: 'Navigate through different pages of Products.',
-          disableBeacon: true,
-        },
+        }
 
       ], 'products');
     }

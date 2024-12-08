@@ -44,7 +44,7 @@ export function ItinerariesPage() {
   const isAdmin = false; // Set to `true` for admin, `false` for tourists
   const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
   useEffect(() => {
-    if (currentPage === 'itineraries') {
+    if (walkthroughPage === 'itineraries') {
       clearSteps();
       addSteps([
         {
@@ -66,15 +66,10 @@ export function ItinerariesPage() {
           target: '[data-tour="itinerary-cards"]',
           content: 'Browse through our carefully curated itineraries.',
           disableBeacon: true,
-        },
-        {
-          target: '[data-tour="itinerary-pagination"]',
-          content: 'here is to go to next page.',
-          disableBeacon: true,
         }
       ], 'itineraries');
     }
-  }, [addSteps, clearSteps, currentPage]);
+  }, [addSteps, clearSteps, walkthroughPage]);
 
   useEffect(() => {
     const fetchBookmarks = async () => {
@@ -255,7 +250,7 @@ export function ItinerariesPage() {
               exchangeRate={exchangeRates[currency] || 1}
               bookmarkedItineraries={bookmarkedItineraries} // Add this prop
               handleBookmark={handleBookmark} /><div className="flex justify-center mt-6 space-x-2">
-                <div className="flex justify-center mt-6 " data-tour="itinerary-pagination">
+                <div className="flex justify-center mt-6 ">
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
