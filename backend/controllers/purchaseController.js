@@ -74,17 +74,17 @@ export const deletePurchase = async (req, res) => {
 
 export const getProductsReport = async (req, res) => {
   try {
-    // const  sellerId  = req.user.userId;
-    const sellerId = req.body.id;
+     const  sellerId  = req.user.userId;
+    //const sellerId = req.body.id;
     const { year, day, month } = req.query;
-
+console.log(sellerId);
     const matchConditions = {
       status: { $in: ['completed', 'pending'] }, // Filter by status
     };
     
-    if (req.user.role === "Seller" && sellerId) {
+   // if (req.user.role === "Seller" && sellerId) {
       matchConditions['productDetails.sellerId'] = new mongoose.Types.ObjectId(sellerId);
-    }
+    //}
     
     if (year || month || day) {
       matchConditions.$expr = {

@@ -24,6 +24,9 @@ import { NumberStepper } from "@/components/ui/number-stepper";
 import NotificationBell from "@/pages/tourist/components/Notifications";
 import logo from "../assets/lb.png";
 import logo2 from "../assets/lw.png";
+import { WalkthroughButton } from './WalkthroughButton';
+import { useLocation } from 'react-router-dom';
+import { BookTransportation } from "@/pages/tourist/components/bookings/book-transportation.jsx"
 
 const pages = [
   { label: "Activities", value: "activities" },
@@ -31,7 +34,6 @@ const pages = [
   { label: "Places", value: "museums" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
-  { label: "Transportation", value: "hotels" },
 ];
 
 export default function Navbar({ profilePageString, children }) {
@@ -50,6 +52,22 @@ export default function Navbar({ profilePageString, children }) {
   const [isAlertOpen, setAlertOpen] = useState(false);
 
   const currency = searchParams.get("currency") ?? "USD";
+  const locations = useLocation();
+  const getCurrentPageType = () => {
+    const path = locations.pathname;
+    const searchParams = new URLSearchParams(locations.search);
+  const currency = searchParams.get("currency") ?? "USD";
+    const type = searchParams.get('type');
+    if (type) return type.toLowerCase();
+    if (path.includes('activities')) return 'activities';
+    if (path.includes('itineraries')) return 'itineraries';
+    if (path.includes('products')) return 'products';
+    if (path.includes('flights')) return 'flights';
+    if (path.includes('hotels')) return 'hotels';
+    if (path.includes('museums')) return 'museums';
+    return 'activities'; // default
+  };
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -233,7 +251,7 @@ export default function Navbar({ profilePageString, children }) {
           }`}
           onClick={() => navigate(`/?currency=${currency}`)}
         >
-          <div className="flex items-center">
+          <div className="flex items-center -ml-8">
             <img
               src={
                 currentPage === "/" || currentPage === `/?currency=${currency}`
@@ -269,8 +287,9 @@ export default function Navbar({ profilePageString, children }) {
               {page.label}
             </button>
           ))}
+          <BookTransportation change={currentPage === "/" || currentPage === `/?currency=${currency}`} />
         </div>
-
+        <WalkthroughButton currentPageType={getCurrentPageType()} />
         <div className="flex items-center space-x-4">
           {isLoggedIn ? (
             <>
@@ -418,25 +437,25 @@ export default function Navbar({ profilePageString, children }) {
                   handleClose();
                   navigate("/tourist-profile");
                 }}>
-                  My profile
+                  My Profile
                 </MenuItem>
                 <MenuItem onClick={() => {
                   handleClose();
                   navigate("/tourist-profile?page=wishlist");
                 }}>
-                  My Wishlist
+                  Wishlist
                 </MenuItem>
                 <MenuItem onClick={() => {
                   handleClose();
                   navigate("/tourist-profile?page=bookmarks");
                 }}>
-                  My Bookmarks
+                  Bookmarks
                 </MenuItem>
                 <MenuItem onClick={() => {
                   handleClose();
                   navigate("/tourist-profile?page=preferences");
                 }}>
-                  My Preferences
+                  Preferences
                 </MenuItem>
                 <Separator />
                 <MenuItem

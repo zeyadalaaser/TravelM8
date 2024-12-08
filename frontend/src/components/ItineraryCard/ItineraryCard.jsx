@@ -181,7 +181,7 @@ export default function ItineraryCard({
     <>
       <div className="space-y-5">
         {itineraries?.map((itinerary) => (
-          <Card key={itinerary._id} className="overflow-hidden">
+          <Card key={itinerary._id} className="overflow-hidden h-[260px]">
             <div className="flex flex-row ">
               <div className="w-1/3">
                 <img
@@ -435,12 +435,28 @@ export default function ItineraryCard({
 
 const ChooseDate = ({ itinerary, currency }) => {
   const navigate = useNavigate();
-  let remainingSpots;
   const [selectedDate, setSelectedDate] = useState(null);
-  const [submitStatus, setSubmitStatus] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const token = localStorage.getItem("token");
+
+  const handleSubmit = async (paymentMethod, walletBalance) => {
+      const response = await createItineraryBooking(itinerary._id, 
+        itinerary.tourGuideId, 
+        selectedDate, 
+        itinerary.price,
+        paymentMethod,
+        token);
+      
+      let message = response.data.message;
+      if (paymentMethod === "Wallet")
+        message += " Your wallet balance is now " + (walletBalance * 1).formatCurrency(currency) + ".";
+
+      if (response.status === 201)
+        toast("Successful Booking of Itinerary!", { description: message });
+      else
+        toast(response.data.message);
+  }
 
   useEffect(() => {
     if (!token) return; 

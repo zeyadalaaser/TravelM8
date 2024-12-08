@@ -13,6 +13,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { getProducts } from '../../api/apiService';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
+import { WalkthroughButton } from '@/components/WalkthroughButton';
 
 const decodeToken = (token) => {
   try {
@@ -39,6 +42,7 @@ export function ProductsPage({ addToCart }) {
   const [loading, setLoading] = useState(false);
   const [exchangeRates, setExchangeRates] = useState({});
   const [token, setToken] = useState(null);
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +52,39 @@ export function ProductsPage({ addToCart }) {
     const totalPages = Math.ceil(products.length / itemsPerPage);
     // Paginated activities
     const paginatedProducts = products.slice(startIndex, endIndex);
-
+    useEffect(() => {
+      if (walkthroughPage === 'products') {
+        clearSteps();
+        addSteps([
+          {
+            target: '[data-tour="search-bar"]',
+            content: 'Use the search bar to find products by name.',
+            disableBeacon: true,
+          },
+          {
+            target: '[data-tour="sort-selection"]',
+            content: 'Sort products based on different Price or Ratings.',
+            disableBeacon: true,
+          },
+          {
+            target: '[data-tour="filters"]',
+            content: 'Use these filters to refine your search results.',
+            disableBeacon: true,
+          },
+          {
+            target: '[data-tour="Product-list"]',
+            content: 'Browse through the list of available Products and add to cart.',
+            disableBeacon: true,
+          },
+          {
+            target: '[data-tour="pagination"]',
+            content: 'Navigate through different pages of Products.',
+            disableBeacon: true,
+          },
+         
+        ], 'products');
+      }
+    }, [addSteps, clearSteps, walkthroughPage]);
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -106,7 +142,10 @@ export function ProductsPage({ addToCart }) {
     <div className="mt-24">
       <div className="flex flex-col md:flex-row gap-8">
         <div className="w-full md:w-1/4 mt-6 sticky top-16 h-full">
+        <div data-tour="search-bar">
         <SearchBar categories={[{ name: "Name", value: "name" }]} />
+        </div>
+        <div data-tour="sort-selection">
         <Separator className="mt-5" />
           <PriceFilter
             currency={currency}
@@ -115,14 +154,20 @@ export function ProductsPage({ addToCart }) {
           <Separator className="mt-5" />
           <RatingFilter />
         </div>
+        </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
             <div className="flex h-5 items-center space-x-4 text-sm">
               {/* <div>{products.length} results</div> */}
               <ClearFilters />
+         
             </div>
+            <div className="w-[180px] " data-tour="filters" >
             <SortSelection />
+            </div >
           </div>
+          <div >
+          <div data-tour="Product-list">
           {loading ? (
             <div className="flex justify-center items-center mt-36">
               <CircularProgress />
@@ -132,6 +177,7 @@ export function ProductsPage({ addToCart }) {
                 products={paginatedProducts}
                 currency={currency}
                 token={token} /><div className="flex justify-center mt-6 space-x-2">
+                  <div className="flex justify-center mt-6 "data-tour="pagination">
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -158,11 +204,13 @@ export function ProductsPage({ addToCart }) {
                   >
                     Next
                   </Button>
-                </div></>
-          )}
+                </div></div></>
+          )}  </div>
 
         </div>
+        </div>
       </div>
+      <Walkthrough />
     </div>
   );
 }

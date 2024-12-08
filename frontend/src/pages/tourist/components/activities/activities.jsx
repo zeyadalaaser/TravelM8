@@ -19,34 +19,51 @@ import ActivityDetails from "@/components/ActivityCard/activityDetails.jsx";
 import { toast } from "sonner";
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from "react-router-dom";
+import PaymentDialog from "../bookings/payment-dialog";
 function Activities({ token, bookActivity, activities, currency, exchangeRate }) {
   const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [toBook, setToBook] = useState();
   const [notifiedActivities, setNotifiedActivities] = useState([]);
   const [activeDialogId, setActiveDialogId] = useState(null);
+
   const navigate = useNavigate();
-  const handleBook = async (activity) => {
-    console.log(token);
-    if (token) {
-      const response = await bookActivity(activity._id, activity.price, "Card", token);
-      console.log(response.message);
-      toast(`Success`, {
-        description: `Activity booked successfully`,
-      });
+
+  const openDialog = (activity) => {
+    if (!token) {
+      toast('Please login to perform this action');
+      return;
     }
-    else
-    toast(`Failed to book activity`, {
-      description: `You need to be logged in first`,
-    });
+    setToBook(activity);
+    setPaymentOpen(true);
   }
+
+  const handleBook = async (paymentMethod, walletBalance) => {
+    const response = await bookActivity(toBook._id, toBook.price, "Card", token);
+    console.log(response.message);
+    toast(`Success`, {
+      description: `Activity booked successfully`,
+    });
+
+    let message = response.data.message;
+    if (paymentMethod === "Wallet")
+      message += " Your wallet balance is now " + (walletBalance * 1).formatCurrency(currency) + ".";
+
+    if (response.status === 201)
+      toast("Successful Booking of Activity!", { description: message });
+    else
+      toast(response.data.message);
+  }
+
   useEffect(() => {
-    if (!token) return; 
+    if (!token) return;
     try {
       const decodedToken = jwtDecode(token);
       const currentTime = Math.floor(Date.now() / 1000);
 
       if (decodedToken.exp < currentTime) {
-        localStorage.removeItem("token"); 
-        navigate("/"); 
+        localStorage.removeItem("token");
+        navigate("/");
       } else {
         const timeout = setTimeout(() => {
           localStorage.removeItem("token");
@@ -57,10 +74,11 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
       }
     } catch (error) {
       console.error("Error decoding token:", error);
-      localStorage.removeItem("token"); 
+      localStorage.removeItem("token");
       navigate("/");
     }
   }, [token, navigate]);
+
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
@@ -99,7 +117,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
         itemId: activityId,
         itemType: 'Activity'
       });
-      
+
       const response = await fetch(`http://localhost:5001/api/bookmarks`, {
         method: "POST",
         headers: {
@@ -151,7 +169,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
   return (
     <div className="space-y-4">
       {activities.map((activity, index) => (
-        <Card key={index} className="overflow-hidden">
+        <Card key={index} className="overflow-hidden h-[260px]">
           <div className="flex flex-col md:flex-row">
             <div className="w-full md:w-1/3">
               <img
@@ -276,13 +294,13 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                 <span className="text-xl font-bold">
                   {Array.isArray(activity.price) && activity.price.length === 2
                     ? `${(activity.price[0] * exchangeRate).formatCurrency(
-                        currency
-                      )} - ${(activity.price[1] * exchangeRate).formatCurrency(
-                        currency
-                      )}`
+                      currency
+                    )} - ${(activity.price[1] * exchangeRate).formatCurrency(
+                      currency
+                    )}`
                     : `${(activity.price * exchangeRate).formatCurrency(
-                        currency
-                      )}`}
+                      currency
+                    )}`}
                 </span>
                 <div className="flex justify-end items-center">
                   <ActivityDetails
@@ -292,7 +310,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                     token={token}
                   />
                   <div className="px-2">
-                    {activity.isBookingOpen && (
+                  {activity.isBookingOpen && (
                       <Button onClick={() => handleBook(activity)}>
                         Book activity
                       </Button>

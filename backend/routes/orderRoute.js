@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPaymentIntent, payWithStripe, payWithCash, payWithWallet, cancelOrder, getWalletBalance, checkout, getOrders, updateOrderStatus } from '../controllers/orderController.js';
+import { createPaymentIntent, payWithStripe, payWithCash, payWithWallet, cancelOrder, getWalletBalance, checkout, getOrders, updateOrderStatus,getOrdersReport } from '../controllers/orderController.js';
 import verifyToken from "../services/tokenDecodingService.js";
 const router = express.Router();
 
@@ -12,6 +12,7 @@ router.post("/tourists/checkout", verifyToken, checkout); // User checkout
 router.get("/tourists/orders", verifyToken, getOrders); // View user orders
 router.put("/tourists/orders/update-status/:id", verifyToken, updateOrderStatus);
 router.put("/tourists/orders/cancel-order/:id", verifyToken, cancelOrder);
+router.get("/ordersReport",verifyToken,getOrdersReport);
 
 
 export default router;

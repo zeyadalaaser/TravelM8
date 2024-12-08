@@ -238,7 +238,7 @@ const ProductPage = () => {
           }}
         >
           <Navbar toggleSidebar={toggleSidebar} />
-          <div className="container mx-auto p-4">
+          <div className="container mx-auto p-4 w-4/5">
             <Button onClick={() => setIsCreateOpen(true)} className="mb-4">
               Create Product
             </Button>

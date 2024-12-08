@@ -10,6 +10,9 @@ import { Flights } from "../flights/flights";
 import { getFlights } from "../../api/apiService";
 import { CityFilter } from "../filters/city-filter";
 import { Button } from "@/components/ui/button";
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
+import { WalkthroughButton } from '@/components/WalkthroughButton';
 
 import axios from "axios";
 
@@ -18,7 +21,7 @@ const query = encodeURIComponent(
 );
 const variables = (cityName) =>
   encodeURIComponent(
-    `{"search":{"term":"${cityName}"},"filter":{"onlyTypes":["CITY"]},"options":{"locale":"en"}}`
+    `{"search":{"term":"${cityName}"},"filter":{"onlyTypes":["CITY","COUNTRY"]},"options":{"locale":"en"}}`
   );
 
 async function fetchCities(cityName) {
@@ -31,15 +34,16 @@ async function fetchCities(cityName) {
 
   return cities.map((edge) => {
     const node = edge["node"];
+    const isCountry = node.__isPlace === "Country";
 
-    const label = `${node["name"]}, ${node["country"]["name"]}`;
+    const label = isCountry ? node["name"] : `${node["name"]}, ${node["country"]["name"]}`;
     const value = `${node["name"]}--${node["legacyId"]}`;
-    const imageUrl1 = `https://flagcdn.com/36x27/${node["country"][
-      "legacyId"
-    ].toLowerCase()}.png`;
-    const imageUrl2 = `https://flagcdn.com/72x54/${node["country"][
-      "legacyId"
-    ].toLowerCase()}.png`;
+
+    const countryCode = isCountry ? node["legacyId"] : node["country"]["legacyId"];
+
+    const imageUrl1 = `https://flagcdn.com/36x27/${countryCode.toLowerCase()}.png`;
+    const imageUrl2 = `https://flagcdn.com/72x54/${countryCode.toLowerCase()}.png`;
+
     const image = (
       <img className="rounded-sm" src={imageUrl1} srcSet={`${imageUrl2} 2x`} />
     );
@@ -61,6 +65,7 @@ export function FlightsPage() {
   const totalPages = Math.ceil(flights.length / itemsPerPage);
   // Paginated activities
   const paginatedFlights = flights.slice(startIndex, endIndex);
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
 
   const fetchFlights = useDebouncedCallback(async () => {
     setLoading(true);
@@ -103,20 +108,59 @@ export function FlightsPage() {
     window.scrollTo(0, 0); // Scroll to the top of the page when changing pages
   };
 
+  useEffect(() => {
+    if (walkthroughPage === 'flights') {
+      clearSteps();
+      addSteps([
+
+        {
+          target: '[data-tour="flight-search"]',
+          content: 'Select departure country.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight-filters"]',
+          content: 'Select destination country.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight-list"]',
+          content: 'Select departure date.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="flight"]',
+          content: 'Select arrival date.',
+          disableBeacon: true,
+        }
+
+      ], 'flights');
+    }
+  }, [addSteps, clearSteps, walkthroughPage]);
+
+
   return (
     <>
-      <div className="flex justify-between space-x-6">
-        <CityFilter className="flex-1" name="From" getData={fetchCities} />
-        <CityFilter className="flex-1" name="To" getData={fetchCities} />
-        <SingleDateFilter
-          className="flex-1"
-          name="Departure"
-          param="departure"
-        />
-        <SingleDateFilter className="flex-1" name="Return" param="return" />
+      <div className="flex justify-between space-x-3" >
+        <div className="flex-1" data-tour="flight-search">
+          <CityFilter className="flex-1" name="From" getData={fetchCities} />
+        </div>
+        <div className="flex-1" data-tour="flight-filters">
+          <CityFilter className="flex-1" name="To" getData={fetchCities} />
+        </div>
+        <div className="flex-1" data-tour="flight-list">
+          <SingleDateFilter
+            className="flex-1"
+            name="Departure"
+            param="departure"
+          />
+        </div>
+        <div className="flex-1" data-tour="flight">
+          <SingleDateFilter className="flex-1" name="Return" param="return" />
+        </div>
       </div>
       <div className="mt-6 flex flex-col md:flex-row gap-8">
-        <div className="flex w-1/4 h-10 items-center">
+        <div className="flex w-1/4 h-10 items-center" data-tour="flight-filters">
           {/* <PriceFilter /> */}
         </div>
         <div className="w-full md:w-3/4">
@@ -131,7 +175,7 @@ export function FlightsPage() {
             </div>
             <SortSelection options={sortOptions} />
           </div>
-          {flights.length!==0 ? (
+          {flights.length !== 0 ? (
 
             <><Flights
               flights={paginatedFlights}
@@ -152,7 +196,7 @@ export function FlightsPage() {
                     onClick={() => {
                       setCurrentPage(page);
                       window.scroll(0, 0);
-                    } }
+                    }}
                   >
                     {page}
                   </Button>
@@ -168,14 +212,14 @@ export function FlightsPage() {
 
           ) : (
             <Flights
-            flights={paginatedFlights}
-            currency={currency}
-            exchangeRate={exchangeRates[currency]} />
+              flights={paginatedFlights}
+              currency={currency}
+              exchangeRate={exchangeRates[currency]} />
           )}
 
         </div>
       </div>
-
+      <Walkthrough />
     </>
   );
 }
