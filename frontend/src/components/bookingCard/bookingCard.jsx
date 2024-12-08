@@ -1,22 +1,76 @@
 import { Box, Tab } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { MapPin, BedDouble } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import useRouter from "@/hooks/useRouter";
 import { FlightsPage } from "@/components/bookingCard/flights-card.jsx";
+import { SingleDateFilter } from "../../pages/tourist/components/filters/single-date-filter";
+import { CityFilter } from "../../pages/tourist/components/filters/city-filter";
+import axios from "axios";
 
 function MyTabs() {
   const [value, setValue] = useState("flights");
+  const { navigate, searchParams } = useRouter();
+
   const handleChange = (_, newValue) => {
     setValue(newValue);
   };
-  const [date, setDate] = useState();
 
+  function createImage(location) {
+    function lucideImage(image) {
+      return (
+        <div className="flex-shrink-0 !w-[48px] !h-[48px] flex items-center justify-center bg-gray-100 rounded-sm">
+          {image}
+        </div>
+      );
+    }
+  
+    let image;
+    if ("destination_images" in location)
+      image = (
+        <img
+          className="flex-shrink-0 w-[48px] h-[48px] rounded-sm"
+          src={`${location["destination_images"]["image_jpeg"]}`}
+        />
+      );
+    else if (location["displayType"]["type"] == "hotel")
+      image = lucideImage(<BedDouble className="!w-[36px] !h-[27px]" />);
+    else image = lucideImage(<MapPin className="!w-[36px] !h-[27px]" />);
+  
+    return image;
+  }
+
+  async function fetchLocations(name) {
+    const results = await axios.post(
+      `https://www.hotelscombined.com/mvm/smartyv2/search?where=${name}`
+    );
+    return results["data"].map((location) => {
+      const indexId = location.indexId;
+      const searchKey = indexId.includes("-") ? indexId.split("-")[1] : indexId;
+      return {
+        label: (
+          <h3 className="truncate text-base font-medium text-gray-900">
+            {location.displayname}
+          </h3>
+        ),
+        sublabel: (
+          <p className="text-sm text-gray-500">
+            {location.displayType.displayName}
+          </p>
+        ),
+        value: `${location.displayname}--${
+          location.entityKey.split(":")[0]
+        }:${searchKey}`,
+        image: createImage(location),
+      };
+    });
+  }
+
+  const onSearch = () => {
+    navigate(`tourist-page?type=hotels&${searchParams.toString()}`);
+  };
 
   return (
     <Box sx={{
@@ -61,65 +115,21 @@ function MyTabs() {
             <div className="flex mb-4 items-end gap-3 w-full">
               <div className="flex-1">
                 <Label htmlFor="destination" className="mb-2 block text-s">Where to?</Label>
-                <Input id="destination" placeholder="Enter destination" className="flex-1" />
+                <CityFilter className="flex-1" name="Where" getData={fetchLocations} />
               </div>
               <div className="flex-1">
                 <Label htmlFor="check-in" className="mb-2 block text-s">Check in</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={`w-full justify-start text-left font-normal ${!date && "text-muted-foreground"}`}
-                    >
-                      <CalendarIcon className="mr-2 h-6 w-6" />
-                      {date ? format(date, "PPP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Input
-                  type="date"
-                  value={date ? format(date, "yyyy-MM-dd") : ""}
-                  onChange={(e) => setDate(new Date(e.target.value))}
-                  className="sr-only"
-                />
+                <SingleDateFilter className="flex-1" param="checkin" />
+
               </div>
               <div className="flex-1">
                 <Label htmlFor="check-out" className="mb-2 block text-s">Check out</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={`w-full justify-start text-left font-normal ${!date && "text-muted-foreground"}`}
-                    >
-                      <CalendarIcon className="mr-2 h-6 w-6" />
-                      {date ? format(date, "PPP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={setDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Input
-                  type="date"
-                  value={date ? format(date, "yyyy-MM-dd") : ""}
-                  onChange={(e) => setDate(new Date(e.target.value))}
-                  className="sr-only"
+                <SingleDateFilter
+                  className="flex-1"
+                  param="checkout"
                 />
               </div>
-              <Button className="rounded-full px-8 text-white ">Search</Button>
+              <Button className="rounded-full px-8 text-white" onClick={onSearch}>Search</Button>
             </div>
           </TabPanel>
         </Box>

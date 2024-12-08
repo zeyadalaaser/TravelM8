@@ -1,13 +1,9 @@
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect, useRef } from "react";
 import useRouter from "@/hooks/useRouter";
-
 import { MapPin, BedDouble } from "lucide-react";
-
 import axios from "axios";
-
 import { ClearFilters } from "../filters/clear-filters";
-import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
 import { SingleDateFilter } from "../filters/single-date-filter";
 import { CityFilter } from "../filters/city-filter";

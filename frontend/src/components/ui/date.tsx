@@ -48,7 +48,7 @@ export function Date({
                     />
                     <div className="flex space-x-2 absolute left-2 top-1/2 transform -translate-y-1/2 text-sm items-center">
                         <div className="flex items-center">
-                            <CalendarIcon className="mr-2 text-muted-foreground" />
+                            <CalendarIcon className={cn("text-muted-foreground", name && "mr-2")} />
                             <span className="text-muted-foreground">
                                 {name}
                             </span>

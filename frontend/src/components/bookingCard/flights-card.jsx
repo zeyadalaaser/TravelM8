@@ -43,25 +43,7 @@ async function fetchCities(cityName) {
 }
 
 export function FlightsPage() {
-  const { location, searchParams } = useRouter();
-  const { navigate } = useRouter();
-  const requestCounter = useRef(0);
-  
-  const fetchFlights = useDebouncedCallback(async () => {
-    setLoading(true);
-
-    const currentRequestId = ++requestCounter.current;
-    const flights = await getFlights(location.search);
-
-    if (currentRequestId === requestCounter.current) setFlights(flights);
-
-    setLoading(false);
-  }, 200);
-
-  useEffect(() => {
-    fetchFlights();
-  }, [location.search]); // Only run when location.search changes
-
+  const { navigate, searchParams } = useRouter();
   const [departureDate, setDepartureDate] = useState(null);
   const [returnDate, setReturnDate] = useState(null);
   const [departureCity, setDepartureCity] = useState(null);
