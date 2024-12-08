@@ -6,7 +6,6 @@ import { ClearFilters } from "../tourist/components/filters/clear-filters";
 import { DateFilter } from "../tourist/components/filters/date-filter";
 import { PriceFilterTwo } from "../tourist/components/filters/PriceFilterTwo";
 import ItineraryCard from "../../components/ItineraryCard/ItineraryCard";
-import { SearchBar } from "../tourist/components/filters/search";
 import { getItineraries } from "../tourist/api/apiService";
 import { SelectFilter } from "../tourist/components/filters/select-filter";
 import { SortSelection } from "../tourist/components/filters/sort-selection";
@@ -19,7 +18,8 @@ export function AdminItinerariesPage() {
   const [itineraries, setItineraries] = useState([]);
   const [currency, setCurrency] = useState("USD");
   const [exchangeRates, setExchangeRates] = useState({});
-  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [priceRange, setPriceRange] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchExchangeRates() {
@@ -38,6 +38,10 @@ export function AdminItinerariesPage() {
   const fetchItineraries = useDebouncedCallback(async () => {
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("isAdmin", true);
+
+    if (searchTerm) {
+      queryParams.set("search", searchTerm);
+    }
 
     const minPriceUSD = priceRange.min
       ? priceRange.min / (exchangeRates[currency] || 1)
@@ -62,7 +66,12 @@ export function AdminItinerariesPage() {
 
   useEffect(() => {
     fetchItineraries();
-  }, [location.search, currency, priceRange]);
+  }, [location.search, currency, priceRange, searchTerm]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    fetchItineraries();
+  };
 
   const handleCurrencyChange = (e) => {
     const selectedCurrency = e.target.value;
@@ -84,6 +93,7 @@ export function AdminItinerariesPage() {
   const resetFilters = () => {
     setPriceRange({ min: "", max: "" });
     setCurrency("USD");
+    setSearchTerm("");
     setItineraries([]);
     navigate(location.pathname, { replace: true });
     fetchItineraries();
@@ -92,10 +102,16 @@ export function AdminItinerariesPage() {
   return (
     <div className="min-h-screen bg-white text-black">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 mt-8 ">
+      <div className="container mx-auto px-4 py-8 mt-16 ">
         <h1 className="text-3xl font-bold mb-8">Itineraries</h1>
         <div className="mb-6">
-          <SearchBar categories={["Name", "Tag"]} />
+          <input 
+            type="text" 
+            placeholder="Search by itinerary name"
+            className="w-1/4 border border-gray-300 rounded-md p-2"
+            onChange={handleSearchChange}
+            value={searchTerm}
+          />
         </div>
         <div className="flex flex-col md:flex-row gap-8">
           <div className="w-full md:w-1/4 bg-gray-100 p-6 rounded-lg">
@@ -117,12 +133,6 @@ export function AdminItinerariesPage() {
               </label>
             </div>
             <DateFilter />
-            <Separator className="my-6" />
-            <PriceFilterTwo
-              currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
-              onPriceChange={handlePriceChange}
-            />
             <Separator className="my-6" />
             <SelectFilter
               name="Languages"

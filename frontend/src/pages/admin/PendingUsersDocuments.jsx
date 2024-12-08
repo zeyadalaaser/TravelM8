@@ -230,13 +230,10 @@ const PendingUserDocuments = () => {
       <Sidebar />
       <div className="flex-1">
         <Navbar />
-        <div className="container mx-auto p-6 mt-8 w-4/5">
+        <div className="container mx-auto p-6 mt-8 w-4/5 mb-20">
 
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Pending User Verifications</h1>
-            <span className="text-sm text-gray-500">
-              Showing {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} users
-            </span>
+            <h1 className="text-2xl font-bold mt-12">Pending User Verifications</h1>
           </div>
           
           <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
