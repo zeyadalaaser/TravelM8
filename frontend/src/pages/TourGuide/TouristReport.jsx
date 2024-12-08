@@ -130,7 +130,7 @@ export default function TouristReport() {
     return (
         <div className="p-6 space-y-6">
             <div className="grid gap-6 md:grid-cols-3 space-y-4">
-                <Card className="w-full md:w-[1100px]">
+                <Card className="col-span-3 w-full">
                     <CardHeader>
                         <CardTitle>Filter Tourist Report</CardTitle>
                     </CardHeader>
