@@ -130,7 +130,7 @@ export const cancelBooking = async (req, res) => {
       });
     }
 
-    bookingToCancel.status = "Cancelled";
+    bookingToCancel.completionStatus = "Cancelled";
     await bookingToCancel.save();
     res.status(201).json({
       bookingToCancel,
