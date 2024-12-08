@@ -53,7 +53,7 @@ export function Date({
                                 {name}
                             </span>
                         </div>
-                        <span className={cn("", !date && "text-muted-foreground")}>
+                        <span>
                             {date ? format(date, "LLL dd, y") : <span>Pick a date</span>}
                         </span>
                     </div>
