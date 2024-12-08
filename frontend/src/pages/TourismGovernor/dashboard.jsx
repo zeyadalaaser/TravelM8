@@ -15,6 +15,9 @@ import {
   Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/lb.png";
+import Header from "@/components/navbarDashboard.jsx";
+import { UserCircle } from "lucide-react"; // Adjust based on your icon setup
 import {
   Card,
   CardContent,
@@ -320,12 +323,15 @@ const TourismGovernorDashboard = () => {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         {/* Header */}
-        <header className="bg-white shadow-sm">
+        <header className="bg-white h-16 shadow-sm">
       <div className="flex items-center justify-between px-7 py-3">
         {/* Title and Notifications */}
-        <h1 className="text-2xl font-semibold text-gray-800 ">TravelM8</h1>
+        <div className="flex items-center -ml-8 -mt-5">
+          <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
+          <h1 className="text-2xl font-semibold text-gray-800">TravelM8</h1>
+        </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center -mt-5">
           {/* Borderless Notification Button */}
           <Button
             variant="link" // Borderless button style
@@ -334,18 +340,11 @@ const TourismGovernorDashboard = () => {
           >
             <span className="sr-only">Notifications</span>
           </Button>
-
-          {/* "Hi, {name}" Greeting */}
-          <span className="text-gray-700 mr-2">Settings</span>
-
-          {/* Dropdown Menu at the right */}
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Button
-                variant="link" // Borderless button style
-                className="p-0 flex items-center"
-              >
-                <ChevronDown className="h-4 w-4 text-gray-500" />
+            <Button variant="link" className="p-0 flex items-center">
+                <UserCircle className="h-6 w-6" /> {/* Consistent size with notification bell */}
+                <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
                 <span className="sr-only">Menu</span>
               </Button>
             </DropdownMenuTrigger>
