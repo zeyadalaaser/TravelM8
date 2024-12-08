@@ -21,9 +21,7 @@ export default function ProductCard({ product, currency, token, liked }) {
                 navigate(0); 
             }    
             else {
-                toast(`Failed to add product`, {
-                    description: "Please log in first",
-                  });
+                toast('Please login to perform this action');
             }
         } catch (error) {
             console.error('Failed to add item to cart:', error);

@@ -366,12 +366,28 @@ export default function ItineraryCard({
 
 const ChooseDate = ({ itinerary, currency }) => {
   const navigate = useNavigate();
-  let remainingSpots;
   const [selectedDate, setSelectedDate] = useState(null);
-  const [submitStatus, setSubmitStatus] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const token = localStorage.getItem("token");
+
+  const handleSubmit = async (paymentMethod, walletBalance) => {
+      const response = await createItineraryBooking(itinerary._id, 
+        itinerary.tourGuideId, 
+        selectedDate, 
+        itinerary.price,
+        paymentMethod,
+        token);
+      
+      let message = response.data.message;
+      if (paymentMethod === "Wallet")
+        message += " Your wallet balance is now " + (walletBalance * 1).formatCurrency(currency) + ".";
+
+      if (response.status === 201)
+        toast("Successful Booking of Itinerary!", { description: message });
+      else
+        toast(response.data.message);
+  }
 
   useEffect(() => {
     if (!token) return; 
@@ -406,9 +422,7 @@ const ChooseDate = ({ itinerary, currency }) => {
           <Button 
                 onClick={() => {
                   if (!token) {
-                    toast(`Failed to book itinerary`, {
-                      description: `You need to be logged in first`,
-                    });
+                    toast('Please login to perform this action');
                   }
                 }}
           >Book itinerary</Button>
@@ -423,7 +437,7 @@ const ChooseDate = ({ itinerary, currency }) => {
           >
             {itinerary.availableSlots.map((slot, index) => {
               const slotDate = new Date(slot.date).toLocaleDateString();
-              const booked = slot.maxNumberOfBookings == 0;
+              const booked = slot.numberOfBookings >= slot.maxNumberOfBookings || new Date() > slotDate;
               return (
                 <div className="flex items-center space-x-2" key={index}>
                   <RadioGroupItem
@@ -448,27 +462,16 @@ const ChooseDate = ({ itinerary, currency }) => {
               Select date
             </Button>
           </DialogFooter>
-          {submitStatus && (
-            <div
-              className={`mt-4 p-4 rounded-md ${submitStatus.success ? "bg-green-100" : "bg-red-100"}`}
-            >
-              <div className="flex items-center">
-                {submitStatus.success ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                ) : (
-                  <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-                )}
-                <p
-                  className={submitStatus.success ? "text-green-700" : "text-red-700"}
-                >
-                  {submitStatus.message}
-                </p>
-              </div>
-            </div>
-          )}
         </DialogContent>
       </Dialog>
-      <PaymentDialog isOpen={paymentOpen} currency={currency} onOpenChange={setPaymentOpen} amount={itinerary.price} />
+      <PaymentDialog 
+          isOpen={paymentOpen} 
+          currency={currency} 
+          onOpenChange={setPaymentOpen} 
+          amount={itinerary.price} 
+          token={token}
+          onPaid={handleSubmit}
+      />
     </>
   );
 };

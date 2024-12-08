@@ -23,9 +23,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
       });
     }
     else
-    toast(`Failed to book activity`, {
-      description: `You need to be logged in first`,
-    });
+    toast('Please login to perform this action');
   }
   useEffect(() => {
     if (!token) return; 

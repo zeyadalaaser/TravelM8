@@ -12,7 +12,7 @@ export default function AnimatedLikeButton({ token, liked, productId }) {
   const handleClick = async () => {
     if (!token)
     {
-      toast("Failed to add to wishlist", {description: "Please log in first"});
+      toast('Please login to perform this action');
       return;
     }
 
