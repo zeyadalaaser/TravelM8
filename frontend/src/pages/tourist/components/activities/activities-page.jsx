@@ -57,7 +57,7 @@ export function ActivitiesPage() {
     try {
       const fetchedActivities = (
         await getActivities(`?${queryParams.toString()}`)
-      ).filter((a) => a.isBookingOpen);
+      );
 
       setActivities(fetchedActivities);
       setLoading(false);
