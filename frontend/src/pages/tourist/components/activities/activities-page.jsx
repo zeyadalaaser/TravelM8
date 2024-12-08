@@ -140,17 +140,17 @@ export function ActivitiesPage() {
           <div data-tour="search-bar">
             <SearchBar categories={searchCategories} />
           </div>
-          <Separator className="mb-6" />
+          <Separator className="mb-5" />
           <div data-tour="filters">
             <DateFilter />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <PriceFilter
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
             <Separator className="mt-5" />
             <RatingFilter />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <SelectFilter
               name="Categories"
               paramName="categoryName"
