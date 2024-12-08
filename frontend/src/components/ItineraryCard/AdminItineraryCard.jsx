@@ -30,7 +30,7 @@ export default function ItineraryCard({
   onRefresh,
   isTourGuide,
   bookmarkedItineraries = [],
-  handleBookmark = () => { },
+  handleBookmark = () => {},
 }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -113,12 +113,12 @@ export default function ItineraryCard({
   };
 
   return (
-<div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-8">
-  {itineraries?.map((itinerary) => (
-    <Card
-      key={itinerary._id}
-      className="w-full max-w-[400px] mx-auto border border-gray-300 rounded-lg shadow-md flex flex-col overflow-hidden"
-    >
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-8">
+      {itineraries?.map((itinerary) => (
+        <Card
+          key={itinerary._id}
+          className="w-full max-w-[400px] mx-auto border border-gray-300 rounded-lg shadow-md flex flex-col overflow-hidden"
+        >
           <img
             src={itinerary.images[0] || "/placeholder.svg?height=200&width=300"}
             alt={itinerary.name}
@@ -187,8 +187,7 @@ export default function ItineraryCard({
                 )}
                 {isAdmin && (
                   <Button
-                    className="w-100 mt-2 mb-2"
-                    variant="destructive"
+                    className={`w-[150px] h-[38px] ${flaggedStatus[itinerary._id] ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}`}
                     onClick={() => toggleFlagItinerary(itinerary._id, flaggedStatus[itinerary._id])}
                   >
                     {flaggedStatus[itinerary._id] ? "Unflag Itinerary" : "Flag as Inappropriate"}
