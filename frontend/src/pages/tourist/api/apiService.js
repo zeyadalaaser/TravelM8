@@ -317,7 +317,7 @@ export async function getToken() {
   await apiClient.get("getHotelsToken");
 }
 
-const hotelsBody = `{"mapParams":{"estimateBoundingBox":true},"filterParams":{},"sortParams":{"sortMode":"rank_a"},"userSearchParams":{"searchLocation":{"locationType":"place","locationQuery":"2800"},"adults":"4","checkin":"2024-11-09","checkout":"2024-11-16","rooms":"3","childAges":[0]},"priceMode":"nightly-base","pageNumber":1,"metadata":{"impressionCount":1}}`;
+const hotelsBody = `{"mapParams":{"estimateBoundingBox":true},"filterParams":{},"sortParams":{"sortMode":"rank_a"},"userSearchParams":{"searchLocation":{"locationType":"place","locationQuery":"2800"},"adults":"4","checkin":"2024-11-09","checkout":"2024-11-16","rooms":"3","childAges":[0]},"priceMode":"nightly-total","pageNumber":1,"metadata":{"impressionCount":1}}`;
 
 export async function getHotels(query) {
   const getScoreFilter = (score) => {
