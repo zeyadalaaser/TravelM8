@@ -7,7 +7,7 @@ import {
   sendEmailReminder2,
 } from "../../controllers/notificationController.js";
 
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/45 * * * *", async () => {
   try {
     console.log("Running scheduled job to send email reminders...");
 
@@ -71,7 +71,7 @@ cron.schedule("*/5 * * * *", async () => {
   }
 });
 
-cron.schedule("*/3 * * * *", async () => {
+cron.schedule("*/30 * * * *", async () => {
   try {
     console.log(
       "Running scheduled job to send email reminders for upcoming activities..."
