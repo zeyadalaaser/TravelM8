@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+
 import {
   getActivityBookings,
   getItineraryBookings,
@@ -108,14 +109,15 @@ const BookingHistory = () => {
         // Filter activities and itineraries after fetching
         const completedActivities = activitiesResponse.filter(
           (activity) =>
-            activity.completionStatus?.toLowerCase() === "paid" &&
-            activity?.activityId?.date < today
-        );
-        const pendingActivities = activitiesResponse.filter(
+              activity.completionStatus?.toLowerCase() === "paid" &&
+              new Date(activity?.activityId?.date) < today
+      );
+      
+      const pendingActivities = activitiesResponse.filter(
           (activity) =>
-            activity.completionStatus?.toLowerCase() === "paid" &&
-            activity?.activityId?.date > today
-        );
+              activity.completionStatus?.toLowerCase() === "paid" &&
+              new Date(activity?.activityId?.date) > today
+      );
 
         console.log("pending activities:", pendingActivities);
 
@@ -255,14 +257,22 @@ const BookingHistory = () => {
 
   const handleCancelBooking = async (type, bookingId) => {
     let response;
-    if (type === "activity") {
-      response = await cancelActivityBooking(bookingId); // Await the response
+    try {
+      if (type === "activity") {
+        response = await cancelActivityBooking(bookingId); // Await the response
+      } else {
+        response = await cancelItineraryBooking(bookingId); // Await the response
+      }
+  
+        toast(`Booking cancelled successfully! Amount refunded: $${response.amountRefunded}. New wallet balance: $${response.newBalance}.`);
+     
+  
+      // Refresh the data after cancellation
       fetchDataAndFilter();
-    } else {
-      response = await cancelItineraryBooking(bookingId); // Await the response
-      fetchDataAndFilter();
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      toast("Failed to cancel booking. Please try again.");
     }
-    toast(response.message); // Show the message once the response is received
   };
 
   const getIcon = (type) => {
