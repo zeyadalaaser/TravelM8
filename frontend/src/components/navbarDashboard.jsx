@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button.jsx"; // Adjust the import path accordingly
-import { Bell, ChevronDown } from "lucide-react"; // Adjust based on your icon setup
+import { Bell, UserCircle, ChevronDown } from "lucide-react"; // Adjust based on your icon setup
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import logo from "../assets/lb.png";
+
 const Header = ({
   name = "Jane Doe",
   editProfile,
@@ -81,6 +82,7 @@ const Header = ({
       console.error("Error deleting notification:", error);
     }
   };
+
   const clearAllNotifications = async () => {
     try {
       await axios.delete("http://localhost:5001/api/notifications", {
@@ -112,7 +114,7 @@ const Header = ({
         </div>
 
         <div className="flex items-center relative">
-          {/* Borderless Notification Button */}
+          {/* Notification Button */}
           <Button
             variant="link" // Borderless button style
             size="icon"
@@ -120,7 +122,7 @@ const Header = ({
             onClick={() => setIsNotificationsOpen(true)} // Open sidebar on bell click
           >
             <div className="relative inline-block">
-              <Bell className="h-4 w-4" />
+              <Bell className="h-6 w-6" /> {/* Increased size for consistency */}
               <span className="sr-only">Notifications</span>
               {unreadCount > 0 && (
                 <span className="bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2">
@@ -130,14 +132,12 @@ const Header = ({
             </div>
           </Button>
 
-          {/* "Hi, {name}" Greeting */}
-          <span className="text-gray-700 mr-2">Hi, {name}</span>
-
-          {/* Dropdown Menu at the right */}
+          {/* Profile Icon Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Button variant="link" className="p-0 flex items-center">
-                <ChevronDown className="h-4 w-4 text-gray-500" />
+                <UserCircle className="h-6 w-6" /> {/* Consistent size with notification bell */}
+                <ChevronDown className="h-4 w-4 text-gray-500 ml-1" />
                 <span className="sr-only">Menu</span>
               </Button>
             </DropdownMenuTrigger>
@@ -174,8 +174,6 @@ const Header = ({
         </SheetTrigger>
         <SheetContent>
           <div>
-            {" "}
-            {/* Wrapping everything inside a div */}
             <SheetHeader>
               <div className="flex justify-between items-center">
                 <SheetTitle>Notifications</SheetTitle>
@@ -230,8 +228,7 @@ const Header = ({
                 ))
               )}
             </div>
-          </div>{" "}
-          {/* Closing the wrapper div */}
+          </div>
         </SheetContent>
       </Sheet>
 

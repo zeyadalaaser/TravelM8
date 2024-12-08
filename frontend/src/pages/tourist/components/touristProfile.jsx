@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { Bell, ChevronDown, Eye, EyeOff, User, X,ClockArrowDown, ThumbsDown, BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart, Bookmark,Gift } from 'lucide-react'
+import { Bell, ChevronDown, Eye, EyeOff, User, X, ClockIcon as ClockArrowDown, ThumbsDown, BookCheck, Tag, Star, Shield, Layout, List, Settings, Map, DollarSign, HeartCrack, Heart, Bookmark, Gift } from 'lucide-react'
 import { Input } from "@/components/ui/input.tsx";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -13,7 +13,7 @@ import BookmarksHistory from "@/pages/tourist/components/activities/bookmarks";
 import RedeemPoints from "@/pages/tourist/components/Points/redeemPoints2.jsx";
 import Navbar from "@/components/Navbar.jsx";
 import { Wishlist } from './wishlist';
-import  PreferencesPage  from './Preferences';
+import PreferencesPage from './Preferences';
 import MyOrdersPage from "@/pages/tourist/components/orders.jsx";
 import { ComplaintForm } from "@/pages/tourist/components/complaints/complaint-form.jsx";
 import { toast } from 'sonner';
@@ -21,7 +21,6 @@ import { Label } from "@/components/ui/label"
 import useRouter from "@/hooks/useRouter";
 
 const TouristProfilePage = () => {
-
   const amount = 45231.89,
     percentageChange = 20.1,
     timeframe = "from last month";
@@ -41,11 +40,11 @@ const TouristProfilePage = () => {
   const [changes, setChanges] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const { location, searchParams, navigate } = useRouter();
+
   useEffect(() => {
-  if (searchParams.has("page"))
-  setActiveView(searchParams.get("page"));
+    if (searchParams.has("page"))
+      setActiveView(searchParams.get("page"));
   }, [location.search]);
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,17 +58,14 @@ const TouristProfilePage = () => {
     }));
   };
 
-
   const handleFormSubmit = async () => {
     try {
-
-        const response = await updateProfile(changes, token);
-        console.log(changes);
-        toast("Profile updated successfully");
-
+      const response = await updateProfile(changes, token);
+      console.log(changes);
+      toast("Profile updated successfully");
     } catch (error) {
       console.log(changes);
-      toast("Error updating profile",{description: error.message});
+      toast("Error updating profile", { description: error.message });
       console.error('Error updating:', error);
     }
   };
@@ -82,7 +78,6 @@ const TouristProfilePage = () => {
       return
     }
     if (newPassword !== confirmPassword) {
-
       setError('New password and confirm password do not match')
       return
     }
@@ -107,7 +102,7 @@ const TouristProfilePage = () => {
       setConfirmPassword(null);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
-        setError(error.response.data.message); // Display the specific error message
+        setError(error.response.data.message);
       } else {
         setError('An unexpected error occurred');
       }
@@ -137,7 +132,6 @@ const TouristProfilePage = () => {
     console.log("Yes button clicked");
 
     try {
-
       const token = localStorage.getItem('token');
       if (!token) {
         console.error("Authorization token is required");
@@ -147,7 +141,7 @@ const TouristProfilePage = () => {
       const response = await fetch('http://localhost:5001/api/deleteRequests', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -169,7 +163,6 @@ const TouristProfilePage = () => {
     }
   };
 
-
   const renderContent = () => {
     if (!profile) {
       return <div>Loading...</div>;
@@ -182,8 +175,8 @@ const TouristProfilePage = () => {
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Profile</h2>
               <div className="flex items-center">
-                <div className="w-20 h-20 bg-gray-300 rounded-full mr-4 flex items-center justify-center text-2xl text-white">
-                  JD
+                <div className="w-20 h-20 bg-gray-300 rounded-full mr-4 flex items-center justify-center text-white">
+                  <User size={40} />
                 </div>
                 <div>
                   <h3 className="font-semibold">{profile ? profile.name : 'null'}</h3>
@@ -244,66 +237,68 @@ const TouristProfilePage = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                                              <Label htmlFor="mobileNumber">Mobile number</Label>
-                                              <div className="flex gap-2">
-                                                <Select name="countryCode" 
-                                                onValueChange={(value) => handleInputChange({ target: { name: 'countryCode', value } })}
-                                                >
-                                                  <SelectTrigger className="w-[120px]">
-                                                  <SelectValue 
-                                                      placeholder={
-                                                         `${countryCodeMap[profile?.countryCode] || ''} ${profile?.countryCode || 'Select a country'}`
-                                                      }
-                                                    />
-                                                  </SelectTrigger>
-                                                  <SelectContent>
-                                                  <SelectItem value="+966">🇸🇦 +966</SelectItem> {/* Saudi Arabia */}
-                                                      <SelectItem value="+971">🇦🇪 +971</SelectItem> {/* United Arab Emirates */}
-                                                      <SelectItem value="+965">🇰🇼 +965</SelectItem> {/* Kuwait */}
-                                                      <SelectItem value="+1">🇺🇸 +1</SelectItem> {/* United States */}
-                                                      <SelectItem value="+44">🇬🇧 +44</SelectItem> {/* United Kingdom */}
-                                                      <SelectItem value="+91">🇮🇳 +91</SelectItem> {/* India */}
-                                                      <SelectItem value="+92">🇵🇰 +92</SelectItem> {/* Pakistan */}
-                                                      <SelectItem value="+20">🇪🇬 +20</SelectItem> {/* Egypt */}
-                                                      <SelectItem value="+27">🇿🇦 +27</SelectItem> {/* South Africa */}
-                                                      <SelectItem value="+49">🇩🇪 +49</SelectItem> {/* Germany */}
-                                                      <SelectItem value="+33">🇫🇷 +33</SelectItem> {/* France */}
-                                                      <SelectItem value="+86">🇨🇳 +86</SelectItem> {/* China */}
-                                                      <SelectItem value="+81">🇯🇵 +81</SelectItem> {/* Japan */}
-                                                      <SelectItem value="+82">🇰🇷 +82</SelectItem> {/* South Korea */}
-                                                      <SelectItem value="+55">🇧🇷 +55</SelectItem> {/* Brazil */}
-                                                      <SelectItem value="+52">🇲🇽 +52</SelectItem> {/* Mexico */}
-                                                      <SelectItem value="+39">🇮🇹 +39</SelectItem> {/* Italy */}
-                                                      <SelectItem value="+34">🇪🇸 +34</SelectItem> {/* Spain */}
-                                                      <SelectItem value="+7">🇷🇺 +7</SelectItem> {/* Russia */}
-                                                      <SelectItem value="+90">🇹🇷 +90</SelectItem> {/* Turkey */}
-                                                      <SelectItem value="+62">🇮🇩 +62</SelectItem> {/* Indonesia */}
-                                                      <SelectItem value="+60">🇲🇾 +60</SelectItem> {/* Malaysia */}
-                                                      <SelectItem value="+65">🇸🇬 +65</SelectItem> {/* Singapore */}
-                                                      <SelectItem value="+61">🇦🇺 +61</SelectItem> {/* Australia */}
-                                                      <SelectItem value="+1">🇨🇦 +1</SelectItem> {/* Canada */}
-                                                      <SelectItem value="+48">🇵🇱 +48</SelectItem> {/* Poland */}
-                                                      <SelectItem value="+63">🇵🇭 +63</SelectItem> {/* Philippines */}
-                                                      <SelectItem value="+94">🇱🇰 +94</SelectItem> {/* Sri Lanka */}
-                                                      <SelectItem value="+880">🇧🇩 +880</SelectItem> {/* Bangladesh */}
-
-                                                  </SelectContent>
-                                                </Select>
-                                                <Input 
-                                                onChange={handleInputChange}
-                                                className="flex-1" 
-                                                id="mobileNumber" 
-                                                name="mobileNumber" 
-                                                value={profile ? profile.mobileNumber : ''}
-                                                placeholder="e.g. 05XXXXXXXX" 
-                                                required />
-                                              </div>
-                                            </div>
+                  <Label htmlFor="mobileNumber">Mobile number</Label>
+                  <div className="flex gap-2">
+                    <Select name="countryCode" 
+                      onValueChange={(value) => handleInputChange({ target: { name: 'countryCode', value } })}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue 
+                          placeholder={
+                            `${countryCodeMap[profile?.countryCode] || ''} ${profile?.countryCode || 'Select a country'}`
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="+966">🇸🇦 +966</SelectItem>
+                        <SelectItem value="+971">🇦🇪 +971</SelectItem>
+                        <SelectItem value="+965">🇰🇼 +965</SelectItem>
+                        <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                        <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                        <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                        <SelectItem value="+92">🇵🇰 +92</SelectItem>
+                        <SelectItem value="+20">🇪🇬 +20</SelectItem>
+                        <SelectItem value="+27">🇿🇦 +27</SelectItem>
+                        <SelectItem value="+49">🇩🇪 +49</SelectItem>
+                        <SelectItem value="+33">🇫🇷 +33</SelectItem>
+                        <SelectItem value="+86">🇨🇳 +86</SelectItem>
+                        <SelectItem value="+81">🇯🇵 +81</SelectItem>
+                        <SelectItem value="+82">🇰🇷 +82</SelectItem>
+                        <SelectItem value="+55">🇧🇷 +55</SelectItem>
+                        <SelectItem value="+52">🇲🇽 +52</SelectItem>
+                        <SelectItem value="+39">🇮🇹 +39</SelectItem>
+                        <SelectItem value="+34">🇪🇸 +34</SelectItem>
+                        <SelectItem value="+7">🇷🇺 +7</SelectItem>
+                        <SelectItem value="+90">🇹🇷 +90</SelectItem>
+                        <SelectItem value="+62">🇮🇩 +62</SelectItem>
+                        <SelectItem value="+60">🇲🇾 +60</SelectItem>
+                        <SelectItem value="+65">🇸🇬 +65</SelectItem>
+                        <SelectItem value="+61">🇦🇺 +61</SelectItem>
+                        <SelectItem value="+1">🇨🇦 +1</SelectItem>
+                        <SelectItem value="+48">🇵🇱 +48</SelectItem>
+                        <SelectItem value="+63">🇵🇭 +63</SelectItem>
+                        <SelectItem value="+94">🇱🇰 +94</SelectItem>
+                        <SelectItem value="+880">🇧🇩 +880</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input 
+                      onChange={handleInputChange}
+                      className="flex-1" 
+                      id="mobileNumber" 
+                      name="mobileNumber" 
+                      value={profile ? profile.mobileNumber : ''}
+                      placeholder="e.g. 05XXXXXXXX" 
+                      required 
+                    />
+                  </div>
+                </div>
                 <div className="mt-2">
                   <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
                   <Input
                     type="date"
-                    value={new Date(profile ? profile.dob : '-').toISOString().split("T")[0]} className="mt-1 mb-4 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+                    value={new Date(profile ? profile.dob : '-').toISOString().split("T")[0]} 
+                    className="mt-1 mb-4 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" 
+                  />
                 </div>
               </div>
             </section>
@@ -440,33 +435,33 @@ const TouristProfilePage = () => {
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('bookings')}
+              >
+                <BookCheck className="mr-3" />
+                Bookings
+              </button>
+              <button
+                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('orders')}
               >
                 <ClockArrowDown className="mr-3" />
-                My orders
+                Orders
+              </button>
+              <button
+                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                onClick={() => setActiveView('points')}
+              >
+                <Gift className="mr-3" />
+               Loyalty points
               </button>
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('complaints')}
               >
                 <ThumbsDown className="mr-3" />
-                My complaints
+                Complaints
               </button>
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView('bookings')}
-              >
-                <BookCheck className="mr-3" />
-                My bookings
-              </button>
-  
-              <button
-                className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
-                onClick={() => setActiveView('points')}
-              >
-                <Gift className="mr-3" />
-               My loyalty points
-              </button>
+            
               <button
                 className="w-full flex items-center px-4 py-2 mb-4 rounded-lg shadow-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
                 onClick={() => setActiveView('settings')}

@@ -153,9 +153,9 @@ const TourGuideProfilePage = () => {
              <section className="mb-8">
                 <h2 className="text-xl font-semibold mb-4">Profile</h2>
                 <div className="flex items-center">
-                  <div className="w-20 h-20 bg-gray-300 rounded-full mr-4 flex items-center justify-center text-2xl text-white">
-                    JD
-                  </div>
+                <div className="w-20 h-20 bg-gray-300 rounded-full mr-4 flex items-center justify-center text-white">
+                  <User size={40} />
+                </div>
                   <div>
                     <h3 className="font-semibold">{profile ? profile.name : 'null'}</h3>
                     <p className="text-gray-600">{profile ? profile.email : 'null'}</p>

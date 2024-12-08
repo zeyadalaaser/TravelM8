@@ -418,25 +418,25 @@ export default function Navbar({ profilePageString, children }) {
                   handleClose();
                   navigate("/tourist-profile");
                 }}>
-                  My profile
+                  My Profile
                 </MenuItem>
                 <MenuItem onClick={() => {
                   handleClose();
                   navigate("/tourist-profile?page=wishlist");
                 }}>
-                  My Wishlist
+                  Wishlist
                 </MenuItem>
                 <MenuItem onClick={() => {
                   handleClose();
                   navigate("/tourist-profile?page=bookmarks");
                 }}>
-                  My Bookmarks
+                  Bookmarks
                 </MenuItem>
                 <MenuItem onClick={() => {
                   handleClose();
                   navigate("/tourist-profile?page=preferences");
                 }}>
-                  My Preferences
+                  Preferences
                 </MenuItem>
                 <Separator />
                 <MenuItem
