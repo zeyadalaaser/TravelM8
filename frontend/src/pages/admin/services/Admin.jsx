@@ -29,6 +29,7 @@ const AdminPanel = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [admins, setAdmins] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,6 +71,7 @@ const AdminPanel = () => {
       fetchAdmins();
       setUsername("");
       setPassword("");
+      setEmail("");
       setEmail("");
       setIsOpen(false);
       toast.success("Admin added successfully!");

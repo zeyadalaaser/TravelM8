@@ -196,6 +196,62 @@ export const pageSteps = {
       content: 'Navigate through different pages of museums.',
       disableBeacon: true,
     }
-  ]
+  ],
+  home: [
+  {
+    target: '[data-tour="flights"]',
+    content: 'flights.',
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="sort-selection"]',
+    content: 'Sort activities based on different criteria.',
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="filters"]',
+    content: 'Use these filters to refine your search results.',
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="activities-list"]',
+    content: 'Browse through the list of available activities.',
+    disableBeacon: true,
+  },
+  {
+    target: '[data-tour="pagination"]',
+    content: 'Navigate through different pages of activities.',
+    disableBeacon: true,
+  }
+
+  ],
+  hotels: [
+    {
+      target: '[data-tour="flights"]',
+      content: 'flights.',
+      disableBeacon: true,
+    },
+    {
+      target: '[data-tour="sort-selection"]',
+      content: 'Sort activities based on different criteria.',
+      disableBeacon: true,
+    },
+    {
+      target: '[data-tour="filters"]',
+      content: 'Use these filters to refine your search results.',
+      disableBeacon: true,
+    },
+    {
+      target: '[data-tour="activities-list"]',
+      content: 'Browse through the list of available activities.',
+      disableBeacon: true,
+    },
+    {
+      target: '[data-tour="pagination"]',
+      content: 'Navigate through different pages of activities.',
+      disableBeacon: true,
+    }
+  
+    ],
 };
 

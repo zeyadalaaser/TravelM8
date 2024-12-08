@@ -243,7 +243,7 @@ function ActivityCard({ token, bookActivity, activity, currency, exchangeRate })
                                 <div className="px-2">
                                     {activity.isBookingOpen ? (
                                         <>
-                                            <Button onClick={() => openDialog(activity)}>
+                                            <Button className="w-[116px]" onClick={() => openDialog(activity)}>
                                                 Book activity
                                             </Button>
 
@@ -283,10 +283,10 @@ function ActivityCard({ token, bookActivity, activity, currency, exchangeRate })
                                                             return;
                                                         }
                                                     }}
-                                                    className={`flex items-center gap-2 ${
+                                                    className={`w-[116px] flex items-center gap-2 ${
                                                         notifiedActivities.includes(activity._id)
                                                             ? "bg-background hover:bg-accent text-yellow-500 border border-input"
-                                                            : "bg-[#020817] hover:bg-[#020817]/90 text-white"
+                                                            : ""
                                                     }`}
                                                 >
                                                     <Bell className={`w-4 h-4 ${

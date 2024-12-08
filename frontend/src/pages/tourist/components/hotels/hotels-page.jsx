@@ -10,6 +10,8 @@ import { CityFilter } from "../filters/city-filter";
 import { getHotels, getToken } from "../../api/apiService";
 import { Hotels } from "./hotels";
 import { Button } from "@/components/ui/button";
+import { useWalkthrough } from '@/contexts/WalkthroughContext';
+import { Walkthrough } from '@/components/Walkthrough';
 
 function createImage(location) {
   function lucideImage(image) {
@@ -53,9 +55,8 @@ async function fetchLocations(name) {
           {location.displayType.displayName}
         </p>
       ),
-      value: `${location.displayname}--${
-        location.entityKey.split(":")[0]
-      }:${searchKey}`,
+      value: `${location.displayname}--${location.entityKey.split(":")[0]
+        }:${searchKey}`,
       image: createImage(location),
     };
   });
@@ -76,6 +77,7 @@ export function HotelsPage() {
   // Paginated activities
   const paginatedHotels = hotels.slice(startIndex, endIndex);
 
+  const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
   const fetchHotels = useDebouncedCallback(async () => {
     setLoading(true);
 
@@ -153,17 +155,51 @@ export function HotelsPage() {
     setCurrentPage(pageNumber);
     window.scrollTo(0, 0); // Scroll to the top of the page when changing pages
   };
+  useEffect(() => {
+    if (walkthroughPage === 'hotels') {
+      clearSteps();
+      addSteps([
+        {
+          target: '[data-tour="search-bar"]',
+          content: 'Use the search bar to find activities by name, category, or tag.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="sort-selection"]',
+          content: 'Sort activities based on different criteria.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="filters"]',
+          content: 'Use these filters to refine your search results.',
+          disableBeacon: true,
+        },
+        {
+          target: '[data-tour="activities-list"]',
+          content: 'Browse through the list of available activities.',
+          disableBeacon: true,
+        }
 
+
+      ], 'hotels');
+    }
+  }, [addSteps, clearSteps, walkthroughPage]);
   return (
     <>
       <div className="flex justify-between space-x-3">
-        <CityFilter className="flex-1" name="Where" getData={fetchLocations} />
-        <SingleDateFilter className="flex-1" name="Check in" param="checkin" />
-        <SingleDateFilter
-          className="flex-1"
-          name="Check out"
-          param="checkout"
-        />
+        <div className="flex-1" data-tour="search-bar">
+          <CityFilter className="flex-1" name="Where" getData={fetchLocations} />
+        </div>
+        <div className="flex-1" data-tour="sort-selection">
+          <SingleDateFilter className="flex-1" name="Check in" param="checkin" />
+        </div>
+        <div className="flex-1" data-tour="filters">
+          <SingleDateFilter
+            className="flex-1"
+            name="Check out"
+            param="checkout"
+          />
+        </div>
       </div>
       <div className="mt-6 flex flex-col md:flex-row gap-8">
         <div className="flex w-1/4 h-10 items-center">
@@ -179,15 +215,17 @@ export function HotelsPage() {
               )}
               <ClearFilters />
             </div>
-            <SortSelection options={sortOptions} />
+            <div data-tour="activities-list">
+              <SortSelection options={sortOptions} />
+            </div>
           </div>
-          {hotels.length !==0 ? (
+          {hotels.length !== 0 ? (
 
-              <>
+            <>
               <Hotels
-              hotels={paginatedHotels}
-              currency={currency}
-              exchangeRate={exchangeRates[currency]} />
+                hotels={paginatedHotels}
+                currency={currency}
+                exchangeRate={exchangeRates[currency]} />
               <div className="flex justify-center mt-6 space-x-2">
                 <Button
                   variant="outline"
@@ -203,7 +241,7 @@ export function HotelsPage() {
                     onClick={() => {
                       setCurrentPage(page);
                       window.scroll(0, 0);
-                    } }
+                    }}
                   >
                     {page}
                   </Button>
@@ -217,15 +255,16 @@ export function HotelsPage() {
                 </Button>
               </div></>
 
-          ) : (             
-             <Hotels
-            hotels={paginatedHotels}
-            currency={currency}
-            exchangeRate={exchangeRates[currency]} />)}
+          ) : (
+            <Hotels
+              hotels={paginatedHotels}
+              currency={currency}
+              exchangeRate={exchangeRates[currency]} />)}
 
         </div>
-      </div>
 
+      </div>
+      <Walkthrough />
     </>
   );
 }

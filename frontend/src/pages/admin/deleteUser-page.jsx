@@ -15,10 +15,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
-import {
-  getAllUsers,
-  deleteUser,
-} from "@/pages/admin/services/adminDeleteServices.js"; // Import the service
+import { getAllUsers, deleteUser } from "@/pages/admin/services/adminDeleteServices.js"; // Import the service
 
 const DeleteUser = () => {
   const [sidebarState, setSidebarState] = useState(false);
@@ -79,44 +76,44 @@ const DeleteUser = () => {
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mx-auto p-4 w-4/5">
+        <div className="container mx-auto p-6 w-4/5">
           <h1 className="text-2xl font-bold mb-4">User Management</h1>
           <div className="flex justify-end mb-4"></div>
 
-          <Table className="w-full">
-            {" "}
-            {/* Added w-full to make the table full width */}
-            <TableHeader>
-              <TableRow>
-                <TableHead>Username</TableHead>
-                <TableHead>User Type</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.username}>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.type}</TableCell>
-                  <TableCell className="text-right">
-                    <button
-                      className="flex items-center text-red-600 hover:text-red-800"
-                      onClick={() => handleDelete(user.username, user.type)} // Pass user type
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Delete
-                    </button>
-                  </TableCell>
+          <div className="bg-white shadow-md rounded-lg p-4"> {/* Card-like container */}
+            <Table className="w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Username</TableHead>
+                  <TableHead>User Type</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.username}>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.type}</TableCell>
+                    <TableCell className="text-right">
+                      <button
+                        className="flex items-center text-red-600 hover:text-red-800 transition duration-200" // Improved button styles
+                        onClick={() => handleDelete(user.username, user.type)} // Pass user type
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Delete
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
 
-          {users.length === 0 && (
-            <p className="text-center text-muted-foreground mt-4">
-              No users found.
-            </p>
-          )}
+            {users.length === 0 && (
+              <p className="text-center text-muted-foreground mt-4">
+                No users found.
+              </p>
+            )}
+          </div>
         </div>
         <Footer />
       </div>
