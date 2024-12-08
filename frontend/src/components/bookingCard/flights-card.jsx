@@ -25,15 +25,16 @@ async function fetchCities(cityName) {
 
   return cities.map((edge) => {
     const node = edge["node"];
+    const isCountry = node.__isPlace === "Country";
 
-    const label = `${node["name"]}, ${node["country"]["name"]}`;
+    const label = isCountry ? node["name"] : `${node["name"]}, ${node["country"]["name"]}`;
     const value = `${node["name"]}--${node["legacyId"]}`;
-    const imageUrl1 = `https://flagcdn.com/36x27/${node["country"][
-      "legacyId"
-    ].toLowerCase()}.png`;
-    const imageUrl2 = `https://flagcdn.com/72x54/${node["country"][
-      "legacyId"
-    ].toLowerCase()}.png`;
+
+    const countryCode = isCountry ? node["legacyId"] : node["country"]["legacyId"];
+
+    const imageUrl1 = `https://flagcdn.com/36x27/${countryCode.toLowerCase()}.png`;
+    const imageUrl2 = `https://flagcdn.com/72x54/${countryCode.toLowerCase()}.png`;
+
     const image = (
       <img className="rounded-sm" src={imageUrl1} srcSet={`${imageUrl2} 2x`} />
     );

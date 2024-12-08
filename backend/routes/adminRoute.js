@@ -5,6 +5,7 @@ import {
   getUsers,
   getAllAdmins,
   getUsersReport,
+  deleteAccountOnly,
 } from "../controllers/adminController.js";
 import { viewPendingUserDocuments } from "../controllers/viewPendingUserDocuments.js";
 import { changePasswordAdmin } from "../controllers/changePassword.js";
@@ -23,6 +24,6 @@ router.post("/admins/changepassword", verifyToken, changePasswordAdmin);
 router.get("/pending-user-documents", viewPendingUserDocuments);
 router.get("/Allrequests", getAllDeletionRequests);
 router.get("/usersReport", getUsersReport);
-
+router.delete("/usersOnly", deleteAccountOnly);
 
 export default router;

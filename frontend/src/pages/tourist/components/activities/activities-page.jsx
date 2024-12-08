@@ -140,17 +140,17 @@ export function ActivitiesPage() {
           <div data-tour="search-bar">
             <SearchBar categories={searchCategories} />
           </div>
-          <Separator className="mb-6" />
+          <Separator className="mb-5" />
           <div data-tour="filters">
             <DateFilter />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <PriceFilter
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
             <Separator className="mt-5" />
             <RatingFilter />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <SelectFilter
               name="Categories"
               paramName="categoryName"
@@ -159,7 +159,7 @@ export function ActivitiesPage() {
           </div>
         </div>
         <div className="w-full md:w-3/4 ">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-6">
             <div className="flex h-5 items-center space-x-4 text-sm">
               {loading ? (
                 <div>Loading...</div>

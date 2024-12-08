@@ -186,3 +186,59 @@ export const getUsersReport = async (req, res) => {
 export const getSalesReport = async (req, res) => {
 
 }
+
+export const deleteAccountOnly = async (req, res) => {
+    const { username, type } = req.body; // Get username and user type from request body
+
+    if (!username || !type) {
+        return res.status(400).send('Username and user type are required');
+    }
+
+    try {
+        let result;
+
+        // Handle each user type case explicitly
+        switch (type) {
+            case 'Admin':
+                result = await Admin.findOneAndDelete({ username });
+                break;
+
+            case 'Tourist':
+                result = await Tourist.findOneAndDelete({ username });
+                break;
+
+            case 'TourGuide':
+                result = await TourGuide.findOneAndDelete({ username });
+               
+                break;
+
+            case 'TourismGovernor':
+                result = await TourismGovernor.findOneAndDelete({ username });
+               
+                break;
+
+            case 'Seller':
+                result = await Seller.findOneAndDelete({ username });
+                 
+                break;
+
+            case 'Advertiser':
+                result = await Advertiser.findOneAndDelete({ username });
+                
+                break;
+
+            default:
+                return res.status(400).json({ message: 'Invalid user type' });
+        }
+
+        // If no user was found, return 404
+        if (!result) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

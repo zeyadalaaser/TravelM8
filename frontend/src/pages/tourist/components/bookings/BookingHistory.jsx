@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
+
 import {
   getActivityBookings,
   getItineraryBookings,
   cancelActivityBooking,
   cancelItineraryBooking,
 } from "../../api/apiService";
-
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
@@ -32,6 +32,7 @@ import {
   CalendarIcon,
   MapPinIcon,
   Star,
+  StarIcon,
   X,
   ShoppingCart,
   Compass,
@@ -43,13 +44,13 @@ import { toast } from "sonner";
 const BookingHistory = () => {
   const token = localStorage.getItem("token");
   const today = new Date();
-  // const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const[dialogData, setDialogData] = useState({
+
+  const [dialogData, setDialogData] = useState({
     isOpen: false,
     touristId: null,
     entityId: null,
     entityType: null,
-    onClose:null
+    onClose: null,
   });
 
   const [allActivitiesList, setAllActivitiesList] = useState([]);
@@ -71,15 +72,10 @@ const BookingHistory = () => {
 
   const [loading, setLoading] = useState(true); // Loading state to track data fetching completion
 
-  const statusColors = {
-    Completed: "bg-green-600",
-    Paid: "bg-gray-800",
-    Pending: "bg-yellow-600",
-    Cancelled: "bg-red-600",
-  };
-
   let completed = false;
   let pending = false;
+  let cancelled = false;
+
 
   const fetchDataAndFilter = async () => {
     try {
@@ -93,25 +89,36 @@ const BookingHistory = () => {
 
       // Set state for main lists
       if (activitiesResponse && itinerariesResponse) {
-        setAllActivitiesList(activitiesResponse);
-        setAllItinerariesList(itinerariesResponse);
-        setShowingActivities(activitiesResponse);
-        setShowingItineraries(itinerariesResponse);
+        const filteredActivities = activitiesResponse.filter(
+          (activity) => activity.completionStatus === "Paid" || activity.completionStatus === "Cancelled"
+        );
 
-        console.log("Activities Set State:", activitiesResponse);
-        console.log("Itineraries Set State:", itinerariesResponse);
+        const filteredItineraries = itinerariesResponse.filter(
+          (itinerary) => itinerary.completionStatus === "Paid" || itinerary.completionStatus === "Cancelled"
+        );
+
+        // Set the state with filtered data
+        setAllActivitiesList(filteredActivities);
+        setAllItinerariesList(filteredItineraries);
+        setShowingActivities(filteredActivities);
+        setShowingItineraries(filteredItineraries);
+
+
+        console.log("Activities Set State:", filteredActivities);
+        console.log("Itineraries Set State:", filteredItineraries);
 
         // Filter activities and itineraries after fetching
         const completedActivities = activitiesResponse.filter(
           (activity) =>
-            activity.completionStatus?.toLowerCase() === "paid" &&
-            activity?.activityId?.date < today
-        );
-        const pendingActivities = activitiesResponse.filter(
+              activity.completionStatus?.toLowerCase() === "paid" &&
+              new Date(activity?.activityId?.date) < today
+      );
+      
+      const pendingActivities = activitiesResponse.filter(
           (activity) =>
-            activity.completionStatus?.toLowerCase() === "paid" &&
-            activity?.activityId?.date > today
-        );
+              activity.completionStatus?.toLowerCase() === "paid" &&
+              new Date(activity?.activityId?.date) > today
+      );
 
         console.log("pending activities:", pendingActivities);
 
@@ -213,6 +220,25 @@ const BookingHistory = () => {
     loading,
   ]);
 
+  const getReviews = async (entityId, entityType, touristId) => {
+    try {
+      // Construct query parameters
+      const params = {
+        entityId,
+        entityType,
+        touristId,
+      };
+
+      const response = await axios.get('/api/ratings', { params });
+
+      console.log('Reviews:', response.data.reviews);
+      console.log('Average Rating:', response.data.averageRating);
+      setReviews(response.data);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    }
+  };
+
   const renderSubTabs = () => {
     if (mainTab === "products") {
       return (
@@ -223,7 +249,7 @@ const BookingHistory = () => {
       );
     } else {
       return (
-        <TabsList className=" grid w-fit grid-cols-4 mb-4">
+        <TabsList className=" grid w-full grid-cols-4 mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
@@ -249,19 +275,24 @@ const BookingHistory = () => {
     });
   };
 
-  
-
-
   const handleCancelBooking = async (type, bookingId) => {
     let response;
-    if (type === "activity") {
-      response = await cancelActivityBooking(bookingId); // Await the response
+    try {
+      if (type === "activity") {
+        response = await cancelActivityBooking(bookingId); // Await the response
+      } else {
+        response = await cancelItineraryBooking(bookingId); // Await the response
+      }
+  
+        toast(`Booking cancelled successfully! Amount refunded: $${response.amountRefunded}. New wallet balance: $${response.newBalance}.`);
+     
+  
+      // Refresh the data after cancellation
       fetchDataAndFilter();
-    } else {
-      response = await cancelItineraryBooking(bookingId); // Await the response
-      fetchDataAndFilter();
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      toast("Failed to cancel booking. Please try again.");
     }
-    toast(response.message); // Show the message once the response is received
   };
 
   const getIcon = (type) => {
@@ -286,7 +317,7 @@ const BookingHistory = () => {
           </div>
         );
       }
-  
+
       return showingActivities
         .filter((a) => a.activityId != null)
         .map((activityBooking) => (
@@ -303,7 +334,7 @@ const BookingHistory = () => {
           </div>
         );
       }
-  
+
       return showingItineraries
         .filter((a) => a.itinerary != null)
         .map((itineraryBooking) => (
@@ -314,15 +345,17 @@ const BookingHistory = () => {
         ));
     }
   };
-  
 
   const ActivitiesCard = ({ activityBooking }) => {
+    const reviews = reviews.reviews;
+    const averageRating = reviews.averageRating;
     pending =
       activityBooking.completionStatus == "Paid" &&
       new Date(activityBooking.activityId?.date) > today;
     completed =
       activityBooking.completionStatus == "Paid" &&
       new Date(activityBooking.activityId?.date) < today;
+    cancelled = activityBooking.completionStatus == "Cancelled";
     return (
       <Card
         key={activityBooking._id}
@@ -336,17 +369,28 @@ const BookingHistory = () => {
             <div className="items-center flex gap-2">
               {getIcon("activities")}
               <span className="text-xl font-bold truncate">
-                {activityBooking.activityId.title}
+                {activityBooking.activityId?.title}
               </span>
             </div>
             <Badge
-              className={`${
-                statusColors[activityBooking.completionStatus]
-              } text-white`}
+              className={`
+                ${cancelled
+                  ? "bg-red-600"
+                  : pending
+                    ? "bg-yellow-600"
+                    : completed
+                      ? "bg-green-600"
+                      : "bg-gray-800"
+                } 
+                text-white
+              `}
             >
-              {activityBooking.completionStatus &&
-                activityBooking.completionStatus.charAt(0).toUpperCase() +
-                  activityBooking.completionStatus.slice(1)}
+              {activityBooking.completionStatus === "Paid"
+                ? "Paid"
+                : activityBooking.completionStatus === "Cancelled"
+                  ? activityBooking.completionStatus.charAt(0).toUpperCase() +
+                  activityBooking.completionStatus.slice(1)
+                  : "Unknown Status"}
             </Badge>
           </div>
           <CardDescription className="flex items-center mt-1">
@@ -359,7 +403,7 @@ const BookingHistory = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-600 mb-4 truncate">
-            {activityBooking.activityId.description}
+            {activityBooking.activityId?.description}
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -369,30 +413,54 @@ const BookingHistory = () => {
               </span>
             </div>
             <p className="text-2xl font-semibold">
-              ${activityBooking.activityId.price}
+              $
+              {activityBooking.activityId?.price ||
+                activityBooking.activityId?.price[0]}
             </p>
           </div>
+            {/* <div className="flex items-center gap-2 text-sm text-gray-600">
+              <StarIcon className="w-4 h-4" />
+              <span>
+                Average Rating: {averageRating}
+              </span>
+            </div>
+          <div className="border-t pt-4">
+            {reviews && (
+              <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                <StarIcon className="w-4 h-4" />
+                <span>Your Rating: {activityBooking.rating}/5</span>
+              </div>
+            )}
+            {activityBooking.comment && (
+              <div className="text-sm text-gray-600">
+                <p className="font-semibold">Your Comment:</p>
+                <p className="italic">&quot;{activityBooking.comment}&quot;</p>
+              </div>
+            )}
+            </div> */}
         </CardContent>
         <CardFooter>
           {activityBooking.completionStatus == "Paid" &&
             new Date(activityBooking.activityId.date) < today && (
               <div className="flex flex-col justify-between space-y-1.5">
                 {/* <Separator></Separator> */}
-                <Button 
+                <Button
                   onClick={() =>
                     openDialog({
                       touristId: activityBooking.touristId,
-                      entityId: activityBooking.activityId ,
+                      entityId: activityBooking.activityId || null,
                       entityType: "Activity",
                     })
-                  }>
+                  }
+                  disabled={activityBooking.activityId === null}
+                >
                   <Star className="mr-2 h-4 w-4" />
                   Rate Activity
                 </Button>
               </div>
             )}
           {activityBooking.completionStatus == "Paid" &&
-            new Date(activityBooking.activityId.date) > today && (
+            new Date(activityBooking.activityId?.date) > today && (
               <div className="flex flex-col justify-between space-y-1.5">
                 {/* <Separator></Separator> */}
                 <Button
@@ -402,6 +470,7 @@ const BookingHistory = () => {
                   onClick={() =>
                     handleCancelBooking("activity", activityBooking._id)
                   }
+                  disabled={activityBooking.activityId === null}
                 >
                   Cancel Booking
                 </Button>
@@ -419,6 +488,9 @@ const BookingHistory = () => {
     completed =
       itineraryBooking.completionStatus == "Paid" &&
       new Date(itineraryBooking.tourDate) < today;
+
+    cancelled = itineraryBooking.completionStatus == "Cancelled";
+
     return (
       <Card
         key={itineraryBooking._id}
@@ -432,16 +504,36 @@ const BookingHistory = () => {
             <div className="items-center flex gap-2">
               {getIcon("itineraries")}
               <span className="text-xl font-bold truncate">
-                {itineraryBooking.itinerary.name}
+                {itineraryBooking.itinerary?.name}
               </span>
             </div>
             <Badge
+              className={`
+                ${cancelled
+                  ? "bg-red-600"
+                  : pending
+                    ? "bg-yellow-600"
+                    : completed
+                      ? "bg-green-600"
+                      : "bg-gray-800"
+                } 
+                text-white
+              `}
+            >
+              {itineraryBooking.completionStatus === "Paid"
+                ? "Paid"
+                : itineraryBooking.completionStatus === "Cancelled"
+                  ? itineraryBooking.completionStatus.charAt(0).toUpperCase() +
+                  itineraryBooking.completionStatus.slice(1)
+                  : "Unknown Status"}
+            </Badge>
+            {/* <Badge
               className={`${
                 statusColors[itineraryBooking.completionStatus]
               } text-white`}
             >
               {itineraryBooking.completionStatus}
-            </Badge>
+            </Badge> */}
           </div>
           <CardDescription className="flex items-center mt-1">
             <CalendarIcon className="w-4 h-4 m-1 flex-shrink-0" />
@@ -453,17 +545,17 @@ const BookingHistory = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-600 mb-4 truncate">
-            {itineraryBooking.itinerary.description}
+            {itineraryBooking.itinerary?.description}
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPinIcon className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">
-                Sites: {itineraryBooking.itinerary.historicalSites.join(", ")}
+                Sites: {itineraryBooking.itinerary?.historicalSites.join(", ")}
               </span>
             </div>
             <p className="text-2xl font-semibold">
-              ${itineraryBooking.itinerary.price}
+              ${itineraryBooking.itinerary?.price}
             </p>
           </div>
         </CardContent>
@@ -476,10 +568,11 @@ const BookingHistory = () => {
                   onClick={() =>
                     openDialog({
                       touristId: itineraryBooking.tourist,
-                      entityId:itineraryBooking.tourGuide ,
+                      entityId: itineraryBooking.tourGuide || null,
                       entityType: "TourGuide",
                     })
                   }
+                  disabled={itineraryBooking.tourGuide === null}
                   variant="secondary"
                   size="sm"
                   className="mr-auto flex-1 items-center justify-center"
@@ -491,10 +584,11 @@ const BookingHistory = () => {
                   onClick={() =>
                     openDialog({
                       touristId: itineraryBooking.tourist,
-                      entityId:itineraryBooking.itinerary ,
+                      entityId: itineraryBooking.itinerary || null,
                       entityType: "Itinerary",
                     })
                   }
+                  disabled={itineraryBooking.itinerary === null}
                   size="sm"
                   className="mr-auto flex-1 items-center justify-center"
                 >
@@ -516,6 +610,7 @@ const BookingHistory = () => {
                 onClick={() =>
                   handleCancelBooking("itinerary", itineraryBooking._id)
                 }
+                disabled={itineraryBooking.itinerary === null}
               >
                 Cancel Booking
               </Button>
@@ -557,4 +652,5 @@ const BookingHistory = () => {
     </div>
   );
 };
+
 export default BookingHistory;

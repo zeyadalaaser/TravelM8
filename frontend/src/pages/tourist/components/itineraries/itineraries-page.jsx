@@ -203,26 +203,26 @@ export function ItinerariesPage() {
           <div data-tour="itinerary-search">
             <SearchBar categories={searchCategories} />
           </div>
-          <Separator className="mb-6" />
+          <Separator className="mb-5" />
           <div data-tour="itinerary-filters">
             <DateFilter />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <PriceFilter
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <SelectFilter
               name="Languages"
               paramName="language"
               getOptions={async () => ["Arabic", "English", "German"]}
             />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <SelectFilter name="Tags" paramName="tag" getOptions={getPreferenceTags} />
           </div>
         </div>
         <div className="w-full md:w-3/4" data-tour="itinerary-cards">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-6">
             <div className="flex h-5 items-center space-x-4 text-sm">
               {loading ? (
                 <div>Loading...</div>
