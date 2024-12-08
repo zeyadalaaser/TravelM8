@@ -251,7 +251,7 @@ export default function Navbar({ profilePageString, children }) {
           }`}
           onClick={() => navigate(`/?currency=${currency}`)}
         >
-          <div className="flex items-center">
+          <div className="flex items-center -ml-8">
             <img
               src={
                 currentPage === "/" || currentPage === `/?currency=${currency}`

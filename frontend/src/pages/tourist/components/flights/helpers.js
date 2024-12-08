@@ -28,7 +28,15 @@ function parseTrip(data) {
     const departure = readSegment(data["sectorSegments"], true);
     const arrival = readSegment(data["sectorSegments"], false);
 
-    return { departure, arrival, sameDay: departure.date === arrival.date, duration };
+    let stops = "";
+    if (data["sectorSegments"].length == 1)
+        stops = "Direct";
+    else if (data["sectorSegments"].length == 2)
+        stops = "1 stop";
+    else
+        stops = (data["sectorSegments"].length - 1) + " stops";
+
+    return { departure, arrival, sameDay: departure.date === arrival.date, duration, stops };
 }
 
 export function itineraryToFlight(itinerary) {
