@@ -1,8 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
+import {Card, CardContent,CardDescription,CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import {
@@ -34,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import React, { useState, useEffect, useRef } from "react";
 import * as tourGuideServices from "@/pages/TourGuide/api/apiService.js";
 import * as advertiserServices from "@/pages/Advertiser/api/apiService.js";
+import * as sellerServices from "@/pages/seller/api/apiService.js"
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -47,7 +44,6 @@ export default function SalesReport() {
   const [error, setError] = useState("");
   const [items, setItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState("");
-  const [role, setRole] = useState("");
   const dateInputRef = useRef(null);
 
   const token = localStorage.getItem("token");
@@ -66,60 +62,47 @@ export default function SalesReport() {
     setLoading(true);
     setError("");
     try {
-      const endpoint =
-        role === "TourGuide"
-          ? "http://localhost:5001/api/itinerariesReport"
-          : "http://localhost:5001/api/activitiesReport";
+      const endpoint ="http://localhost:5001/api/ordersReport";
       const response = await axios.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
         params: { year, month, day },
       });
       setReportData(response.data?.data || []); // Ensure it's always an array
+      console.log(response.data?.data);
     } catch (err) {
-      console.error(
-        `Error fetching ${
-          role === "TourGuide" ? "itineraries" : "activities"
-        } report:`,
-        err
-      );
+      console.error(`Error fetching products report:`,err);
       setError(err.response?.data?.message || "Failed to fetch report");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    const userRole = getRoleFromToken();
-    setRole(userRole);
-    if (!token || !userRole) {
-      navigate("/");
-      return;
-    }
-    fetchItems(userRole);
-  }, [token, navigate]);
+   
 
   useEffect(() => {
-    if (role) {
+    
       fetchReport();
-    }
-  }, [role, year, month, day]);
+  
+  }, [token, year, month, day]);
+ 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const queryParams = new URLSearchParams(location.search);
+        const response = await sellerServices.getMyProducts(queryParams); // Fetch actual products
+        setItems(Array.isArray(response.products) ? response.products : []);
+        console.log(response.products);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchItems = async (userRole) => {
-    try {
-      const response =
-        userRole === "TourGuide"
-          ? await tourGuideServices.getMyItineraries(token)
-          : await advertiserServices.getMyActivities(token);
-      setItems(Array.isArray(response) ? response : []);
-    } catch (error) {
-      console.error(
-        `Error fetching ${
-          userRole === "TourGuide" ? "itineraries" : "activities"
-        }:`,
-        error
-      );
-    }
-  };
+    fetchProducts();
+  }, [location.search]);
 
   const handleDateChange = (e) => {
     const selectedDate = new Date(e.target.value);
@@ -145,12 +128,17 @@ export default function SalesReport() {
     }
   };
 
-  const filteredReportData = Array.isArray(reportData)
-    ? reportData.filter((item) =>
+  const combinedData = items.map((item) => {
+    const reportItem = reportData.find((report) => report.name === item.name);
+    return reportItem || { name: item.name, revenue: 0, purchaseCount: 0 }; // Add item with zero revenue if not found in report
+  });
+
+  const filteredReportData = Array.isArray(combinedData)
+    ? combinedData.filter((item) =>
         selectedItem ? item.name === selectedItem : true
       )
     : [];
-
+   
   return (
     <div className="p-6 space-y-6">
       <div className="grid gap-6 md:grid-cols-3 space-y-4">
@@ -163,18 +151,16 @@ export default function SalesReport() {
               <Select value={selectedItem} onValueChange={setSelectedItem}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue
-                    placeholder={`Select ${
-                      role === "TourGuide" ? "Itinerary" : "Activity"
-                    }`}
+                    placeholder={`Select Product`}
                   />
                 </SelectTrigger>
                 <SelectContent>
                   {items?.map((item) => (
                     <SelectItem
                       key={item?._id}
-                      value={role === "TourGuide" ? item.name : item.title}
+                      value={item.name}
                     >
-                      {role === "TourGuide" ? item.name : item.title}
+                      {item.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -266,9 +252,7 @@ export default function SalesReport() {
       <Card>
   <CardHeader>
     <CardTitle>Total Revenue</CardTitle>
-    <CardDescription>{`The revenue of each ${
-      role === "TourGuide" ? "itinerary" : "activity"
-    }`}</CardDescription>
+    <CardDescription>{`The revenue of each product`}</CardDescription>
   </CardHeader>
   <CardContent>
     {loading ? (
@@ -277,9 +261,7 @@ export default function SalesReport() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="text-xl">{`${
-              role === "TourGuide" ? "Itinerary" : "Activity"
-            } Name`}</TableHead>
+            <TableHead className="text-xl">{`Product Name`}</TableHead>
             <TableHead className="text-xl">Revenue</TableHead>
           </TableRow>
         </TableHeader>

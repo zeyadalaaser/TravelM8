@@ -1,6 +1,9 @@
 import Stripe from 'stripe';
 import Order from '../models/orderModel.js';
 import Tourist from '../models/touristModel.js';
+import Purchase from '../models/purchaseModel.js';
+import Product from '../models/productModel.js';
+import mongoose from "mongoose";
 import axios from "axios"
 
 
@@ -365,7 +368,79 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: "Failed to cancel order", error });
     }
   };
-
+  export const getOrdersReport = async (req, res) => {
+    try {
+      const sellerId = req.user?.userId; // Assuming `userId` is the seller's ID.
+      if (!sellerId) {
+        return res.status(400).json({ message: "Seller ID is required" });
+      }
+  
+      const { year, month, day } = req.query;
+  
+      const dateConditions = year || month || day ? {
+        $expr: {
+          $and: [
+            ...(year ? [{ $eq: [{ $year: "$createdAt" }, parseInt(year)] }] : []),
+            ...(month ? [{ $eq: [{ $month: "$createdAt" }, parseInt(month)] }] : []),
+            ...(day ? [{ $eq: [{ $dayOfMonth: "$createdAt" }, parseInt(day)] }] : []),
+          ],
+        },
+      } : {};
+  
+      const results = await Order.aggregate([
+        {
+          $unwind: "$items", // Deconstruct items array
+        },
+        {
+          $lookup: {
+            from: "products", // Match with Product collection
+            localField: "items.product",
+            foreignField: "_id",
+            as: "productDetails",
+          },
+        },
+        {
+          $unwind: "$productDetails", // Flatten the productDetails array
+        },
+        {
+          $match: {
+            ...dateConditions,
+            "productDetails.sellerId": new mongoose.Types.ObjectId(sellerId), // Match sellerId
+          },
+        },
+        {
+          $group: {
+            _id: "$items.product", // Group by product ID
+            name: { $first: "$productDetails.name" },
+            purchaseCount: { $sum: "$items.quantity" },
+            revenue: { $sum: { $multiply: ["$items.quantity", "$items.price"] } },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+            purchaseCount: 1,
+            revenue: 1,
+          },
+        },
+      ]);
+  console.log(results);
+      if (results.length === 0) {
+        return res.status(200).json({ message: "No data to show" });
+      }
+  
+      return res.status(200).json({
+        data: results,
+        message: "Successfully fetched the orders report",
+      });
+    } catch (error) {
+      console.error("Error fetching orders report:", error);
+      res.status(500).json({ message: "Failed to fetch orders report", error: error.message });
+    }
+  };
+  
+  
 
   
   
