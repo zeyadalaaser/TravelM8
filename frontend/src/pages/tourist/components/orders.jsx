@@ -192,7 +192,7 @@ const MyOrdersPage = () => {
 
   return (
     <>
-      <div className="mb-6 flex justify-start">
+      <div className="mb-6 flex justify-end">
         <Select onValueChange={(value) => setStatusFilter(value)}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="Filter by status" />

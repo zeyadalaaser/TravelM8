@@ -227,7 +227,7 @@ const BookingHistory = () => {
       );
     } else {
       return (
-        <TabsList className=" grid w-fit grid-cols-4 mb-4">
+        <TabsList className=" grid w-full grid-cols-4 mb-4">
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="completed">Completed</TabsTrigger>
           <TabsTrigger value="pending">Pending</TabsTrigger>
