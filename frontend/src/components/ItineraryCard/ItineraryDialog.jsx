@@ -383,7 +383,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
               <Badge
                 key={index}
                 style={{ marginRight: "5px" }}
-                className="badge bg-emerald-800"
+                className="badge bg-gray-800"
               >
                 {activity}
                 <button
@@ -429,7 +429,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
               <Badge
                 key={index}
                 style={{ marginRight: "5px" }}
-                className="badge bg-emerald-800"
+                className="badge bg-gray-800"
               >
                 {place}
                 <button
@@ -636,7 +636,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
               <Badge
                 key={index}
                 style={{ marginRight: "5px" }}
-                className="badge bg-emerald-800"
+                className="badge bg-gray-800"
               >
                 {tag.name}
                 <button
@@ -697,7 +697,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
           /> */}
         </div>
         <DialogFooter className="sm:justify-start">
-          <Button onClick={handleSubmit} className="w-full bg-emerald-900 hover:bg-emerald-800 hover:text-white">
+          <Button onClick={handleSubmit} className="w-full  hover:text-white">
             Add itinerary
           </Button>
         </DialogFooter>
