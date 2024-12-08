@@ -37,13 +37,13 @@ import {
   Compass,
   Briefcase,
 } from "lucide-react";
-import { ReviewDialog } from "./ratings/ReviewDialog.jsx";
+import { ReviewDialog } from "../ratings/ReviewDialog.jsx";
 import { toast } from "sonner";
 
 const BookingHistory = () => {
   const token = localStorage.getItem("token");
   const today = new Date();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // const [isDialogOpen, setIsDialogOpen] = useState(false);
   const[dialogData, setDialogData] = useState({
     isOpen: false,
     touristId: null,
@@ -350,7 +350,7 @@ const BookingHistory = () => {
             </Badge>
           </div>
           <CardDescription className="flex items-center mt-1">
-            <CalendarIcon className="w-4 h-4 mr-1 flex-shrink-0" />
+            <CalendarIcon className="w-4 h-4 m-1 flex-shrink-0" />
             <span>
               Booked On:{" "}
               {new Date(activityBooking.bookingDate).toLocaleString()}
@@ -377,7 +377,7 @@ const BookingHistory = () => {
           {activityBooking.completionStatus == "Paid" &&
             new Date(activityBooking.activityId.date) < today && (
               <div className="flex flex-col justify-between space-y-1.5">
-                <Separator></Separator>
+                {/* <Separator></Separator> */}
                 <Button 
                   onClick={() =>
                     openDialog({
@@ -394,7 +394,7 @@ const BookingHistory = () => {
           {activityBooking.completionStatus == "Paid" &&
             new Date(activityBooking.activityId.date) > today && (
               <div className="flex flex-col justify-between space-y-1.5">
-                <Separator></Separator>
+                {/* <Separator></Separator> */}
                 <Button
                   variant="destructive"
                   className="mr-auto"
@@ -444,7 +444,7 @@ const BookingHistory = () => {
             </Badge>
           </div>
           <CardDescription className="flex items-center mt-1">
-            <CalendarIcon className="w-4 h-4 mr-1 flex-shrink-0" />
+            <CalendarIcon className="w-4 h-4 m-1 flex-shrink-0" />
             <span>
               Booked On:{" "}
               {new Date(itineraryBooking.bookingDate).toLocaleString()}
@@ -470,7 +470,7 @@ const BookingHistory = () => {
         <CardFooter>
           {completed && (
             <div className="flex flex-col justify-between space-y-1.5">
-              <Separator></Separator>
+              {/* <Separator></Separator> */}
               <div className="flex mr-auto gap-4">
                 <Button
                   onClick={() =>
@@ -508,7 +508,7 @@ const BookingHistory = () => {
             new Date(itineraryBooking.tourDate) > today && ( */}
           {pending && (
             <div className="flex flex-col justify-between space-y-1.5 ">
-              <Separator></Separator>
+              {/* <Separator></Separator> */}
               <Button
                 variant="destructive"
                 className="mr-auto"
