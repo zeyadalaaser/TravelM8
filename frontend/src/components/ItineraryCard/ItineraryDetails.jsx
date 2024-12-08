@@ -23,17 +23,26 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
   const [isToken,setToken]=useState(true);
+  const [reviews, setReviews] = useState({});
 
+  const getReviews = async (entityId, touristId) => {
+    try {
+        // Construct query parameters
+        const params = {
+            entityId,
+            entityType:"Itinerary",
+            touristId
+        };
 
-  // useState(() => {
-  //   if (!token) {
-  //     setToken(false);
-  //     toast(`Failed to book itinerary`, {
-  //       description: `You need to be logged in to book an itinerary`,
-  //     });
-  // }
-   
-  // }, []);
+        const response = await axios.get('/api/ratings', { params });
+
+        console.log('Reviews:', response.data.reviews);
+        console.log('Average Rating:', response.data.averageRating);
+        setReviews(response.data);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+    }
+};
 
   const handleDelete = async (id) => {
     try {

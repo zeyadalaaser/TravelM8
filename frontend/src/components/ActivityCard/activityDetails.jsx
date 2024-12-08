@@ -55,6 +55,25 @@ export default function ActivityDetails({ activity, bookActivity,currency,token 
     }
   }, [token, navigate]);
 
+  const getReviews = async (entityId, touristId) => {
+    try {
+        // Construct query parameters
+        const params = {
+            entityId,
+            entityType:"Activity",
+            touristId
+        };
+
+        const response = await axios.get('/api/ratings', { params });
+
+        console.log('Reviews:', response.data.reviews);
+        console.log('Average Rating:', response.data.averageRating);
+        setReviews(response.data);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+    }
+};
+
   return (
     <Dialog>
       <DialogTrigger asChild>

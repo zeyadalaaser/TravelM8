@@ -31,6 +31,7 @@ import {
   CalendarIcon,
   MapPinIcon,
   Star,
+  StarIcon,
   X,
   ShoppingCart,
   Compass,
@@ -74,7 +75,7 @@ const BookingHistory = () => {
   let pending = false;
   let cancelled = false;
 
-  
+
   const fetchDataAndFilter = async () => {
     try {
       setLoading(true); // Start loading
@@ -90,11 +91,11 @@ const BookingHistory = () => {
         const filteredActivities = activitiesResponse.filter(
           (activity) => activity.completionStatus === "Paid" || activity.completionStatus === "Cancelled"
         );
-        
+
         const filteredItineraries = itinerariesResponse.filter(
           (itinerary) => itinerary.completionStatus === "Paid" || itinerary.completionStatus === "Cancelled"
         );
-        
+
         // Set the state with filtered data
         setAllActivitiesList(filteredActivities);
         setAllItinerariesList(filteredItineraries);
@@ -217,6 +218,25 @@ const BookingHistory = () => {
     loading,
   ]);
 
+  const getReviews = async (entityId, entityType, touristId) => {
+    try {
+      // Construct query parameters
+      const params = {
+        entityId,
+        entityType,
+        touristId,
+      };
+
+      const response = await axios.get('/api/ratings', { params });
+
+      console.log('Reviews:', response.data.reviews);
+      console.log('Average Rating:', response.data.averageRating);
+      setReviews(response.data);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    }
+  };
+
   const renderSubTabs = () => {
     if (mainTab === "products") {
       return (
@@ -317,6 +337,8 @@ const BookingHistory = () => {
   };
 
   const ActivitiesCard = ({ activityBooking }) => {
+    const reviews = reviews.reviews;
+    const averageRating = reviews.averageRating;
     pending =
       activityBooking.completionStatus == "Paid" &&
       new Date(activityBooking.activityId?.date) > today;
@@ -342,14 +364,13 @@ const BookingHistory = () => {
             </div>
             <Badge
               className={`
-                ${
-                  cancelled
-                    ? "bg-red-600"
-                    : pending
+                ${cancelled
+                  ? "bg-red-600"
+                  : pending
                     ? "bg-yellow-600"
                     : completed
-                    ? "bg-green-600"
-                    : "bg-gray-800"
+                      ? "bg-green-600"
+                      : "bg-gray-800"
                 } 
                 text-white
               `}
@@ -357,9 +378,9 @@ const BookingHistory = () => {
               {activityBooking.completionStatus === "Paid"
                 ? "Paid"
                 : activityBooking.completionStatus === "Cancelled"
-                ? activityBooking.completionStatus.charAt(0).toUpperCase() +
+                  ? activityBooking.completionStatus.charAt(0).toUpperCase() +
                   activityBooking.completionStatus.slice(1)
-                : "Unknown Status"}
+                  : "Unknown Status"}
             </Badge>
           </div>
           <CardDescription className="flex items-center mt-1">
@@ -387,6 +408,26 @@ const BookingHistory = () => {
                 activityBooking.activityId?.price[0]}
             </p>
           </div>
+            {/* <div className="flex items-center gap-2 text-sm text-gray-600">
+              <StarIcon className="w-4 h-4" />
+              <span>
+                Average Rating: {averageRating}
+              </span>
+            </div>
+          <div className="border-t pt-4">
+            {reviews && (
+              <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                <StarIcon className="w-4 h-4" />
+                <span>Your Rating: {activityBooking.rating}/5</span>
+              </div>
+            )}
+            {activityBooking.comment && (
+              <div className="text-sm text-gray-600">
+                <p className="font-semibold">Your Comment:</p>
+                <p className="italic">&quot;{activityBooking.comment}&quot;</p>
+              </div>
+            )}
+            </div> */}
         </CardContent>
         <CardFooter>
           {activityBooking.completionStatus == "Paid" &&
@@ -458,14 +499,13 @@ const BookingHistory = () => {
             </div>
             <Badge
               className={`
-                ${
-                  cancelled
-                    ? "bg-red-600"
-                    : pending
+                ${cancelled
+                  ? "bg-red-600"
+                  : pending
                     ? "bg-yellow-600"
                     : completed
-                    ? "bg-green-600"
-                    : "bg-gray-800"
+                      ? "bg-green-600"
+                      : "bg-gray-800"
                 } 
                 text-white
               `}
@@ -473,9 +513,9 @@ const BookingHistory = () => {
               {itineraryBooking.completionStatus === "Paid"
                 ? "Paid"
                 : itineraryBooking.completionStatus === "Cancelled"
-                ? itineraryBooking.completionStatus.charAt(0).toUpperCase() +
+                  ? itineraryBooking.completionStatus.charAt(0).toUpperCase() +
                   itineraryBooking.completionStatus.slice(1)
-                : "Unknown Status"}
+                  : "Unknown Status"}
             </Badge>
             {/* <Badge
               className={`${
