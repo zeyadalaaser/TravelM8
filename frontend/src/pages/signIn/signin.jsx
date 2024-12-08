@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import ForgotPassword from "./ForgetPassword";
+import blacklogo from "../../assets/lb.png";
 
 const LoginPage = ({
   children,
@@ -117,9 +118,9 @@ const LoginPage = ({
             </DialogDescription>
           </DialogHeader>
           <div className="bg-white bg-opacity-80 rounded-xl shadow-2xl p-8">
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center -mb-10 -mt-12">
               <img
-                src="/placeholder.svg?height=60&width=200"
+                src={blacklogo}
                 alt="TravelM8 Travels Logo"
                 width={200}
                 height={60}

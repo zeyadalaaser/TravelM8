@@ -26,13 +26,14 @@ import logo from "../assets/lb.png";
 import logo2 from "../assets/lw.png";
 import { WalkthroughButton } from './WalkthroughButton';
 import { useLocation } from 'react-router-dom';
+import { BookTransportation } from "@/pages/tourist/components/bookings/book-transportation.jsx"
+
 const pages = [
   { label: "Activities", value: "activities" },
   { label: "Itineraries", value: "itineraries" },
   { label: "Places", value: "museums" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
-  { label: "Transportation", value: "hotels" },
 ];
 
 export default function Navbar({ profilePageString, children }) {
@@ -286,6 +287,7 @@ export default function Navbar({ profilePageString, children }) {
               {page.label}
             </button>
           ))}
+          <BookTransportation change={currentPage === "/" || currentPage === `/?currency=${currency}`} />
         </div>
         <WalkthroughButton currentPageType={getCurrentPageType()} />
         <div className="flex items-center space-x-4">

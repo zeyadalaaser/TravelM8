@@ -18,7 +18,7 @@ const transportOptions = [
     { id: 'careem', name: 'Careem', size: 20, image: 'https://cdn.worldvectorlogo.com/logos/careem.svg' },
 ];
 
-export function BookTransportation() {
+export function BookTransportation({change}) {
     const [selectedTransport, setSelectedTransport] = useState('')
     const [fromLocation, setFromLocation] = useState('')
     const [toLocation, setToLocation] = useState('')
@@ -44,7 +44,13 @@ export function BookTransportation() {
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-                <Button variant="ghost" className="rounded-full py-2 px-4 border-[1px] border-transparent">Book Transportation</Button>
+                <button
+                    variant="ghost"
+                    className={change ? "text-white hover:text-white/70 py-1 px-3"
+                        : "text-black hover:text-black/70 py-1 px-3"}
+                >
+                    Transportation
+                </button>
             </DialogTrigger>
             <DialogContent className="w-auto">
                 <DialogHeader>

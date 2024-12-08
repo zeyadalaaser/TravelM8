@@ -29,9 +29,7 @@ export default function ActivityDetails({ activity, bookActivity,currency,token 
       });
     }
     else
-    toast(`Failed to book activity`, {
-        description: `You need to be logged in first`,
-      });
+    toast('Please login to perform this action');
   }
   useEffect(() => {
     if (!token) return; 

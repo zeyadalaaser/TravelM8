@@ -69,6 +69,7 @@
     "recharts": "^2.14.1",
     "scrollreveal": "^4.0.9",
     "sonner": "^1.7.0",
+    "stripe": "^17.4.0",
     "styled-components": "^6.1.13",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",

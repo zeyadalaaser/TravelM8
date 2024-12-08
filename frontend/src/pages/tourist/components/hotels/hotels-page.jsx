@@ -1,13 +1,9 @@
 import { useDebouncedCallback } from "use-debounce";
 import { useState, useEffect, useRef } from "react";
 import useRouter from "@/hooks/useRouter";
-
 import { MapPin, BedDouble } from "lucide-react";
-
 import axios from "axios";
-
 import { ClearFilters } from "../filters/clear-filters";
-import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
 import { SingleDateFilter } from "../filters/single-date-filter";
 import { CityFilter } from "../filters/city-filter";
@@ -160,7 +156,7 @@ export function HotelsPage() {
 
   return (
     <>
-      <div className="flex justify-between space-x-6">
+      <div className="flex justify-between space-x-3">
         <CityFilter className="flex-1" name="Where" getData={fetchLocations} />
         <SingleDateFilter className="flex-1" name="Check in" param="checkin" />
         <SingleDateFilter

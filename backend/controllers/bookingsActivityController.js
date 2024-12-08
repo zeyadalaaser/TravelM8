@@ -56,6 +56,11 @@ export const createBooking = async (req, res) => {
     await newBooking.save();
     const activityPrice = await getActivityPrice(activityId);
     if (activityPrice) {
+      console.log(paymentMethod);
+      if (paymentMethod === "Wallet") {
+        touristData.wallet -= activityPrice;
+        await touristData.save();
+      }
       const { points, current } = await updatePoints(touristId, activityPrice);
       const emailSubject = "Payment Receipt for Your Booking";
       const emailBody = `
@@ -82,7 +87,7 @@ export const createBooking = async (req, res) => {
         html: emailBody, // Email content
       });
       return res.status(201).json({
-        message: `Activity booked successfully. You gained ${points} points and currently have ${current} loyality points`,
+        message: `You gained ${points} points and currently have ${current} loyality points.`,
         booking: newBooking,
       });
     } else
