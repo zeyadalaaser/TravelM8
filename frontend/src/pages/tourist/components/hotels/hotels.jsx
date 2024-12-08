@@ -37,7 +37,7 @@ export function Hotels({ hotels, currency, exchangeRate }) {
                 <div className="border rounded bg-white flex flex-col justify-between items-center px-6 py-4 w-[250px]">
                     <div />
                     <div className="flex flex-col items-center">
-                        <span className="text-2xl font-bold text-center">{(hotel.price * exchangeRate).formatCurrency(currency)}</span>
+                        <span className="text-xl font-bold text-center">{(hotel.price * exchangeRate).formatCurrency(currency)}</span>
                         <span className="text-gray-500">per night</span>
                     </div>
                     <Button className="px-8" onClick={bookHotel}>

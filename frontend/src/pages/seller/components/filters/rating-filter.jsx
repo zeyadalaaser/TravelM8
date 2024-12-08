@@ -30,7 +30,6 @@ export function RatingFilter() {
                     {[1, 2, 3, 4, 5].map((star) => (
                         <Star key={star} className="w-4 h-4 fill-current text-yellow-400" />
                     ))}
-                    <span className="ml-2">& up</span>
                 </Label>
             </div>
             <div className="flex items-center">
