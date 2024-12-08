@@ -209,7 +209,7 @@ export const getItinerariesReport = async (req, res) => {
       completionStatus: { $in: ['Pending', 'Completed','Paid'] },  
     };
     if(req.user.role === "TourGuide" && tourguideId){
-      matchConditions["tourguide"] =  new mongoose.Types.ObjectId(tourguideId);
+      matchConditions["tourGuide"] =  new mongoose.Types.ObjectId(tourguideId);
     }
    console.log("tourguide in match conditions: " ,matchConditions["tourguide"]);
     

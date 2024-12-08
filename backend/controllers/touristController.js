@@ -185,8 +185,8 @@ export const redeemPoints = async (req, res) => {
       userId,
       {
         wallet: newWalletBalance,
-        loyaltyPoints: newLoyaltyPoints,
-        badgeLevel: newLevel  // Update the level
+        loyaltyPoints: newLoyaltyPoints
+      
       },
       { new: true, runValidators: true }
     );
