@@ -294,22 +294,22 @@ export default function CheckoutPage() {
   };
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar/>
+     
       {isLoading ? (
         <div style={spinnerStyle}>
           <CircularProgress />
         </div>
       ) : (
         <>
-           
+            <Navbar/>
           <main className="mx-auto grid  max-w-7xl gap-8 p-8 md:grid-cols-[2fr_1fr]">
             <div className="space-y-8">
               {/* Shipping Address Section */}
               <div className="border-b pb-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-4">
-                    <span className="text-2xl font-semibold">1</span>
-                    <h2 className="text-xl font-semibold">Shipping address</h2>
+                    <span className="text-2xl font-semibold mt-12 block">1</span>
+                    <h2 className="text-xl font-semibold mt-12 block">Shipping address</h2>
                   </div>
                 </div>
                 <div className="bg-white rounded-lg border p-6 relative">
@@ -718,7 +718,7 @@ export default function CheckoutPage() {
         : ((totalPrice + 20) * exchangeRate).formatCurrency(currency)}
     </span>
   </div>
-
+ 
   <Button
     onClick={checkout}
     className="w-full bg  text-white hover:bg "
@@ -726,11 +726,12 @@ export default function CheckoutPage() {
     Confirm Order
   </Button>
   <Button
-      onClick={() => navigate("/")} // Navigate directly inside the onClick
-      className="w-full bg text-white hover:bg-red"
-    >
-      Cancel  
-    </Button>
+  onClick={() => navigate("/")}  
+  className="w-full bg-red-500 text-white hover:bg-red-700"
+>
+  Cancel
+</Button>
+
  
                   {error && <p style={{ color: "red" }}>{error}</p>}
                   {success && <p style={{ color: "green" }}>{success}</p>}
