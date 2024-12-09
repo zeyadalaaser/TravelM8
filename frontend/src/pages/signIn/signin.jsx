@@ -118,14 +118,6 @@ const LoginPage = ({
             </DialogDescription>
           </DialogHeader>
           <div className="bg-white bg-opacity-80 rounded-xl shadow-2xl p-8">
-            <div className="flex justify-center -mb-10 -mt-12">
-              <img
-                src={blacklogo}
-                alt="TravelM8 Travels Logo"
-                width={200}
-                height={60}
-              />
-            </div>
             <form onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <Input
