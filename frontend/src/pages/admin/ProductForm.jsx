@@ -17,7 +17,7 @@ const ProductForm = ({ productId, onProductSaved }) => {
         const response = await axios.get(`/api/products/${productId}`);
         setFormData(response.data);
       }
-    };
+    };all
     fetchProduct();
   }, [productId]);
 

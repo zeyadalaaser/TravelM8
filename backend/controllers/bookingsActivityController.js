@@ -118,7 +118,6 @@ export const getAllActivityBookings = async (req, res) => {
       const activityReview = reviews.find(
         (review) => activityIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Use .equals() for ObjectId comparison
       );
-      console.log("activity review is: ", activityReview);
       return {
         ...booking.toObject(),
         review: activityReview || null, // Include the review or set to null if not found
