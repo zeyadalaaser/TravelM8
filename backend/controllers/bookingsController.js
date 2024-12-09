@@ -29,6 +29,7 @@ export const createBooking2 = async (req, res) => {
       price,
       paymentMethod,
     });
+    const itineraryDetails = await Itinerary.findById(itinerary);
     const savedBooking = await newBooking.save();
     const result = await updateItineraryUponBookingModification(
       itinerary,
@@ -54,7 +55,7 @@ export const createBooking2 = async (req, res) => {
       const emailBody = `
         <h1>Thank you for booking with us!</h1>
         <p>Dear ${touristData.name},</p>
-        <p>Your booking for the itinerary <strong>${savedBooking.itinerary}</strong> has been confirmed.</p>
+        <p>Your booking for the itinerary <strong>${itineraryDetails.name}</strong> has been confirmed.</p>
         <p><strong>Details:</strong></p>
         <ul>
           <li>Booking ID: ${savedBooking._id}</li>
