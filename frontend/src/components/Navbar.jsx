@@ -267,8 +267,8 @@ export default function Navbar({ profilePageString, children }) {
           <BookTransportation change={location.pathname === "/"} />
         </div>
         <div className="flex items-center space-x-4">
-          <WalkthroughButton currentPageType={getCurrentPageType()} currency={currency} currentPage={currentPage} />
-          {isLoggedIn ? (
+        <WalkthroughButton currentPageType={getCurrentPageType()} change={location.pathname === "/"}/>
+          {isLoggedIn  ? (
             <>
               <div className="flex items-center space-x-4">
 
@@ -287,7 +287,7 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <Store className="h-5 w-5" />
               </Button>
-              <NotificationBell currency={currency} currentPage={currentPage} />
+              <NotificationBell change={location.pathname === "/"} />
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
                   <Button

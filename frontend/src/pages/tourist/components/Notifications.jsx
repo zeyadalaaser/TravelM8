@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Prefernces.css';
 
-export default function NotificationSidebar({currency, currentPage}) {
+export default function NotificationSidebar({change}) {
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -184,7 +184,7 @@ export default function NotificationSidebar({currency, currentPage}) {
         <Button 
           variant="ghost" 
           size="icon" 
-          className={(currentPage === "/" || currentPage === `/?currency=${currency}`) ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
+          className={change ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
         >
           <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
