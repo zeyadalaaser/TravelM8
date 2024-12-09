@@ -108,10 +108,10 @@ export const getReviews = async (req, res) => {
 
         if (touristId) {
             // If touristId is provided, filter reviews by touristId as well
-            reviews = await Rating.find({ entityId, entityType, userId: touristId });
+            reviews = await Rating.find({ entityId, entityType, userId: touristId }).populate('userId');
         } else {
             // If touristId is not provided, fetch all reviews for the entity and type
-            reviews = await Rating.find({ entityId, entityType });
+            reviews = await Rating.find({ entityId, entityType }).populate('userId');
         }
 
         if (reviews.length === 0) {
