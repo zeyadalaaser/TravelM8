@@ -34,7 +34,7 @@ import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
 import axios from "axios";
 import { CircularProgress } from "@mui/material"
-import { getCurrency } from './components/ui/currency-dialog';
+import { useCurrency } from './hooks/currency-provider';
 const images = [
   "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=2020&ixlib=rb-4.0.3",
   "https://wallpapercave.com/wp/wp2481186.jpg",
@@ -49,7 +49,7 @@ export default function HeroSection() {
   const { location } = useRouter();
   const navigate = useNavigate();
   const [museums, setMuseums] = useState([]);
-  const { currency, exchangeRate } = getCurrency();
+  const { currency, exchangeRate } = useCurrency();
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [itineraries, setItineraries] = useState([]);
   const [products, setProducts] = useState([]);

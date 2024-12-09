@@ -15,7 +15,7 @@ import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { PriceFilter } from "../filters/price-filter";
 import { SelectFilter } from "../filters/select-filter";
-import { getCurrency } from "../../../../components/ui/currency-dialog";
+import { useCurrency } from "../../../../hooks/currency-provider";
 
 function createImage(location) {
   function lucideImage(image) {
@@ -141,7 +141,7 @@ export function HotelsPage() {
     { value: "rating-userrating_b", description: "Rating" },
   ];
 
-  const { currency, exchangeRate } = getCurrency();
+  const { currency, exchangeRate } = useCurrency();
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);

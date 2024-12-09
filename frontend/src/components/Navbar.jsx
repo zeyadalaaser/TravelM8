@@ -27,7 +27,8 @@ import logo2 from "../assets/lw.png";
 import { WalkthroughButton } from './WalkthroughButton';
 import { useLocation } from 'react-router-dom';
 import { BookTransportation } from "@/pages/tourist/components/bookings/book-transportation.jsx"
-import { CurrencyDialog, getCurrency } from "./ui/currency-dialog.jsx";
+import { CurrencyDialog } from "./ui/currency-dialog.jsx";
+import { useCurrency } from "../hooks/currency-provider.jsx";
 
 const pages = [
   { label: "Activities", value: "activities" },
@@ -53,7 +54,7 @@ export default function Navbar({ profilePageString, children }) {
   const [isAlertOpen, setAlertOpen] = useState(false);
   const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
 
-  const { currency, exchangeRate } = getCurrency();
+  const { currency, exchangeRate } = useCurrency();
   const locations = useLocation();
   const getCurrentPageType = () => {
     const path = locations.pathname;
@@ -437,7 +438,7 @@ export default function Navbar({ profilePageString, children }) {
                   Preferences
                 </MenuItem>
                 <MenuItem onClick={() => {handleClose(); setIsCurrencyOpen(true);}}>
-                  Currency: {getCurrency().currency}
+                  Currency: {currency}
                 </MenuItem>
                 <Separator />
                 <MenuItem

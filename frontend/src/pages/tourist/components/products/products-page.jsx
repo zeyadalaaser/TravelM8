@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
-import { getCurrency } from '../../../../components/ui/currency-dialog';
+import { useCurrency } from '../../../../hooks/currency-provider';
 
 const decodeToken = (token) => {
   try {
@@ -37,7 +37,7 @@ export function ProductsPage({ addToCart }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type');
-  const { currency, exchangeRate } = getCurrency();
+  const { currency, exchangeRate } = useCurrency();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);

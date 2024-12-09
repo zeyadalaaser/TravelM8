@@ -5,14 +5,14 @@ import Navbar from "@/components/NavbarAdmin";
 import { getItineraries } from "../tourist/api/apiService";
 import AdminItineraryCard from "../../components/ItineraryCard/AdminItineraryCard";
 import axios from "axios";
-import { getCurrency } from "../../components/ui/currency-dialog";
+import { useCurrency } from "../../hooks/currency-provider";
 
 export function AdminItinerariesPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
   const [filteredItineraries, setFilteredItineraries] = useState([]);
-  const { currency, exchangeRate } = getCurrency();
+  const { currency, exchangeRate } = useCurrency();
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [searchQuery, setSearchQuery] = useState(""); // Added search state
 

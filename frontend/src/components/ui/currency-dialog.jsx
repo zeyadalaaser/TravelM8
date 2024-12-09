@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from 'lucide-react';
+import { useCurrency } from '../../hooks/currency-provider';
 
 async function getExchangeRates() {
     try {
@@ -32,14 +33,8 @@ async function getCurrencies(rates) {
     }
 }
 
-export function getCurrency() {
-    const currency = localStorage.getItem("currency") ?? "USD";
-    const exchangeRate = localStorage.getItem("exchangeRate") ?? 1;
-    console.log(exchangeRate);
-    return { currency, exchangeRate }
-}
-
 export function CurrencyDialog({ isOpen, setIsOpen }) {
+    const { changeCurrency } = useCurrency();
     const [exchangeRates, setExchangeRates] = useState({});
     const [currencies, setCurrencies] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -62,8 +57,9 @@ export function CurrencyDialog({ isOpen, setIsOpen }) {
     )
 
     const setCurrency = (code) => {
-        localStorage.setItem("currency", code);
-        localStorage.setItem("exchangeRate", exchangeRates[code]);
+        const rate = exchangeRates[code];
+        changeCurrency(code, rate);
+        setIsOpen(false);
     }
 
     return (
@@ -88,7 +84,7 @@ export function CurrencyDialog({ isOpen, setIsOpen }) {
                                 key={currency.code}
                                 variant="outline"
                                 className="h-auto py-4 px-2 flex flex-col items-center justify-center text-center"
-                                onClick={() => { setCurrency(currency.code); setIsOpen(false); }}                        
+                                onClick={() => setCurrency(currency.code)}                        
                             >
                                 <span className="font-medium text-sm">{currency.code}</span>
                                 <span className="text-xs text-muted-foreground mt-1">{currency.name}</span>

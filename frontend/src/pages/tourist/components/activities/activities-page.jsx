@@ -22,13 +22,13 @@ import ActivityCard from "./activity-card";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
-import { getCurrency } from "@/components/ui/currency-dialog";
+import { useCurrency } from "../../../../hooks/currency-provider";
 
 export function ActivitiesPage() {
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(false);
   const { location } = useRouter();
-  const { currency, exchangeRate } = getCurrency();
+  const { currency, exchangeRate } = useCurrency();
   const [activities, setActivities] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);

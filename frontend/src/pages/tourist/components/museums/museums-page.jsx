@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
-import { getCurrency } from "../../../../components/ui/currency-dialog";
+import { useCurrency } from "../../../../hooks/currency-provider";
 
 
 export function MuseumsPage() {
@@ -22,7 +22,7 @@ export function MuseumsPage() {
   const { location } = useRouter();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get("type");
-  const { currency, exchangeRate } = getCurrency();
+  const { currency, exchangeRate } = useCurrency();
   const [museums, setMuseums] = useState([]);
 
   // Pagination

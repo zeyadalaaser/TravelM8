@@ -45,7 +45,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { CheckoutToast } from "@/pages/tourist/components/products/checkoutToast.jsx";
 import { loadStripe } from "@stripe/stripe-js";
-import { getCurrency } from "../../../../components/ui/currency-dialog";
+import { useCurrency } from "../../../../hooks/currency-provider";
 
 const stripePromise = loadStripe(
   "pk_test_51QNwSmLNUgOldllO51XLfeq4fZCMqG9jUXp4wVgY6uq9wpvjOAJ1XgKNyErFb6jf8rmH74Efclz55kWzG8UDxZ9J0064KdbDCb"
@@ -98,7 +98,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart } = location.state || {};
   const searchParams = new URLSearchParams(location.search);
-  const { currency, exchangeRate } = getCurrency();
+  const { currency, exchangeRate } = useCurrency();
   const [isLoading, setIsLoading] = useState(true);
   const [showAddAddressDialog, setShowAddAddressDialog] = useState(false);
   const [showDeliveryForm, setShowDeliveryForm] = useState(true);
