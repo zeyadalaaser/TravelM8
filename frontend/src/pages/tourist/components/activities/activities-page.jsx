@@ -100,6 +100,7 @@ export function ActivitiesPage() {
       );
 
       setActivities(fetchedActivities);
+      setCurrentPage(1);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching activities:", error);

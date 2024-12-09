@@ -42,7 +42,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { NumberStepper } from "@/components/ui/number-stepper";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "sonner";
 import { CheckoutToast } from "@/pages/tourist/components/products/checkoutToast.jsx";
 import { loadStripe } from "@stripe/stripe-js";
 
@@ -55,6 +55,7 @@ function CheckoutForm({ clientSecret, handlePayment }) {
   const elements = useElements();
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState(false);
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -104,6 +105,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("credit-card");
   const [showPromotionCode, setShowPromotionCode] = useState(false);
   const [promoCode, setPromoCode] = useState("");
+  const [PromoCodeValue, setPromoCodeValue] = useState(null);
   const token = localStorage.getItem("token");
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
@@ -236,7 +238,7 @@ export default function CheckoutPage() {
       );
       try {
         const response = await services.checkout(
-          { address, paymentMethod, promoCode },
+          { address, paymentMethod, PromoCodeValue },
           token
         );
         CheckoutToast(
@@ -261,7 +263,7 @@ export default function CheckoutPage() {
       const response = await axios.post(
         "http://localhost:5001/api/create-payment-intent",
         {
-          amount: totalPrice + 20,
+          amount: totalPrice + 20 ,
           targetCurrency: currency,
           currency: "USD",
         }
@@ -273,6 +275,36 @@ export default function CheckoutPage() {
     }
   };
 
+  const handlePromoCodeChange = (e) => {
+    const promo = e.target.value;
+    setPromoCode(promo);  // This stores just the string value of the input
+  };
+  const handlePromoCode = async () => {
+    try {
+      console.log("Promo code value:", promoCode);
+      // Send the promoCode to the backend
+      const response = await axios.post(
+        `http://localhost:5001/api/use-promo-code`, 
+        {
+          promoCode,   
+        }
+      );
+      console.log("Response from backend:", response);
+      if (response.data && response.data.message) {
+        toast(response.data.message);
+      //  alert(response.data.message);   
+      }   if (response.data && response.data.value) {
+        setPromoCodeValue(response.data.value);   
+      }
+      else {
+        alert("Unknown response format");
+      }
+    } catch (error) {
+      console.error("Error occurred:", error);
+       
+      toast(error.response?.data?.message || error.message);
+    }
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       {isLoading ? (
@@ -648,36 +680,71 @@ export default function CheckoutPage() {
                     </>
                   ))}
                 </CardContent>
+                <div className="px-4 mb-4">
+        <div className="flex space-x-2">
+          <Input
+            type="text"
+            placeholder="Enter promo code"
+           value={promoCode}
+            onChange={handlePromoCodeChange}
+          />
+          <Button onClick={handlePromoCode} variant="outline">
+            Apply
+          </Button>
+        </div>
+      </div>
+      <div className="mb-4 space-y-2 pt-4 px-4">
+  <div className="flex justify-between">
+    <span className="text-gray-500">Subtotal</span>
+    <span>
+      {(totalPrice * exchangeRates[currency]).formatCurrency(currency)}
+    </span>
+  </div>
 
-                {/* Footer with Subtotal, Shipping, Total, and Confirm Order */}
-                <div className="mb-4 space-y-2 pt-4 px-4">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Subtotal</span>
-                    <span>
-                      {(totalPrice * exchangeRates[currency]).formatCurrency(
-                        currency
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Shipping</span>
-                    <span>{Number(20).formatCurrency(currency)}</span>
-                  </div>
-                  <div className="flex justify-between font-medium">
-                    <span>Total ({currency})</span>
-                    <span>
-                      {(
-                        (totalPrice + 20) *
-                        exchangeRates[currency]
-                      ).formatCurrency(currency)}
-                    </span>
-                  </div>
-                  <Button
-                    onClick={checkout}
-                    className="w-full bg-green-800 text-white hover:bg-green-900"
-                  >
-                    Confirm Order
-                  </Button>
+  {/* Check if PromoCodeValue exists and render accordingly */}
+  {PromoCodeValue && (
+    <>
+      {/* Promo code value (discount amount) */}
+      <div className="flex justify-between text-green-600">
+        <span>Promo code discount</span>
+        <span>${PromoCodeValue}</span>
+      </div>
+      <Separator />
+      {/* Value after promo code */}
+      <div className="flex justify-between font-medium">
+        <span className="text-gray-500">Subtotal after promo code</span>
+        <span>
+          {(totalPrice * exchangeRates[currency] - PromoCodeValue).formatCurrency(
+            currency
+          )}
+        </span>
+      </div>
+    </>
+  )}
+
+  {/* Shipping */}
+  <div className="flex justify-between">
+    <span className="text-gray-500">Shipping</span>
+    <span>{Number(20).formatCurrency(currency)}</span>
+  </div>
+
+  {/* Total (with or without promo code applied) */}
+  <div className="flex justify-between font-medium">
+    <span>Total ({currency})</span>
+    <span>
+      {PromoCodeValue
+        ? ((totalPrice + 20 - PromoCodeValue) * exchangeRates[currency]).formatCurrency(currency)
+        : ((totalPrice + 20) * exchangeRates[currency]).formatCurrency(currency)}
+    </span>
+  </div>
+
+  <Button
+    onClick={checkout}
+    className="w-full bg-green-800 text-white hover:bg-green-900"
+  >
+    Confirm Order
+  </Button>
+ 
                   {error && <p style={{ color: "red" }}>{error}</p>}
                   {success && <p style={{ color: "green" }}>{success}</p>}
                 </div>

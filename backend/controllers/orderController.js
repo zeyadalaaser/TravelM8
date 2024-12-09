@@ -212,7 +212,7 @@ export const payWithCash = async (req, res) => {
   export const checkout = async (req, res) => {
     try {
       const userId = req.user?.userId; // Assumes user ID is extracted from token
-      const { address, paymentMethod, promoCode } = req.body;
+      const { address, paymentMethod, PromoCodeValue } = req.body;
   
       // Find user and populate cart details
       const user = await Tourist.findById(userId).populate("cart.productId");
@@ -245,10 +245,13 @@ export const payWithCash = async (req, res) => {
   
       const deliveryFee = 20; 
       totalAmount += deliveryFee;
-      if (promoCode) {
+     // console.log(promoCode);
+      if (PromoCodeValue) {
         const discount = 0.1 * totalAmount;
-        totalAmount -= discount;
+        totalAmount -= PromoCodeValue;
       }
+     // console.log(promoCode);
+      console.log(totalAmount);
       let stripePaymentIntentId = null;
       if (paymentMethod === 'credit-card') {
         const paymentIntent = await stripe.paymentIntents.create({
