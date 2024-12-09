@@ -4,7 +4,6 @@ import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -19,8 +18,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Bike, Tent, Mountain, Waves, Coffee, Camera, Map } from "lucide-react";
 import { toast } from "sonner";
 
 const ActivityCategories = () => {
@@ -30,6 +30,18 @@ const ActivityCategories = () => {
   const [currentCategory, setCurrentCategory] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Icon mapping for different categories
+  const categoryIcons = {
+    "Biking": Bike,
+    "Camping": Tent,
+    "Hiking": Mountain,
+    "Water Sports": Waves,
+    "Cafe Hopping": Coffee,
+    "Photography": Camera,
+    "default": Map
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -139,10 +151,19 @@ const ActivityCategories = () => {
     }
   };
 
+  const getIconForCategory = (categoryName) => {
+    const IconComponent = categoryIcons[categoryName] || categoryIcons.default;
+    return <IconComponent className="h-5 w-5" />;
+  };
+
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div style={{ display: "flex" }}>
       <Sidebar
-        state={sidebarState}
+        isOpen={sidebarState}
         toggleSidebar={() => setSidebarState(!sidebarState)}
       />
       <div
@@ -153,90 +174,108 @@ const ActivityCategories = () => {
         }}
       >
         <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
-        <div className="container mx-auto p-4 w-4/5">
-          <h1 className="text-2xl font-bold mb-4">
-            Activity Categories Management
-          </h1>
+        <main className="flex-1 py-16 bg-gray-50"> {/* Consistent top/bottom padding */}
+        <div className="container mx-auto p-6 w-4/5">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-2xl font-bold mt-12">Activity Categories</h1>
+            </div>
 
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setCurrentCategory(null)}>
-                <Plus className="mr-2 h-4 w-4" /> Add New Category
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  {currentCategory ? "Edit Category" : "Create New Category"}
-                </DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="categoryName" className="text-right">
-                    Category Name
-                  </Label>
-                  <Input
-                    id="categoryName"
-                    value={newCategoryName}
-                    onChange={(e) => setNewCategoryName(e.target.value)}
-                    className="col-span-3"
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+              <div className="mb-6 flex justify-between items-center">
+                <div className="relative w-1/3">
+                  <input
+                    type="text"
+                    placeholder="Search categories..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
                   />
+                  <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 </div>
+                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                  <DialogTrigger asChild>
+                    <Button onClick={() => setCurrentCategory(null)} className="bg-gray-800">
+                      <Plus className="mr-2 h-4 w-4" /> Add New Category
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold">
+                        {currentCategory ? "Edit Category" : "Create New Category"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="flex items-center gap-4">
+                        <Input
+                          placeholder="Category name..."
+                          value={newCategoryName}
+                          onChange={(e) => setNewCategoryName(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={currentCategory ? handleUpdate : handleCreate} className="bg-black hover:bg-gray-800">
+                        {currentCategory ? "Update" : "Create"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
-              <div className="flex justify-end">
-                <Button onClick={currentCategory ? handleUpdate : handleCreate}>
-                  {currentCategory ? "Update" : "Create"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
 
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Category Name</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {categories.map((category) => (
-                  <TableRow key={category.name}>
-                    <TableCell>{category.name}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mr-2"
-                        onClick={() => {
-                          setCurrentCategory(category.name);
-                          setNewCategoryName(category.name);
-                          setIsOpen(true);
-                        }}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDelete(category.name)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-          {categories.length === 0 && !loading && (
-            <p className="text-center text-muted-foreground mt-4">
-              No categories found.
-            </p>
-          )}
-        </div>
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                </div>
+              ) : filteredCategories.length === 0 ? (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                  <p className="text-gray-600">
+                    {searchQuery ? "No categories found matching your search." : "No categories available."}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredCategories.map((category) => (
+                    <div
+                      key={category.name}
+                      className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                            {getIconForCategory(category.name)}
+                          </div>
+                          <span className="font-medium text-gray-900">{category.name}</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setCurrentCategory(category.name);
+                              setNewCategoryName(category.name);
+                              setIsOpen(true);
+                            }}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(category.name)}
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
         <Footer />
       </div>
     </div>

@@ -265,6 +265,7 @@ const PendingUserDocuments = () => {
                   <SelectItem value="tourguide" className="text-sm">Tour Guide</SelectItem>
                   <SelectItem value="advertiser" className="text-sm">Advertiser</SelectItem>
                   <SelectItem value="seller" className="text-sm">Seller</SelectItem>
+                  <SelectItem value="user" className="text-sm">Regular User</SelectItem>
                 </SelectContent>
               </Select>
             </div>

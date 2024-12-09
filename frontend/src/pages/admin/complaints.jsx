@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -34,6 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { User as UserIcon } from "lucide-react";
 
 export default function ComplaintsPage() {
   const token = localStorage.getItem("token");
@@ -61,10 +63,15 @@ export default function ComplaintsPage() {
   const [reply, setReply] = useState("");
   const { searchParams, navigate, location } = useRouter();
   const [selectedDate, setSelectedDate] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarState(!sidebarState);
   };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   useEffect(() => {
     fetchComplaints();
@@ -72,6 +79,7 @@ export default function ComplaintsPage() {
 
   const fetchComplaints = async () => {
     try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       const data = await getAllComplaints(token);
       let filteredAndSortedComplaints = [...data];
 
@@ -142,7 +150,7 @@ export default function ComplaintsPage() {
   const handleSubmit = async () => {
     if (selectedComplaint && selectedStatus) {
       try {
-        updateComplaintStatusAndReply(
+        await updateComplaintStatusAndReply(
           token,
           selectedComplaint._id,
           reply,
@@ -159,6 +167,11 @@ export default function ComplaintsPage() {
           description: `Complaint status updated to ${selectedStatus}.`,
           duration: 10000,
         });
+        // Reset form and close dialog
+        setSelectedComplaint(null);
+        setSelectedStatus("");
+        setReply("");
+        setIsOpen(false);
       } catch (error) {
         console.error("Error updating status:", error);
         toast("Error", {
@@ -170,173 +183,175 @@ export default function ComplaintsPage() {
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="flex min-h-screen bg-gray-50">
       <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
-      <div
-        style={{
-          transition: "margin-left 0.3s ease",
-          marginLeft: sidebarState ? "250px" : "0",
-          width: "100%",
-        }}
-      >
+      <div className="flex-1 flex flex-col">
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mx-auto p-4 w-4/5">
-          <h1 className="text-2xl font-bold mb-4">Complaints Management</h1>
-          <div className="flex justify-start mb-4">
-            <div className="flex items-center space-x-4">
-              <Select value={getActiveFilter()} onValueChange={handleFilter}>
-                <SelectTrigger className="w-[200px] !ring-0">
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">Show All</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Resolved">Resolved</SelectItem>
-                </SelectContent>
-              </Select>
+        
+        <main className="flex-1 py-16 bg-gray-50"> {/* Consistent top/bottom padding */}
+        <div className="container mx-auto p-6 w-4/5">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-2xl font-bold mt-12">Complaints Management</h1>
             </div>
-            <div className="flex items-center space-x-4 ml-4">
-              <Select value={getSortBy()} onValueChange={handleSort}>
-                <SelectTrigger className="w-[200px] !ring-0">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date-desc">Date: Newest First</SelectItem>
-                  <SelectItem value="date-asc">Date: Oldest First</SelectItem>
-                </SelectContent>
-              </Select>
-              {/* Date filter */}
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => {
-                  setSelectedDate(e.target.value);
-                  handleFilter(getActiveFilter());
-                }}
-                className="border px-2 py-1 rounded"
-                placeholder="Filter by date"
-              />
+
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+              <div className="mb-6 flex justify-between items-center">
+                <div className="flex items-center space-x-4">
+                  <Select value={getActiveFilter()} onValueChange={handleFilter}>
+                    <SelectTrigger className="w-[180px] text-sm">
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All" className="text-sm">Show All</SelectItem>
+                      <SelectItem value="Pending" className="text-sm">Pending</SelectItem>
+                      <SelectItem value="Resolved" className="text-sm">Resolved</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <Select value={getSortBy()} onValueChange={handleSort}>
+                    <SelectTrigger className="w-[180px] text-sm">
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="date-desc" className="text-sm">Date: Newest First</SelectItem>
+                      <SelectItem value="date-asc" className="text-sm">Date: Oldest First</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => {
+                      setSelectedDate(e.target.value);
+                      handleFilter(getActiveFilter());
+                    }}
+                    className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+
+              {complaints.length === 0 ? (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                  <p className="text-gray-600">
+                    No complaints found matching your criteria.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-lg border border-gray-200">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-50">
+                        <TableHead className="font-medium text-gray-700 pl-6 text-sm">Username</TableHead>
+                        <TableHead className="font-medium text-gray-700 text-sm">Complaint</TableHead>
+                        <TableHead className="font-medium text-gray-700 text-sm text-center">Status</TableHead>
+                        <TableHead className="font-medium text-gray-700 text-sm text-center">Date Issued</TableHead>
+                        <TableHead className="font-medium text-gray-700 text-sm text-center">Time</TableHead>
+                        <TableHead className="font-medium text-gray-700 text-sm text-right pr-6">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {complaints.map((complaint) => (
+                        <TableRow key={complaint._id} className="hover:bg-gray-50">
+                          <TableCell className="py-4 pl-6">
+                            <div className="flex items-center gap-3">
+                              <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                <UserIcon className="h-4 w-4 text-gray-500" />
+                              </div>
+                              <span className="font-medium text-gray-900 text-sm">
+                                {complaint.touristId?.username}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-sm text-gray-600">{complaint.title}</TableCell>
+                          <TableCell className="text-center">
+                            <span className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium
+                              ${complaint.status === "Pending" 
+                                ? "bg-yellow-100 text-yellow-800" 
+                                : "bg-green-100 text-green-800"}`}>
+                              {complaint.status}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-center text-sm text-gray-600">
+                            {new Date(complaint.date).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-center text-sm text-gray-600">
+                            {new Date(complaint.date).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </TableCell>
+                          <TableCell className="text-right pr-6">
+                            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                              <DialogTrigger asChild>
+                                <Button
+                                  onClick={() => {
+                                    setSelectedComplaint(complaint);
+                                    setSelectedStatus(complaint.status);
+                                    setReply(complaint.reply || "");
+                                    setIsOpen(true);
+                                  }}
+                                  variant="outline"
+                                  className="text-sm"
+                                >
+                                  View Details
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle className="text-xl font-bold text-center">
+                                    Complaint Details
+                                  </DialogTitle>
+                                </DialogHeader>
+                                <div className="mt-4">
+                                  <h3 className="font-semibold mb-2">{selectedComplaint?.title}</h3>
+                                  <p className="text-sm text-gray-600 mb-4">{selectedComplaint?.body}</p>
+                                  <div className="space-y-4">
+                                    <div>
+                                      <label className="text-sm font-medium">Status</label>
+                                      <Select
+                                        value={selectedStatus}
+                                        onValueChange={setSelectedStatus}
+                                      >
+                                        <SelectTrigger className="w-full mt-1">
+                                          <SelectValue placeholder="Select status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="Resolved">Resolved</SelectItem>
+                                          <SelectItem value="Pending">Pending</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div>
+                                      <label className="text-sm font-medium">Reply</label>
+                                      <Textarea
+                                        value={reply}
+                                        onChange={(e) => setReply(e.target.value)}
+                                        className="mt-1"
+                                        placeholder="Enter your reply..."
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <DialogFooter className="mt-6">
+                                  <Button
+                                    onClick={handleSubmit}
+                                    className="w-full bg-black hover:bg-gray-800"
+                                  >
+                                    Submit Response
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </div>
           </div>
-
-          <Table className="w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Username</TableHead>
-                <TableHead>Complaint</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date Issued</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {complaints.map((complaint) => (
-                <TableRow key={complaint._id}>
-                  <TableCell>{complaint.touristId?.username}</TableCell>
-                  <TableCell>{complaint.title}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`${
-                        complaint.status === "Pending"
-                          ? "text-red-500"
-                          : "text-green-500"
-                      }`}
-                    >
-                      {complaint.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {new Date(complaint.date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(complaint.date).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          onClick={() => {
-                            setSelectedComplaint(complaint);
-                            setSelectedStatus(complaint.status);
-                          }}
-                          variant="outline"
-                        >
-                          View Details
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle
-                            style={{
-                              fontSize: "1.5rem",
-                              fontWeight: "bold",
-                              textAlign: "center",
-                            }}
-                          >
-                            Complaint : {selectedComplaint?.title}
-                          </DialogTitle>
-                          <p></p>
-                          <Separator />
-                          <p></p>
-                          <p>
-                            <strong>Description : </strong>
-                          </p>
-                          {selectedComplaint?.body}
-                          <p></p>
-                          <p>
-                            <strong>Date Issued :</strong>{" "}
-                            {selectedComplaint
-                              ? new Date(
-                                  selectedComplaint.date
-                                ).toLocaleDateString()
-                              : ""}
-                          </p>
-                          <p></p>
-                          <p>
-                            <strong>Reply to Complaint : </strong>
-                          </p>
-                          <Textarea
-                            value={reply} // Bind the Textarea value to reply state
-                            onChange={(e) => setReply(e.target.value)} // Update reply state on change
-                          />
-                          <p></p>
-                          <p></p>
-                          <Select
-                            value={selectedStatus}
-                            onValueChange={(value) => setSelectedStatus(value)}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Theme" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Resolved">Resolved</SelectItem>
-                              <SelectItem value="Pending">Pending</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </DialogHeader>
-                        <DialogClose asChild>
-                          <Button onClick={handleSubmit} className="mt-4">
-                            Submit
-                          </Button>
-                        </DialogClose>
-                      </DialogContent>
-                    </Dialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          {complaints.length === 0 && (
-            <p className="text-center text-muted-foreground mt-4">
-              No complaints found.
-            </p>
-          )}
-        </div>
+        </main>
         <Footer />
       </div>
     </div>

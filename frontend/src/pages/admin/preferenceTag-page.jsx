@@ -6,30 +6,22 @@ import Navbar from "@/components/NavbarAdmin";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Plus, Pencil, Trash2, Search, Tag } from "lucide-react";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2 } from "lucide-react";
 import {
   createPreferenceTag,
   getAllPreferenceTags,
   updatePreferenceTag,
   deletePreferenceTag,
-} from "@/pages/admin/services/preferenceTagService.js"; // Import the service
+} from "@/pages/admin/services/preferenceTagService.js";
 
 const Preferencetag = () => {
   const [sidebarState, setSidebarState] = useState(false);
@@ -37,18 +29,16 @@ const Preferencetag = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentTag, setCurrentTag] = useState(null);
   const [newTagName, setNewTagName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    const fetchTags = async () => {
-      const fetchedTags = await getAllPreferenceTags();
-      setTags(fetchedTags);
-    };
-
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     fetchTags();
   }, []);
 
-  const toggleSidebar = () => {
-    setSidebarState(!sidebarState);
+  const fetchTags = async () => {
+    const fetchedTags = await getAllPreferenceTags();
+    setTags(fetchedTags);
   };
 
   const handleCreate = async () => {
@@ -66,10 +56,7 @@ const Preferencetag = () => {
 
   const handleUpdate = async () => {
     if (currentTag && newTagName.trim() !== "") {
-      const updatedTag = await updatePreferenceTag(
-        currentTag.name,
-        newTagName.trim()
-      );
+      const updatedTag = await updatePreferenceTag(currentTag.name, newTagName.trim());
       setTags((prevTags) =>
         prevTags.map((tag) => (tag.name === currentTag.name ? updatedTag : tag))
       );
@@ -92,15 +79,13 @@ const Preferencetag = () => {
     });
   };
 
-  const openEditModal = (tag) => {
-    setCurrentTag(tag);
-    setNewTagName(tag.name);
-    setIsOpen(true);
-  };
+  const filteredTags = tags.filter(tag =>
+    tag.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div style={{ display: "flex" }}>
-      <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
+      <Sidebar state={sidebarState} toggleSidebar={() => setSidebarState(!sidebarState)} />
       <div
         style={{
           transition: "margin-left 0.3s ease",
@@ -108,88 +93,114 @@ const Preferencetag = () => {
           width: "100%",
         }}
       >
-        <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mx-auto p-4 w-4/5">
-          <h1 className="text-2xl font-bold mb-4">Vacation Preference Tags</h1>
+        <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
+        <main className="flex-1 py-16 bg-gray-50"> {/* Consistent top/bottom padding */}
+        <div className="container mx-auto p-6 w-4/5">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-2xl font-bold mt-12">Preference Tags</h1>
+            </div>
 
-          <div className="flex justify-between items-center mb-4">
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  onClick={() => {
-                    setCurrentTag(null);
-                    setNewTagName("");
-                  }}
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Add New Tag
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    {currentTag ? "Edit Tag" : "Create New Tag"}
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="tagName" className="text-right">
-                      Tag Name
-                    </Label>
-                    <Input
-                      id="tagName"
-                      value={newTagName}
-                      onChange={(e) => setNewTagName(e.target.value)}
-                      className="col-span-3"
-                    />
-                  </div>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+              <div className="mb-6 flex justify-between items-center">
+                <div className="relative w-1/3">
+                  <input
+                    type="text"
+                    placeholder="Search tags..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
+                  />
+                  <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 </div>
-                <div className="flex justify-end">
-                  <Button onClick={currentTag ? handleUpdate : handleCreate}>
-                    {currentTag ? "Update" : "Create"}
-                  </Button>
+                <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      onClick={() => {
+                        setCurrentTag(null);
+                        setNewTagName("");
+                      }}
+                      className="bg-gray-800"
+                    >
+                      <Plus className="mr-2 h-4 w-4" /> Add New Tag
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle className="text-xl font-bold">
+                        {currentTag ? "Edit Tag" : "Create New Tag"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="flex items-center gap-4">
+                        <Input
+                          placeholder="Tag name..."
+                          value={newTagName}
+                          onChange={(e) => setNewTagName(e.target.value)}
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button 
+                        onClick={currentTag ? handleUpdate : handleCreate}
+                        className="bg-black hover:bg-gray-800"
+                      >
+                        {currentTag ? "Update" : "Create"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {filteredTags.length === 0 ? (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                  <p className="text-gray-600">
+                    {searchQuery ? "No tags found matching your search." : "No tags available."}
+                  </p>
                 </div>
-              </DialogContent>
-            </Dialog>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredTags.map((tag) => (
+                    <div
+                      key={tag.name}
+                      className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                            <Tag className="h-5 w-5 text-gray-500" />
+                          </div>
+                          <span className="font-medium text-gray-900">{tag.name}</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setCurrentTag(tag);
+                              setNewTagName(tag.name);
+                              setIsOpen(true);
+                            }}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(tag.name)}
+                            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tag Name</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tags.map((tag) => (
-                <TableRow key={tag.id}>
-                  <TableCell>{tag.name}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mr-2"
-                      onClick={() => openEditModal(tag)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDelete(tag.name)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {tags.length === 0 && (
-            <p className="text-center text-muted-foreground mt-4">
-              No tags found.
-            </p>
-          )}
-        </div>
+        </main>
         <Footer />
       </div>
     </div>

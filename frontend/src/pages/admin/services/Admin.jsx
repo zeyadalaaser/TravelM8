@@ -29,7 +29,6 @@ const AdminPanel = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [email, setEmail] = useState("");
   const [admins, setAdmins] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,6 +36,7 @@ const AdminPanel = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     fetchAdmins();
   }, []);
 
@@ -45,6 +45,7 @@ const AdminPanel = () => {
   }, []);
 
   const fetchAdmins = async () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     try {
       const response = await axios.get("http://localhost:5001/api/admins");
       setAdmins(Array.isArray(response.data) ? response.data : []);
@@ -98,10 +99,10 @@ const AdminPanel = () => {
       <div className="flex-1 flex flex-col">
         <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
         
-        <main className="flex-1 py-28">
-          <div className="container mx-auto p-6 w-4/5">
+        <main className="flex-1 py-16 bg-gray-50"> {/* Consistent top/bottom padding */}
+        <div className="container mx-auto p-6 w-4/5">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-xl font-bold">Admin Management</h1>
+              <h1 className="text-2xl font-bold mt-12">Admin Management</h1>
             </div>
 
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
@@ -118,7 +119,7 @@ const AdminPanel = () => {
                 </div>
                 <Dialog open={isOpen} onOpenChange={setIsOpen}>
                   <DialogTrigger asChild>
-                    <Button className="bg-black hover:bg-gray-800 shadow-sm text-sm">
+                    <Button className="bg-gray-800">
                       <UserPlus className="mr-2 h-4 w-4" />
                       New Admin
                     </Button>
