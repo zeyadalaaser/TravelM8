@@ -23,7 +23,7 @@ export default function ProductCard({ product, currency, token, liked }) {
         try {
             if (token) {
                 const response = await axios.get(
-                    "http://localhost:5001/api/tourists/cart",
+                    "http://localhost:5001/api/tourists/cart2",
                     {
                         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                     }
@@ -39,7 +39,7 @@ export default function ProductCard({ product, currency, token, liked }) {
                 await axios.post(`http://localhost:5001/api/tourists/cart/${product._id}`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                navigate(0);
+                //navigate(0);
             }
             else {
                 toast('Please login to perform this action');

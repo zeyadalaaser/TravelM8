@@ -396,6 +396,24 @@ export const getCart = async (req, res) => {
   }
 };
 
+export const getCart2 = async (req, res) => {
+  try {
+    const userId = req.user?.userId; // Assume user ID is from token/session
+    const user = await Tourist.findById(userId).populate("cart.productId");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    res.status(200).json({
+      message: "Cart details retrieved successfully",
+      cart: user.cart,
+      totalCartPrice: user.totalCartPrice,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to retrieve cart details", error });
+  }
+};
+
 export const getWishlist = async (req, res) => {
   try {
     const userId = req.user?.userId;
