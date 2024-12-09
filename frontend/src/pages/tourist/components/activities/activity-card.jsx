@@ -146,18 +146,132 @@ function ActivityCard({ token, bookActivity, activity, currency, exchangeRate })
         }
     };
 
-    const handleNotifyMe = (activityId) => {
-        if (notifiedActivities.includes(activityId)) {
-            toast(`Notification removed`, {
-                description: `You will no longer receive updates for this activity`,
-            });
-            setNotifiedActivities(prev => prev.filter(id => id !== activityId));
-        } else {
-            toast(`Notification added`, {
-                description: `You will be notified when this activity becomes available`,
-            });
-            setNotifiedActivities(prev => [...prev, activityId]);
+    useEffect(() => {
+        const checkNotificationStatus = async () => {
+            if (!token || !activity._id) return;
+            
+            try {
+                const response = await fetch(
+                    `http://localhost:5001/api/button-actions/status/${activity._id}?actionType=NOTIFY`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }
+                );
+                
+                const data = await response.json();
+                if (data.status) {
+                    setNotifiedActivities(prev => [...prev, activity._id]);
+                }
+            } catch (error) {
+                console.error('Error checking notification status:', error);
+            }
+        };
+
+        checkNotificationStatus();
+    }, [token, activity._id]);
+
+    const handleNotifyMe = async (activityId) => {
+        if (!token) {
+            toast.error("Please log in to set notifications");
+            return;
         }
+
+        try {
+            // Verify token format
+            const tokenParts = token.split('.');
+            if (tokenParts.length !== 3) {
+                console.error('Invalid token format');
+                toast.error("Invalid authentication token");
+                return;
+            }
+
+            // Log full request details
+            const requestDetails = {
+                url: 'http://localhost:5001/api/button-actions/toggle',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: {
+                    itemId: activityId,
+                    itemType: 'Activity',
+                    actionType: 'NOTIFY'
+                }
+            };
+            console.log('Making request with:', requestDetails);
+
+            // Try decoding token payload
+            try {
+                const payload = JSON.parse(atob(tokenParts[1]));
+                console.log('Token payload:', {
+                    exp: new Date(payload.exp * 1000),
+                    iat: new Date(payload.iat * 1000),
+                    userId: payload.userId || payload._id,
+                    isExpired: payload.exp * 1000 < Date.now()
+                });
+            } catch (e) {
+                console.error('Error decoding token:', e);
+            }
+
+            const response = await fetch('http://localhost:5001/api/button-actions/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                },
+                credentials: 'include', // Add this to include cookies
+                body: JSON.stringify({
+                    itemId: activityId,
+                    itemType: 'Activity',
+                    actionType: 'NOTIFY'
+                })
+            });
+
+            // Log full response details
+            console.log('Response details:', {
+                status: response.status,
+                statusText: response.statusText,
+                headers: Object.fromEntries(response.headers),
+                url: response.url
+            });
+
+            const data = await response.json();
+            console.log('Response data:', data);
+
+            if (response.ok) {
+                if (notifiedActivities.includes(activityId)) {
+                    toast.success('Notification removed');
+                    setNotifiedActivities(prev => prev.filter(id => id !== activityId));
+                } else {
+                    toast.success('Notification added');
+                    setNotifiedActivities(prev => [...prev, activityId]);
+                }
+            } else {
+                if (response.status === 401) {
+                    // Token might be expired
+                    toast.error("Session expired", {
+                        description: "Please log in again"
+                    });
+                    // Optionally redirect to login
+                    // navigate('/login');
+                    return;
+                }
+                throw new Error(data.message || 'Failed to update notification');
+            }
+        } catch (error) {
+            console.error('Notification error:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+            toast.error(error.message || "Failed to update notification status");
+        }
+
         setActiveDialogId(null);
     };
 

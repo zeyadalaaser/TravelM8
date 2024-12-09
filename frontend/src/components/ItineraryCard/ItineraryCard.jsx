@@ -57,20 +57,103 @@ export default function ItineraryCard({
     setFlaggedStatus(initialFlaggedStatus);
   }, [itineraries]);
 
-  const handleNotifyMe = (itineraryId) => {
-    if (notifiedItineraries.includes(itineraryId)) {
-        toast(`Notification removed`, {
-            description: `You will no longer receive updates for this itinerary`,
-        });
-        setNotifiedItineraries(prev => prev.filter(id => id !== itineraryId));
-    } else {
-        toast(`Notification added`, {
-            description: `You will be notified when this itinerary becomes available`,
-        });
-        setNotifiedItineraries(prev => [...prev, itineraryId]);
+  const handleNotifyMe = async (itineraryId) => {
+    if (!token) {
+        toast.error("Please log in to set notifications");
+        return;
     }
+
+    try {
+        console.log('Creating notification for itinerary:', {
+            itineraryId,
+            type: 'Itinerary',
+            actionType: 'NOTIFY',
+            hasToken: !!token,
+            tokenPreview: token?.substring(0, 20) + '...'
+        });
+        
+        const response = await fetch('http://localhost:5001/api/button-actions/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                itemId: itineraryId,
+                itemType: 'Itinerary',
+                actionType: 'NOTIFY'
+            })
+        });
+
+        const data = await response.json();
+        console.log('Notification response:', data);
+
+        if (response.ok) {
+            if (notifiedItineraries.includes(itineraryId)) {
+                toast.success('Notification removed', {
+                    description: 'You will no longer receive updates for this itinerary'
+                });
+                setNotifiedItineraries(prev => prev.filter(id => id !== itineraryId));
+            } else {
+                toast.success('Notification added', {
+                    description: 'You will be notified when this itinerary becomes available'
+                });
+                setNotifiedItineraries(prev => [...prev, itineraryId]);
+            }
+        } else {
+            if (response.status === 401) {
+                toast.error("Session expired", {
+                    description: "Please log in again"
+                });
+                return;
+            }
+            throw new Error(data.message || 'Failed to update notification');
+        }
+    } catch (error) {
+        console.error('Notification error:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+        toast.error(error.message || "Failed to update notification status");
+    }
+
     setActiveDialogId(null);
   };
+
+  // Add useEffect to check initial notification status
+  useEffect(() => {
+    const checkNotificationStatuses = async () => {
+        if (!token) return;
+        
+        try {
+            const response = await fetch(
+                'http://localhost:5001/api/button-actions/user',
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            
+            const data = await response.json();
+            const notifiedIds = data.actions
+                .filter(action => 
+                    action.actionType === 'NOTIFY' && 
+                    action.itemType === 'Itinerary' && 
+                    action.status === true
+                )
+                .map(action => action.itemId);
+                
+            setNotifiedItineraries(notifiedIds);
+        } catch (error) {
+            console.error('Error checking notification statuses:', error);
+        }
+    };
+
+    checkNotificationStatuses();
+  }, [token]);
 
   const handleDelete = async (id) => {
     try {

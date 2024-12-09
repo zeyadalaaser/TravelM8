@@ -8,6 +8,8 @@ import { getActivityBookings, getItineraryBookings } from "../api/apiService";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Prefernces.css';
+import { buttonActionService } from '../api/buttonActionService';
+import { DialogDescription } from "@/components/ui/dialog";
 
 export default function NotificationSidebar({change}) {
   const [notifications, setNotifications] = useState([]);
@@ -81,28 +83,62 @@ export default function NotificationSidebar({change}) {
   };
 
   const fetchNotifications2 = async () => {
-    setGeneralLoading(true);  // Set loading state to true when fetching data
+    setGeneralLoading(true);
     try {
-      const response = await axios.get('http://localhost:5001/api/notifications', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      setNotifications(response.data.notifications || []);
-      setUnreadCount(response.data.notifications.filter(n => !n.isRead).length);
+      const token = localStorage.getItem('token');
+      
+      const [notificationsResponse, buttonActionsResponse] = await Promise.all([
+        axios.get('http://localhost:5001/api/notifications', {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }),
+        axios.get('http://localhost:5001/api/button-actions/user', {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+      ]);
+
+      const regularNotifications = notificationsResponse.data?.notifications || [];
+      const buttonActions = buttonActionsResponse.data?.actions || [];
+
+      const buttonActionNotifications = buttonActions
+        .filter(action => action.actionType === 'NOTIFY' && action.status === true)
+        .map(action => ({
+          _id: action._id,
+          message: formatNotificationMessage({
+            type: 'button_action',
+            itemId: action.itemId
+          }),
+          createdAt: action.createdAt,
+          isRead: false,
+          type: 'button_action',
+          itemId: action.itemId,
+          itemType: action.itemType,
+          status: action.status
+        }));
+
+      const allNotifications = [...regularNotifications, ...buttonActionNotifications]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      setNotifications(allNotifications);
+      setUnreadCount(buttonActionNotifications.length);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
       setNotifications([]);
     } finally {
-      setGeneralLoading(false);  // Set loading state to false when fetching completes
+      setGeneralLoading(false);
     }
   };
 
   const formatNotificationMessage = (notification) => {
-    const timeLeft = calculateTimeLeft(notification.eventDate);
-    if (notification.type === 'activity') {
-      return `Don't forget! Your activity "${notification.title}" - ${timeLeft}`;
-    } else {
-      return `Don't forget! Your itinerary "${notification.title}" - ${timeLeft}`;
+    if (notification.type === 'button_action') {
+      return `The activity "${notification.itemId?.title || 'Unknown Activity'}" is now open for booking!`;
     }
+    return notification.message || 'New notification received';
   };
 
   const markAsRead = (notificationId) => {
@@ -116,14 +152,24 @@ export default function NotificationSidebar({change}) {
     setUnreadCount(prevCount => prevCount - 1);
   };
 
-  const markAsRead2 = async (notificationId) => {
+  const markAsRead2 = async (notification) => {
     try {
-      await axios.patch(`http://localhost:5001/api/notifications/${notificationId}/read`, {}, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      if (notification.type === 'button_action') {
+        // Handle button action notification
+        await axios.patch(`http://localhost:5001/api/button-actions/${notification._id}`, 
+          { status: false },
+          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }}
+        );
+      } else {
+        // Handle regular notification
+        await axios.patch(`http://localhost:5001/api/notifications/${notification._id}/read`, {}, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        });
+      }
+
       setNotifications(prevNotifications =>
-        prevNotifications.map(notification =>
-          notification._id === notificationId ? { ...notification, isRead: true } : notification
+        prevNotifications.map(n =>
+          n._id === notification._id ? { ...n, isRead: true } : n
         )
       );
       setUnreadCount(prevCount => prevCount - 1);
@@ -166,13 +212,24 @@ export default function NotificationSidebar({change}) {
       console.error("Invalid notification ID");
       return;
     }
-    markAsRead2(notification._id);
+    markAsRead2(notification);
   };
 
   const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'paid':
+    // If status is a boolean, convert it to string
+    const statusString = typeof status === 'boolean' 
+      ? (status ? 'active' : 'inactive')
+      : String(status);
+
+    switch (statusString.toLowerCase()) {
+      case 'active':
+      case 'true':
         return 'bg-green-500';
+      case 'pending':
+        return 'bg-yellow-500';
+      case 'inactive':
+      case 'false':
+        return 'bg-red-500';
       default:
         return 'bg-gray-500';
     }
@@ -197,6 +254,9 @@ export default function NotificationSidebar({change}) {
       <SheetContent side="right" className="w-[400px]">
         <SheetHeader>
           <SheetTitle>Notifications</SheetTitle>
+          <DialogDescription className="text-sm text-gray-500">
+            Your notifications and updates will appear here.
+          </DialogDescription>
         </SheetHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
