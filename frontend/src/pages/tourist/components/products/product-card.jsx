@@ -18,11 +18,25 @@ export default function ProductCard({ product, currency, token, liked }) {
     const navigate = useNavigate();
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [reviews, setReviews] = useState([]);
-
-    const addToCart = async (productId) => {
+    
+    const addToCart = async (product) => {
         try {
             if (token) {
-                await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
+                const response = await axios.get(
+                    "http://localhost:5001/api/tourists/cart",
+                    {
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                    }
+                );
+
+                const productInCart = response.data.cart.find(p => p.productId._id === product._id);
+                if (productInCart.quantity >= product.quantity)
+                {
+                    toast("You have reached the maximum stock limit for this item.");
+                    return;
+                }
+
+                await axios.post(`http://localhost:5001/api/tourists/cart/${product._id}`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 navigate(0);
@@ -37,24 +51,24 @@ export default function ProductCard({ product, currency, token, liked }) {
 
     const getReviews = async (entityId) => {
         try {
-          // Construct query parameters
-          const params = {
-            entityId,
-            entityType: "Product",
-          };
-    
-          const response = await axios.get("http://localhost:5001/api/ratings", {
-            params,
-          });
-    
-          console.log("Reviews:", response.data.reviews);
-          console.log("Average Rating:", response.data.averageRating);
-          setReviews(response.data.reviews);
+            // Construct query parameters
+            const params = {
+                entityId,
+                entityType: "Product",
+            };
+
+            const response = await axios.get("http://localhost:5001/api/ratings", {
+                params,
+            });
+
+            console.log("Reviews:", response.data.reviews);
+            console.log("Average Rating:", response.data.averageRating);
+            setReviews(response.data.reviews);
         } catch (error) {
-          console.error("Error fetching reviews:", error);
+            console.error("Error fetching reviews:", error);
         }
-      };
-    
+    };
+
 
     return (
         <Card key={product._id}>
@@ -131,15 +145,15 @@ export default function ProductCard({ product, currency, token, liked }) {
                     <Button
                         className={`w-full mt-2 bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors duration-200`}
                         size="sm"
-                        onClick={() => {setDialogOpen(true); getReviews(product._id);}}
-                        
+                        onClick={() => { setDialogOpen(true); getReviews(product._id); }}
+
                     >
                         View Details
                     </Button>
                     <Button
                         className={`w-full text-white mt-2`}
                         size="sm"
-                        onClick={() => product.quantity > 0 && addToCart(product._id)}
+                        onClick={() => product.quantity > 0 && addToCart(product)}
                         disabled={product.quantity <= 0}
                     >
                         {product.quantity > 0 ? 'Add to Cart' : 'Out of Stock'}
