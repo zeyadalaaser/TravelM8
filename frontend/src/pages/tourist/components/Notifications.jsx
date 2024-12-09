@@ -51,7 +51,7 @@ export default function NotificationSidebar({change}) {
         ...activityBookings.filter(booking => booking.activityId).map(booking => ({
           id: booking._id,
           type: 'activity',
-          status: booking.status,
+          status: booking.completionStatus,
           title: booking.activityId?.title,
           location: `${booking.activityId?.location?.lat}, ${booking.activityId?.location?.lng}`,
           eventDate: booking.activityId?.date,
