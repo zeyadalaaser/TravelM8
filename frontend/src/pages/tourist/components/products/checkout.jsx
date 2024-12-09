@@ -45,6 +45,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { CheckoutToast } from "@/pages/tourist/components/products/checkoutToast.jsx";
 import { loadStripe } from "@stripe/stripe-js";
+import { getCurrency } from "../../../../components/ui/currency-dialog";
 
 const stripePromise = loadStripe(
   "pk_test_51QNwSmLNUgOldllO51XLfeq4fZCMqG9jUXp4wVgY6uq9wpvjOAJ1XgKNyErFb6jf8rmH74Efclz55kWzG8UDxZ9J0064KdbDCb"
@@ -97,7 +98,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cart } = location.state || {};
   const searchParams = new URLSearchParams(location.search);
-  const currency = searchParams.get("currency") ?? "USD";
+  const { currency, exchangeRate } = getCurrency();
   const [isLoading, setIsLoading] = useState(true);
   const [showAddAddressDialog, setShowAddAddressDialog] = useState(false);
   const [showDeliveryForm, setShowDeliveryForm] = useState(true);
@@ -130,7 +131,6 @@ export default function CheckoutPage() {
     event.target.reset();
   };
 
-  const [exchangeRates, setExchangeRates] = useState({});
   const [cartItems, setCartItems] = useState(cart || []);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -188,21 +188,7 @@ export default function CheckoutPage() {
       console.error("Failed to update item quantity:", error);
     }
   };
-
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    console.log(exchangeRates);
-    fetchExchangeRates();
-  }, []);
+  
   const totalPrice = cart?.reduce(
     (acc, item) => acc + item.productId.price * item.quantity,
     0
@@ -672,7 +658,7 @@ export default function CheckoutPage() {
                         </div>
                         <p className="text-sm text-gray-500">
                           {(
-                            item.productId.price * exchangeRates[currency]
+                            item.productId.price * exchangeRate
                           ).formatCurrency(currency)}
                         </p>
                       </div>
@@ -697,7 +683,7 @@ export default function CheckoutPage() {
   <div className="flex justify-between">
     <span className="text-gray-500">Subtotal</span>
     <span>
-      {(totalPrice * exchangeRates[currency]).formatCurrency(currency)}
+      {(totalPrice * exchangeRate).formatCurrency(currency)}
     </span>
   </div>
 
@@ -714,7 +700,7 @@ export default function CheckoutPage() {
       <div className="flex justify-between font-medium">
         <span className="text-gray-500">Subtotal after promo code</span>
         <span>
-          {(totalPrice * exchangeRates[currency] - PromoCodeValue).formatCurrency(
+          {(totalPrice * exchangeRate - PromoCodeValue).formatCurrency(
             currency
           )}
         </span>
@@ -733,8 +719,8 @@ export default function CheckoutPage() {
     <span>Total ({currency})</span>
     <span>
       {PromoCodeValue
-        ? ((totalPrice + 20 - PromoCodeValue) * exchangeRates[currency]).formatCurrency(currency)
-        : ((totalPrice + 20) * exchangeRates[currency]).formatCurrency(currency)}
+        ? ((totalPrice + 20 - PromoCodeValue) * exchangeRate).formatCurrency(currency)
+        : ((totalPrice + 20) * exchangeRate).formatCurrency(currency)}
     </span>
   </div>
 

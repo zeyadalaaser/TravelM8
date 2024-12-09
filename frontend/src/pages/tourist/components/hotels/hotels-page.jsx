@@ -15,6 +15,7 @@ import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { PriceFilter } from "../filters/price-filter";
 import { SelectFilter } from "../filters/select-filter";
+import { getCurrency } from "../../../../components/ui/currency-dialog";
 
 function createImage(location) {
   function lucideImage(image) {
@@ -140,22 +141,7 @@ export function HotelsPage() {
     { value: "rating-userrating_b", description: "Rating" },
   ];
 
-  const currency = searchParams.get("currency") ?? "USD";
-  const [exchangeRates, setExchangeRates] = useState({});
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-        console.log(exchangeRates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
+  const { currency, exchangeRate } = getCurrency();
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -214,7 +200,7 @@ export function HotelsPage() {
           <div data-tour="hotels-filters">
             <PriceFilter
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
             />
             <Separator className="mt-5" />
             <SelectFilter name="Review Score" paramName="review" getOptions={async () => ["6+", "7+", "8+", "9+"].reverse()} />
@@ -242,7 +228,7 @@ export function HotelsPage() {
               <Hotels
                 hotels={paginatedHotels}
                 currency={currency}
-                exchangeRate={exchangeRates[currency]} />
+                exchangeRate={exchangeRate} />
               <div className="flex justify-center mt-6 space-x-2">
                 <Button
                   variant="outline"
@@ -276,7 +262,7 @@ export function HotelsPage() {
             <Hotels
               hotels={paginatedHotels}
               currency={currency}
-              exchangeRate={exchangeRates[currency]} />)}
+              exchangeRate={exchangeRate} />)}
 
         </div>
 

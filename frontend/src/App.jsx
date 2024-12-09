@@ -34,6 +34,7 @@ import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
 import axios from "axios";
 import { CircularProgress } from "@mui/material"
+import { getCurrency } from './components/ui/currency-dialog';
 const images = [
   "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&q=80&w=2020&ixlib=rb-4.0.3",
   "https://wallpapercave.com/wp/wp2481186.jpg",
@@ -48,8 +49,7 @@ export default function HeroSection() {
   const { location } = useRouter();
   const navigate = useNavigate();
   const [museums, setMuseums] = useState([]);
-  const [currency, setCurrency] = useState("USD");
-  const [exchangeRates, setExchangeRates] = useState({});
+  const { currency, exchangeRate } = getCurrency();
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [itineraries, setItineraries] = useState([]);
   const [products, setProducts] = useState([]);
@@ -122,25 +122,10 @@ export default function HeroSection() {
     window.scrollTo(0, 0);
   },[]);
 
-  // Fetch latest exchange rates on mount
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
-
   const fetchMuseums = useDebouncedCallback(async () => {
       const queryParams = new URLSearchParams(location.search);
       queryParams.set("currency", currency);
-      queryParams.set("exchangeRate", exchangeRates[currency] || 1);
+      queryParams.set("exchangeRate", exchangeRate);
 
       const fetchedMuseums = await services.getMuseums(`?${queryParams.toString()}`);
       setMuseums(fetchedMuseums);

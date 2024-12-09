@@ -17,16 +17,16 @@ import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
+import { getCurrency } from "../../../../components/ui/currency-dialog";
 
 export function ItinerariesPage() {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get("type");
-  const currency = searchParams.get("currency") ?? "USD";
+  const { currency, exchangeRate } = getCurrency();
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
-  const [exchangeRates, setExchangeRates] = useState({});
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [bookmarkedItineraries, setBookmarkedItineraries] = useState([]);
   const token = localStorage.getItem("token");
@@ -137,21 +137,6 @@ export function ItinerariesPage() {
     }
   };
 
-  // Fetch exchange rates on mount
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
-
   const fetchItineraries = useDebouncedCallback(async () => {
     setLoading(true);
     const queryParams = new URLSearchParams(location.search);
@@ -212,7 +197,7 @@ export function ItinerariesPage() {
             <Separator className="mt-5" />
             <PriceFilter
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
             />
             <Separator className="mt-5" />
             <SelectFilter
@@ -247,7 +232,7 @@ export function ItinerariesPage() {
               itineraries={paginatedItineraries}
               isTourist={true}
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
               bookmarkedItineraries={bookmarkedItineraries} // Add this prop
               handleBookmark={handleBookmark} /><div className="flex justify-center mt-6 space-x-2">
                 <div className="flex justify-center mt-6 ">

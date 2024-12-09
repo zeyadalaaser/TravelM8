@@ -1,12 +1,8 @@
 import React from 'react';
 import { Facebook, Instagram, Youtube, Twitter, Mail, MapPin, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import useRouter from "@/hooks/useRouter";
 
 export default function Footer() {
-  const { location } = useRouter();
-  const searchParams = new URLSearchParams(location.search);
-  const currency = searchParams.get("currency") ?? "USD";
 
   return (
     <footer className="bg-gray-800 text-gray-300 py-8 px-4 sm:px-6 lg:px-8">
@@ -24,11 +20,11 @@ export default function Footer() {
           <div>
             <h2 className="text-white text-lg font-semibold mb-4">Explore</h2>
             <ul className="space-y-2 text-sm">
-              <li><Link to={`/tourist-page?type=activities&currency=${currency}`} className="hover:text-white transition-colors">Activities</Link></li>
-              <li><Link to={`/tourist-page?type=itineraries&currency=${currency}`} className="hover:text-white transition-colors">Itineraries</Link></li>
-              <li><Link to={`/tourist-page?type=hotels&currency=${currency}`} className="hover:text-white transition-colors">Hotels</Link></li>
-              <li><Link to={`/tourist-page?type=flights&currency=${currency}`} className="hover:text-white transition-colors">Flights</Link></li>
-              <li><Link to={`/tourist-page?type=products&currency=${currency}`} className="hover:text-white transition-colors">Shop</Link></li>
+              <li><Link to={`/tourist-page?type=activities`} className="hover:text-white transition-colors">Activities</Link></li>
+              <li><Link to={`/tourist-page?type=itineraries`} className="hover:text-white transition-colors">Itineraries</Link></li>
+              <li><Link to={`/tourist-page?type=hotels`} className="hover:text-white transition-colors">Hotels</Link></li>
+              <li><Link to={`/tourist-page?type=flights`} className="hover:text-white transition-colors">Flights</Link></li>
+              <li><Link to={`/tourist-page?type=products`} className="hover:text-white transition-colors">Shop</Link></li>
             </ul>
           </div>
 

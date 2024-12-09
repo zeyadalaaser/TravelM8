@@ -27,6 +27,7 @@ import logo2 from "../assets/lw.png";
 import { WalkthroughButton } from './WalkthroughButton';
 import { useLocation } from 'react-router-dom';
 import { BookTransportation } from "@/pages/tourist/components/bookings/book-transportation.jsx"
+import { CurrencyDialog, getCurrency } from "./ui/currency-dialog.jsx";
 
 const pages = [
   { label: "Activities", value: "activities" },
@@ -39,7 +40,6 @@ const pages = [
 
 export default function Navbar({ profilePageString, children }) {
   const [cart, setCart] = useState([]);
-  const [exchangeRates, setExchangeRates] = useState({});
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const { searchParams, location } = useRouter();
@@ -51,8 +51,9 @@ export default function Navbar({ profilePageString, children }) {
   const [userName, setUserName] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAlertOpen, setAlertOpen] = useState(false);
+  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
 
-  const currency = searchParams.get("currency") ?? "USD";
+  const { currency, exchangeRate } = getCurrency();
   const locations = useLocation();
   const getCurrentPageType = () => {
     const path = locations.pathname;
@@ -66,7 +67,7 @@ export default function Navbar({ profilePageString, children }) {
     if (path.includes('hotels')) return 'hotels';
     if (path.includes('museums')) return 'museums';
     if (path.includes('home')) return 'home';
-    
+
     //return 'activities'; // default
   };
 
@@ -210,27 +211,6 @@ export default function Navbar({ profilePageString, children }) {
     navigate(`/checkout?currency=${currency}`, { state: { cart } });
   };
 
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
-
-  const handleCurrencyChange = (e) => {
-    searchParams.set("currency", e.target.value);
-    navigate(`${location.pathname}?${searchParams.toString()}`, {
-      replace: true,
-    });
-  };
-
   return (
     <>
       <nav
@@ -244,11 +224,10 @@ export default function Navbar({ profilePageString, children }) {
         style={{ height: "56px" }}
       >
         <div
-          className={`cursor-pointer text-2xl font-semibold ${
-            location.pathname === "/"
+          className={`cursor-pointer text-2xl font-semibold ${location.pathname === "/"
               ? "text-white"
               : "text-black"
-          }`}
+            }`}
           onClick={() => navigate(`/?currency=${currency}`)}
         >
           <div className="flex items-center -ml-8">
@@ -266,36 +245,34 @@ export default function Navbar({ profilePageString, children }) {
         </div>
 
         <div className="hidden md:flex items-center justify-start ml-32 space-x-1">
-  {pages.filter(page => !(isLoggedIn && page.value === "products") || (page.visibleWhenLoggedOut && !isLoggedIn)).map((page) => ( // Adjusted filter logic
-    <button
-      key={page.value}
-      className={`${
-        location.pathname === "/"
-          ? "text-white hover:text-white/70"
-          : "text-black hover:text-black/70"
-      } ${
-        currentPage.includes(`/tourist-page?type=${page.value}`)
-          ? "py-1 px-3 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-0.5 after:bg-primary"
-          : "py-1 px-3"
-      }`}
-      onClick={() =>
-        navigate(
-          `/tourist-page?type=${page.value}&currency=${currency}`
-        )
-      }
-    >
-      {page.label}
-    </button>
-  ))}
-  <BookTransportation change={location.pathname === "/"} />
-</div>
+          {pages.filter(page => !(isLoggedIn && page.value === "products") || (page.visibleWhenLoggedOut && !isLoggedIn)).map((page) => ( // Adjusted filter logic
+            <button
+              key={page.value}
+              className={`${location.pathname === "/"
+                  ? "text-white hover:text-white/70"
+                  : "text-black hover:text-black/70"
+                } ${currentPage.includes(`/tourist-page?type=${page.value}`)
+                  ? "py-1 px-3 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-0.5 after:bg-primary"
+                  : "py-1 px-3"
+                }`}
+              onClick={() =>
+                navigate(
+                  `/tourist-page?type=${page.value}&currency=${currency}`
+                )
+              }
+            >
+              {page.label}
+            </button>
+          ))}
+          <BookTransportation change={location.pathname === "/"} />
+        </div>
         <div className="flex items-center space-x-4">
-        <WalkthroughButton currentPageType={getCurrentPageType()} currency={currency} currentPage={currentPage}/>
-          {isLoggedIn  ? (
+          <WalkthroughButton currentPageType={getCurrentPageType()} currency={currency} currentPage={currentPage} />
+          {isLoggedIn ? (
             <>
-            <div className="flex items-center space-x-4">
-           
-      </div>
+              <div className="flex items-center space-x-4">
+
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
@@ -374,7 +351,7 @@ export default function Navbar({ profilePageString, children }) {
                             <span className="font-medium mb-10 text-lg">
                               {(
                                 item.productId.price *
-                                (exchangeRates[currency] || 1)
+                                (exchangeRate)
                               ).formatCurrency(currency)}
                             </span>
                           </li>
@@ -390,7 +367,7 @@ export default function Navbar({ profilePageString, children }) {
                         <span className="font-medium">Total:</span>
                         <span className="font-bold">
                           {(
-                            totalPrice * (exchangeRates[currency] || 1)
+                            totalPrice * exchangeRate
                           ).formatCurrency(currency)}
                         </span>
                       </div>
@@ -459,6 +436,9 @@ export default function Navbar({ profilePageString, children }) {
                 }}>
                   Preferences
                 </MenuItem>
+                <MenuItem onClick={() => {handleClose(); setIsCurrencyOpen(true);}}>
+                  Currency: {getCurrency().currency}
+                </MenuItem>
                 <Separator />
                 <MenuItem
                   onClick={() => {
@@ -469,6 +449,7 @@ export default function Navbar({ profilePageString, children }) {
                   Sign out
                 </MenuItem>
               </Menu>
+              <CurrencyDialog isOpen={isCurrencyOpen} setIsOpen={setIsCurrencyOpen} />
               <LogoutAlertDialog
                 isOpen={isAlertOpen}
                 onClose={() => setAlertOpen(false)}
@@ -485,11 +466,10 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <Button
                   variant="outline"
-                  className={`bg-transparent rounded-full px-8 py-2 ${
-                    location.pathname === "/"
+                  className={`bg-transparent rounded-full px-8 py-2 ${location.pathname === "/"
                       ? "text-white hover:bg-white/10 hover:text-white"
                       : "text-black"
-                  } `}
+                    } `}
                 >
                   Login
                 </Button>
@@ -500,11 +480,10 @@ export default function Navbar({ profilePageString, children }) {
                 onLoginClick={openLogin}
               >
                 <button
-                  className={`font-medium rounded-full px-8 py-2 ${
-                    location.pathname === "/"
+                  className={`font-medium rounded-full px-8 py-2 ${location.pathname === "/"
                       ? " bg-white text-black hover:bg-white/90"
                       : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
-                  } `}
+                    } `}
                 >
                   Register
                 </button>
