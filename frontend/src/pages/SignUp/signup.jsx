@@ -53,6 +53,8 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
   const [certificatesfile, setcertificatesfile] = useState();
   const navigate = useNavigate();
 
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
+
   const handleRoleChange = (role) => {
       setFormData2({
         name: '',
@@ -220,6 +222,62 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
         error.response?.data?.msg || "Login failed. Please try again."
       );
     }
+  };
+
+  const renderTermsAndConditions = () => {
+    if (formData.type === 'Tourist') return null;
+
+    return (
+      <>
+        <div className="flex items-center space-x-2 mb-4">
+          <input
+            type="checkbox"
+            id="terms"
+            checked={termsAccepted}
+            onChange={(e) => setTermsAccepted(e.target.checked)}
+            className="rounded border-gray-300"
+          />
+          <label htmlFor="terms" className="text-sm text-gray-600">
+            I accept the{" "}
+            <button
+              type="button"
+              onClick={() => setShowTermsDialog(true)}
+              className="text-blue-600 hover:underline"
+            >
+              terms and conditions
+            </button>
+          </label>
+        </div>
+
+        <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
+          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Terms and Conditions</DialogTitle>
+            </DialogHeader>
+            <div className="mt-4 space-y-4">
+              <h3 className="font-semibold">Service Provider Agreement</h3>
+              <p>By using our platform as a service provider, you agree to:</p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li>Provide accurate information about your services</li>
+                <li>Maintain professional standards in all interactions</li>
+                <li>Comply with local regulations and laws</li>
+                <li>Protect user privacy and data</li>
+              </ul>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <Button 
+                onClick={() => {
+                  setTermsAccepted(true);
+                  setShowTermsDialog(false);
+                }}
+              >
+                Accept
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </>
+    );
   };
 
   return (
@@ -654,24 +712,7 @@ export default function SignupDialog({children, isOpen, onOpenChange, onLoginCli
               </>
             )}
 
-            <div className="space-y-2">
-              <input
-                type="checkbox"
-                id="terms"
-                checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
-                required
-              />
-              <label htmlFor="terms">
-                {" "}I accept the{' '}
-                <span
-                  className="text-blue-600 cursor-pointer"
-                  onClick={() => toast("read terms and consitions")}
-                >
-                  Terms and Conditions
-                </span>
-              </label>
-            </div>
+            {renderTermsAndConditions()}
 
             <Button type="submit" className="w-full">
               Sign up

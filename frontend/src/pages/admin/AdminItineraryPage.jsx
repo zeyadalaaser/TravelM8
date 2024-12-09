@@ -81,6 +81,25 @@ export function AdminItinerariesPage() {
     fetchItineraries();
   };
 
+  // Add this useEffect for initial load and refresh
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    fetchItineraries();
+  }, []);
+
+  // Add this useEffect specifically for page refresh
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white text-black">
       <Navbar />
