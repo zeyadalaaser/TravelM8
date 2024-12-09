@@ -77,6 +77,9 @@ const BookingHistory = () => {
   let pending = false;
   let cancelled = false;
 
+  const [currentPage, setCurrentPage] = useState(1); // Current page state
+  const itemsPerPage = 10; // Number of items per page
+
   const fetchDataAndFilter = async () => {
     try {
       setLoading(true); // Start loading
@@ -293,9 +296,24 @@ const BookingHistory = () => {
     }
   };
 
+  // Function to get paginated activities
+  const getPaginatedActivities = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return showingActivities.slice(startIndex, startIndex + itemsPerPage);
+  };
+
+  // Function to get paginated itineraries
+  const getPaginatedItineraries = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return showingItineraries.slice(startIndex, startIndex + itemsPerPage);
+  };
+
   const renderCards = () => {
+    const paginatedActivities = getPaginatedActivities(); // Get paginated activities
+    const paginatedItineraries = getPaginatedItineraries(); // Get paginated itineraries
+
     if (mainTab === "activities") {
-      if (!showingActivities || showingActivities.length === 0) {
+      if (!paginatedActivities || paginatedActivities.length === 0) {
         return (
           <div className="flex items-center justify-center h-full">
             <p>No {subTab} activities found.</p>
@@ -303,7 +321,7 @@ const BookingHistory = () => {
         );
       }
 
-      return showingActivities
+      return paginatedActivities
         .filter((a) => a.activityId != null)
         .map((activityBooking) => (
           <ActivitiesCard
@@ -311,16 +329,16 @@ const BookingHistory = () => {
             activityBooking={activityBooking}
           />
         ));
-    } else {
-      if (!showingItineraries || showingItineraries.length === 0) {
+    } else if (mainTab === "itineraries") {
+      if (!paginatedItineraries || paginatedItineraries.length === 0) {
         return (
           <div className="flex items-center justify-center h-full">
-            <p>No {subTab} itineraries found.</p>{" "}
+            <p>No {subTab} itineraries found.</p>
           </div>
         );
       }
 
-      return showingItineraries
+      return paginatedItineraries
         .filter((a) => a.itinerary != null)
         .map((itineraryBooking) => (
           <ItinerariesCard
@@ -631,6 +649,45 @@ const BookingHistory = () => {
     );
   };
 
+  // Function to handle page change
+  const handlePageChange = (direction) => {
+    setCurrentPage((prevPage) => {
+      if (direction === "next") {
+        return prevPage + 1;
+      } else if (direction === "prev" && prevPage > 1) {
+        return prevPage - 1;
+      }
+      return prevPage;
+    });
+  };
+
+  // Render pagination controls
+  const renderPagination = () => {
+    const totalItems = mainTab === "activities" ? showingActivities.length : showingItineraries.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage) || 0; // Ensure totalPages is 0 if totalItems is 0
+    const currentItems = totalItems > 0 ? Math.min(itemsPerPage, totalItems - (currentPage - 1) * itemsPerPage) : 0; // Calculate current items on the page
+
+    return (
+      <div className="flex justify-between mt-4">
+        <Button
+          onClick={() => handlePageChange("prev")}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span>
+          {totalItems === 0 ? "Page 0/0" : `Page ${currentPage} of ${totalPages}`}
+        </span>
+        <Button
+          onClick={() => handlePageChange("next")}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
+    );
+  };
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 return (
@@ -650,6 +707,7 @@ return (
         </Tabs>
 
         <div className="grid grid-cols-1 gap-6">{renderCards()}</div>
+        {renderPagination()} {/* Add pagination controls here */}
       </TabsContent>
     </Tabs>
     <ReviewDialog
