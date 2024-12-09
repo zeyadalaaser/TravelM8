@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ShareButton } from "@/components/ui/share-button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Clock, Globe, Tag, Calendar, Users, CalendarClock} from 'lucide-react';
+import {
+  Clock,
+  Globe,
+  Tag,
+  Calendar,
+  Users,
+  CalendarClock,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
@@ -16,35 +23,43 @@ import {
 import { useNavigate } from "react-router-dom";
 import { flagItinerary } from "../../pages/admin/services/AdminItineraryService";
 // import { Timeline } from './Timeline';
-import { ChooseDate } from './ChooseDate';
+import { ChooseDate } from "./ChooseDate";
 import { toast } from "sonner";
 import axios from "axios";
-import {Stars} from "../Stars.jsx"
-export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTourGuide, onRefresh,currency,token }) {
+import { Stars } from "../Stars.jsx";
+export default function ItineraryDetails({
+  itinerary,
+  isAdmin,
+  isTourist,
+  isTourGuide,
+  onRefresh,
+  currency,
+  token,
+}) {
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
-  const [isToken,setToken]=useState(true);
-  const [reviews, setReviews] = useState({});
+  const [isToken, setToken] = useState(true);
+  const [reviews, setReviews] = useState([]);
 
   const getReviews = async (entityId) => {
     try {
-        // Construct query parameters
-        const params = {
-            entityId,
-            entityType:"Itinerary",
-        };
+      // Construct query parameters
+      const params = {
+        entityId,
+        entityType: "Itinerary",
+      };
 
-        const response = await axios.get('http://localhost:5001/api/ratings', { params });
+      const response = await axios.get("http://localhost:5001/api/ratings", {
+        params,
+      });
 
-        console.log('Reviews:', response.data.reviews);
-        console.log('Average Rating:', response.data.averageRating);
-        setReviews(response.data.reviews);
+      console.log("Reviews:", response.data.reviews);
+      console.log("Average Rating:", response.data.averageRating);
+      setReviews(response.data.reviews);
     } catch (error) {
-        console.error('Error fetching reviews:', error);
+      console.error("Error fetching reviews:", error);
     }
-};
-
-
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -243,13 +258,21 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
                 {reviews && reviews.length > 0 ? (
                   <ul className="space-y-4">
                     {reviews.map((review, index) => (
-                      <li key={index} className="border-b pb-4 last:border-b-0">
-                          <span className="font-medium">{review.userId.username}</span>
-                          <Stars rating={review.rating} />
-                        <p className="text-sm text-muted-foreground">
-                          {review.comment}
-                        </p>
-                      </li>
+                      <div key={review.id} className="flex space-x-4">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h5 className="text-sm font-semibold ">
+                              {review.userId?.username?review.userId.username:"Anonymous"}
+                            </h5>
+                            <div className=" flex items-center">
+                              <Stars rating={review?.rating} />
+                            </div>
+                          </div>
+                          <p className="text-sm italic text-muted-foreground">
+                            &quot;{review?.comment}&quot;
+                          </p>
+                        </div>
+                      </div>
                     ))}
                   </ul>
                 ) : (
@@ -337,4 +360,3 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
 //     </div>
 //   )
 // }
-
