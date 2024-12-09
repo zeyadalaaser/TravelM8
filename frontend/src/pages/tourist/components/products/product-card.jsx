@@ -30,7 +30,7 @@ export default function ProductCard({ product, currency, token, liked }) {
                 );
 
                 const productInCart = response.data.cart.find(p => p.productId._id === product._id);
-                if (productInCart.quantity >= product.quantity)
+                if (productInCart && productInCart?.quantity >= product.quantity)
                 {
                     toast("You have reached the maximum stock limit for this item.");
                     return;
