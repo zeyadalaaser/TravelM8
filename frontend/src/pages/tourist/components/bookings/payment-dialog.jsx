@@ -139,7 +139,11 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
       toast(error.message || "An error occurred during payment.");
     }
   };
-  
+  useEffect(() => {
+    if (!isOpen) {
+      setPromoCode("");
+    }
+  }, [isOpen]);
   
   
   
