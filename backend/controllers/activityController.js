@@ -223,13 +223,13 @@ const flagActivity = async (req, res) => {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "mennayehiahassan@gmail.com", // Replace with your email
-          pass: "dsbkyetgxkynwbpz", // Replace with app password
+          user: "TravelM8noreply@gmail.com",
+          pass: "mgis kukx ozqk dkkn",
         },
       });
 
       const mailOptions = {
-        from: "mennayehiahassan@gmail.com",
+        from: "TravelM8noreply@gmail.com",
         to: email,
         subject: "Activity Flagged Notification",
         text: `Dear ${username},\n\nYour activity "${activityTitle}" has been flagged by the admin. Please review the flagged activity and contact support if needed.\n\nRegards,\nYour System Team`,
@@ -281,13 +281,13 @@ const unflagActivity = async (req, res) => {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: "mennayehiahassan@gmail.com", // Replace with your email
-          pass: "dsbkyetgxkynwbpz", // Replace with app password
+          user: "TravelM8noreply@gmail.com", // Replace with your email
+          pass: "mgis kukx ozqk dkkn", // Replace with app password
         },
       });
 
       const mailOptions = {
-        from: "mennayehiahassan@gmail.com",
+        from: "TravelM8noreply@gmail.com",
         to: email,
         subject: "Activity Unflagged Notification",
         text: `Dear ${username},\n\nYour activity "${activityTitle}" has been unflagged by the admin. It is now visible again on the platform.\n\nRegards,\nYour System Team`,

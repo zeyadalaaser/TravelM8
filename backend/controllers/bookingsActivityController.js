@@ -5,13 +5,13 @@ import { updatePoints } from "./touristController.js";
 import { getActivityPrice } from "./activityController.js";
 import tourist from "../models/touristModel.js";
 import nodemailer from "nodemailer";
-import { getTouristReviews } from "./ratingController.js"
+import { getTouristReviews } from "./ratingController.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "mennayehiahassan@gmail.com", // Replace with your email
-    pass: "dsbkyetgxkynwbpz", // Replace with app password
+    user: "TravelM8noreply@gmail.com",
+    pass: "mgis kukx ozqk dkkn",
   },
 });
 
@@ -82,7 +82,7 @@ export const createBooking = async (req, res) => {
       `;
 
       await transporter.sendMail({
-        from: "mennayehiahassan@gmail.com", // Sender address
+        from: "TravelM8noreply@gmail.com", // Sender address
         to: touristData.email, // Use the tourist's email from the fetched data
         subject: emailSubject,
         html: emailBody, // Email content
@@ -103,7 +103,6 @@ export const createBooking = async (req, res) => {
 
 export const getAllActivityBookings = async (req, res) => {
   try {
-
     const touristId = req.user.userId;
 
     // Fetch all activity bookings
@@ -116,7 +115,8 @@ export const getAllActivityBookings = async (req, res) => {
     const bookingsWithRatings = allBookings.map((booking) => {
       const activityIdBooking = new mongoose.Types.ObjectId(booking.activityId);
       const activityReview = reviews.find(
-        (review) => activityIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Use .equals() for ObjectId comparison
+        (review) =>
+          activityIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Use .equals() for ObjectId comparison
       );
       console.log("activity review is: ", activityReview);
       return {
@@ -138,7 +138,9 @@ export const getAllActivityBookings = async (req, res) => {
 export const cancelBooking = async (req, res) => {
   try {
     const bookingId = req.params.id;
-    const bookingToCancel = await BookingActivity.findById(bookingId).populate("activityId");
+    const bookingToCancel = await BookingActivity.findById(bookingId).populate(
+      "activityId"
+    );
 
     if (!bookingToCancel) {
       return res.status(404).json({ message: "Booking not found" });
@@ -150,7 +152,8 @@ export const cancelBooking = async (req, res) => {
 
     if (hoursDifference < 48) {
       return res.status(400).json({
-        message: "Cancellations are only allowed 48 hours before the activity date",
+        message:
+          "Cancellations are only allowed 48 hours before the activity date",
       });
     }
 
@@ -159,7 +162,7 @@ export const cancelBooking = async (req, res) => {
     await bookingToCancel.save();
 
     // Refund logic
-    const touristId = bookingToCancel.touristId; 
+    const touristId = bookingToCancel.touristId;
     const touristData = await tourist.findById(touristId); // Fetch the tourist data
     const refundAmount = bookingToCancel.price; // Assuming 'price' is the amount paid for the booking
 
@@ -307,9 +310,9 @@ export const getActivitiesReport = async (req, res) => {
   try {
     const matchConditions = {
       $or: [
-        { status: { $in: ["booked", "completed"] } },  // Filter by status "booked" or "completed"
-        { completionStatus: "Paid" }                    // Filter by completionstatus "paid"
-      ]
+        { status: { $in: ["booked", "completed"] } }, // Filter by status "booked" or "completed"
+        { completionStatus: "Paid" }, // Filter by completionstatus "paid"
+      ],
     };
 
     if (req.user?.role === "Advertiser" && advertiserId) {

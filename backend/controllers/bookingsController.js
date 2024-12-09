@@ -7,13 +7,13 @@ import { updatePoints } from "./touristController.js";
 import { getItineraryPrice } from "./itineraryController.js";
 import tourist1 from "../models/touristModel.js"; // Import tourist model
 import nodemailer from "nodemailer";
-import { getTouristReviews } from "./ratingController.js"
+import { getTouristReviews } from "./ratingController.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "mennayehiahassan@gmail.com", // Replace with your email
-    pass: "dsbkyetgxkynwbpz", // Replace with app password
+    user: "TravelM8noreply@gmail.com",
+    pass: "mgis kukx ozqk dkkn",
   },
 });
 export const createBooking2 = async (req, res) => {
@@ -69,7 +69,7 @@ export const createBooking2 = async (req, res) => {
       `;
 
       await transporter.sendMail({
-        from: "mennayehiahassan@gmail.com", // Sender address
+        from: "TravelM8noreply@gmail.com", // Sender address
         to: touristData.email, // Tourist's email
         subject: emailSubject,
         html: emailBody, // Email content
@@ -126,7 +126,9 @@ export const getAllTourBookings = async (req, res) => {
     const touristId = req.user.userId;
 
     // Fetch all tour bookings without populating the tourGuide
-    const allBookings = await Booking.find({ tourist: touristId }).populate("itinerary");
+    const allBookings = await Booking.find({ tourist: touristId }).populate(
+      "itinerary"
+    );
 
     // Fetch all reviews for the tourist's itineraries and tour guides
     const itineraryReviews = await getTouristReviews(touristId, "Itinerary");
@@ -137,7 +139,9 @@ export const getAllTourBookings = async (req, res) => {
       const itineraryIdBooking = new mongoose.Types.ObjectId(booking.itinerary); // Use the itinerary ID from populated field
       const itineraryReview = itineraryReviews.find(
         (review) =>
-          itineraryIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Compare ObjectIds
+          itineraryIdBooking.equals(
+            new mongoose.Types.ObjectId(review.entityId)
+          ) // Compare ObjectIds
       );
 
       const guideIdBooking = new mongoose.Types.ObjectId(booking.tourGuide); // Use the tour guide ID from the booking
@@ -162,49 +166,50 @@ export const getAllTourBookings = async (req, res) => {
   }
 };
 
-
-
 export const cancelBooking = async (req, res) => {
   try {
-      const userId = req.user?.userId;
-      const bookingId = req.params.id;
+    const userId = req.user?.userId;
+    const bookingId = req.params.id;
 
-      const bookingToCancel = await Booking.findById(bookingId).populate('tourist'); // Assuming 'tourist' is the reference to the user
+    const bookingToCancel = await Booking.findById(bookingId).populate(
+      "tourist"
+    ); // Assuming 'tourist' is the reference to the user
 
-      if (!bookingToCancel) {
-          return res.status(404).json({ message: "Booking not found" });
-      }
+    if (!bookingToCancel) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
 
-      const currentDate = new Date();
-      const slotDateObj = new Date(bookingToCancel.tourDate);
-      const hoursDifference = (slotDateObj - currentDate) / (1000 * 60 * 60);
+    const currentDate = new Date();
+    const slotDateObj = new Date(bookingToCancel.tourDate);
+    const hoursDifference = (slotDateObj - currentDate) / (1000 * 60 * 60);
 
-      if (hoursDifference < 48) {
-          return res.status(400).json({
-              message: "Cancellations are only allowed 48 hours before the activity date",
-          });
-      }
-
-      // Update booking status
-      bookingToCancel.completionStatus = "Cancelled";
-      await bookingToCancel.save();
-
-      // Refund logic
-      const tourist = bookingToCancel.tourist; // Assuming the booking has a reference to the tourist
-      const refundAmount = bookingToCancel.price; // Assuming 'price' is the amount paid for the booking
-
-      // Update user's wallet balance
-      tourist.wallet += refundAmount; // Add the refund amount to the wallet
-      await tourist.save(); // Save the updated wallet balance
-
-      res.status(200).json({
-          success: true,
-          message: "Successfully cancelled your booking!",
-          amountRefunded: refundAmount,
-          newBalance: tourist.wallet,
+    if (hoursDifference < 48) {
+      return res.status(400).json({
+        message:
+          "Cancellations are only allowed 48 hours before the activity date",
       });
+    }
+
+    // Update booking status
+    bookingToCancel.completionStatus = "Cancelled";
+    await bookingToCancel.save();
+
+    // Refund logic
+    const tourist = bookingToCancel.tourist; // Assuming the booking has a reference to the tourist
+    const refundAmount = bookingToCancel.price; // Assuming 'price' is the amount paid for the booking
+
+    // Update user's wallet balance
+    tourist.wallet += refundAmount; // Add the refund amount to the wallet
+    await tourist.save(); // Save the updated wallet balance
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully cancelled your booking!",
+      amountRefunded: refundAmount,
+      newBalance: tourist.wallet,
+    });
   } catch (error) {
-      res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -277,19 +282,46 @@ export const getItinerariesReport = async (req, res) => {
 
   try {
     const matchConditions = {
-      completionStatus: { $in: ['Pending', 'Completed','Paid'] },  
+      completionStatus: { $in: ["Pending", "Completed", "Paid"] },
     };
-    if(req.user.role === "TourGuide" && tourguideId){
-      matchConditions["tourGuide"] =  new mongoose.Types.ObjectId(tourguideId);
+    if (req.user.role === "TourGuide" && tourguideId) {
+      matchConditions["tourGuide"] = new mongoose.Types.ObjectId(tourguideId);
     }
-   console.log("tourguide in match conditions: " ,matchConditions["tourguide"]);
-    
+    console.log(
+      "tourguide in match conditions: ",
+      matchConditions["tourguide"]
+    );
+
     if (year || month || day) {
       matchConditions.$expr = {
         $and: [
-          ...(year ? [{ $eq: [{ $year: { $toDate: '$bookingDate' } }, parseInt(year)] }] : []),
-          ...(month ? [{ $eq: [{ $month: { $toDate: '$bookingDate' } }, parseInt(month)] }] : []),
-          ...(day ? [{ $eq: [{ $dayOfMonth: { $toDate: '$bookingDate' } }, parseInt(day)] }] : []),
+          ...(year
+            ? [
+                {
+                  $eq: [{ $year: { $toDate: "$bookingDate" } }, parseInt(year)],
+                },
+              ]
+            : []),
+          ...(month
+            ? [
+                {
+                  $eq: [
+                    { $month: { $toDate: "$bookingDate" } },
+                    parseInt(month),
+                  ],
+                },
+              ]
+            : []),
+          ...(day
+            ? [
+                {
+                  $eq: [
+                    { $dayOfMonth: { $toDate: "$bookingDate" } },
+                    parseInt(day),
+                  ],
+                },
+              ]
+            : []),
         ],
       };
     }
@@ -300,27 +332,27 @@ export const getItinerariesReport = async (req, res) => {
       },
       {
         $lookup: {
-          from: 'itineraries', // Itinerary collection name
-          localField: 'itinerary', // Grouped itinerary ID
-          foreignField: '_id', // Match with Itinerary `_id`
-          as: 'itineraryDetails',
+          from: "itineraries", // Itinerary collection name
+          localField: "itinerary", // Grouped itinerary ID
+          foreignField: "_id", // Match with Itinerary `_id`
+          as: "itineraryDetails",
         },
       },
       {
-        $unwind: '$itineraryDetails',  
+        $unwind: "$itineraryDetails",
       },
       {
         $group: {
-          _id: '$itinerary', // Group by the itinerary ID
+          _id: "$itinerary", // Group by the itinerary ID
           bookingCount: { $sum: 1 }, // Count the number of bookings per itinerary
-          revenue: { $sum: '$itineraryDetails.price' }, // Sum up the price of bookings per itinerary
-          itineraryTitle: { $first: '$itineraryDetails.name' },
+          revenue: { $sum: "$itineraryDetails.price" }, // Sum up the price of bookings per itinerary
+          itineraryTitle: { $first: "$itineraryDetails.name" },
         },
       },
       {
         $project: {
           _id: 1, // Include itinerary ID
-          name: '$itineraryTitle', // Include itinerary name
+          name: "$itineraryTitle", // Include itinerary name
           bookingCount: 1, // Include the count of bookings
           revenue: 1, // Include the total revenue
         },
@@ -335,12 +367,12 @@ export const getItinerariesReport = async (req, res) => {
 
     return res.status(200).json({
       data: results,
-      message: 'Successfully fetched the itineraries report',
+      message: "Successfully fetched the itineraries report",
     });
   } catch (error) {
-    console.error('Error fetching itineraries report:', error);
+    console.error("Error fetching itineraries report:", error);
     res.status(500).json({
-      message: 'Failed to fetch itinerary report',
+      message: "Failed to fetch itinerary report",
       error: error.message,
     });
   }

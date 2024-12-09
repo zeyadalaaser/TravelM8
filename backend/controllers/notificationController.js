@@ -45,13 +45,13 @@ export const sendEmailNotification = async (email, username, itineraryName) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "mennayehiahassan@gmail.com", // Replace with your email
-        pass: "dsbkyetgxkynwbpz", // Replace with app password
+        user: "TravelM8noreply@gmail.com",
+        pass: "mgis kukx ozqk dkkn",
       },
     });
     console.log("Email to send notification to:", email);
     const mailOptions = {
-      from: "mennayehiahassan@gmail.com",
+      from: "TravelM8noreply@gmail.com",
       to: email,
       subject: "Itinerary Flagged as Inappropriate",
       text: `Dear ${username},\n\nYour itinerary "${itineraryName}" has been flagged as inappropriate by the admin.\n\nPlease review the flagged itinerary and contact support if needed.\n\nRegards,\nYour System Team`,
@@ -75,13 +75,13 @@ export const sendEmailNotification2 = async (
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "mennayehiahassan@gmail.com", // Replace with your email
-        pass: "dsbkyetgxkynwbpz", // Replace with app password
+        user: "TravelM8noreply@gmail.com",
+        pass: "mgis kukx ozqk dkkn",
       },
     });
     console.log("Email to send notification to:", email);
     const mailOptions = {
-      from: "mennayehiahassan@gmail.com",
+      from: "TravelM8noreply@gmail.com",
       to: email,
       subject: "Itinerary unFlagged ",
       text: `Dear ${username},\n\nYour itinerary "${itineraryName}" has been unflagged by the admin.\n\nRegards,\nYour System Team`,
@@ -181,15 +181,15 @@ export const sendEmailReminder = async (
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "mennayehiahassan@gmail.com", // Replace with your email
-        pass: "dsbkyetgxkynwbpz", // Replace with app password
+        user: "TravelM8noreply@gmail.com",
+        pass: "mgis kukx ozqk dkkn",
       },
     });
 
     const formattedDate = new Date(tourDate).toLocaleString();
 
     const mailOptions = {
-      from: "mennayehiahassan@gmail.com",
+      from: "TravelM8noreply@gmail.com",
       to: email,
       subject: "Upcoming Event Reminder",
       text: `Dear ${username},\n\nThis is a reminder for your upcoming event "${itineraryName}" scheduled on ${formattedDate}.\n\nWe look forward to seeing you there!\n\nRegards,\nYour System Team`,
@@ -210,14 +210,14 @@ export const sendEmailReminder2 = async (email, subject, body) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "mennayehiahassan@gmail.com", // Replace with your email
-      pass: "dsbkyetgxkynwbpz", // Replace with app password
+      user: "TravelM8noreply@gmail.com",
+      pass: "mgis kukx ozqk dkkn",
     },
   });
 
   try {
     const info = await transporter.sendMail({
-      from: "mennayehiahassan@gmail.com", // Sender address
+      from: "TravelM8noreply@gmail.com", // Sender address
       to: email, // Recipient address
       subject: subject, // Subject line
       html: body, // HTML body of the email
