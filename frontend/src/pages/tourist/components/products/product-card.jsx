@@ -202,7 +202,6 @@ export default function ProductCard({ product, currency, token, liked }) {
                         <span className="text-2xl font-bold">
                             {`${(product.price * 1).formatCurrency(currency)}`}
                         </span>
-                        <Button onClick={() => handleBook(product)}>Book Product</Button>
                     </div>
                 </DialogContent>
             </Dialog>
