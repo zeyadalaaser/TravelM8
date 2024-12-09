@@ -42,6 +42,8 @@ import {
 import { ReviewDialog } from "../ratings/ReviewDialog.jsx";
 import { toast } from "sonner";
 import { useCurrency } from '@/hooks/currency-provider';
+import { FlightCard, flights } from "./flight-card.jsx";
+import { HotelCard, hotels } from "./hotel-card.jsx";
 
 const BookingHistory = () => {
   const token = localStorage.getItem("token");
@@ -313,9 +315,48 @@ const BookingHistory = () => {
     return showingItineraries.slice(startIndex, startIndex + itemsPerPage);
   };
 
+  const getPaginatedFlights = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return flights.slice(startIndex, startIndex + itemsPerPage);
+  };
+
+  const getPaginatedHotels = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return hotels.slice(startIndex, startIndex + itemsPerPage);
+  };
+
   const renderCards = () => {
     const paginatedActivities = getPaginatedActivities(); // Get paginated activities
     const paginatedItineraries = getPaginatedItineraries(); // Get paginated itineraries
+    const paginatedFlights = getPaginatedFlights();
+    const paginatedHotels = getPaginatedHotels();
+
+    if (mainTab === "flights") {
+      return paginatedFlights
+        .map((flight, index) => (
+          <FlightCard
+            key={index}
+            details={flight}
+            exchangeRate={exchangeRate}
+            currency={currency}
+          />
+        ));
+    }
+
+    if (mainTab === "hotels")
+      return <HotelCard hotels={paginatedHotels} exchangeRate={exchangeRate} currency={currency} />
+
+    if (mainTab === "hotels") {
+      return paginatedFlights
+        .map((flight, index) => (
+          <FlightCard
+            key={index}
+            details={flight}
+            exchangeRate={exchangeRate}
+            currency={currency}
+          />
+        ));
+    }
 
     if (mainTab === "activities") {
       if (!paginatedActivities || paginatedActivities.length === 0) {
