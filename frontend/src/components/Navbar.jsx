@@ -271,9 +271,6 @@ export default function Navbar({ profilePageString, children }) {
         <WalkthroughButton currentPageType={getCurrentPageType()} change={location.pathname === "/"}/>
           {isLoggedIn  ? (
             <>
-              <div className="flex items-center space-x-4">
-
-              </div>
               <Button
                 variant="ghost"
                 size="icon"
