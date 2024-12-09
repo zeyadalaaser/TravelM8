@@ -19,12 +19,14 @@ import { ComplaintForm } from "@/pages/tourist/components/complaints/complaint-f
 import { toast } from 'sonner';
 import { Label } from "@/components/ui/label"
 import useRouter from "@/hooks/useRouter";
+import { useCurrency } from '@/hooks/currency-provider';
 
 const TouristProfilePage = () => {
   const amount = 45231.89,
     percentageChange = 20.1,
     timeframe = "from last month";
   const isPositive = percentageChange > 0;
+  const { currency, exchangeRate } = useCurrency();
   const [showComplaintForm, setShowComplaintForm] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
   const [currentPassword, setCurrentPassword] = useState('')
@@ -415,7 +417,7 @@ const TouristProfilePage = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${profile ? profile.wallet.toFixed(2) : '0'}</div>
+                <div className="text-2xl font-bold">{(profile?.wallet * exchangeRate).formatCurrency(currency)}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   <span className={isPositive ? "text-green-500" : "text-red-500"}>
                     {isPositive ? '+' : ''}{percentageChange}%

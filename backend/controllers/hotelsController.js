@@ -56,7 +56,6 @@ export const getHotelsToken = async (_, res) => {
 };
 
 export const getHotels = async (req, res) => {
-
     let token;
 
     const requestBody = req.body;
@@ -67,7 +66,7 @@ export const getHotels = async (req, res) => {
         try {
             if (!token)
                 token = await getToken();
-
+            
             response = await axios.post(
                 "https://www.hotelscombined.com/i/api/search/dynamic/hotels/poll",
                 requestBody,
@@ -83,17 +82,25 @@ export const getHotels = async (req, res) => {
                     },
                 }
             );
-
+            
         }
         catch (error) {
             const errorStr = JSON.stringify(error?.response?.data);
             console.log(errorStr);
-            if (errorStr?.includes("Session is invalid or expired")) {
+            if (errorStr?.includes("Session is invalid or expired"))
+            {
                 token = null;
                 hotelsToken = null;
             }
-            res.status(200).send([]);
-            return;
+            if (errorStr?.includes("The checkOutDate must be after the checkInDate"))
+            {
+                res.status(200).send([]);
+                return;
+            }
+            if (errorStr?.includes("The user has sent too many requests in a given amount of time")) {
+                res.sendStatus(204);
+                return;
+            }
         }
         console.log(response?.data?.results?.length);
         await sleep(600);

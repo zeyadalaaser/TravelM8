@@ -50,6 +50,19 @@ const ManageActivities = () => {
 
   useEffect(() => {
     fetchActivities();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, []);
 
   const handleSearchChange = (e) => {

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import axios from "axios";
 import { toast } from "sonner";
-
+import { useCurrency } from '@/hooks/currency-provider';
 export default function RedeemPoints() {
   const token = localStorage.getItem('token');
   const [points, setPoints] = useState(0);
@@ -17,6 +17,7 @@ export default function RedeemPoints() {
   const [redeemAmount, setRedeemAmount] = useState("");
   const [level, setLevel] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const { currency, exchangeRate } = useCurrency();
 
   // Fetch user data (points, wallet balance, and level) from backend
   useEffect(() => {
@@ -187,7 +188,7 @@ export default function RedeemPoints() {
             <Wallet />
             <div>
               <p className="text-sm font-medium">Wallet Balance</p>
-              <p className="text-2xl font-bold">${walletBalance.toFixed(2)}</p>
+              <p className="text-2xl font-bold">{(walletBalance * exchangeRate).formatCurrency(currency)}</p>
             </div>
           </div>
         </div>

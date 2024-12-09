@@ -3,12 +3,14 @@ import axios from 'axios';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useCurrency } from '@/hooks/currency-provider';
 
 const WalletPage = () => {
   const [walletBalance, setWalletBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currency, exchangeRate } = useCurrency();
 
   useEffect(() => {
     const fetchWalletData = async () => {
@@ -86,7 +88,7 @@ const WalletPage = () => {
           <CardDescription>Your available funds</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-4xl font-bold">${walletBalance.toFixed(2)}</p>
+          <p className="text-4xl font-bold">{(walletBalance * exchangeRate).formatCurrency(currency)}</p>
         </CardContent>
       </Card>
 
@@ -104,7 +106,7 @@ const WalletPage = () => {
                 <div className="flex justify-between items-center">
                   <span className="font-medium">{transaction.type}</span>
                   <span className={`font-bold ${transaction.amount > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {transaction.amount > 0 ? '+' : ''}{Math.abs(transaction.amount).toFixed(2)}
+                    {transaction.amount > 0 ? '+' : ''}{Math.abs(transaction.amount * exchangeRate).formatCurrency(currency)}
                   </span>
                 </div>
                 <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>

@@ -32,6 +32,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ReviewDialog } from "./ratings/ReviewDialog";
 import * as services from "@/pages/tourist/api/apiService.js";
+import { useCurrency } from '@/hooks/currency-provider'; 
 const statusIcons = {
   Placed: Package,
   Shipped: Truck,
@@ -46,6 +47,7 @@ const statusColors = {
 
 const MyOrdersPage = () => {
   const navigate = useNavigate();
+  const { currency, exchangeRate } = useCurrency();
   const [profile, setProfile] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -150,10 +152,9 @@ const MyOrdersPage = () => {
       toast(`Order #${order._id.slice(-6)} has been cancelled successfully`, {
         description: (
           <>
-            Amount added to wallet: ${order.totalAmount}
+            Amount added to wallet: {(order.totalAmount * exchangeRate).formatCurrency(currency)}
             <br />
-            New wallet balance: $
-            {(order.totalAmount + profile?.wallet).toFixed(2)}
+            New wallet balance: {((order.totalAmount + profile?.wallet) * exchangeRate).formatCurrency(currency)}
           </>
         ),
       });
@@ -241,7 +242,7 @@ const MyOrdersPage = () => {
                     {new Date(order.createdAt).toLocaleDateString()}
                   </span>
                   <span className="font-semibold text-lg text-gray-700 dark:text-gray-300">
-                    ${order.totalAmount.toFixed(2)}
+                    {(order.totalAmount * exchangeRate).formatCurrency(currency)}
                   </span>
                 </div>
                 <AnimatePresence>
@@ -269,10 +270,7 @@ const MyOrdersPage = () => {
                                   {item.product.name} (x{item.quantity})
                                 </span>
                                 <span>
-                                  $
-                                  {(item.product.price * item.quantity).toFixed(
-                                    2
-                                  )}
+                                  {(item.product.price * item.quantity * exchangeRate).formatCurrency(currency)}
                                 </span>
                               </div>
                               <hr className="col-span-2 border-gray-300 my-2" />
@@ -324,10 +322,7 @@ const MyOrdersPage = () => {
                                 {item.product.name} (x{item.quantity})
                               </span>
                               <span>
-                                $
-                                {(item.product.price * item.quantity).toFixed(
-                                  2
-                                )}
+                              {(item.product.price * item.quantity * exchangeRate).formatCurrency(currency)}
                               </span>
                             </li>
                           ))}

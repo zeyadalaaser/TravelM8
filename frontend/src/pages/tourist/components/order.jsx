@@ -8,11 +8,13 @@ import { AlertCircle, CheckCircle, TruckIcon, XCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useCurrency } from '@/hooks/currency-provider';
 
 const OrderPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { currency, exchangeRate } = useCurrency();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -96,7 +98,7 @@ const OrderPage = () => {
                   {order.items.slice(0, 2).map((item, index) => (
                     <div key={index} className="flex justify-between items-center">
                       <span>{item.product.name} x {item.quantity}</span>
-                      <span>${item.price.toFixed(2)}</span>
+                      <span>{(item.price * exchangeRate).formatCurrency(currency)}</span>
                     </div>
                   ))}
                   {order.items.length > 2 && (
@@ -107,7 +109,7 @@ const OrderPage = () => {
                   <Separator className="my-2" />
                   <div className="flex justify-between items-center font-bold">
                     <span>Total</span>
-                    <span>${order.totalAmount.toFixed(2)}</span>
+                    <span>{(order.totalAmount * exchangeRate).formatCurrency(currency)}</span>
                   </div>
                 </div>
               </CardContent>
@@ -130,7 +132,7 @@ const OrderPage = () => {
                           {order.items.map((item, index) => (
                             <div key={index} className="flex justify-between items-center mb-2">
                               <span>{item.product.name} x {item.quantity}</span>
-                              <span>${item.price.toFixed(2)}</span>
+                              <span>{(item.price * exchangeRate).formatCurrency(currency)}</span>
                             </div>
                           ))}
                         </div>
@@ -146,9 +148,9 @@ const OrderPage = () => {
                         <div>
                           <h4 className="font-semibold mb-2">Payment Details:</h4>
                           <p>Method: {order.paymentMethod}</p>
-                          <p>Total Amount: ${order.totalAmount.toFixed(2)}</p>
+                          <p>Total Amount: {(order.totalAmount * exchangeRate).formatCurrency(currency)}</p>
                           {order.deliveryFee > 0 && (
-                            <p>Delivery Fee: ${order.deliveryFee.toFixed(2)}</p>
+                            <p>Delivery Fee: ${(order.deliveryFee * exchangeRate).formatCurrency(currency)}</p>
                           )}
                         </div>
                       </div>

@@ -229,7 +229,7 @@ const variables = `{"search":{"itinerary":{"source":{"ids":["City:"]},"destinati
 export async function getFlights(query) // source, dest, departureDate, arrivalDate
 {
   const searchParams = new URLSearchParams(query);
-  if (!searchParams.has("from") || !searchParams.has("to"))
+  if (!searchParams.has("from") || !searchParams.has("to") || !searchParams.has("departure") || !searchParams.has("return"))
     return [];
 
   const source = searchParams.get("from")?.split('--')[1];
@@ -332,7 +332,7 @@ export async function getHotels(query) {
       return result + "excellent;";
   }
 
-  const getStarsFilter = (stars) => "stars~" + stars.charAt(0) + ";";
+  const getStarsFilter = (stars) => "stars=~" + stars.charAt(0) + ";";
 
   const searchParams = new URLSearchParams(query);
   if (!searchParams.has("checkin") || !searchParams.has("checkout") || !searchParams.has("where"))
@@ -372,6 +372,7 @@ export async function getHotels(query) {
     requestBody.sortParams.sortMode = sort;
 
   try {
+    console.log(JSON.stringify(requestBody));
     const response = await apiClient.post("getHotels?currency=USD", requestBody);
     return response["data"];
   }
