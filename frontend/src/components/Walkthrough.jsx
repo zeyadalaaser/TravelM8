@@ -6,6 +6,7 @@ export function Walkthrough() {
   const { 
     steps, 
     isWalkthroughActive, 
+    disableWalkthrough,
     toggleWalkthrough
   } = useWalkthrough();
 
@@ -29,7 +30,7 @@ export function Walkthrough() {
     const { status, action, index, type } = data;
 
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
-      toggleWalkthrough();
+      disableWalkthrough();
       // Scroll to the top of the page after finishing or skipping the walkthrough
       window.scrollTo({
         top: 0,

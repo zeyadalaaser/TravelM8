@@ -24,6 +24,10 @@ export function WalkthroughProvider({ children }) {
     setIsWalkthroughActive(prev => !prev);
   };
 
+  const disableWalkthrough = () => {
+    setIsWalkthroughActive(false);
+  };
+
   const setPage = (page) => {
     setCurrentPage(page);
   };
@@ -35,6 +39,7 @@ export function WalkthroughProvider({ children }) {
         addSteps, 
         clearSteps, 
         toggleWalkthrough, 
+        disableWalkthrough,
         isWalkthroughActive,
         currentPage,
         setPage

@@ -234,7 +234,7 @@ export function FlightsPage() {
             <Flights
               flights={paginatedFlights}
               currency={currency}
-              exchangeRate={exchangeRates[currency]} />
+              exchangeRate={exchangeRate} />
           )}
 
         </div>
