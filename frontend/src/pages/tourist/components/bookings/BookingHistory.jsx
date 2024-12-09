@@ -41,10 +41,13 @@ import {
 } from "lucide-react";
 import { ReviewDialog } from "../ratings/ReviewDialog.jsx";
 import { toast } from "sonner";
+import { useCurrency } from '@/hooks/currency-provider';
 
 const BookingHistory = () => {
   const token = localStorage.getItem("token");
   const today = new Date();
+
+  const { currency, exchangeRate } = useCurrency();
 
   const [dialogData, setDialogData] = useState({
     isOpen: false,
@@ -227,6 +230,8 @@ const BookingHistory = () => {
   ]);
 
   const renderSubTabs = () => {
+    if (mainTab === "hotels" || mainTab === "flights")
+      return (<></>);
     if (mainTab === "products") {
       return (
         <TabsList className="grid grid-cols-2 mb-4">
@@ -272,7 +277,7 @@ const BookingHistory = () => {
         response = await cancelItineraryBooking(bookingId); // Await the response
       }
 
-      toast(`Booking cancelled successfully! Amount refunded: $${response.amountRefunded}. New wallet balance: $${response.newBalance}.`);
+      toast(`Booking cancelled successfully! Amount refunded: ${(response.amountRefunded * exchangeRate).formatCurrency(currency)}. New wallet balance: ${(response.newBalance * exchangeRate).formatCurrency(currency)}.`);
 
 
       // Refresh the data after cancellation
@@ -416,9 +421,9 @@ const BookingHistory = () => {
               </span>
             </div>
             <p className="text-2xl font-semibold">
-              $
-              {activityBooking.activityId?.price ||
-                activityBooking.activityId?.price[0]}
+              
+              {((activityBooking.activityId?.price ||
+                activityBooking.activityId?.price[0]) * exchangeRate).formatCurrency(currency)}
             </p>
           </div>
           {!cancelled && (<Separator></Separator>)}
@@ -549,7 +554,7 @@ const BookingHistory = () => {
               </span>
             </div>
             <p className="text-2xl font-semibold">
-              ${itineraryBooking.itinerary?.price}
+              {(itineraryBooking.itinerary?.price * exchangeRate).formatCurrency(currency)}
             </p>
           </div>
           {!cancelled && <Separator></Separator>}
