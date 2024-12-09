@@ -1,36 +1,68 @@
 import { ButtonAction } from '../models/ButtonAction.js';
+import mongoose from 'mongoose';
 
 export const buttonActionController = {
     // Toggle button action status
     toggleAction: async (req, res) => {
         try {
             const { itemId, itemType, actionType } = req.body;
+            
+            // Verify we have a user
+            if (!req.user || !req.user.userId) {
+                console.error('No user found in request:', req.user);
+                return res.status(401).json({
+                    message: "User not authenticated"
+                });
+            }
+
             const userId = req.user.userId;
 
-            console.log('Toggle request:', { userId, itemId, itemType, actionType });
+            // Validate the itemId
+            if (!mongoose.Types.ObjectId.isValid(itemId)) {
+                console.error('Invalid itemId:', itemId);
+                return res.status(400).json({
+                    message: "Invalid item ID format"
+                });
+            }
+
+            console.log('Toggle request:', { 
+                userId, 
+                itemId, 
+                itemType, 
+                actionType,
+                userDetails: req.user 
+            });
 
             const existingAction = await ButtonAction.findOne({
                 userId,
                 itemId,
-                actionType,
-                status: true
+                actionType
             });
 
+            console.log('Found existing action:', existingAction);
+
             if (existingAction) {
-                await ButtonAction.findByIdAndUpdate(existingAction._id, { status: false });
+                existingAction.status = !existingAction.status;
+                await existingAction.save();
+                
                 return res.status(200).json({
-                    status: false,
-                    message: "Notification removed successfully"
+                    status: existingAction.status,
+                    message: existingAction.status ? 
+                        "Notification set successfully" : 
+                        "Notification removed successfully"
                 });
             }
 
-            await ButtonAction.create({
+            const newAction = new ButtonAction({
                 userId,
                 itemId,
                 itemType,
                 actionType,
                 status: true
             });
+
+            await newAction.save();
+            console.log('Created new action:', newAction);
 
             return res.status(201).json({
                 status: true,
@@ -45,26 +77,22 @@ export const buttonActionController = {
         }
     },
 
-    // Check action status
+    // Get action status
     checkActionStatus: async (req, res) => {
         try {
             const { itemId } = req.params;
             const { actionType } = req.query;
-            const userId = req.user.userId; 
-
-            console.log('Checking status for:', { userId, itemId, actionType });
+            const userId = req.user.userId;
 
             const action = await ButtonAction.findOne({
                 userId,
                 itemId,
                 actionType,
-                status: true // Only find active notifications
+                status: true
             });
 
-            console.log('Found action:', action);
-
             return res.status(200).json({
-                status: !!action // Convert to boolean
+                status: !!action
             });
         } catch (error) {
             console.error('Error in checkActionStatus:', error);
@@ -75,25 +103,29 @@ export const buttonActionController = {
         }
     },
 
-    // Get all actions for a user
+    // Get user actions
     getUserActions: async (req, res) => {
         try {
-            const userId = req.user._id;
-            const { actionType, itemType } = req.query;
+            const userId = req.user.userId;
+            console.log('Getting actions for user:', userId);
 
-            const query = { userId };
-            if (actionType) query.actionType = actionType;
-            if (itemType) query.itemType = itemType;
+            const actions = await ButtonAction.find({ 
+                userId,
+                actionType: 'NOTIFY',
+                status: true
+            })
+            .populate('itemId')
+            .sort({ createdAt: -1 });
 
-            const actions = await ButtonAction.find(query)
-                .populate({
-                    path: 'itemId',
-                    model: itemType || ['Activity', 'Itinerary']
-                })
-                .sort({ createdAt: -1 });
+            console.log('Found actions:', actions);
 
             return res.status(200).json({
-                actions
+                actions,
+                debug: {
+                    userId,
+                    totalActions: await ButtonAction.countDocuments(),
+                    userActions: actions.length
+                }
             });
         } catch (error) {
             console.error('Error in getUserActions:', error);
