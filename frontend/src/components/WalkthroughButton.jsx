@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '../contexts/WalkthroughContext';
 import { pageSteps } from '../contexts/WalkthroughContext';
 
-export function WalkthroughButton({ currentPageType }) {
+export function WalkthroughButton({ currentPageType, change}) {
   const { toggleWalkthrough, isWalkthroughActive, setPage, addSteps, clearSteps } = useWalkthrough();
 
   const handleClick = () => {
@@ -19,7 +19,7 @@ export function WalkthroughButton({ currentPageType }) {
       onClick={handleClick}
       variant="ghost" 
       size="icon"
-      className="relative"
+      className={change ? "text-white hover:bg-transparent hover:text-white " : "text-black"}
       aria-label={isWalkthroughActive ? 'Stop Walkthrough' : 'Start Walkthrough'}
     >
       <HelpCircle className="h-5 w-5" />

@@ -31,6 +31,7 @@ import { BookTransportation } from "@/pages/tourist/components/bookings/book-tra
 const pages = [
   { label: "Activities", value: "activities" },
   { label: "Itineraries", value: "itineraries" },
+  { label: "Products", value: "products", visibleWhenLoggedOut: true }, // Added Products here
   { label: "Places", value: "museums" },
   { label: "Flights", value: "flights" },
   { label: "Hotels", value: "hotels" },
@@ -56,7 +57,6 @@ export default function Navbar({ profilePageString, children }) {
   const getCurrentPageType = () => {
     const path = locations.pathname;
     const searchParams = new URLSearchParams(locations.search);
-  const currency = searchParams.get("currency") ?? "USD";
     const type = searchParams.get('type');
     if (type) return type.toLowerCase();
     if (path.includes('activities')) return 'activities';
@@ -65,9 +65,10 @@ export default function Navbar({ profilePageString, children }) {
     if (path.includes('flights')) return 'flights';
     if (path.includes('hotels')) return 'hotels';
     if (path.includes('museums')) return 'museums';
-    return 'activities'; // default
+    if (path.includes('home')) return 'home';
+    
+    //return 'activities'; // default
   };
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -234,27 +235,26 @@ export default function Navbar({ profilePageString, children }) {
     <>
       <nav
         className={`w-screen fixed top-0 left-0 right-0 z-50 flex items-center justify-between pl-6 pr-12 py-3 transition-all duration-300  
-          ${
-            currentPage === "/" || currentPage === `/?currency=${currency}`
-              ? isScrolled
-                ? "bg-gray-800/50 backdrop-blur-md"
-                : "bg-transparent"
-              : "bg-white text-black shadow-sm"
+          ${location.pathname === "/"
+            ? isScrolled
+              ? "bg-gray-800/50 backdrop-blur-md"
+              : "bg-transparent"
+            : "bg-white text-black shadow-sm"
           }`}
         style={{ height: "56px" }}
       >
         <div
           className={`cursor-pointer text-2xl font-semibold ${
-            currentPage === "/" || currentPage === `/?currency=${currency}`
+            location.pathname === "/"
               ? "text-white"
               : "text-black"
           }`}
           onClick={() => navigate(`/?currency=${currency}`)}
         >
-          <div className="flex items-center">
+          <div className="flex items-center -ml-8">
             <img
               src={
-                currentPage === "/" || currentPage === `/?currency=${currency}`
+                location.pathname === "/"
                   ? logo2 // Use white logo if scrolled on homepage
                   : logo // Use white logo if on homepage without scrolling
               }
@@ -266,38 +266,41 @@ export default function Navbar({ profilePageString, children }) {
         </div>
 
         <div className="hidden md:flex items-center justify-start ml-32 space-x-1">
-          {pages.map((page) => (
-            <button
-              key={page.value}
-              className={`${
-                currentPage === "/" || currentPage === `/?currency=${currency}`
-                  ? "text-white hover:text-white/70"
-                  : "text-black hover:text-black/70"
-              } ${
-                currentPage.includes(`/tourist-page?type=${page.value}`)
-                  ? "py-1 px-3 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-0.5 after:bg-primary"
-                  : "py-1 px-3"
-              }`}
-              onClick={() =>
-                navigate(
-                  `/tourist-page?type=${page.value}&currency=${currency}`
-                )
-              }
-            >
-              {page.label}
-            </button>
-          ))}
-          <BookTransportation change={currentPage === "/" || currentPage === `/?currency=${currency}`} />
-        </div>
-        <WalkthroughButton currentPageType={getCurrentPageType()} />
+  {pages.filter(page => !(isLoggedIn && page.value === "products") || (page.visibleWhenLoggedOut && !isLoggedIn)).map((page) => ( // Adjusted filter logic
+    <button
+      key={page.value}
+      className={`${
+        location.pathname === "/"
+          ? "text-white hover:text-white/70"
+          : "text-black hover:text-black/70"
+      } ${
+        currentPage.includes(`/tourist-page?type=${page.value}`)
+          ? "py-1 px-3 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-0.5 after:bg-primary"
+          : "py-1 px-3"
+      }`}
+      onClick={() =>
+        navigate(
+          `/tourist-page?type=${page.value}&currency=${currency}`
+        )
+      }
+    >
+      {page.label}
+    </button>
+  ))}
+  <BookTransportation change={location.pathname === "/"} />
+</div>
         <div className="flex items-center space-x-4">
-          {isLoggedIn ? (
+        <WalkthroughButton currentPageType={getCurrentPageType()} change={location.pathname === "/"}/>
+          {isLoggedIn  ? (
             <>
+            <div className="flex items-center space-x-4">
+           
+      </div>
               <Button
                 variant="ghost"
                 size="icon"
                 className={
-                  currentPage === "/" || currentPage === `/?currency=${currency}`
+                  location.pathname === "/"
                     ? "text-white hover:bg-transparent hover:text-white"
                     : "text-black"
                 }
@@ -307,15 +310,14 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <Store className="h-5 w-5" />
               </Button>
-              <NotificationBell currency={currency} currentPage={currentPage} />
+              <NotificationBell change={location.pathname === "/"} />
               <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
                 <SheetTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
                     className={
-                      currentPage === "/" ||
-                      currentPage === `/?currency=${currency}`
+                      location.pathname === "/"
                         ? "text-white hover:bg-transparent hover:text-white "
                         : "text-black"
                     }
@@ -407,7 +409,7 @@ export default function Navbar({ profilePageString, children }) {
                 size="icon"
                 onClick={handleClick}
                 className={
-                  currentPage === "/" || currentPage === `/?currency=${currency}`
+                  location.pathname === "/"
                     ? "text-white hover:bg-transparent hover:text-white"
                     : "text-black"
                 }
@@ -484,8 +486,7 @@ export default function Navbar({ profilePageString, children }) {
                 <Button
                   variant="outline"
                   className={`bg-transparent rounded-full px-8 py-2 ${
-                    currentPage === "/" ||
-                    currentPage === `/?currency=${currency}`
+                    location.pathname === "/"
                       ? "text-white hover:bg-white/10 hover:text-white"
                       : "text-black"
                   } `}
@@ -500,8 +501,7 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <button
                   className={`font-medium rounded-full px-8 py-2 ${
-                    currentPage === "/" ||
-                    currentPage === `/?currency=${currency}`
+                    location.pathname === "/"
                       ? " bg-white text-black hover:bg-white/90"
                       : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
                   } `}
@@ -519,4 +519,3 @@ export default function Navbar({ profilePageString, children }) {
     </>
   );
 }
-

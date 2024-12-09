@@ -1,7 +1,11 @@
 import Stripe from 'stripe';
 import Order from '../models/orderModel.js';
 import Tourist from '../models/touristModel.js';
+import Purchase from '../models/purchaseModel.js';
+import Product from '../models/productModel.js';
+import mongoose from "mongoose";
 import axios from "axios"
+import { getTouristReviews } from "./ratingController.js"
 
 
 const stripe = new Stripe('sk_test_51QNwSmLNUgOldllO81Gcdv4m60Pf04huhn0DcH2jm0NedAn6xh3krj5GyJ9PEojkKCJYmGJGojBK12S52FktB5Jc00dYqr1Ujo');
@@ -208,7 +212,7 @@ export const payWithCash = async (req, res) => {
   export const checkout = async (req, res) => {
     try {
       const userId = req.user?.userId; // Assumes user ID is extracted from token
-      const { address, paymentMethod, promoCode } = req.body;
+      const { address, paymentMethod, PromoCodeValue } = req.body;
   
       // Find user and populate cart details
       const user = await Tourist.findById(userId).populate("cart.productId");
@@ -241,10 +245,13 @@ export const payWithCash = async (req, res) => {
   
       const deliveryFee = 20; 
       totalAmount += deliveryFee;
-      if (promoCode) {
+     // console.log(promoCode);
+      if (PromoCodeValue) {
         const discount = 0.1 * totalAmount;
-        totalAmount -= discount;
+        totalAmount -= PromoCodeValue;
       }
+     // console.log(promoCode);
+      console.log(totalAmount);
       let stripePaymentIntentId = null;
       if (paymentMethod === 'credit-card') {
         const paymentIntent = await stripe.paymentIntents.create({
@@ -291,22 +298,53 @@ export const payWithCash = async (req, res) => {
     try {
       const userId = req.user?.userId; // Assumes user ID is extracted from token
   
-      // Find orders for the logged-in user
-      const orders = await Order.find({ user: userId })
+      // Fetch all orders for the logged-in user
+      const allOrders = await Order.find({ user: userId })
         .sort({ createdAt: -1 })
         .populate({
           path: "items.product",
           model: "Product", // Populates product details
         })
-        .select("items totalAmount deliveryFee deliveryAddress paymentMethod status createdAt"); // Explicitly select the fields you want
+        .select("items totalAmount deliveryFee deliveryAddress paymentMethod status createdAt");
   
-      if (!orders || orders.length === 0) {
+      if (!allOrders || allOrders.length === 0) {
         return res.status(404).json({ message: "No orders found" });
       }
   
-      res.status(200).json({ orders });
+      // Fetch all reviews for products in the user's orders
+      const productIds = allOrders
+        .flatMap((order) => order.items.map((item) => item.product?._id))
+        .filter(Boolean); // Ensure valid IDs
+
+      const productReviews = await getTouristReviews(userId, "Product");
+      const ordersWithProductReviews = allOrders.map((order) => {
+        const updatedItems = order.items.map((item) => {
+          const productId = new mongoose.Types.ObjectId(item.product?._id);
+          const productReview = productReviews.find(
+            (review) => productId.equals(new mongoose.Types.ObjectId(review.entityId)) // Use .equals() for ObjectId comparison
+          );
+  
+          return {
+            ...item.toObject(),
+            review: productReview || null, // Include the review or set to null if not found
+          };
+        });
+  
+        return {
+          ...order.toObject(),
+          items: updatedItems, // Update the items with reviews
+        };
+      });
+  
+      res.status(200).json({
+        orders: ordersWithProductReviews,
+        message: "Successfully fetched all your orders with product reviews!",
+      });
     } catch (error) {
-      res.status(500).json({ message: "Failed to fetch orders", error: error.message });
+      res.status(500).json({
+        message: "Failed to fetch orders",
+        error: error.message,
+      });
     }
   };
   
@@ -365,7 +403,92 @@ export const payWithCash = async (req, res) => {
       res.status(500).json({ message: "Failed to cancel order", error });
     }
   };
-
+  export const getOrdersReport = async (req, res) => {
+    try {
+      const { userId, role } = req.user; // Assuming `userId` and `role` are part of the user object.
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+  
+      // Only filter by sellerId if the user has a seller role
+      const sellerId = role === 'Seller' ? userId : null;
+      if (role === 'Seller' && !sellerId) {
+        return res.status(400).json({ message: "Seller ID is required" });
+      }
+  
+      const { year, month, day } = req.query;
+  
+      const dateConditions = year || month || day ? {
+        $expr: {
+          $and: [
+            ...(year ? [{ $eq: [{ $year: "$createdAt" }, parseInt(year)] }] : []),
+            ...(month ? [{ $eq: [{ $month: "$createdAt" }, parseInt(month)] }] : []),
+            ...(day ? [{ $eq: [{ $dayOfMonth: "$createdAt" }, parseInt(day)] }] : []),
+          ],
+        },
+      } : {};
+  
+      // Build the query pipeline
+      const matchConditions = {
+        ...dateConditions,
+        ...(sellerId ? { "productDetails.sellerId": new mongoose.Types.ObjectId(sellerId) } : {}),
+      };
+  
+      const results = await Order.aggregate([
+        {
+          $unwind: "$items", // Deconstruct items array
+        },
+        {
+          $lookup: {
+            from: "products", // Match with Product collection
+            localField: "items.product",
+            foreignField: "_id",
+            as: "productDetails",
+          },
+        },
+        {
+          $unwind: "$productDetails", // Flatten the productDetails array
+        },
+        {
+          $match: matchConditions, // Apply dynamic match conditions
+        },
+        {
+          $group: {
+            _id: "$items.product", // Group by product ID
+            name: { $first: "$productDetails.name" },
+            purchaseCount: { $sum: "$items.quantity" },
+            revenue: { $sum: { $multiply: ["$items.quantity", "$items.price"] } },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+            purchaseCount: 1,
+            revenue: 1,
+          },
+        },
+      ]);
+  
+      console.log(results);
+  
+      if (results.length === 0) {
+        return res.status(200).json({ message: "No data to show" });
+      }
+  
+      return res.status(200).json({
+        data: results,
+        message: "Successfully fetched the orders report",
+      });
+    } catch (error) {
+      console.error("Error fetching orders report:", error);
+      res.status(500).json({ message: "Failed to fetch orders report", error: error.message });
+    }
+  };
+  
+  
+  
 
   
   

@@ -8,6 +8,7 @@ import { useElements, Elements, CardNumberElement, CardExpiryElement, CardCvcEle
 import { loadStripe } from '@stripe/stripe-js'
 import Stripe from "stripe"
 import { toast } from "sonner"
+import axios from "axios"
 
 const stripePromise = loadStripe('pk_test_51QTROSJnQIPyN4lXWIK6v6wyxe1fW7lQWyCXtU4AnyZuIOzwCIoB64PAbKJFZ3wzAaxNx08sjdj88CVNzDJNQFf500l2rJOSAa');
 
@@ -24,6 +25,8 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
   const [stripeReady, setStripeReady] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("card")
   const [profile, setProfile] = useState();
+  const [promoCode, setPromoCode] = useState("");
+  const [PromoCodeValue, setPromoCodeValue] = useState(0);
   const elements = useElements();
   const t = useStripe();
 
@@ -47,13 +50,13 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     if (paymentMethod === "wallet") {
-      await onPaid("Wallet", profile.wallet - amount);
+      await onPaid("Wallet", profile.wallet - amount+PromoCodeValue);
       setLoading(false);
       onOpenChange(false);
       return;
     }
 
-    const amountInCents = Math.round(amount * 100);
+    const amountInCents = Math.round((amount-PromoCodeValue) * 100);
     const cardNumberElement = elements.getElement("cardNumber");
 
     const result = await t.createPaymentMethod({
@@ -86,6 +89,66 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
     onOpenChange(false);
     setLoading(false);
   }
+  const handlePromoCodeChange = (e) => {
+    const promo = e.target.value;
+    setPromoCode(promo);   
+  };
+  const handlePromoCode = async () => {
+    try {
+      console.log("Promo code value:", promoCode);
+  
+      const response = await axios.post(`http://localhost:5001/api/use-promo-code`, {
+        promoCode,
+      });
+  
+      console.log("Response from backend:", response);
+  
+      if (response.data && response.data.value) {
+        setPromoCodeValue(response.data.value);
+        return { success: true }; // Promo code validated successfully
+      } else if (response.data && response.data.message) {
+        return { success: false, message: response.data.message }; // Error message from backend
+      } else {
+        return { success: false, message: "Unknown response format" };
+      }
+    } catch (error) {
+      console.error("Error occurred during promo code validation:", error);
+      return { success: false, message: error.response?.data?.message || error.message };
+    }
+  };
+  
+  console.log("Promo code entered:", promoCode.trim());
+  const handlePayClick = async () => {
+    try {
+      if (promoCode.trim()) {
+        console.log("Promo code entered:", promoCode.trim());
+  
+        // Validate promo code
+        const promoCodeResult = await handlePromoCode();
+  
+        // Check if promo code validation failed
+        if (!promoCodeResult.success) {
+          throw new Error(promoCodeResult.message || "Promo code validation failed");
+        }
+      }
+  
+      // Proceed to payment if promo code validation succeeds
+      await Pay();
+    } catch (error) {
+      console.error("Error during payment:", error);
+      toast(error.message || "An error occurred during payment.");
+    }
+  };
+  useEffect(() => {
+    if (!isOpen) {
+      setPromoCode("");
+    }
+  }, [isOpen]);
+  
+  
+  
+  
+  
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -151,8 +214,18 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
               </div>
             )}
           </div>
+          <div className="flex flex-col justify-center relative h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+  <input
+    type="text"
+    name="promoCode"
+    id="promoCode"
+    placeholder="Promo Code"
+    onChange={handlePromoCodeChange}
+    className="w-full h-full bg-transparent outline-none"
+  />
+</div>
 
-          <Button disabled={profile?.wallet < amount || loading} className="w-full mt-4" onClick={() => Pay()}>
+          <Button disabled={profile?.wallet < amount || loading} className="w-full mt-4" onClick={() => handlePayClick()}>
             {!loading ? `Pay ${(amount * 1)?.formatCurrency(currency)}` : <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           </Button>
         </div>

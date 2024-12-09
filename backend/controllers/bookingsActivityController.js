@@ -5,6 +5,7 @@ import { updatePoints } from "./touristController.js";
 import { getActivityPrice } from "./activityController.js";
 import tourist from "../models/touristModel.js";
 import nodemailer from "nodemailer";
+import { getTouristReviews } from "./ratingController.js"
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -102,12 +103,31 @@ export const createBooking = async (req, res) => {
 
 export const getAllActivityBookings = async (req, res) => {
   try {
+
     const touristId = req.user.userId;
+
+    // Fetch all activity bookings
     const allBookings = await BookingActivity.find({
       touristId: touristId,
     }).populate("activityId");
+
+    // Fetch all reviews for the tourist
+    const reviews = await getTouristReviews(touristId, "Activity");
+    const bookingsWithRatings = allBookings.map((booking) => {
+      const activityIdBooking = new mongoose.Types.ObjectId(booking.activityId);
+      const activityReview = reviews.find(
+        (review) => activityIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Use .equals() for ObjectId comparison
+      );
+      console.log("activity review is: ", activityReview);
+      return {
+        ...booking.toObject(),
+        review: activityReview || null, // Include the review or set to null if not found
+      };
+    });
+    // console.log(bookingsWithRatings);
+
     res.status(201).json({
-      allBookings,
+      bookingsWithRatings,
       message: "Successfully fetched all your activity bookings!",
     });
   } catch (error) {
@@ -117,32 +137,45 @@ export const getAllActivityBookings = async (req, res) => {
 
 export const cancelBooking = async (req, res) => {
   try {
-    // const touristId = req.user.userId;
     const bookingId = req.params.id;
-    const bookingToCancel = await BookingActivity.findById(bookingId).populate(
-      "activityId"
-    );
+    const bookingToCancel = await BookingActivity.findById(bookingId).populate("activityId");
+
+    if (!bookingToCancel) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
 
     const currentDate = new Date();
     const slotDateObj = new Date(bookingToCancel.activityId.date);
-
     const hoursDifference = (slotDateObj - currentDate) / (1000 * 60 * 60);
 
     if (hoursDifference < 48) {
       return res.status(400).json({
-        message:
-          "Cancellations are only allowed 48 hours before the activity date",
+        message: "Cancellations are only allowed 48 hours before the activity date",
       });
     }
 
+    // Update booking status
     bookingToCancel.completionStatus = "Cancelled";
     await bookingToCancel.save();
-    res.status(201).json({
+
+    // Refund logic
+    const touristId = bookingToCancel.touristId; 
+    const touristData = await tourist.findById(touristId); // Fetch the tourist data
+    const refundAmount = bookingToCancel.price; // Assuming 'price' is the amount paid for the booking
+
+    // Update user's wallet balance
+    touristData.wallet += refundAmount; // Add the refund amount to the wallet
+    await touristData.save(); // Save the updated wallet balance
+
+    res.status(200).json({
       bookingToCancel,
       message: "Successfully cancelled your booking!",
+      amountRefunded: refundAmount,
+      newBalance: touristData.wallet,
     });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error cancelling booking:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
 
@@ -266,11 +299,9 @@ export const addRatingAndComment = async (req, res) => {
   // }
 };
 
-
-
 export const getActivitiesReport = async (req, res) => {
   const advertiserId = req.user.userId; // Extract advertiser ID from the authenticated user
-//  const advertiserId = req.body.id;
+  //  const advertiserId = req.body.id;
   const { year, month, day } = req.query;
 
   try {

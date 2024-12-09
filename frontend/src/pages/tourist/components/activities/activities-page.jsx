@@ -97,9 +97,10 @@ export function ActivitiesPage() {
     try {
       const fetchedActivities = (
         await getActivities(`?${queryParams.toString()}`)
-      ).filter((a) => a.isBookingOpen);
+      );
 
       setActivities(fetchedActivities);
+      setCurrentPage(1);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching activities:", error);
@@ -135,40 +136,22 @@ export function ActivitiesPage() {
 
   return (
     <div className="mt-24">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex-grow"></div>
-      </div>
-
-      {/* Sort Selection */}
-      <div className="flex justify-end ml-4 mb-8" >
-        <div className="w-[180px] !ring-0" data-tour="sort-selection">
-          <SortSelection />
-        </div>
-      </div>
-
-
-
-      {/* Main Content */}
       <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar Section */}
-        <div
-          className="w-full -mt-16 md:w-1/4 sticky top-16 h-full"
-
-        ><div data-tour="search-bar">
+        <div className="w-full md:w-1/4 sticky top-16 h-full">
+          <div data-tour="search-bar">
             <SearchBar categories={searchCategories} />
           </div>
+          <Separator className="mb-5" />
           <div data-tour="filters">
-            <Separator className="mb-8" />
             <DateFilter />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <PriceFilter
               currency={currency}
               exchangeRate={exchangeRates[currency] || 1}
             />
             <Separator className="mt-5" />
             <RatingFilter />
-            <Separator className="mt-7" />
+            <Separator className="mt-5" />
             <SelectFilter
               name="Categories"
               paramName="categoryName"
@@ -176,41 +159,41 @@ export function ActivitiesPage() {
             />
           </div>
         </div>
-        {/* Main Activities Section */}
-        <div className="w-full md:w-3/4 -mt-4">
-          {/* Filter Section */}
-          <div className="flex justify-between items-center mb-24 -mt-3">
-            <div className="flex h-5 items-center -mt-8 space-x-4 text-sm">
+        <div className="w-full md:w-3/4 ">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex h-5 items-center space-x-4 text-sm">
+              {loading ? (
+                <div>Loading...</div>
+              ) : (
+                <div>{activities.length} results</div>
+              )}
               <ClearFilters />
             </div>
+            <div data-tour="sort-selection">
+              <SortSelection />
+            </div>
           </div>
-
-          {/* Activities and Pagination */}
           {loading ? (
             <div className="flex justify-center items-center mt-48">
               <CircularProgress />
             </div>
           ) : (
             <>
-              {/* Activities List */}
               <div data-tour="activities-list">
                 <div className="space-y-4">
                   {paginatedActivities.map((activity) => (
                     <ActivityCard
-                      token={token}
-                      bookActivity={createActivityBooking}
-                      activity={activity}
-                      currency={currency}
-                      exchangeRate={exchangeRates[currency] || 1} />
+                    key={activity._id}  // Add this unique key prop
+                    token={token}
+                    bookActivity={createActivityBooking}
+                    activity={activity}
+                    currency={currency}
+                    exchangeRate={exchangeRates[currency] || 1} />
                   ))}
                 </div>
               </div>
 
-              {/* Pagination */}
-              <div
-                className="flex justify-center mt-6 space-x-2"
-
-              >
+              <div className="flex justify-center mt-6 space-x-2">
                 <div
                   className="flex justify-center mt-6 "
                   data-tour="pagination"
@@ -225,12 +208,12 @@ export function ActivitiesPage() {
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                     (page) => (
                       <Button
-                        key={page}
-                        variant={currentPage === page ? 'default' : 'outline'}
-                        onClick={() => {
-                          setCurrentPage(page);
-                          window.scroll(0, 0);
-                        }}
+                      key={`page-${page}`}  // Make the key more explicit
+                      variant={currentPage === page ? 'default' : 'outline'}
+                      onClick={() => {
+                        setCurrentPage(page);
+                        window.scroll(0, 0);
+                      }}
                       >
                         {page}
                       </Button>

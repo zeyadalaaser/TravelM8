@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, Bell } from "lucide-react";
+import { ChevronDown, Bell, UserCircle } from "lucide-react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import LoginPage from "../pages/signIn/signin";
@@ -325,7 +325,7 @@ export default function Navbar({ children }) {
           onClick={() => navigate("/")}
           style={{ cursor: "pointer" }}
         >
-          <div className="flex items-center">
+          <div className="flex items-center -ml-8">
             <img src={logo} alt="TravelM8 Logo" className="h-20 w-auto -mr-4" />
             <span>TRAVELM8</span>
           </div>
@@ -446,66 +446,63 @@ export default function Navbar({ children }) {
                   </div>
                 </SheetContent>
               </Sheet>
-              <button
-                onClick={handleClick}
-                className={`${
-                  currentPage === "/"
-                    ? "text-white hover:text-white/80 border border-white rounded-full px-4 py-1 flex items-center space-x-2"
-                    : "text-black hover:text-black/80 border border-black rounded-full px-4 py-1 flex items-center space-x-2"
-                }`}
-              >
-                <span>Hello, {userName}</span>
-                <ChevronDown
-                  className={`h-4 w-4 ${
-                    currentPage === "/" ? "text-white" : "text-gray-500"
-                  }`}
-                />
-              </button>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                MenuListProps={{
-                  "aria-labelledby": "basic-button",
-                  sx: { p: 0 },
-                }}
-                PaperProps={{
-                  sx: {
-                    width: "200px",
-                    marginTop: "8px",
-                  },
-                }}
-              >
-                {userRole !== "Admin" && (
-                  <div>
-                    <MenuItem
-                      onClick={() => {
-                        if (userRole === "Tourist") {
-                          navigate("/tourist-profile");
-                        }
-                        handleClose();
-                      }}
-                    >
-                      My profile
-                    </MenuItem>
-                    <Separator />
-                  </div>
-                )}
-                {userRole === "Admin" && (
-                  <MenuItem
-                    onClick={() => {
-                      setIsPasswordModalOpen(true);
-                      handleClose();
-                    }}
-                  >
-                    Change Password
-                  </MenuItem>
-                )}
 
-                <Separator />
-                <MenuItem onClick={handleLogoutClick}>Sign out</MenuItem>
-              </Menu>
+
+<Button
+  variant="ghost"
+  size="icon"
+  onClick={handleClick}
+  className={
+    location.pathname === "/"
+      ? "text-white hover:bg-transparent hover:text-white"
+      : "text-black"
+  }
+>
+  <UserCircle className="h-7 w-7" /> 
+</Button>
+<Menu
+  id="basic-menu"
+  anchorEl={anchorEl}
+  open={Boolean(anchorEl)}
+  onClose={handleClose}
+  MenuListProps={{
+    "aria-labelledby": "basic-button",
+    sx: { p: 0 },
+  }}
+  PaperProps={{
+    sx: {
+      width: "200px",
+    },
+  }}
+>
+{userRole !== "Admin" && (
+    <div>
+      <MenuItem
+        onClick={() => {
+          if (userRole === "Tourist") {
+            navigate("/tourist-profile");
+          }
+          handleClose();
+        }}
+      >
+        My profile
+      </MenuItem>
+      <Separator />
+    </div>
+  )}
+  {userRole === "Admin" && (
+    <MenuItem
+      onClick={() => {
+        setIsPasswordModalOpen(true);
+        handleClose();
+      }}
+    >
+      Change Password
+    </MenuItem>
+  )}
+  <Separator />
+  <MenuItem onClick={handleLogoutClick}>Sign out</MenuItem>
+</Menu>
               <LogoutAlertDialog
                 isOpen={isAlertOpen}
                 onClose={() => setAlertOpen(false)}

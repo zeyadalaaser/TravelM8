@@ -129,8 +129,16 @@ function AddProductForm({ onSubmit, initialData }) {
         />
       </div>
       <div>
-        <Label htmlFor="image">Upload Image</Label>
-        <Input id="image" name="image" type="file" accept="image/*" onChange={handleChange} required disabled={isSubmitting} />
+        <Label htmlFor="image">Image </Label>
+        <Input
+          id="image"
+          name="image"
+          value={formData.image}
+          // accept="image/*"
+          required
+          onChange={handleChange}
+          disabled={isSubmitting}
+        />
       </div>
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Saving..." : "Save Product"}

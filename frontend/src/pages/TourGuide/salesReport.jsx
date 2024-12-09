@@ -144,9 +144,31 @@ export default function SalesReport() {
       dateInputRef.current.value = ""; // Clear the date input field
     }
   };
+  const combinedData = items.map((item) => {
+    let reportItem;
+  
+    if (item.name) {
+      // If item has 'name', treat it as an itinerary
+      reportItem = reportData.find((report) => report.name === item.name);
+    } else if (item.title) {
+      // If item has 'title', treat it as an activity
+      reportItem = reportData.find((report) => report.name === item.title);
+    }
+  
+    return reportItem || { name: item.name || item.title, revenue: 0, bookingCount: 0 }; // Add item with zero values if not found in reportData
+  });
+  
+  // Add any reportData entries that are not in items
+  reportData.forEach((reportItem) => {
+    if (!combinedData.some((data) => data.name === reportItem.name)) {
+      combinedData.push(reportItem); // Add missing reportItem to the combinedData
+    }
+  });
+  
 
-  const filteredReportData = Array.isArray(reportData)
-    ? reportData.filter((item) =>
+   
+  const filteredReportData = Array.isArray(combinedData)
+    ? combinedData.filter((item) =>
         selectedItem ? item.name === selectedItem : true
       )
     : [];
@@ -154,7 +176,7 @@ export default function SalesReport() {
   return (
     <div className="p-6 space-y-6">
       <div className="grid gap-6 md:grid-cols-3 space-y-4">
-        <Card className="w-full md:w-[1100px]">
+        <Card className="col-span-3 w-full">
           <CardHeader>
             <CardTitle>Filter Sales Report</CardTitle>
           </CardHeader>
@@ -211,57 +233,61 @@ export default function SalesReport() {
           </CardContent>
         </Card>
       </div>
-
       <Card>
-        <CardHeader>
-          <CardTitle>Revenue Overview</CardTitle>
-          <CardDescription>Revenue performance</CardDescription>
-        </CardHeader>
-        <CardContent className="w-full md:h-[550px] flex justify-center">
-          <ResponsiveContainer width="90%" height={500}>
-            <BarChart data={filteredReportData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="name"
-                angle={-45}
-                textAnchor="end"
-                height={100}
-                interval={0}
-                tick={{ fontSize: 13 }}
-              />
-              <YAxis
-                tickFormatter={(tick) => {
-                  if (tick > 1000000000) {
-                    return `${(tick / 1000000000).toFixed(1)}B`;
-                  } else if (tick >= 1000000) {
-                    return `${(tick / 1000000).toFixed(1)}M`;
-                  } else if (tick >= 1000) {
-                    return `${(tick / 1000).toFixed(1)}K`;
-                  }
-                  return tick;
-                }}
-                tickCount={7}
-              />
-              <Tooltip
-                formatter={(value) => {
-                  if (value >= 1000000) {
-                    return `${(value / 1000000).toFixed(1)}M`;
-                  } else if (value >= 1000) {
-                    return `${(value / 1000).toFixed(1)}K`;
-                  }
-                  return value;
-                }}
-              />
-              <Bar
-                dataKey="revenue"
-                fill="#8884d8"
-                barSize={50}
-                radius={[5, 5, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+  <CardHeader>
+    <CardTitle>Revenue Overview</CardTitle>
+    <CardDescription>Revenue performance</CardDescription>
+  </CardHeader>
+  <CardContent className="w-full md:h-[550px] flex justify-center">
+    <ResponsiveContainer width="90%" height={500}>
+      <BarChart data={filteredReportData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis
+          dataKey="name"
+          angle={-30}  // Make the text horizontal (no rotation)
+          textAnchor="middle"  // Center the text under the bars
+          height={120}  // Ensure there's enough space between the bars and the labels
+          interval={0}
+          tick={{ fontSize: 13 }}
+          tickLine={false}  // Disable tick line for cleaner appearance
+          dy={53}  // Adjust the vertical position (downward) of the labels
+          dx={-10}  // Shift the labels slightly to the left, if needed
+        />
+        <YAxis
+          tickFormatter={(tick) => {
+            if (tick > 1000000000) {
+              return `${(tick / 1000000000).toFixed(1)}B`;
+            } else if (tick >= 1000000) {
+              return `${(tick / 1000000).toFixed(1)}M`;
+            } else if (tick >= 1000) {
+              return `${(tick / 1000).toFixed(1)}K`;
+            }
+            return tick;
+          }}
+          tickCount={7}
+        />
+        <Tooltip
+          formatter={(value) => {
+            if (value >= 1000000) {
+              return `${(value / 1000000).toFixed(1)}M`;
+            } else if (value >= 1000) {
+              return `${(value / 1000).toFixed(1)}K`;
+            }
+            return value;
+          }}
+        />
+        <Bar
+          dataKey="revenue"
+          fill="#8884d8"
+          barSize={50}
+          radius={[5, 5, 0, 0]}
+        />
+      </BarChart>
+    </ResponsiveContainer>
+  </CardContent>
+</Card>
+
+
 
       <Card>
   <CardHeader>

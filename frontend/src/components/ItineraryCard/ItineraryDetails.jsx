@@ -18,22 +18,33 @@ import { flagItinerary } from "../../pages/admin/services/AdminItineraryService"
 // import { Timeline } from './Timeline';
 import { ChooseDate } from './ChooseDate';
 import { toast } from "sonner";
-
+import axios from "axios";
+import {Stars} from "../Stars.jsx"
 export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTourGuide, onRefresh,currency,token }) {
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
   const [isToken,setToken]=useState(true);
+  const [reviews, setReviews] = useState({});
+
+  const getReviews = async (entityId) => {
+    try {
+        // Construct query parameters
+        const params = {
+            entityId,
+            entityType:"Itinerary",
+        };
+
+        const response = await axios.get('http://localhost:5001/api/ratings', { params });
+
+        console.log('Reviews:', response.data.reviews);
+        console.log('Average Rating:', response.data.averageRating);
+        setReviews(response.data.reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+    }
+};
 
 
-  // useState(() => {
-  //   if (!token) {
-  //     setToken(false);
-  //     toast(`Failed to book itinerary`, {
-  //       description: `You need to be logged in to book an itinerary`,
-  //     });
-  // }
-   
-  // }, []);
 
   const handleDelete = async (id) => {
     try {
@@ -74,7 +85,7 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
         return;
       }
       onRefresh();
-      ttoast(`Itinerary ${state} successfully`);
+      toast(`Itinerary ${state} successfully`);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -93,16 +104,18 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">View Details</Button>
+        <Button onClick={() => getReviews(itinerary)} variant="outline">
+          View Details
+        </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             {itinerary.name}
           </DialogTitle>
         </DialogHeader>
-        <div className="flex gap-4">
-          <div className="w-1/2">
+        <div className="flex gap-4 h-full">
+          <div className="w-2/5 flex-shrink-0">
             <div className="aspect-square overflow-hidden rounded-lg mb-2">
               <img
                 src={
@@ -131,137 +144,133 @@ export default function ItineraryDetails({ itinerary, isAdmin, isTourist, isTour
               ))}
             </div>
           </div>
-          <div className="w-2/3 space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <Globe className="w-4 h-4" />
-              <Badge variant="secondary">{itinerary.tourLanguage}</Badge>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Tag className="w-4 h-4" />
-              {itinerary.tags.map((tag, tagIndex) => (
-                <Badge
-                  key={tagIndex}
-                  className="space-x-12"
-                  variant="secondary"
-                >
-                  {tag?.name ?? tag}
-                </Badge>
-              ))}
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Description</h3>
-              <div className="grid gap-2">
-                <div>
-                  <div className="flex flex-wrap gap-2 ">
-                    <p className="text-sm text-muted-foreground">
-                      {itinerary.description}
-                    </p>
-                  </div>
-                </div>
+          <div
+            className="w-2/3 overflow-y-auto pr-4"
+            style={{ maxHeight: "calc(80vh - 150px)" }}
+          >
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <Globe className="w-4 h-4" />
+                <Badge variant="secondary">{itinerary.tourLanguage}</Badge>
               </div>
-            </div>
-            <Separator />
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Activities</h3>
-              <div className="grid gap-2">
-                <div>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {itinerary.activities.map((activity, index) => (
-                      <Badge key={index} variant="secondary">
-                        {activity}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Separator />
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Historical Sites</h3>
-              <div className="grid gap-2">
-                <div>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    {itinerary.historicalSites.map((site, index) => (
-                      <Badge key={index} variant="secondary">
-                        {site}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Separator />
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Timeline</h3>
-              <div className="relative space-y-8 before:absolute before:inset-0 before:left-4 before:h-full before:w-0.5 before:-ml-px before:bg-gray-200">
-                {itinerary.timeline.map((event, index) => (
-                  <div key={index} className="relative flex items-start group">
-                    <div className="absolute left-0 h-8 w-8 rounded-full bg-gray-800  flex items-center justify-center text-white">
-                      <CalendarClock className=" h-4 w-4" />
-                    </div>
-                    <div className="ml-12 space-y-1">
-                      <div className="text-lg font-semibold text-gray-900">
-                        {event.event}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(event.startTime).toLocaleString()} -{" "}
-                        {new Date(event.endTime).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {/* <div className="flex-col gap-2">
-                {itinerary.timeline.map((event, index) => (
-                  <div key={index} className="flex items-center mb-2">
-                    <div className="w-1 h-1 bg-black rounded-full mr-2"></div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-md">{event.event}</h4>
-                      <p className="text-sm">
-                        Start: {new Date(event.startTime).toLocaleString()}
-                      </p>
-                      <p className="text-sm">
-                        {" "}
-                        End: {new Date(event.endTime).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div> */}
-            </div>
-            <Separator />
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Available Dates</h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {itinerary.availableSlots.map((slot, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center p-2 border rounded-md"
+              <div className="flex flex-wrap gap-2">
+                <Tag className="w-4 h-4" />
+                {itinerary.tags.map((tag, tagIndex) => (
+                  <Badge
+                    key={tagIndex}
+                    className="space-x-12"
+                    variant="secondary"
                   >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span className="text-sm">
-                      {new Date(slot.date).toLocaleDateString()}
-                    </span>
-                  </div>
+                    {tag?.name ?? tag}
+                  </Badge>
                 ))}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Description</h3>
+                <p className="text-sm text-muted-foreground">
+                  {itinerary.description}
+                </p>
+              </div>
+              <Separator />
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Activities</h3>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {itinerary.activities.map((activity, index) => (
+                    <Badge key={index} variant="secondary">
+                      {activity}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Historical Sites</h3>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  {itinerary.historicalSites.map((site, index) => (
+                    <Badge key={index} variant="secondary">
+                      {site}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Timeline</h3>
+                <div className="relative space-y-8 before:absolute before:inset-0 before:left-4 before:h-full before:w-0.5 before:-ml-px before:bg-gray-200">
+                  {itinerary.timeline.map((event, index) => (
+                    <div
+                      key={index}
+                      className="relative flex items-start group"
+                    >
+                      <div className="absolute left-0 h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center text-white">
+                        <CalendarClock className="h-4 w-4" />
+                      </div>
+                      <div className="ml-12 space-y-1">
+                        <div className="text-lg font-semibold text-gray-900">
+                          {event.event}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {new Date(event.startTime).toLocaleString()} -{" "}
+                          {new Date(event.endTime).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator />
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Available Dates</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {itinerary.availableSlots.map((slot, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center p-2 border rounded-md"
+                    >
+                      <Calendar className="w-4 h-4 mr-2" />
+                      <span className="text-sm">
+                        {new Date(slot.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <Separator></Separator>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Reviews and Comments
+                </h3>
+                {reviews && reviews.length > 0 ? (
+                  <ul className="space-y-4">
+                    {reviews.map((review, index) => (
+                      <li key={index} className="border-b pb-4 last:border-b-0">
+                          <span className="font-medium">{review.userId.username}</span>
+                          <Stars rating={review.rating} />
+                        <p className="text-sm text-muted-foreground">
+                          {review.comment}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No reviews yet.
+                  </p>
+                )}
               </div>
             </div>
           </div>
         </div>
-        <div className="flex items-center mt-8 bg-gray-100 justify-between w-full p-4 rounded-lg">
-          {/* Price on the far left */}
+        <div className="flex items-center mt-4 bg-gray-100 justify-between w-full p-4 rounded-lg">
           <span className="text-2xl font-bold">
             {`${(itinerary.price * 1).formatCurrency(currency)}`}
           </span>
-
-          {/* Right-aligned components (Timeline and ChooseDate) */}
           <div className="flex items-center space-x-4">
-            {/* <Timeline selectedItinerary={itinerary} /> */}
             {isTourist && <ChooseDate itinerary={itinerary} token={token} />}
           </div>
         </div>
         {(isTourGuide || isAdmin) && (
-          <DialogFooter className="flex-col sm:flex-row gap-2 mt-6">
+          <DialogFooter className="flex-col sm:flex-row gap-2 mt-4">
             {isTourGuide && (
               <>
                 <Button

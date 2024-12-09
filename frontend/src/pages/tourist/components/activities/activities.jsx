@@ -1,4 +1,13 @@
-import { Clock, Tag, MapPin, Bookmark, BookmarkPlus } from "lucide-react";
+import { Clock, Tag, MapPin, Bookmark, BookmarkPlus, Bell } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "@/components/Stars";
@@ -15,6 +24,8 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
   const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [toBook, setToBook] = useState();
+  const [notifiedActivities, setNotifiedActivities] = useState([]);
+  const [activeDialogId, setActiveDialogId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -93,6 +104,7 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
     }
   }, [token]);
 
+  
   const handleBookmark = async (activityId) => {
     if (!token) {
       toast(`Failed to bookmark activity`, {
@@ -139,6 +151,21 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
     }
   };
 
+  const handleNotifyMe = (activityId) => {
+    if (notifiedActivities.includes(activityId)) {
+      toast(`Success`, {
+        description: `Notification removed for this activity`,
+      });
+      setNotifiedActivities(prev => prev.filter(id => id !== activityId));
+    } else {
+      toast(`Success`, {
+        description: `You will be notified when this activity becomes available for booking`,
+      });
+      setNotifiedActivities(prev => [...prev, activityId]);
+    }
+    setActiveDialogId(null);
+  };
+  
   return (
     <div className="space-y-4">
       {activities.map((activity, index) => (
@@ -156,16 +183,78 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                 <h3 className="text-xl font-semibold mb-1">{activity.title}</h3>
                 <div className="flex items-center space-x-2">
                   <ShareButton id={activity._id} name="activity" />
+                  
+                  {!activity.isBookingOpen && (
+                    <Dialog 
+                      open={activeDialogId === activity._id && !notifiedActivities.includes(activity._id)}
+                      onOpenChange={(open) => {
+                        if (!token && open) {
+                          toast.error("Authentication Required", {
+                            description: "You need to be logged in first",
+                          });
+                          return;
+                        }
+                        setActiveDialogId(open ? activity._id : null);
+                      }}
+                    >
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={(e) => {
+                            if (!token) {
+                              e.preventDefault();
+                              toast(`Failed to set notification`, {
+                                description: `You need to be logged in first`,
+                              });
+                              return;
+                            }
+                            if (notifiedActivities.includes(activity._id)) {
+                              e.preventDefault();
+                              handleNotifyMe(activity._id);
+                              return;
+                            }
+                          }}
+                          className={`w-10 h-10 hover:bg-transparent ${
+                            notifiedActivities.includes(activity._id)
+                              ? "text-yellow-500 hover:text-yellow-600"
+                              : "text-black hover:text-gray-600"
+                          }`}
+                        >
+                          <Bell className={`w-6 h-6 ${
+        notifiedActivities.includes(activity._id)
+          ? "fill-yellow-500 stroke-black" // Yellow fill with black border
+          : "fill-none stroke-black" // Dark border when inactive
+      } stroke-2`} // Keep the border bold
+                        />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Stay Updated</DialogTitle>
+                          <DialogDescription className="pt-2">
+                            Get notified when this activity opens for booking so you don't miss out on this amazing experience!
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter className="mt-4">
+                          <Button onClick={() => handleNotifyMe(activity._id)}>
+                            Get Notified
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  )}
 
                   <button
                     onClick={() => handleBookmark(activity._id)}
                     className="w-10 h-10 text-gray-500 hover:text-black"
                   >
                     <Bookmark
-                      className={`w-7 h-7 ${bookmarkedActivities.includes(activity._id)
-                        ? "fill-yellow-400 text-black"
-                        : "fill-none text-black"
-                        }`}
+                      className={`w-6 h-6 ${
+                        bookmarkedActivities.includes(activity._id)
+                          ? "fill-yellow-400 text-black"
+                          : "fill-none text-black"
+                      }`}
                     />
                   </button>
                 </div>
@@ -221,18 +310,11 @@ function Activities({ token, bookActivity, activities, currency, exchangeRate })
                     token={token}
                   />
                   <div className="px-2">
-                    <Button onClick={() => openDialog(activity)}>
-                      Book activity
-                    </Button>
-
-                    <PaymentDialog
-                      isOpen={paymentOpen}
-                      currency={currency}
-                      onOpenChange={setPaymentOpen}
-                      amount={activity.price}
-                      token={token}
-                      onPaid={handleBook}
-                    />
+                  {activity.isBookingOpen && (
+                      <Button onClick={() => handleBook(activity)}>
+                        Book activity
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

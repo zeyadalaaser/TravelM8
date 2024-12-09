@@ -8,7 +8,7 @@ import { PriceFilter } from "../filters/price-filter";
 import { SortSelection } from "../filters/sort-selection";
 import ItineraryCard from "@/components/ItineraryCard/ItineraryCard";
 import { SearchBar } from "../filters/search";
-import { getItineraries, getMyPreferredTags } from "../../api/apiService";
+import { getItineraries, getMyPreferredTags, getPreferenceTags } from "../../api/apiService";
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -44,7 +44,7 @@ export function ItinerariesPage() {
   const isAdmin = false; // Set to `true` for admin, `false` for tourists
   const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
   useEffect(() => {
-    if (currentPage === 'itineraries') {
+    if (walkthroughPage === 'itineraries') {
       clearSteps();
       addSteps([
         {
@@ -66,15 +66,10 @@ export function ItinerariesPage() {
           target: '[data-tour="itinerary-cards"]',
           content: 'Browse through our carefully curated itineraries.',
           disableBeacon: true,
-        },
-        {
-          target: '[data-tour="itinerary-pagination"]',
-          content: 'here is to go to next page.',
-          disableBeacon: true,
         }
       ], 'itineraries');
     }
-  }, [addSteps, clearSteps, currentPage]);
+  }, [addSteps, clearSteps, walkthroughPage]);
 
   useEffect(() => {
     const fetchBookmarks = async () => {
@@ -165,8 +160,8 @@ export function ItinerariesPage() {
 
     try {
       let fetchedItineraries = (
-        await getItineraries(`?${queryParams.toString()}`)
-      ).filter((i) => i.isBookingOpen);
+        await getItineraries(`?${queryParams.toString()}`, token)
+      );
 
       // Filter out flagged itineraries if the user is a tourist
       if (!isAdmin) {
@@ -175,6 +170,7 @@ export function ItinerariesPage() {
         );
       }
       setItineraries(fetchedItineraries);
+      setCurrentPage(1);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching itineraries:", error);
@@ -190,13 +186,12 @@ export function ItinerariesPage() {
     { name: "Tag", value: "tag" },
   ];
 
-  const [preferences, setPreferences] = useState([]);
-  useEffect(() => {
-    const getPreferences = async () => {
-      setPreferences(await getMyPreferredTags(token));
-    };
-    getPreferences();
-  }, []);
+  const sortOptions = [
+    ...(token ? [{ value: "tags-pref", description: "My Preferences" }] : []),
+    { value: "price-asc", description: "Price: Low to High" },
+    { value: "price-desc", description: "Price: High to High" },
+    { value: "averageRating-desc", description: "Rating" },
+];
 
   // Handle page change
   const handlePageChange = (pageNumber) => {
@@ -206,46 +201,41 @@ export function ItinerariesPage() {
 
   return (
     <div className="mt-24">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex-grow" >
-          <div className="mb-6 w-[360px]" data-tour="itinerary-search">
-          <SearchBar categories={searchCategories} />
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="w-full md:w-1/4 sticky top-16 h-full" >
+          <div data-tour="itinerary-search">
+            <SearchBar categories={searchCategories} />
+          </div>
+          <Separator className="mb-5" />
+          <div data-tour="itinerary-filters">
+            <DateFilter />
+            <Separator className="mt-5" />
+            <PriceFilter
+              currency={currency}
+              exchangeRate={exchangeRates[currency] || 1}
+            />
+            <Separator className="mt-5" />
+            <SelectFilter
+              name="Languages"
+              paramName="language"
+              getOptions={async () => ["Arabic", "English", "German"]}
+            />
+            <Separator className="mt-5" />
+            <SelectFilter name="Tags" paramName="tag" getOptions={getPreferenceTags} />
           </div>
         </div>
-        <div className="ml-4 mb-8" data-tour="itinerary-sort">
-          <SortSelection />
-        </div>
-      </div>
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full -mt-3 md:w-1/4 sticky top-16 h-full"data-tour="itinerary-filters">
-          <DateFilter />
-          <Separator className="mt-7" />
-          <PriceFilter
-            currency={currency}
-            exchangeRate={exchangeRates[currency] || 1}
-          />
-          <Separator className="mt-7" />
-          <SelectFilter
-            name="Languages"
-            paramName="language"
-            getOptions={async () => ["Arabic", "English", "German"]}
-          />
-          {preferences.length > 0 && (
-            <>
-              <Separator className="mt-7" />
-              <SelectFilter
-                name="Preference Tags"
-                paramName="tag"
-                getOptions={async () => preferences}
-              />
-            </>
-          )}
-        </div>
-        <div className="w-full md:w-3/4 -mt-7"data-tour="itinerary-cards">
-          <div className="flex justify-between items-center mb-2 -mt-3">
+        <div className="w-full md:w-3/4" data-tour="itinerary-cards">
+          <div className="flex justify-between items-center mb-6">
             <div className="flex h-5 items-center space-x-4 text-sm">
-              <div>{itineraries.length} results</div>
+              {loading ? (
+                <div>Loading...</div>
+              ) : (
+                <div>{itineraries.length} results</div>
+              )}
               <ClearFilters />
+            </div>
+            <div data-tour="itinerary-sort">
+              <SortSelection options={sortOptions} />
             </div>
           </div>
           {loading ? (
@@ -254,13 +244,13 @@ export function ItinerariesPage() {
             </div>
           ) : (
             <><ItineraryCard
-                itineraries={paginatedItineraries}
-                isTourist={true}
-                currency={currency}
-                exchangeRate={exchangeRates[currency] || 1}
-                bookmarkedItineraries={bookmarkedItineraries} // Add this prop
-                handleBookmark={handleBookmark} /><div className="flex justify-center mt-6 space-x-2">
-                  <div className="flex justify-center mt-6 "data-tour="itinerary-pagination">
+              itineraries={paginatedItineraries}
+              isTourist={true}
+              currency={currency}
+              exchangeRate={exchangeRates[currency] || 1}
+              bookmarkedItineraries={bookmarkedItineraries} // Add this prop
+              handleBookmark={handleBookmark} /><div className="flex justify-center mt-6 space-x-2">
+                <div className="flex justify-center mt-6 ">
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
@@ -275,7 +265,7 @@ export function ItinerariesPage() {
                       onClick={() => {
                         setCurrentPage(page);
                         window.scroll(0, 0);
-                      } }
+                      }}
                     >
                       {page}
                     </Button>
@@ -288,7 +278,7 @@ export function ItinerariesPage() {
                     Next
                   </Button>
                 </div></div></>
-        
+
           )}
 
         </div>

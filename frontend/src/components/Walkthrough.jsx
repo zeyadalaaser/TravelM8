@@ -10,14 +10,18 @@ export function Walkthrough() {
   } = useWalkthrough();
 
   useEffect(() => {
+    const setBodyOverflow = (value) => {
+      document.body.style.overflow = value;
+    };
+
     if (isWalkthroughActive) {
-      document.body.style.overflow = 'hidden';
+      setBodyOverflow('hidden');
     } else {
-      document.body.style.overflow = 'auto';
+      setBodyOverflow('auto');
     }
 
     return () => {
-      document.body.style.overflow = 'auto';
+      setBodyOverflow('auto');
     };
   }, [isWalkthroughActive]);
 
@@ -26,6 +30,15 @@ export function Walkthrough() {
 
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       toggleWalkthrough();
+      // Scroll to the top of the page after finishing or skipping the walkthrough
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      // Ensure body overflow is reset after scrolling
+      setTimeout(() => {
+        document.body.style.overflow = 'auto';
+      }, 100);
     }
 
     if (action === 'update' && type === 'step:after') {
@@ -51,6 +64,8 @@ export function Walkthrough() {
       scrollToFirstStep={true}
       scrollOffset={100}
       disableOverlayClose={true}
+      disableCloseOnEsc={true}
+      hideCloseButton={true}
       spotlightClicks={true}
       styles={{
         options: {
@@ -70,7 +85,7 @@ export function Walkthrough() {
           maxWidth: '300px',
         },
         tooltipContainer: {
-          textAlign: 'left'
+          textAlign: 'center'
         },
         buttonNext: {
           backgroundColor: '#007bff',
@@ -89,6 +104,9 @@ export function Walkthrough() {
       }}
       floaterProps={{
         disableAnimation: true,
+        hideArrow: false,
+        offset: 16,
+        placement: 'auto',
         styles: {
           floater: {
             filter: 'drop-shadow(0 0 5px rgba(0, 0, 0, 0.2))',

@@ -1,12 +1,10 @@
-
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { getMyProducts } from './api/apiService'; // Assuming this is the correct import
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle,   CardDescription,   CardFooter,} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DollarSign, Calendar, Users, Settings, Plus } from "lucide-react";
+import { DollarSign, Calendar, Users, Settings, Plus,Map } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import AddProductForm from "../seller/components/AddProductForm"; // Assuming AddProductForm is in the same folder
@@ -16,10 +14,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocation } from "react-router-dom"; 
 import ProductCard from "../seller/components/ProductCard";
 import ProductDetailCard from "../seller/components/ProductDetailsCard";
-
-const token = localStorage.getItem("token");
+import SalesReport from './components/SalesReport.jsx';
+import axios from 'axios';
+import { SearchBar } from "./components/filters/search";
+import { PriceFilter } from "./components/filters/price-filter";
+import Footer from "@/components/Footer.jsx";
+import { Pencil, Trash2, ShoppingCart, Eye } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 const SellerDashboard = () => {
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const location = useLocation();
   const [products, setProducts] = useState([]);
@@ -30,7 +36,69 @@ const SellerDashboard = () => {
   const [editProductData, setEditProductData] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("products");
+  const [reportData, setReportData] = useState([]);
 
+  const fetchReport = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const endpoint ="http://localhost:5001/api/ordersReport";
+      const response = await axios.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+       // params: { year, month, day },
+      });
+      setReportData(response.data?.data || []); // Ensure it's always an array
+      console.log(response.data?.data);
+    } catch (err) {
+      console.error(`Error fetching products report:`,err);
+      setError(err.response?.data?.message || "Failed to fetch report");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const toggleArchiveStatus = async (id, product) => {
+    try {
+      const newStatus = !product?.isArchived;
+      setProducts((prevProducts) =>
+        prevProducts.map((item) =>
+          item._id === id ? { ...item, isArchived: newStatus } : item
+        )
+      );
+      await fetch(
+        `http://localhost:5001/api/products/${id}/${
+          isArchived ? "unarchive" : "archive"
+        }`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      setProducts((prev) =>
+        prev.map((product) =>
+          product._id === id
+            ? { ...product, archived: !isArchived }
+            : product
+        )
+      );
+      console.log("Archive status updated successfully");
+    } catch (error) {
+      console.error("Error updating archive status:", error);
+    }
+  };
+
+   
+
+  useEffect(() => {
+    
+      fetchReport();
+  
+  }, [token ]);
+  console.log(reportData);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -50,7 +118,6 @@ const SellerDashboard = () => {
     fetchProducts();
   }, [location.search]);
 
-  // Handle product deletion
   const handleDelete = async (productId) => {
     try {
       const response = await fetch(
@@ -107,7 +174,6 @@ const SellerDashboard = () => {
     }
   };
 
-  // Handle product editing
   const handleEdit = (product) => {
     setEditProductData(product);
     setIsEditProductModalOpen(true);
@@ -182,9 +248,9 @@ const SellerDashboard = () => {
 
    const handleCardClick = (product) => {
    
-      console.log("Product clicked:", product); // Add logging here
-      setSelectedProduct(product);  // Ensure product is passed correctly
-      console.log("Selected Product after setting:", selectedProduct); // Log the selected product after setting it
+      console.log("Product clicked:", product); 
+      setSelectedProduct(product);  
+      console.log("Selected Product after setting:", selectedProduct);
       setIsDetailModalOpen(true);
     
   }; 
@@ -196,88 +262,96 @@ const SellerDashboard = () => {
     setSelectedProduct(null);
   };
 
+  useEffect(() => {
+    if (!token) return;
+    try {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000); 
+
+      if (decodedToken.exp < currentTime) {
+        localStorage.removeItem("token");
+        navigate("/");
+      } else {
+        const timeout = setTimeout(() => {
+          localStorage.removeItem("token");
+          navigate("/");
+        }, (decodedToken.exp - currentTime) * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  }, [token, navigate]);
+
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <aside className="w-64 h-full bg-white drop-shadow-xl flex flex-col justify-between">
-        <div>
-          <div className="p-4">
-            <h2 className="text-2xl font-bold text-gray-800">Seller Dashboard</h2>
-          </div>
-          <nav className="mt-6">
-            <button
-              className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left"
-              onClick={() => navigate("/SellerProducts")}
-            >
-              <Calendar className="mr-3" />
-              Products
-            </button>
-            <button
-              className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left"
-              /* onClick={() => navigate("/SalesReport")} */
-            >
-              <DollarSign className="mr-3" />
-              Sales Report
-            </button>
-            <button
-              className="flex items-center px-4 py-2 mt-2 text-gray-600 hover:bg-gray-200 w-full text-left"
-              /* onClick={() => navigate("/Settings")} */
-            >
-              <Settings className="mr-3" />
-              Settings
-            </button>
-          </nav>
-        </div>
-        <div className="p-4">
-          <Logout />
-        </div>
-      </aside>
-
-      {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <Header name="Seller Name" type="Seller" editProfile="/sellerProfile" />
-
         <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             {/* Key Statistics Cards */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Total Products</CardTitle>
+            <Card >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Products
+                </CardTitle>
+                <Map className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{products.length}</div>
+                <div className="text-2xl font-bold">{products?.length}</div>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader>
-                <CardTitle>Active Products</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Active Products
+                </CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {products.filter((product) => !product.archived).length}
+                {products?.filter((product) => !product.archived).length}
                 </div>
               </CardContent>
             </Card>
             <Card>
-              <CardHeader>
-                <CardTitle>Total Sales</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Revenue
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">0 USD</div> {/* Update with real sales data */}
+                <div className="text-2xl font-bold">
+                $
+                    {reportData.length > 0
+                      ? reportData
+                          .reduce((total, item) => total + item.revenue, 0)
+                          .toFixed(2)
+                      : "0.00"}
+                </div>
               </CardContent>
             </Card>
           </div>
-          <div className="flex justify-between items-center">
-                  <h2 className="text-2xl font-bold">Manage Activities</h2>
-
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="space-y-4"
+          >
+            <div className="flex mb-10 justify-between items-center">
+              <TabsList>
+                <TabsTrigger value="products">Products</TabsTrigger>
+                <TabsTrigger value="sales">Sales Report</TabsTrigger>
+              </TabsList>
           {/* Add Product Button */}
           <Dialog open={isAddProductModalOpen} onOpenChange={setIsAddProductModalOpen}>
             <DialogTrigger asChild>
-              {/* <Button className="mt-4">Add New Product</Button>
-               */}
                     <Button  variant="primary">
-                    <Plus className="mr-2 h-4 w-4" /> Create Activity
+                    <Plus className="mr-2 h-4 w-4" /> Add Product
                   </Button>
             </DialogTrigger>
             <DialogContent>
@@ -287,9 +361,13 @@ const SellerDashboard = () => {
               <AddProductForm onSubmit={handleCreateProduct} />
             </DialogContent>
           </Dialog>
-          </div>
-
-          {/* Edit Product Modal */}
+          
+         </div> 
+         <TabsContent value="sales" className="space-y-4">
+          <SalesReport/>
+          </TabsContent>
+          <TabsContent value="products" className="space-y-4">
+         
           <Dialog open={isEditProductModalOpen} onOpenChange={setIsEditProductModalOpen}>
             <DialogTrigger asChild>
               <Button className="mt-4" style={{ display: "none" }}>
@@ -302,51 +380,113 @@ const SellerDashboard = () => {
               </DialogHeader>
               <AddProductForm onSubmit={handleUpdateProduct} initialData={editProductData} />
             </DialogContent>
-          </Dialog>     
+          </Dialog>         
+          <SearchBar />
+          <PriceFilter />         
 
-  
+          <div className="flex gap-6 w-full">
+ 
+          <div className="grid grid-cols-1  md:grid-cols-3 lg:grid-cols-3 gap-6 flex-grow">
+            {loading ? (
+              <p>Loading products...</p>
+            ) : products.length === 0 ? (
+              <p>No products found.</p>
+            ) : (
+              products.map((product) => (
+            <Card
+                className="mb-6 flex flex-col h-full"
+                key={product._id}
+              >
+                <div className="flex-grow p-4">
+                  <div className="justify-self-end">
+                    {product.isArchived ? (
+                      <Badge className="bg-red-600">Archived</Badge>
+                    ) : (
+                      <Badge className="bg-green-600">Unarchived</Badge>
+                    )}
+                  </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-  {loading ? (
-    <p>Loading products...</p>
-  ) : products.length === 0 ? (
-    <p>No products found.</p>
-  ) : (
-    products.map((product) => (
-     
-      <ProductCard
-        key={product._id}
-        product={product}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onToggleArchive={toggleArchive}
-        onDetails={handleCardClick}
-      />
+                  <CardHeader>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-64 object-cover rounded-t-lg"
+                    />
+                    <CardTitle>{product.name}</CardTitle>
+                    <CardDescription>
+                      {product.description}
+                    </CardDescription>
+                  </CardHeader>
 
-     
-    ))
-  )}
-</div>
+                  <CardContent className="p-4">
+                    <div className="flex flex-col text-sm text-gray-500 mb-4">
+                      <div className="flex items-center mb-3">
+                        <ShoppingCart className="w-4 h-4 mr-1" />
+                        <span>Sold: {product.sales}</span>
+                      </div>
+                      <div>
+                        <span>In stock: {product.quantity}</span>
+                      </div>
+                    </div>
+                    <div className="text-lg font-semibold mb-4">
+                      Price: ${product.price.toFixed(2)}
+                    </div>
+                  </CardContent>
+                </div>
 
-          {/* Detailed Product Modal */}
+                <CardFooter className="flex flex-col mt-auto space-y-2 p-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={product.isArchived}
+                      onCheckedChange={() =>
+                        toggleArchiveStatus(product._id, product)
+                      }
+                    />
+                    <Label>
+                      {product.isArchived ? "Archived" : "Unarchived"}
+                    </Label>
+                  </div>
+                  <div className="flex justify-between space-x-4">
+                    {/* Edit Button */}
+                    <Button variant="outline" size="sm" onClick={() => onEdit(product)}>
+                      <Pencil className="w-4 h-4 mr-2" />
+                      Edit
+                    </Button>
+
+                    {/* Delete Button */}
+                    <Button variant="destructive" size="sm" onClick={() => onDelete(product._id)}>
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+              ))
+            )}
+            </div>
+          </div>
           <Dialog open={isDetailModalOpen} onOpenChange={setIsDetailModalOpen}>
-  <DialogTrigger asChild>
-    <Button className="mt-4" style={{ display: "none" }}>
-      Edit Product
-    </Button>
-  </DialogTrigger>
-  <DialogContent>
-    {selectedProduct ? (
-      <ProductDetailCard product={selectedProduct} onClose={closeModal} />
-    ) : (
-      <div>Loading...</div>
-    )}
-  </DialogContent>
-</Dialog>
-
-
-
+              <DialogTrigger asChild>
+                <Button className="mt-4" style={{ display: "none" }}>
+                  Edit Product
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                {selectedProduct ? (
+                  <ProductDetailCard product={selectedProduct} onClose={closeModal} />
+                ) : (
+                  <div>Loading...</div>
+                )}
+              </DialogContent>
+            </Dialog>
+          </TabsContent>  
+         </Tabs>
+  
         </div>
+        <div className='mt-12'>
+        <Footer />
+        </div>
+
       </main>
     </div>
   );

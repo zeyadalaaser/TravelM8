@@ -81,7 +81,7 @@ const DeletionRequestsAdmin = () => {
   const handleDelete = async (username, type) => {
     try {
       // Step 1: Delete the user
-      const userResponse = await fetch("http://localhost:5001/api/users", {
+      const userResponse = await fetch("http://localhost:5001/api/usersOnly", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -132,19 +132,20 @@ const DeletionRequestsAdmin = () => {
   };
 
   return (
-    <div style={{ display: "flex" }}>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
       <div
         style={{
           transition: "margin-left 0.3s ease",
           marginLeft: sidebarState ? "250px" : "0",
           width: "100%",
+          flex: 1,
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mx-auto p-6 bg-background shadow-lg rounded-lg  mt-8 w-4/5">
-          <h1 className="text-3xl font-bold mb-6 text-primary"></h1>
-          <div className="border rounded-lg overflow-hidden">
+        <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg mt-24 w-4/5 mb-20">
+          <h1 className="text-3xl font-bold mb-6 text-primary">Deletion Requests</h1>
+          <div className="border rounded-lg overflow-hidden mt-6">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted">
@@ -179,7 +180,6 @@ const DeletionRequestsAdmin = () => {
                       >
                         <DialogTrigger asChild>
                           <Button
-                            variant="destructive"
                             onClick={() => openDeleteDialog(request)}
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
@@ -197,19 +197,6 @@ const DeletionRequestsAdmin = () => {
                               from our servers.
                             </DialogDescription>
                           </DialogHeader>
-                          {/* <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="username" className="text-right">
-                                Username
-                              </Label>
-                              <Input
-                                id="username"
-                                value={selectedRequest ? selectedRequest.name : ''}
-                                className="col-span-3"
-                                readOnly
-                              />
-                            </div>
-                          </div> */}
                           <DialogFooter>
                             <Button
                               variant="outline"
@@ -224,10 +211,9 @@ const DeletionRequestsAdmin = () => {
                                   handleDelete(
                                     selectedRequest.username,
                                     selectedRequest.userType
-                                  ); // Use selectedRequest's data
-                                  // setIsDeleteDialogOpen(false); // Close dialog after deletion
+                                  );
                                 }
-                                closeDeleteDialog(); // Close the dialog after deletion
+                                closeDeleteDialog();
                               }}
                             >
                               Delete Account
@@ -247,7 +233,7 @@ const DeletionRequestsAdmin = () => {
             </p>
           )}
         </div>
-        <Footer />
+        <Footer className="mt-auto" />
       </div>
     </div>
   );
