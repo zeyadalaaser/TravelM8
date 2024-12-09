@@ -566,7 +566,7 @@ export default function CheckoutPage() {
                             Cancel
                           </Button>
                           <Button
-                            className="bg-green-800 hover:bg-green-900 text-white"
+                            className="text-white"
                             type="submit"
                           >
                             Add address
