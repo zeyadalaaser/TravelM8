@@ -229,7 +229,7 @@ const variables = `{"search":{"itinerary":{"source":{"ids":["City:"]},"destinati
 export async function getFlights(query) // source, dest, departureDate, arrivalDate
 {
   const searchParams = new URLSearchParams(query);
-  if (!searchParams.has("from") || !searchParams.has("to"))
+  if (!searchParams.has("from") || !searchParams.has("to") || !searchParams.has("departure") || !searchParams.has("return"))
     return [];
 
   const source = searchParams.get("from")?.split('--')[1];
