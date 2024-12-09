@@ -10,10 +10,14 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
+// import { Stars } from "../../../components/Stars.jsx";
+import { Separator } from "@/components/ui/separator";
+
 
 export default function ProductCard({ product, currency, token, liked }) {
     const navigate = useNavigate();
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [reviews, setReviews] = useState([]);
 
     const addToCart = async (productId) => {
         try {
@@ -21,8 +25,8 @@ export default function ProductCard({ product, currency, token, liked }) {
                 await axios.post(`http://localhost:5001/api/tourists/cart/${productId}`, {}, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                navigate(0); 
-            }    
+                navigate(0);
+            }
             else {
                 toast('Please login to perform this action');
             }
@@ -30,6 +34,27 @@ export default function ProductCard({ product, currency, token, liked }) {
             console.error('Failed to add item to cart:', error);
         }
     };
+
+    const getReviews = async (entityId) => {
+        try {
+          // Construct query parameters
+          const params = {
+            entityId,
+            entityType: "Product",
+          };
+    
+          const response = await axios.get("http://localhost:5001/api/ratings", {
+            params,
+          });
+    
+          console.log("Reviews:", response.data.reviews);
+          console.log("Average Rating:", response.data.averageRating);
+          setReviews(response.data.reviews);
+        } catch (error) {
+          console.error("Error fetching reviews:", error);
+        }
+      };
+    
 
     return (
         <Card key={product._id}>
@@ -106,7 +131,8 @@ export default function ProductCard({ product, currency, token, liked }) {
                     <Button
                         className={`w-full mt-2 bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors duration-200`}
                         size="sm"
-                        onClick={() => setDialogOpen(true)}
+                        onClick={() => {setDialogOpen(true); getReviews(product._id);}}
+                        
                     >
                         View Details
                     </Button>
@@ -122,46 +148,47 @@ export default function ProductCard({ product, currency, token, liked }) {
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold">{product.name}</DialogTitle>
+                        <DialogTitle className="text-2xl font-bold">{product?.name}</DialogTitle>
                     </DialogHeader>
-                    <ScrollArea className="flex-grow">
-                        <div className="flex flex-col md:flex-row gap-4 p-4">
-                            <div className="w-full md:w-1/2">
-                                <div className="aspect-square overflow-hidden rounded-lg mb-4">
-                                    <img
-                                        src={product.image || "/placeholder.svg?height=300&width=300"}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
+                    <div className="flex gap-4 h-full">
+                        <div className="w-2/5 flex-shrink-0">
+                            <div className="aspect-square overflow-hidden rounded-lg mb-2">
+                                <img
+                                    src={product?.image || "/placeholder.svg?height=300&width=300"}
+                                    alt={product?.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        </div>
+                        <div className="w-2/3 overflow-y-auto pr-4" style={{ maxHeight: "calc(80vh - 150px)" }}>
+                            <div className="space-y-4">
                                 <div>
                                     <h3 className="text-lg font-semibold mb-2">Description</h3>
-                                    <p className="text-sm text-muted-foreground">{product.description || "No description available"}</p>
+                                    <p className="text-sm text-muted-foreground">{product?.description}</p>
                                 </div>
-                            </div>
-                            <div className="w-full md:w-1/2 space-y-4">
-                                <div>
-                                    <h3 className="text-lg font-semibold mb-2">Price</h3>
-                                    <p className="text-sm text-muted-foreground">{(product.price * 1).formatCurrency(currency)}</p>
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold mb-2">Seller</h3>
-                                    <p className="text-sm text-muted-foreground">{product.seller?.name || "Unknown Seller"}</p>
-                                </div>
+                                <Separator />
                                 <div>
                                     <h3 className="text-lg font-semibold mb-2">Reviews and Comments</h3>
-                                    {product.reviews && product.reviews.length > 0 ? (
+                                    {reviews && reviews.length > 0 ? (
                                         <ul className="space-y-4">
-                                            {product.reviews.map((review, index) => (
-                                                <li key={index} className="border-b pb-4 last:border-b-0">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <span className="font-medium">{review.user}</span>
-                                                        <Stars rating={review.rating} />
+                                            {reviews.map((review, index) => (
+                                                <div key={review.id} className="flex space-x-4">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center justify-between">
+                                                            <h5 className="font-semibold text-sm">
+                                                                {review.userId?.username ? review.userId.username : "Anonymous"}
+                                                            </h5>
+                                                            <div className="flex items-center">
+                                                                <Stars rating={review?.rating} />
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-sm italic text-muted-foreground">
+                                                            &quot;{review?.comment}&quot;
+                                                        </p>
                                                     </div>
-                                                    <p className="text-sm text-muted-foreground">{review.comment}</p>
-                                                </li>
+                                                </div>
                                             ))}
                                         </ul>
                                     ) : (
@@ -170,9 +197,16 @@ export default function ProductCard({ product, currency, token, liked }) {
                                 </div>
                             </div>
                         </div>
-                    </ScrollArea>
+                    </div>
+                    <div className="flex items-center mt-4 bg-gray-100 justify-between w-full p-4 rounded-lg">
+                        <span className="text-2xl font-bold">
+                            {`${(product.price * 1).formatCurrency(currency)}`}
+                        </span>
+                        <Button onClick={() => handleBook(product)}>Book Product</Button>
+                    </div>
                 </DialogContent>
             </Dialog>
+
         </Card>
     );
 }

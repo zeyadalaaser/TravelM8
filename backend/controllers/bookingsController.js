@@ -7,6 +7,7 @@ import { updatePoints } from "./touristController.js";
 import { getItineraryPrice } from "./itineraryController.js";
 import tourist1 from "../models/touristModel.js"; // Import tourist model
 import nodemailer from "nodemailer";
+import { getTouristReviews } from "./ratingController.js"
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -87,20 +88,81 @@ export const createBooking2 = async (req, res) => {
   }
 };
 
+// export const getAllTourBookings = async (req, res) => {
+//   try {
+//     const touristId = req.user.userId;
+
+//     // Fetch all tour bookings
+//     const allBookings = await Booking.find({ tourist: touristId }).populate("itinerary");
+
+//     // Fetch all reviews for the tourist
+//     const reviews = await getTouristReviews(touristId, "Itinerary");
+
+//     // Map bookings to include their respective review
+//     const bookingsWithRatings = allBookings.map((booking) => {
+//       const itineraryIdBooking = new mongoose.Types.ObjectId(booking.itinerary); // Use the itinerary ID from populated field
+//       const itineraryReview = reviews.find(
+//         (review) =>
+//           itineraryIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Compare ObjectIds
+//       );
+
+//       return {
+//         ...booking.toObject(),
+//         review: itineraryReview || null, // Include the review or set to null if not found
+//       };
+//     });
+
+//     res.status(201).json({
+//       bookingsWithRatings,
+//       message: "Successfully fetched all your tour bookings!",
+//     });
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
+
 export const getAllTourBookings = async (req, res) => {
   try {
-    const tourist = req.user.userId;
-    const allBookings = await Booking.find({ tourist: tourist }).populate(
-      "itinerary"
-    ); // Populating the itinerary field
+    const touristId = req.user.userId;
 
-    res
-      .status(200)
-      .json({ allBookings, message: "Successful Retrieval of Itineraries!" });
+    // Fetch all tour bookings without populating the tourGuide
+    const allBookings = await Booking.find({ tourist: touristId }).populate("itinerary");
+
+    // Fetch all reviews for the tourist's itineraries and tour guides
+    const itineraryReviews = await getTouristReviews(touristId, "Itinerary");
+    const guideReviews = await getTouristReviews(touristId, "TourGuide");
+
+    // Map bookings to include their respective reviews for both itinerary and tour guide
+    const bookingsWithRatings = allBookings.map((booking) => {
+      const itineraryIdBooking = new mongoose.Types.ObjectId(booking.itinerary); // Use the itinerary ID from populated field
+      const itineraryReview = itineraryReviews.find(
+        (review) =>
+          itineraryIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Compare ObjectIds
+      );
+
+      const guideIdBooking = new mongoose.Types.ObjectId(booking.tourGuide); // Use the tour guide ID from the booking
+      const guideReview = guideReviews.find(
+        (review) =>
+          guideIdBooking.equals(new mongoose.Types.ObjectId(review.entityId)) // Compare ObjectIds
+      );
+
+      return {
+        ...booking.toObject(),
+        review: itineraryReview || null, // Include the itinerary review or set to null if not found
+        tourGuideReview: guideReview || null, // Include the tour guide review or set to null if not found
+      };
+    });
+
+    res.status(201).json({
+      bookingsWithRatings,
+      message: "Successfully fetched all your tour bookings!",
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
+
 
 export const cancelBooking = async (req, res) => {
   try {

@@ -6,8 +6,11 @@ import {
   Truck,
   CheckCircle,
   XCircle,
-  Star
+  Star,
+  SeparatorHorizontal,
 } from "lucide-react";
+import { Separator } from "@/components/ui/Separator";
+import { Stars } from "@/components/Stars.jsx";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -75,31 +78,30 @@ const MyOrdersPage = () => {
     getProfileInfo();
   }, [navigate, token]);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("No authentication token found");
-        }
-        const response = await axios.get(
-          "http://localhost:5001/api/tourists/orders",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setOrders(response.data.orders);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching orders:", err);
-        setError(
-          err.response?.data?.message ||
-            "Failed to fetch orders. Please try again."
-        );
-        setLoading(false);
+  const fetchOrders = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
       }
-    };
-
+      const response = await axios.get(
+        "http://localhost:5001/api/tourists/orders",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setOrders(response.data.orders);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching orders:", err);
+      setError(
+        err.response?.data?.message ||
+        "Failed to fetch orders. Please try again."
+      );
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchOrders();
   }, []);
 
@@ -108,6 +110,8 @@ const MyOrdersPage = () => {
       ...prev,
       isOpen: false,
     }));
+    fetchOrders();
+
   };
   const openDialog = ({ touristId, entityId }) => {
     setDialogData({
@@ -157,7 +161,7 @@ const MyOrdersPage = () => {
       console.error("Error cancelling order:", err);
       setError(
         err.response?.data?.message ||
-          "Failed to cancel order. Please try again."
+        "Failed to cancel order. Please try again."
       );
     }
   };
@@ -257,31 +261,52 @@ const MyOrdersPage = () => {
                           {order.items.map((item, index) => (
                             <li
                               key={index}
-                              className="grid grid-cols-3 items-center p-4 border rounded-md shadow-sm text-gray-600 dark:text-gray-400"
+                              className="grid grid-cols-2 gap-4 p-4 border rounded-md shadow-sm text-gray-600 dark:text-gray-400"
                             >
-                              <span className="col-span-1">
-                                {item.product.name} (x{item.quantity})
-                              </span>
-                              <span className="col-span-1 text-center">
-                                $
-                                {(item.product.price * item.quantity).toFixed(
-                                  2
-                                )}
-                              </span>
-                              <div className="col-span-1 flex justify-end">
-                                <Button 
-                                  className="h-fit w-fit"
+                              {/* First row: Name and Price */}
+                              <div className="flex justify-between col-span-2">
+                                <span>
+                                  {item.product.name} (x{item.quantity})
+                                </span>
+                                <span>
+                                  $
+                                  {(item.product.price * item.quantity).toFixed(
+                                    2
+                                  )}
+                                </span>
+                              </div>
+                              <hr className="col-span-2 border-gray-300 my-2" />
+                              <div className="flex justify-end col-span-2 space-x-2">
+                                <div className="w-full items-center flex justify-between m-auto">
+                                  <div className="">
+                                    {item.review && (
+                                      <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                                        <span className="font-semibold">Your Rating :</span>
+                                        <Stars rating={item.review.rating} />
+                                      </div>
+                                    )}
+                                    {item.review && (
+                                      <div className="gap-2 text-sm flex text-gray-600">
+                                        <p className="font-semibold">Your Comment :</p>
+                                        <p className="italic">
+                                          &quot;{item.review?.comment}&quot;
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <Button
+                                  className="h-fit w-fit m-auto"
                                   onClick={() => {
                                     console.log(profile._id);
                                     openDialog({
                                       touristId: profile._id,
                                       entityId: item.product,
                                     });
-                                  }
-                                  }
+                                  }}
                                 >
                                   <Star className="mr-1 h-4 w-4" />
-
                                   Rate
                                 </Button>
                               </div>
@@ -329,9 +354,8 @@ const MyOrdersPage = () => {
                   </span>
                 )}
                 <div
-                  className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center ${
-                    statusColors[order.status]
-                  }`}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center ${statusColors[order.status]
+                    }`}
                 >
                   <StatusIcon className="h-4 w-4 mr-1" />
                   {order.status}

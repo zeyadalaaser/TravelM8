@@ -55,36 +55,7 @@ export const getHotelsToken = async (_, res) => {
     }
 };
 
-
-async function setCurrency(currency, token) {
-    while (true) {
-        try {
-            const response = await axios.post(
-                "https://www.hotelscombined.com/i/api/account/currency/v1/set",
-                { currencyCode: currency, store: false },
-                {
-                    headers: {
-                        "X-CSRF": token,
-                        "Content-Type": "application/json",
-                        "Referer": "https://www.hotelscombined.com",
-                        "Origin": "https://www.hotelscombined.com",
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0",
-                        "X-Requested-With": "XMLHttpRequest",
-                        "Cookie": combineCookies()
-                    },
-                }
-            );
-
-            extractCookies(response.headers["set-cookie"]);
-            return;
-        } catch {
-            await sleep(500);
-        }
-    }
-}
-
 export const getHotels = async (req, res) => {
-    const { currency } = req.query;
 
     let token;
 
@@ -95,11 +66,8 @@ export const getHotels = async (req, res) => {
     do {
         try {
             if (!token)
-            {
                 token = await getToken();
-                await setCurrency(currency, token);
-            }
-            
+
             response = await axios.post(
                 "https://www.hotelscombined.com/i/api/search/dynamic/hotels/poll",
                 requestBody,
@@ -115,26 +83,22 @@ export const getHotels = async (req, res) => {
                     },
                 }
             );
-            
+
         }
         catch (error) {
             const errorStr = JSON.stringify(error?.response?.data);
             console.log(errorStr);
-            if (errorStr?.includes("Session is invalid or expired"))
-            {
+            if (errorStr?.includes("Session is invalid or expired")) {
                 token = null;
                 hotelsToken = null;
             }
-            if (errorStr?.includes("The checkOutDate must be after the checkInDate"))
-            {
-                res.status(200).send([]);
-                return;
-            }
+            res.status(200).send([]);
+            return;
         }
         console.log(response?.data?.results?.length);
         await sleep(600);
     }
-    while (!response || response.data?.results?.length < 20);
+    while (!response || (response.data?.results?.length < 20 && response.data?.status !== "complete"));
 
     console.log("done");
 

@@ -559,7 +559,9 @@ const ChooseDate = ({
                     isOpen={paymentOpen} 
                     currency={currency} 
                     onOpenChange={setPaymentOpen} 
-                    amount={itinerary.price} 
+                    amount={itinerary.price}
+                    token={token}
+                    onPaid={handleSubmit}
                 />
             )}
         </>

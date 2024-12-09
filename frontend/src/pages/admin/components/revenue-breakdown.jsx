@@ -61,7 +61,7 @@ export default function RevenueBreakdown() {
               <Compass className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold overflow-hidden text-ellipsis">${activitiesRevenue || 0}</div>
+              <div className="text-2xl font-bold overflow-hidden text-ellipsis">${(activitiesRevenue || 0).toFixed(2)}</div>
             </CardContent>
           </Card>
           <Card>
@@ -70,7 +70,7 @@ export default function RevenueBreakdown() {
               <Map className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold overflow-hidden text-ellipsis">${itinerariesRevenue || 0}</div>
+              <div className="text-2xl font-bold overflow-hidden text-ellipsis">${(itinerariesRevenue || 0).toFixed(2)}</div>
             </CardContent>
           </Card>
           <Card>
@@ -79,7 +79,7 @@ export default function RevenueBreakdown() {
               <ShoppingBag className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold overflow-hidden text-ellipsis">${productsRevenue || 0}</div>
+              <div className="text-2xl font-bold overflow-hidden text-ellipsis">${(productsRevenue || 0).toFixed(2)}</div>
             </CardContent>
           </Card>
         </div>

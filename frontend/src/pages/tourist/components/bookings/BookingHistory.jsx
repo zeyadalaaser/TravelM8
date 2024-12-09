@@ -6,7 +6,8 @@ import {
   cancelActivityBooking,
   cancelItineraryBooking,
 } from "../../api/apiService";
-
+import { Stars } from "@/components/Stars.jsx";
+import axios from "axios";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Card,
@@ -69,13 +70,12 @@ const BookingHistory = () => {
   //////////////////////////////////////////////////////////////////////////
   const [mainTab, setMainTab] = useState("activities");
   const [subTab, setSubTab] = useState("all");
-
+  // const [ratings, setRatings] = useState({});
   const [loading, setLoading] = useState(true); // Loading state to track data fetching completion
 
   let completed = false;
   let pending = false;
   let cancelled = false;
-
 
   const fetchDataAndFilter = async () => {
     try {
@@ -90,11 +90,15 @@ const BookingHistory = () => {
       // Set state for main lists
       if (activitiesResponse && itinerariesResponse) {
         const filteredActivities = activitiesResponse.filter(
-          (activity) => activity.completionStatus === "Paid" || activity.completionStatus === "Cancelled"
+          (activity) =>
+            activity.completionStatus === "Paid" ||
+            activity.completionStatus === "Cancelled"
         );
 
         const filteredItineraries = itinerariesResponse.filter(
-          (itinerary) => itinerary.completionStatus === "Paid" || itinerary.completionStatus === "Cancelled"
+          (itinerary) =>
+            itinerary.completionStatus === "Paid" ||
+            itinerary.completionStatus === "Cancelled"
         );
 
         // Set the state with filtered data
@@ -103,22 +107,21 @@ const BookingHistory = () => {
         setShowingActivities(filteredActivities);
         setShowingItineraries(filteredItineraries);
 
-
         console.log("Activities Set State:", filteredActivities);
         console.log("Itineraries Set State:", filteredItineraries);
 
         // Filter activities and itineraries after fetching
         const completedActivities = activitiesResponse.filter(
           (activity) =>
-              activity.completionStatus?.toLowerCase() === "paid" &&
-              new Date(activity?.activityId?.date) < today
-      );
-      
-      const pendingActivities = activitiesResponse.filter(
+            activity.completionStatus?.toLowerCase() === "paid" &&
+            new Date(activity?.activityId?.date) < today
+        );
+
+        const pendingActivities = activitiesResponse.filter(
           (activity) =>
-              activity.completionStatus?.toLowerCase() === "paid" &&
-              new Date(activity?.activityId?.date) > today
-      );
+            activity.completionStatus?.toLowerCase() === "paid" &&
+            new Date(activity?.activityId?.date) > today
+        );
 
         console.log("pending activities:", pendingActivities);
 
@@ -220,25 +223,6 @@ const BookingHistory = () => {
     loading,
   ]);
 
-  const getReviews = async (entityId, entityType, touristId) => {
-    try {
-      // Construct query parameters
-      const params = {
-        entityId,
-        entityType,
-        touristId,
-      };
-
-      const response = await axios.get('/api/ratings', { params });
-
-      console.log('Reviews:', response.data.reviews);
-      console.log('Average Rating:', response.data.averageRating);
-      setReviews(response.data);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-    }
-  };
-
   const renderSubTabs = () => {
     if (mainTab === "products") {
       return (
@@ -264,6 +248,7 @@ const BookingHistory = () => {
       ...prev,
       isOpen: false,
     }));
+    fetchDataAndFilter();
   };
   const openDialog = ({ touristId, entityId, entityType }) => {
     setDialogData({
@@ -283,10 +268,10 @@ const BookingHistory = () => {
       } else {
         response = await cancelItineraryBooking(bookingId); // Await the response
       }
-  
-        toast(`Booking cancelled successfully! Amount refunded: $${response.amountRefunded}. New wallet balance: $${response.newBalance}.`);
-     
-  
+
+      toast(`Booking cancelled successfully! Amount refunded: $${response.amountRefunded}. New wallet balance: $${response.newBalance}.`);
+
+
       // Refresh the data after cancellation
       fetchDataAndFilter();
     } catch (error) {
@@ -347,8 +332,8 @@ const BookingHistory = () => {
   };
 
   const ActivitiesCard = ({ activityBooking }) => {
-    const reviews = reviews.reviews;
-    const averageRating = reviews.averageRating;
+    // console.log(getReviews(activityBooking.activityId, "Activity", activityBooking.touristId));
+    //const averageRating = ratings.averageRating;
     pending =
       activityBooking.completionStatus == "Paid" &&
       new Date(activityBooking.activityId?.date) > today;
@@ -361,7 +346,7 @@ const BookingHistory = () => {
         key={activityBooking._id}
         className="w-full overflow-hidden"
         style={{
-          height: !completed && !pending ? "200px" : "250px",
+          height: !completed && !pending ? "200px" : "290px",
         }}
       >
         <CardHeader>
@@ -405,10 +390,10 @@ const BookingHistory = () => {
           <p className="text-sm text-gray-600 mb-4 truncate">
             {activityBooking.activityId?.description}
           </p>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPinIcon className="w-4 h-4 flex-shrink-0" />
-              <span className="truncate">
+              <span className="truncate max-w-[200px]-">
                 Location: {`${activityBooking.activityId?.location?.name}`}
               </span>
             </div>
@@ -418,65 +403,63 @@ const BookingHistory = () => {
                 activityBooking.activityId?.price[0]}
             </p>
           </div>
-            {/* <div className="flex items-center gap-2 text-sm text-gray-600">
-              <StarIcon className="w-4 h-4" />
-              <span>
-                Average Rating: {averageRating}
-              </span>
+          {!cancelled && (<Separator></Separator>)}
+          <div className="w-full items-center flex justify-between mt-5">
+            <div className="">
+              {activityBooking.review && (
+                <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                  <span className="font-semibold">Your Rating :</span>
+                  <Stars rating={activityBooking.review.rating} />
+                </div>
+              )}
+              {activityBooking.review && (
+                <div className="gap-2 text-sm flex text-gray-600">
+                  <p className="font-semibold">Your Comment :</p>
+                  <p className="italic">
+                    &quot;{activityBooking.review?.comment}&quot;
+                  </p>
+                </div>
+              )}
             </div>
-          <div className="border-t pt-4">
-            {reviews && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                <StarIcon className="w-4 h-4" />
-                <span>Your Rating: {activityBooking.rating}/5</span>
-              </div>
-            )}
-            {activityBooking.comment && (
-              <div className="text-sm text-gray-600">
-                <p className="font-semibold">Your Comment:</p>
-                <p className="italic">&quot;{activityBooking.comment}&quot;</p>
-              </div>
-            )}
-            </div> */}
+            <div>
+              {activityBooking.completionStatus == "Paid" &&
+                new Date(activityBooking.activityId.date) < today && (
+                  <div className="flex flex-col justify-between space-y-1.5">
+                    <Button
+                      onClick={() => {
+                        openDialog({
+                          touristId: activityBooking.touristId,
+                          entityId: activityBooking.activityId || null,
+                          entityType: "Activity",
+                        });
+                      }}
+                      disabled={activityBooking.activityId === null}
+                    >
+                      <Star className="mr-2 h-4 w-4" />
+                      Rate Activity
+                    </Button>
+                  </div>
+                )}
+              {activityBooking.completionStatus == "Paid" &&
+                new Date(activityBooking.activityId?.date) > today && (
+                  <div className="flex flex-col justify-between m-2">
+                    {/* <Separator></Separator> */}
+                    <Button
+                      variant="destructive"
+                      className="mr-auto"
+                      size="sm"
+                      onClick={() =>
+                        handleCancelBooking("activity", activityBooking._id)
+                      }
+                      disabled={activityBooking.activityId === null}
+                    >
+                      Cancel Booking
+                    </Button>
+                  </div>
+                )}
+            </div>
+          </div>
         </CardContent>
-        <CardFooter>
-          {activityBooking.completionStatus == "Paid" &&
-            new Date(activityBooking.activityId.date) < today && (
-              <div className="flex flex-col justify-between space-y-1.5">
-                {/* <Separator></Separator> */}
-                <Button
-                  onClick={() =>
-                    openDialog({
-                      touristId: activityBooking.touristId,
-                      entityId: activityBooking.activityId || null,
-                      entityType: "Activity",
-                    })
-                  }
-                  disabled={activityBooking.activityId === null}
-                >
-                  <Star className="mr-2 h-4 w-4" />
-                  Rate Activity
-                </Button>
-              </div>
-            )}
-          {activityBooking.completionStatus == "Paid" &&
-            new Date(activityBooking.activityId?.date) > today && (
-              <div className="flex flex-col justify-between space-y-1.5">
-                {/* <Separator></Separator> */}
-                <Button
-                  variant="destructive"
-                  className="mr-auto"
-                  size="sm"
-                  onClick={() =>
-                    handleCancelBooking("activity", activityBooking._id)
-                  }
-                  disabled={activityBooking.activityId === null}
-                >
-                  Cancel Booking
-                </Button>
-              </div>
-            )}
-        </CardFooter>
       </Card>
     );
   };
@@ -495,7 +478,7 @@ const BookingHistory = () => {
       <Card
         key={itineraryBooking._id}
         style={{
-          height: !completed && !pending ? "200px" : "250px",
+          height: !completed && !pending ? "200px" : "290px",
         }}
         className="w-full overflow-hidden"
       >
@@ -527,13 +510,6 @@ const BookingHistory = () => {
                   itineraryBooking.completionStatus.slice(1)
                   : "Unknown Status"}
             </Badge>
-            {/* <Badge
-              className={`${
-                statusColors[itineraryBooking.completionStatus]
-              } text-white`}
-            >
-              {itineraryBooking.completionStatus}
-            </Badge> */}
           </div>
           <CardDescription className="flex items-center mt-1">
             <CalendarIcon className="w-4 h-4 m-1 flex-shrink-0" />
@@ -547,7 +523,7 @@ const BookingHistory = () => {
           <p className="text-sm text-gray-600 mb-4 truncate">
             {itineraryBooking.itinerary?.description}
           </p>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <MapPinIcon className="w-4 h-4 flex-shrink-0" />
               <span className="truncate">
@@ -558,99 +534,133 @@ const BookingHistory = () => {
               ${itineraryBooking.itinerary?.price}
             </p>
           </div>
-        </CardContent>
-        <CardFooter>
-          {completed && (
-            <div className="flex flex-col justify-between space-y-1.5">
-              {/* <Separator></Separator> */}
-              <div className="flex mr-auto gap-4">
+          {!cancelled && <Separator></Separator>}
+          <div className="w-full items-center flex justify-between mt-5">
+            {!cancelled && (
+              <div className="grid grid-cols-2 gap-4">
+                {itineraryBooking.review && (
+                  <>
+                    {/* First Column - Review */}
+                    <div className="flex-col pr-4 border-r-2 border-gray-300">
+                    <div className="flex w-fit items-center gap-2 text-sm text-gray-600 mb-2">
+                        <span className="font-semibold">Your Itinerary Rating :</span>
+                        <Stars rating={itineraryBooking.review.rating} />
+                      </div>
+                      <div className="gap-2 text-sm flex text-gray-600">
+                        <p className="font-semibold">Your Comment :</p>
+                        <p className="italic">
+                          &quot;{itineraryBooking.review?.comment}&quot;
+                        </p>
+                      </div>
+                    </div>
+                  
+                    {/* Second Column - Review */}
+                    <div className="flex-col">
+                      <div className="flex w-fit items-center gap-2 text-sm text-gray-600 mb-2">
+                        <span className="font-semibold">Your Tourguide Rating :</span>
+                        <Stars rating={itineraryBooking.tourGuideReview.rating} />
+                      </div>
+                      <div className="gap-2 text-sm flex text-gray-600">
+                        <p className="font-semibold">Your Comment :</p>
+                        <p className="italic">
+                          &quot;{itineraryBooking.tourGuideReview.comment}&quot;
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          <div>
+            {completed && (
+              <div className="flex flex-col justify-between space-y-1.5">
+                <div className="flex mr-auto gap-4">
+                  <Button
+                    onClick={() =>
+                      openDialog({
+                        touristId: itineraryBooking.tourist,
+                        entityId: itineraryBooking.tourGuide || null,
+                        entityType: "TourGuide",
+                      })
+                    }
+                    disabled={itineraryBooking.tourGuide === null}
+                    variant="secondary"
+                    size="sm"
+                    className="mr-auto flex-1 items-center justify-center"
+                  >
+                    <Star className="mr-1 h-4 w-4" />
+                    Rate Tourguide
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      openDialog({
+                        touristId: itineraryBooking.tourist,
+                        entityId: itineraryBooking.itinerary || null,
+                        entityType: "Itinerary",
+                      })
+                    }
+                    disabled={itineraryBooking.itinerary === null}
+                    size="sm"
+                    className="mr-auto flex-1 items-center justify-center"
+                  >
+                    <Star className="mr-1 h-4 w-4" />
+                    Rate Itinerary
+                  </Button>
+                </div>
+              </div>
+            )}
+            {pending && (
+              <div className="flex flex-col justify-between space-y-1.5 ">
                 <Button
-                  onClick={() =>
-                    openDialog({
-                      touristId: itineraryBooking.tourist,
-                      entityId: itineraryBooking.tourGuide || null,
-                      entityType: "TourGuide",
-                    })
-                  }
-                  disabled={itineraryBooking.tourGuide === null}
-                  variant="secondary"
+                  variant="destructive"
+                  className="mr-auto"
                   size="sm"
-                  className="mr-auto flex-1 items-center justify-center"
-                >
-                  <Star className="mr-1 h-4 w-4" />
-                  Rate Tourguide
-                </Button>
-                <Button
                   onClick={() =>
-                    openDialog({
-                      touristId: itineraryBooking.tourist,
-                      entityId: itineraryBooking.itinerary || null,
-                      entityType: "Itinerary",
-                    })
+                    handleCancelBooking("itinerary", itineraryBooking._id)
                   }
                   disabled={itineraryBooking.itinerary === null}
-                  size="sm"
-                  className="mr-auto flex-1 items-center justify-center"
                 >
-                  <Star className="mr-1 h-4 w-4" />
-                  Rate Itinerary
+                  Cancel Booking
                 </Button>
               </div>
-            </div>
-          )}
-          {/* {itineraryBooking.completionStatus == "Paid" &&
-            new Date(itineraryBooking.tourDate) > today && ( */}
-          {pending && (
-            <div className="flex flex-col justify-between space-y-1.5 ">
-              {/* <Separator></Separator> */}
-              <Button
-                variant="destructive"
-                className="mr-auto"
-                size="sm"
-                onClick={() =>
-                  handleCancelBooking("itinerary", itineraryBooking._id)
-                }
-                disabled={itineraryBooking.itinerary === null}
-              >
-                Cancel Booking
-              </Button>
-            </div>
-          )}
-        </CardFooter>
-      </Card>
+            )}
+          </div>
+        </div>
+      </CardContent>
+      </Card >
     );
   };
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  return (
-    <div className="container mx-auto p-4 bg-background">
-      <h1 className="text-2xl font-bold mb-6">Bookings</h1>
-      <Tabs value={mainTab} onValueChange={setMainTab} className="w-full">
-        <TabsList className=" bg-gray-300 grid w-full grid-cols-4 mb-4">
-          <TabsTrigger value="activities">Activities</TabsTrigger>
-          <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
-          <TabsTrigger value="flights">Flights</TabsTrigger>
-          <TabsTrigger value="hotels">Hotels</TabsTrigger>
-        </TabsList>
+return (
+  <div className="container mx-auto p-4 bg-background">
+    <h1 className="text-2xl font-bold mb-6">Bookings</h1>
+    <Tabs value={mainTab} onValueChange={setMainTab} className="w-full">
+      <TabsList className=" bg-gray-300 grid w-full grid-cols-4 mb-4">
+        <TabsTrigger value="activities">Activities</TabsTrigger>
+        <TabsTrigger value="itineraries">Itineraries</TabsTrigger>
+        <TabsTrigger value="flights">Flights</TabsTrigger>
+        <TabsTrigger value="hotels">Hotels</TabsTrigger>
+      </TabsList>
 
-        <TabsContent value={mainTab}>
-          <Tabs value={subTab} onValueChange={setSubTab}>
-            {renderSubTabs()}
-          </Tabs>
+      <TabsContent value={mainTab}>
+        <Tabs value={subTab} onValueChange={setSubTab}>
+          {renderSubTabs()}
+        </Tabs>
 
-          <div className="grid grid-cols-1 gap-6">{renderCards()}</div>
-        </TabsContent>
-      </Tabs>
-      <ReviewDialog
-        isOpen={dialogData.isOpen}
-        onClose={closeDialog}
-        touristId={dialogData.touristId}
-        entityId={dialogData.entityId}
-        entityType={dialogData.entityType}
-      />
-    </div>
-  );
+        <div className="grid grid-cols-1 gap-6">{renderCards()}</div>
+      </TabsContent>
+    </Tabs>
+    <ReviewDialog
+      isOpen={dialogData.isOpen}
+      onClose={closeDialog}
+      touristId={dialogData.touristId}
+      entityId={dialogData.entityId}
+      entityType={dialogData.entityType}
+    />
+  </div>
+);
 };
 
 export default BookingHistory;

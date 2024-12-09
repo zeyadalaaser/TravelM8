@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
+import { useCurrency } from '../../../../hooks/currency-provider';
 
 const decodeToken = (token) => {
   try {
@@ -36,11 +37,10 @@ export function ProductsPage({ addToCart }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type');
-  const currency = searchParams.get('currency') ?? "USD";
+  const { currency, exchangeRate } = useCurrency();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [exchangeRates, setExchangeRates] = useState({});
   const [token, setToken] = useState(null);
   const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
 
@@ -63,7 +63,7 @@ export function ProductsPage({ addToCart }) {
         },
         {
           target: '[data-tour="sort-selection"]',
-          content: 'Sort products based on different Price or Ratings.',
+          content: 'Sort products based on different prices or ratings.',
           disableBeacon: true,
         },
         {
@@ -73,14 +73,9 @@ export function ProductsPage({ addToCart }) {
         },
         {
           target: '[data-tour="Product-list"]',
-          content: 'Browse through the list of available Products and add to cart.',
+          content: 'Browse through the list of available products and add to cart.',
           disableBeacon: true,
-        },
-        {
-          target: '[data-tour="pagination"]',
-          content: 'Navigate through different pages of Products.',
-          disableBeacon: true,
-        },
+        }
 
       ], 'products');
     }
@@ -94,18 +89,6 @@ export function ProductsPage({ addToCart }) {
     }
   }, []);
 
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get("https://api.exchangerate-api.com/v4/latest/USD");
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
-
   const fetchProducts = useDebouncedCallback(async () => {
     setLoading(true);
     const queryParams = new URLSearchParams(location.search);
@@ -113,6 +96,7 @@ export function ProductsPage({ addToCart }) {
 
     try {
       setProducts(await getProducts(queryParams.toString()));
+      setCurrentPage(1);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -149,7 +133,7 @@ export function ProductsPage({ addToCart }) {
             <Separator className="mt-6" />
             <PriceFilter
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
             />
             <Separator className="mt-5" />
             <RatingFilter />

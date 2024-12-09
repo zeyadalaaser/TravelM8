@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import useRouter from "@/hooks/useRouter";
 import { MapPin, BedDouble } from "lucide-react";
 import axios from "axios";
+import { Separator } from "@/components/ui/separator";
 import { ClearFilters } from "../filters/clear-filters";
 import { SortSelection } from "../filters/sort-selection";
 import { SingleDateFilter } from "../filters/single-date-filter";
@@ -12,6 +13,9 @@ import { Hotels } from "./hotels";
 import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
+import { PriceFilter } from "../filters/price-filter";
+import { SelectFilter } from "../filters/select-filter";
+import { useCurrency } from "../../../../hooks/currency-provider";
 
 function createImage(location) {
   function lucideImage(image) {
@@ -115,7 +119,10 @@ export function HotelsPage() {
       })
       .filter((item) => item !== null);
 
-    if (currentRequestId === requestCounter.current) setHotels(mapped);
+    if (currentRequestId === requestCounter.current) {
+      setHotels(mapped);
+      setCurrentPage(1);
+    }
 
     setLoading(false);
   }, 200);
@@ -134,22 +141,7 @@ export function HotelsPage() {
     { value: "rating-userrating_b", description: "Rating" },
   ];
 
-  const currency = searchParams.get("currency") ?? "USD";
-  const [exchangeRates, setExchangeRates] = useState({});
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-        console.log(exchangeRates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
+  const { currency, exchangeRate } = useCurrency();
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -184,6 +176,7 @@ export function HotelsPage() {
       ], 'hotels');
     }
   }, [addSteps, clearSteps, walkthroughPage]);
+
   return (
     <>
       <div className="flex justify-between space-x-3">
@@ -202,8 +195,18 @@ export function HotelsPage() {
         </div>
       </div>
       <div className="mt-6 flex flex-col md:flex-row gap-8">
-        <div className="flex w-1/4 h-10 items-center">
-          {/* <PriceFilter /> */}
+        <div className="w-full md:w-1/4 sticky top-11 h-full">
+          <Separator />
+          <div data-tour="hotels-filters">
+            <PriceFilter
+              currency={currency}
+              exchangeRate={exchangeRate}
+            />
+            <Separator className="mt-5" />
+            <SelectFilter name="Review Score" paramName="review" getOptions={async () => ["6+", "7+", "8+", "9+"].reverse()} />
+            <Separator className="mt-5" />
+            <SelectFilter name="Hotel Class" paramName="class" getOptions={async () => ["2+ stars", "3+ stars", "4+ stars", "5 stars"].reverse()} />
+          </div>
         </div>
         <div className="w-full md:w-3/4">
           <div className="flex justify-between items-center mb-4">
@@ -225,7 +228,7 @@ export function HotelsPage() {
               <Hotels
                 hotels={paginatedHotels}
                 currency={currency}
-                exchangeRate={exchangeRates[currency]} />
+                exchangeRate={exchangeRate} />
               <div className="flex justify-center mt-6 space-x-2">
                 <Button
                   variant="outline"
@@ -259,7 +262,7 @@ export function HotelsPage() {
             <Hotels
               hotels={paginatedHotels}
               currency={currency}
-              exchangeRate={exchangeRates[currency]} />)}
+              exchangeRate={exchangeRate} />)}
 
         </div>
 

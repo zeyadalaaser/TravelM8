@@ -57,74 +57,77 @@ import BookmarksPage from './pages/tourist/components/activities/activities.jsx'
 import Checkout from "./pages/tourist/components/products/checkout.jsx";
 import PreferencesPage from './pages/tourist/components/Preferences.jsx';
 import "@/lib/formatter.js";
+import { CurrencyProvider } from "./hooks/currency-provider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-      <WalkthroughProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/checkout" element={<Checkout />} />
-        {/* <Route path="/admin" element={<AdminPage/>} /> */}
-        <Route path="/loading" element={<LoadingPage />} />
-        <Route path="/Sellerdashboard" element={<Sellerdashboard />} />
-        <Route path="/SellerProducts" element={<SellerProducts />} />
-        <Route path="/SellerProfile" element={<SellerProfile />} />
-        <Route path="/tourist" element={<TouristPage />} />
-        <Route path="/deleteUser" element={<DeleteUser />} />
-        <Route path="/viewComplaints" element={<ComplaintsPage />} />
-        <Route path="/preferenceTag" element={<PreferenceTag />} />
-        <Route path="/Admindashboard" element={<AdminDashboard />} />
-        <Route path="/AdminPromoCode" element={<AdminPromoCode />} />
-        <Route path="/product" element={<Product />} />
-        <Route path="/admin/addAdmin" element={<Admin />} />
-        <Route path="/deleteAccount" element={<AccountDelete />} />
-        <Route
-          path="/admin/EditActivityCategories"
-          element={<ActivityCategories />}
-        />
-        <Route
-          path="/admin/addTourismGovernor"
-          element={<TourismGovernor1 />}
-        />
-        <Route path="login" element={<Login />} />
-        <Route path="/signup" element={<SignupsRoles />} />
-        <Route path="/signup/signupTourist" element={<TouristRegistration />} />
-        <Route
-          path="/signup/signupAdvertiser"
-          element={<AdvertiserRegistration />}
-        />
-        <Route path="/signup/signupTourguide" element={<FormPage />} />
-        <Route path="/signup/signupSeller" element={<FormPageSeller />} />
-        <Route path="/tourist-page" element={<TouristPage />} />
-        <Route path="/tourist-profile" element={<TouristProfile />} />
-        <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
-        <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
-        <Route path="/activityForm" element={<ActivityForm />} />
-        <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
-        <Route path="/tourGuideProfile" element={<TourGuideProfile />} />
-        <Route path="/tourGuideDashboard" element={<TourGuideDashboard />} />
-        <Route path="/itineraryForm" element={<ItineraryForm />} />
-        <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
-        <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/notifications" element={<NotificationsPage />} />
-        <Route path="/Pastactivities" element={<PastActivities />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/siginIn" element={<LoginPage />} />
-        <Route path="/wallet" element={<Wallet />} />
-        <Route path="/order" element={<Order />} />
-        <Route path="/admin/manage-activities" element={<ManageActivities />} />
-        <Route path="/bookmarks" element={<BookmarksPage ></BookmarksPage>} />
-        <Route path="/preferences" element={<PreferencesPage />} />
-      </Routes>
-    </BrowserRouter>
-    <Toaster closeButton richColors toastOptions={{
-      classNames: {
-        toast: 'w-auto right-0',
-      },
-    }} />
+    <WalkthroughProvider>
+      <CurrencyProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/checkout" element={<Checkout />} />
+            {/* <Route path="/admin" element={<AdminPage/>} /> */}
+            <Route path="/loading" element={<LoadingPage />} />
+            <Route path="/Sellerdashboard" element={<Sellerdashboard />} />
+            <Route path="/SellerProducts" element={<SellerProducts />} />
+            <Route path="/SellerProfile" element={<SellerProfile />} />
+            <Route path="/tourist" element={<TouristPage />} />
+            <Route path="/deleteUser" element={<DeleteUser />} />
+            <Route path="/viewComplaints" element={<ComplaintsPage />} />
+            <Route path="/preferenceTag" element={<PreferenceTag />} />
+            <Route path="/Admindashboard" element={<AdminDashboard />} />
+            <Route path="/AdminPromoCode" element={<AdminPromoCode />} />
+            <Route path="/product" element={<Product />} />
+            <Route path="/admin/addAdmin" element={<Admin />} />
+            <Route path="/deleteAccount" element={<AccountDelete />} />
+            <Route
+              path="/admin/EditActivityCategories"
+              element={<ActivityCategories />}
+            />
+            <Route
+              path="/admin/addTourismGovernor"
+              element={<TourismGovernor1 />}
+            />
+            <Route path="login" element={<Login />} />
+            <Route path="/signup" element={<SignupsRoles />} />
+            <Route path="/signup/signupTourist" element={<TouristRegistration />} />
+            <Route
+              path="/signup/signupAdvertiser"
+              element={<AdvertiserRegistration />}
+            />
+            <Route path="/signup/signupTourguide" element={<FormPage />} />
+            <Route path="/signup/signupSeller" element={<FormPageSeller />} />
+            <Route path="/tourist-page" element={<TouristPage />} />
+            <Route path="/tourist-profile" element={<TouristProfile />} />
+            <Route path="/TourismGovernorDashboard" element={<TourismGovernor />} />
+            <Route path="/advertiserProfile" element={<AdvertiserProfile />} />
+            <Route path="/activityForm" element={<ActivityForm />} />
+            <Route path="/advertiserDashboard" element={<AdvertiserDashboard />} />
+            <Route path="/tourGuideProfile" element={<TourGuideProfile />} />
+            <Route path="/tourGuideDashboard" element={<TourGuideDashboard />} />
+            <Route path="/itineraryForm" element={<ItineraryForm />} />
+            <Route path="/admin/itineraries" element={<AdminItinerariesPage />} />
+            <Route path="/admin/pending-users" element={<PendingUserDocuments />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/Pastactivities" element={<PastActivities />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/siginIn" element={<LoginPage />} />
+            <Route path="/wallet" element={<Wallet />} />
+            <Route path="/order" element={<Order />} />
+            <Route path="/admin/manage-activities" element={<ManageActivities />} />
+            <Route path="/bookmarks" element={<BookmarksPage ></BookmarksPage>} />
+            <Route path="/preferences" element={<PreferencesPage />} />
+          </Routes>
+        </BrowserRouter>
+        <Toaster closeButton richColors toastOptions={{
+          classNames: {
+            toast: 'w-auto right-0',
+          },
+        }} />
+      </CurrencyProvider>
     </WalkthroughProvider>
   </StrictMode>
 );
