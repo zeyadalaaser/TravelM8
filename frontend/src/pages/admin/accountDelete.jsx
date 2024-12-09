@@ -3,9 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/NavbarAdmin";
-import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -14,7 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trash2, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -22,66 +20,66 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-//import { getAllUsers, deleteUser } from "@/pages/admin/services/adminDeleteServices.js"; // Import the service
+import { User, Trash2, Search } from "lucide-react";
+import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const DeletionRequestsAdmin = () => {
+  const [sidebarState, setSidebarState] = useState(false);
   const [requests, setRequests] = useState([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [sidebarState, setSidebarState] = useState(false);
-  const openDeleteDialog = (request) => {
-    setSelectedRequest(request); // Store the selected request to be deleted
-    setIsDeleteDialogOpen(true); // Open the confirmation dialog
-  };
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const requestsPerPage = 5;
+  const [selectedType, setSelectedType] = useState("all");
 
-  const closeDeleteDialog = () => {
-    setIsDeleteDialogOpen(false); // Close the dialog
-    setSelectedRequest(null); // Clear selected request
-  };
-
-  // Fetch deletion requests on component mount
   useEffect(() => {
-    const fetchDeletionRequests = async () => {
-      try {
-        const response = await fetch("http://localhost:5001/api/Allrequests", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Authorization token
-          },
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setRequests(data);
-        } else {
-          console.error("Error fetching deletion requests:", data.message);
-          toast("Failed to load requests", {
-            description: data.message,
-          });
-        }
-      } catch (error) {
-        console.error("Error:", error);
-        toast("Error", {
-          description: "Failed to fetch deletion requests",
-        });
-      }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    fetchDeletionRequests();
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
     };
 
-    fetchDeletionRequests();
-  }, [toast]); // Empty dependency array ensures it runs once on mount
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
-  const toggleSidebar = () => {
-    setSidebarState(!sidebarState);
+  const fetchDeletionRequests = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/api/Allrequests", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setRequests(data);
+      } else {
+        toast.error("Failed to load requests");
+      }
+    } catch (error) {
+      toast.error("Failed to fetch deletion requests");
+    }
   };
 
-  // Function to delete both the user and their deletion request
   const handleDelete = async (username, type) => {
     try {
-      // Step 1: Delete the user
-      const userResponse = await fetch("http://localhost:5001/api/usersOnly", {
+      await fetch("http://localhost:5001/api/usersOnly", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -90,151 +88,191 @@ const DeletionRequestsAdmin = () => {
         body: JSON.stringify({ username, type }),
       });
 
-      // Check if the user deletion was successful
-      if (!userResponse.ok) {
-        const errorData = await userResponse.json();
-        throw new Error(errorData.message || "Failed to delete the user");
-      }
+      await fetch("http://localhost:5001/api/delete-request", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ username }),
+      });
 
-      // Step 2: Delete the deletion request
-      const requestResponse = await fetch(
-        "http://localhost:5001/api/delete-request",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ username }),
-        }
-      );
-
-      if (!requestResponse.ok) {
-        const errorData = await requestResponse.json();
-        throw new Error(
-          errorData.message || "Failed to delete the deletion request"
-        );
-      }
-
-      // Update UI: remove the request from the displayed list
       setRequests(requests.filter((request) => request.username !== username));
-
-      toast("User  deleted successfully");
+      toast.success("User deleted successfully");
+      setIsDeleteDialogOpen(false);
     } catch (error) {
-      console.error("Error deleting the user and/or deletion request:", error);
-      toast("Failed to delete the user and/or deletion request");
+      toast.error("Failed to delete user");
     }
   };
 
-  const handleReject = (id) => {
-    console.log(`Rejecting request for ID: ${id}`);
-    // Add logic to reject deletion request here
-  };
+  // Filter and pagination logic
+  const filteredRequests = requests.filter(request => {
+    const matchesSearch = request.username.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = selectedType === "all" || request.userType.toLowerCase() === selectedType.toLowerCase();
+    return matchesSearch && matchesType;
+  });
+
+  const indexOfLastRequest = currentPage * requestsPerPage;
+  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+  const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
+  const totalPages = Math.ceil(filteredRequests.length / requestsPerPage);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <Sidebar state={sidebarState} toggleSidebar={toggleSidebar} />
-      <div
-        style={{
-          transition: "margin-left 0.3s ease",
-          marginLeft: sidebarState ? "250px" : "0",
-          width: "100%",
-          flex: 1,
-        }}
-      >
-        <Navbar toggleSidebar={toggleSidebar} />
-        <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg mt-24 w-4/5 mb-20">
-          <h1 className="text-3xl font-bold mb-6 text-primary">Deletion Requests</h1>
-          <div className="border rounded-lg overflow-hidden mt-6">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted">
-                  <TableHead className="font-semibold text-muted-foreground">
-                    Username
-                  </TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">
-                    User Type
-                  </TableHead>
-                  <TableHead className="font-semibold text-muted-foreground">
-                    Request Date
-                  </TableHead>
-                  <TableHead className="text-right font-semibold text-muted-foreground">
-                    Actions
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {requests.map((request) => (
-                  <TableRow key={request._id} className="border-t">
-                    <TableCell className="font-medium">
-                      {request.username}
-                    </TableCell>
-                    <TableCell>{request.userType}</TableCell>
-                    <TableCell>
-                      {new Date(request.requestDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Dialog
-                        open={isDeleteDialogOpen}
-                        onOpenChange={setIsDeleteDialogOpen}
-                      >
-                        <DialogTrigger asChild>
-                          <Button
-                            onClick={() => openDeleteDialog(request)}
+    <div className="flex min-h-screen bg-gray-50">
+      <Sidebar
+        isOpen={sidebarState}
+        toggleSidebar={() => setSidebarState(!sidebarState)}
+      />
+      <div className="flex-1 flex flex-col">
+        <Navbar toggleSidebar={() => setSidebarState(!sidebarState)} />
+        
+        <main className="flex-1 py-16 bg-gray-50"> {/* Consistent top/bottom padding */}
+        <div className="container mx-auto p-6 w-4/5">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-2xl font-bold mt-12">Deletion Requests</h1>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+              <div className="mb-6 flex justify-between items-center">
+                <div className="relative w-1/3">
+                  <input
+                    type="text"
+                    placeholder="Search by username..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
+                  />
+                  <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                </div>
+                <Select
+                  value={selectedType}
+                  onValueChange={(value) => {
+                    setSelectedType(value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-[180px] text-sm">
+                    <SelectValue placeholder="Filter by type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all" className="text-sm">All Types</SelectItem>
+                    <SelectItem value="tourguide" className="text-sm">Tour Guide</SelectItem>
+                    <SelectItem value="advertiser" className="text-sm">Advertiser</SelectItem>
+                    <SelectItem value="seller" className="text-sm">Seller</SelectItem>
+                    <SelectItem value="user" className="text-sm">Regular User</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="font-medium text-gray-700 pl-6 text-sm">Username</TableHead>
+                      <TableHead className="font-medium text-gray-700 text-sm">User Type</TableHead>
+                      <TableHead className="font-medium text-gray-700 text-sm text-center">Request Date</TableHead>
+                      <TableHead className="font-medium text-gray-700 text-sm text-right pr-6">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {currentRequests.map((request) => (
+                      <TableRow key={request._id} className="hover:bg-gray-50">
+                        <TableCell className="py-4 pl-6">
+                          <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                              <User className="h-4 w-4 text-gray-500" />
+                            </div>
+                            <span className="font-medium text-gray-900 text-sm">{request.username}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-4 text-gray-600 text-sm">
+                          {request.userType}
+                        </TableCell>
+                        <TableCell className="py-4 text-center text-gray-600 text-sm">
+                          {new Date(request.requestDate).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="py-4 text-right pr-6">
+                          <button
+                            className="flex items-center text-red-600 hover:text-red-800 transition duration-200 ml-auto text-sm"
+                            onClick={() => {
+                              setSelectedRequest(request);
+                              setIsDeleteDialogOpen(true);
+                            }}
                           >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            <span className="sr-only">Delete Account</span>
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>
-                              Are you sure you want to delete this account?
-                            </DialogTitle>
-                            <DialogDescription>
-                              This action cannot be undone. This will
-                              permanently delete the account and remove the data
-                              from our servers.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <DialogFooter>
-                            <Button
-                              variant="outline"
-                              onClick={closeDeleteDialog}
-                            >
-                              Cancel
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              onClick={() => {
-                                if (selectedRequest) {
-                                  handleDelete(
-                                    selectedRequest.username,
-                                    selectedRequest.userType
-                                  );
-                                }
-                                closeDeleteDialog();
-                              }}
-                            >
-                              Delete Account
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            Delete
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+
+                {totalPages > 1 && (
+                  <div className="flex justify-center gap-2 mt-6">
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <Button
+                        key={i + 1}
+                        variant={currentPage === i + 1 ? "default" : "outline"}
+                        onClick={() => setCurrentPage(i + 1)}
+                        className={currentPage === i + 1 ? 'bg-black text-white hover:bg-black' : ''}
+                      >
+                        {i + 1}
+                      </Button>
+                    ))}
+                    <Button
+                      variant="outline"
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-          {requests.length === 0 && (
-            <p className="text-center text-muted-foreground mt-6 p-4 bg-muted rounded-lg">
-              No deletion requests found.
-            </p>
-          )}
-        </div>
-        <Footer className="mt-auto" />
+        </main>
+        
+        <Footer />
       </div>
+
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Confirm Deletion</DialogTitle>
+            <DialogDescription className="text-gray-500 mt-2">
+              Are you sure you want to delete user "{selectedRequest?.username}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-2 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+              className="text-sm"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => selectedRequest && handleDelete(selectedRequest.username, selectedRequest.userType)}
+              className="bg-red-600 hover:bg-red-700 text-sm"
+            >
+              Delete User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -16,9 +16,14 @@ import {
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { jwtDecode } from 'jwt-decode';
+import axios from "axios";
+import { Stars } from "../Stars.jsx";
 
 export default function ActivityDetails({ activity, bookActivity,currency,token }) {
   const navigate = useNavigate();
+  const [reviews, setReviews] = useState([]);
+
+
   const handleBook = async (activity) => {
     console.log(token);
     if (token) {
@@ -55,29 +60,30 @@ export default function ActivityDetails({ activity, bookActivity,currency,token 
     }
   }, [token, navigate]);
 
-  const getReviews = async (entityId, touristId) => {
+  const getReviews = async (entityId) => {
     try {
-        // Construct query parameters
-        const params = {
-            entityId,
-            entityType:"Activity",
-            touristId
-        };
+      // Construct query parameters
+      const params = {
+        entityId,
+        entityType: "Activity",
+      };
 
-        const response = await axios.get('/api/ratings', { params });
+      const response = await axios.get("http://localhost:5001/api/ratings", {
+        params,
+      });
 
-        console.log('Reviews:', response.data.reviews);
-        console.log('Average Rating:', response.data.averageRating);
-        setReviews(response.data);
+      console.log("Reviews:", response.data.reviews);
+      console.log("Average Rating:", response.data.averageRating);
+      setReviews(response.data.reviews);
     } catch (error) {
-        console.error('Error fetching reviews:', error);
+      console.error("Error fetching reviews:", error);
     }
-};
+  };
 
   return (
     <Dialog >
       <DialogTrigger asChild>
-        <Button variant="outline">View Details</Button>
+        <Button onClick={()=> getReviews(activity)} variant="outline">View Details</Button>
       </DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden">
         <DialogHeader>
@@ -123,6 +129,36 @@ export default function ActivityDetails({ activity, bookActivity,currency,token 
                 <p className="text-sm text-muted-foreground">{activity?.location?.name}</p>
               </div>
               <Separator />
+              <div>
+                <h3 className="text-lg font-semibold mb-2">
+                  Reviews and Comments
+                </h3>
+                {reviews && reviews.length > 0 ? (
+                  <ul className="space-y-4">
+                    {reviews.map((review, index) => (
+                      <div key={review.id} className="flex space-x-4">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h5 className="font-semibold text-sm">
+                            {review.userId?.username?review.userId.username:"Anonymous"}
+                            </h5>
+                            <div className="flex items-center">
+                              <Stars rating={review?.rating} />
+                            </div>
+                          </div>
+                          <p className="text-sm italic text-muted-foreground">
+                            &quot;{review?.comment}&quot;
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    No reviews yet.
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
