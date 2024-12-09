@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
+import { useCurrency } from '../../../../hooks/currency-provider';
 
 const decodeToken = (token) => {
   try {
@@ -36,11 +37,10 @@ export function ProductsPage({ addToCart }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get('type');
-  const currency = searchParams.get('currency') ?? "USD";
+  const { currency, exchangeRate } = useCurrency();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [exchangeRates, setExchangeRates] = useState({});
   const [token, setToken] = useState(null);
   const { addSteps, clearSteps, currentPage: walkthroughPage } = useWalkthrough();
 
@@ -89,18 +89,6 @@ export function ProductsPage({ addToCart }) {
     }
   }, []);
 
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get("https://api.exchangerate-api.com/v4/latest/USD");
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
-
   const fetchProducts = useDebouncedCallback(async () => {
     setLoading(true);
     const queryParams = new URLSearchParams(location.search);
@@ -145,7 +133,7 @@ export function ProductsPage({ addToCart }) {
             <Separator className="mt-6" />
             <PriceFilter
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
             />
             <Separator className="mt-5" />
             <RatingFilter />

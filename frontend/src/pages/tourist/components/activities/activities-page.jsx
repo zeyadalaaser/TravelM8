@@ -22,17 +22,15 @@ import ActivityCard from "./activity-card";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
+import { useCurrency } from "../../../../hooks/currency-provider";
 
 export function ActivitiesPage() {
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(false);
   const { location } = useRouter();
-  const searchParams = new URLSearchParams(location.search);
-  const currency = searchParams.get("currency") ?? "USD";
+  const { currency, exchangeRate } = useCurrency();
   const [activities, setActivities] = useState([]);
-  const [exchangeRates, setExchangeRates] = useState({});
 
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
 
   const itemsPerPage = 4; // Adjust how many items per page you want
@@ -73,26 +71,12 @@ export function ActivitiesPage() {
     }
   }, [addSteps, clearSteps, walkthroughPage]);
 
-  // Fetch the latest exchange rates from the API
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
 
   const fetchActivities = useDebouncedCallback(async () => {
     setLoading(true); // Set loading to true when starting the fetch
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
-    queryParams.set("exchangeRate", exchangeRates[currency] || 1);
+    queryParams.set("exchangeRate", exchangeRate);
 
     try {
       const fetchedActivities = (
@@ -147,7 +131,7 @@ export function ActivitiesPage() {
             <Separator className="mt-5" />
             <PriceFilter
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
             />
             <Separator className="mt-5" />
             <RatingFilter />
@@ -188,7 +172,7 @@ export function ActivitiesPage() {
                     bookActivity={createActivityBooking}
                     activity={activity}
                     currency={currency}
-                    exchangeRate={exchangeRates[currency] || 1} />
+                    exchangeRate={exchangeRate} />
                   ))}
                 </div>
               </div>

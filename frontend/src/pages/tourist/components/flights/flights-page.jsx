@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axios from "axios";
 import { SelectFilter } from "../filters/select-filter";
 import { TimeFilter } from "../filters/time-filter";
+import { useCurrency } from "../../../../hooks/currency-provider";
 
 const query = encodeURIComponent(
   "query UmbrellaPlacesQuery( $search: PlacesSearchInput $filter: PlacesFilterInput $options: PlacesOptionsInput ) { places(search: $search, filter: $filter, options: $options, first: 20) { __typename ... on AppError { error: message } ... on PlaceConnection { edges { rank distance { __typename distance } isAmbiguous node { __typename __isPlace: __typename id legacyId name slug slugEn gps { lat lng } rank ... on City { code autonomousTerritory { legacyId id } subdivision { legacyId name id } country { legacyId name slugEn region { legacyId continent { legacyId id } id } id } airportsCount groundStationsCount } ... on Station { type code gps { lat lng } city { legacyId name slug autonomousTerritory { legacyId id } subdivision { legacyId name id } country { legacyId name region { legacyId continent { legacyId id } id } id } id } } ... on Region { continent { legacyId id } } ... on Country { code region { legacyId continent { legacyId id } id } } ... on AutonomousTerritory { country { legacyId name region { legacyId continent { legacyId id } id } id } } ... on Subdivision { country { legacyId name region { legacyId continent { legacyId id } id } id } } } } } } }"
@@ -93,21 +94,7 @@ export function FlightsPage() {
     { value: "duration-fastest", description: "Fastest" },
   ];
 
-  const currency = searchParams.get("currency") ?? "USD";
-  const [exchangeRates, setExchangeRates] = useState({});
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
+  const { currency, exchangeRate } = useCurrency();
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -171,7 +158,7 @@ export function FlightsPage() {
           <div data-tour="flight-filters">
             <PriceFilter
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
             />
             <Separator className="mt-5" />
             <SelectFilter name="Stops" paramName="stops" getOptions={async () => ["Direct", "Up to 1 stop", "Up to 2 stops"]} />
@@ -213,7 +200,7 @@ export function FlightsPage() {
             <><Flights
               flights={paginatedFlights}
               currency={currency}
-              exchangeRate={exchangeRates[currency]} />
+              exchangeRate={exchangeRate} />
               <div className="flex justify-center mt-6 space-x-2">
                 <Button
                   variant="outline"

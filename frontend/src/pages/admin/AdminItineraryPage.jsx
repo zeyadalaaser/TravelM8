@@ -5,40 +5,27 @@ import Navbar from "@/components/NavbarAdmin";
 import { getItineraries } from "../tourist/api/apiService";
 import AdminItineraryCard from "../../components/ItineraryCard/AdminItineraryCard";
 import axios from "axios";
+import { useCurrency } from "../../hooks/currency-provider";
 
 export function AdminItinerariesPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [itineraries, setItineraries] = useState([]);
   const [filteredItineraries, setFilteredItineraries] = useState([]);
-  const [currency, setCurrency] = useState("USD");
-  const [exchangeRates, setExchangeRates] = useState({});
+  const { currency, exchangeRate } = useCurrency();
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [searchQuery, setSearchQuery] = useState(""); // Added search state
 
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
 
   const fetchItineraries = useDebouncedCallback(async () => {
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("isAdmin", true);
 
     const minPriceUSD = priceRange.min
-      ? priceRange.min / (exchangeRates[currency] || 1)
+      ? priceRange.min / exchangeRate
       : "";
     const maxPriceUSD = priceRange.max
-      ? priceRange.max / (exchangeRates[currency] || 1)
+      ? priceRange.max / exchangeRate
       : "";
 
     if (minPriceUSD) queryParams.set("minPrice", minPriceUSD);
@@ -114,7 +101,7 @@ export function AdminItinerariesPage() {
               itineraries={filteredItineraries} // Use filtered itineraries
               isAdmin={true}
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
               onRefresh={fetchItineraries}
             />
           ) : (

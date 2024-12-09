@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useWalkthrough } from '@/contexts/WalkthroughContext';
 import { Walkthrough } from '@/components/Walkthrough';
 import { WalkthroughButton } from '@/components/WalkthroughButton';
+import { useCurrency } from "../../../../hooks/currency-provider";
 
 
 export function MuseumsPage() {
@@ -21,9 +22,8 @@ export function MuseumsPage() {
   const { location } = useRouter();
   const searchParams = new URLSearchParams(location.search);
   const type = searchParams.get("type");
-  const currency = searchParams.get("currency") ?? "USD";
+  const { currency, exchangeRate } = useCurrency();
   const [museums, setMuseums] = useState([]);
-  const [exchangeRates, setExchangeRates] = useState({});
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,26 +62,11 @@ export function MuseumsPage() {
     }
   }, [addSteps, clearSteps, walkthroughPage]);
 
-  // Fetch latest exchange rates on mount
-  useEffect(() => {
-    async function fetchExchangeRates() {
-      try {
-        const response = await axios.get(
-          "https://api.exchangerate-api.com/v4/latest/USD"
-        );
-        setExchangeRates(response.data.rates);
-      } catch (error) {
-        console.error("Error fetching exchange rates:", error);
-      }
-    }
-    fetchExchangeRates();
-  }, []);
-
   const fetchMuseums = useDebouncedCallback(async () => {
     setLoading(true);
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("currency", currency);
-    queryParams.set("exchangeRate", exchangeRates[currency] || 1);
+    queryParams.set("exchangeRate", exchangeRate);
 
     const fetchedMuseums = await getMuseums(`?${queryParams.toString()}`);
 
@@ -115,7 +100,7 @@ export function MuseumsPage() {
           <div data-tour="museums-filters">
             <PriceFilter
               currency={currency}
-              exchangeRate={exchangeRates[currency] || 1}
+              exchangeRate={exchangeRate}
             />
             <Separator className="mt-5" />
             <SelectFilter name="Tags" paramName="tag" getOptions={getPlaceTags} />
@@ -143,7 +128,7 @@ export function MuseumsPage() {
               <Museums
                 museums={paginatedPlaces}
                 currency={currency}
-                exchangeRate={exchangeRates[currency] || 1}
+                exchangeRate={exchangeRate}
               />
 
               <div className="flex justify-center mt-6 space-x-2">
