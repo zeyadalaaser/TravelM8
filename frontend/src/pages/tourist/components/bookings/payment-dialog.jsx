@@ -225,7 +225,7 @@ function ForSubmit({ isOpen, onOpenChange, currency, amount, token, onPaid }) {
   />
 </div>
 
-          <Button disabled={profile?.wallet < amount || loading} className="w-full mt-4" onClick={() => handlePayClick()}>
+          <Button disabled={(paymentMethod==="wallet" && (profile?.wallet < amount) )|| loading} className="w-full mt-4" onClick={() => handlePayClick()}>
             {!loading ? `Pay ${(amount * 1)?.formatCurrency(currency)}` : <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           </Button>
         </div>

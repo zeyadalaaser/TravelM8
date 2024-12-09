@@ -41,10 +41,15 @@ import {
 } from "lucide-react";
 import { ReviewDialog } from "../ratings/ReviewDialog.jsx";
 import { toast } from "sonner";
+import { useCurrency } from '@/hooks/currency-provider';
+import { FlightCard, flights } from "./flight-card.jsx";
+import { HotelCard, hotels } from "./hotel-card.jsx";
 
 const BookingHistory = () => {
   const token = localStorage.getItem("token");
   const today = new Date();
+
+  const { currency, exchangeRate } = useCurrency();
 
   const [dialogData, setDialogData] = useState({
     isOpen: false,
@@ -227,6 +232,8 @@ const BookingHistory = () => {
   ]);
 
   const renderSubTabs = () => {
+    if (mainTab === "hotels" || mainTab === "flights")
+      return (<></>);
     if (mainTab === "products") {
       return (
         <TabsList className="grid grid-cols-2 mb-4">
@@ -272,7 +279,7 @@ const BookingHistory = () => {
         response = await cancelItineraryBooking(bookingId); // Await the response
       }
 
-      toast(`Booking cancelled successfully! Amount refunded: $${response.amountRefunded}. New wallet balance: $${response.newBalance}.`);
+      toast(`Booking cancelled successfully! Amount refunded: ${(response.amountRefunded * exchangeRate).formatCurrency(currency)}. New wallet balance: ${(response.newBalance * exchangeRate).formatCurrency(currency)}.`);
 
 
       // Refresh the data after cancellation
@@ -308,9 +315,48 @@ const BookingHistory = () => {
     return showingItineraries.slice(startIndex, startIndex + itemsPerPage);
   };
 
+  const getPaginatedFlights = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return flights.slice(startIndex, startIndex + itemsPerPage);
+  };
+
+  const getPaginatedHotels = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return hotels.slice(startIndex, startIndex + itemsPerPage);
+  };
+
   const renderCards = () => {
     const paginatedActivities = getPaginatedActivities(); // Get paginated activities
     const paginatedItineraries = getPaginatedItineraries(); // Get paginated itineraries
+    const paginatedFlights = getPaginatedFlights();
+    const paginatedHotels = getPaginatedHotels();
+
+    if (mainTab === "flights") {
+      return paginatedFlights
+        .map((flight, index) => (
+          <FlightCard
+            key={index}
+            details={flight}
+            exchangeRate={exchangeRate}
+            currency={currency}
+          />
+        ));
+    }
+
+    if (mainTab === "hotels")
+      return <HotelCard hotels={paginatedHotels} exchangeRate={exchangeRate} currency={currency} />
+
+    if (mainTab === "hotels") {
+      return paginatedFlights
+        .map((flight, index) => (
+          <FlightCard
+            key={index}
+            details={flight}
+            exchangeRate={exchangeRate}
+            currency={currency}
+          />
+        ));
+    }
 
     if (mainTab === "activities") {
       if (!paginatedActivities || paginatedActivities.length === 0) {
@@ -416,9 +462,9 @@ const BookingHistory = () => {
               </span>
             </div>
             <p className="text-2xl font-semibold">
-              $
-              {activityBooking.activityId?.price ||
-                activityBooking.activityId?.price[0]}
+              
+              {((activityBooking.activityId?.price ||
+                activityBooking.activityId?.price[0]) * exchangeRate).formatCurrency(currency)}
             </p>
           </div>
           {!cancelled && (<Separator></Separator>)}
@@ -549,7 +595,7 @@ const BookingHistory = () => {
               </span>
             </div>
             <p className="text-2xl font-semibold">
-              ${itineraryBooking.itinerary?.price}
+              {(itineraryBooking.itinerary?.price * exchangeRate).formatCurrency(currency)}
             </p>
           </div>
           {!cancelled && <Separator></Separator>}

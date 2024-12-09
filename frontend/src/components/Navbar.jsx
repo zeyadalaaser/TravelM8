@@ -226,8 +226,8 @@ export default function Navbar({ profilePageString, children }) {
       >
         <div
           className={`cursor-pointer text-2xl font-semibold ${location.pathname === "/"
-              ? "text-white"
-              : "text-black"
+            ? "text-white"
+            : "text-black"
             }`}
           onClick={() => navigate(`/?currency=${currency}`)}
         >
@@ -250,8 +250,8 @@ export default function Navbar({ profilePageString, children }) {
             <button
               key={page.value}
               className={`${location.pathname === "/"
-                  ? "text-white hover:text-white/70"
-                  : "text-black hover:text-black/70"
+                ? "text-white hover:text-white/70"
+                : "text-black hover:text-black/70"
                 } ${currentPage.includes(`/tourist-page?type=${page.value}`)
                   ? "py-1 px-3 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-2/3 after:h-0.5 after:bg-primary"
                   : "py-1 px-3"
@@ -268,9 +268,10 @@ export default function Navbar({ profilePageString, children }) {
           <BookTransportation change={location.pathname === "/"} />
         </div>
         <div className="flex items-center space-x-4">
-        <WalkthroughButton currentPageType={getCurrentPageType()} change={location.pathname === "/"}/>
-          {isLoggedIn  ? (
+
+          {isLoggedIn ? (
             <>
+              <WalkthroughButton currentPageType={getCurrentPageType()} change={location.pathname === "/"} />
               <Button
                 variant="ghost"
                 size="icon"
@@ -434,7 +435,7 @@ export default function Navbar({ profilePageString, children }) {
                 }}>
                   Preferences
                 </MenuItem>
-                <MenuItem onClick={() => {handleClose(); setIsCurrencyOpen(true);}}>
+                <MenuItem onClick={() => { handleClose(); setIsCurrencyOpen(true); }}>
                   Currency: {currency}
                 </MenuItem>
                 <Separator />
@@ -465,8 +466,8 @@ export default function Navbar({ profilePageString, children }) {
                 <Button
                   variant="outline"
                   className={`bg-transparent rounded-full px-8 py-2 ${location.pathname === "/"
-                      ? "text-white hover:bg-white/10 hover:text-white"
-                      : "text-black"
+                    ? "text-white hover:bg-white/10 hover:text-white"
+                    : "text-black"
                     } `}
                 >
                   Login
@@ -479,8 +480,8 @@ export default function Navbar({ profilePageString, children }) {
               >
                 <button
                   className={`font-medium rounded-full px-8 py-2 ${location.pathname === "/"
-                      ? " bg-white text-black hover:bg-white/90"
-                      : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
+                    ? " bg-white text-black hover:bg-white/90"
+                    : "rounded-full px-8 bg-gray-800 hover:bg-gray-700 text-white "
                     } `}
                 >
                   Register

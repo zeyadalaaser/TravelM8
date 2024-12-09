@@ -332,7 +332,7 @@ export async function getHotels(query) {
       return result + "excellent;";
   }
 
-  const getStarsFilter = (stars) => "stars~" + stars.charAt(0) + ";";
+  const getStarsFilter = (stars) => "stars=~" + stars.charAt(0) + ";";
 
   const searchParams = new URLSearchParams(query);
   if (!searchParams.has("checkin") || !searchParams.has("checkout") || !searchParams.has("where"))
@@ -372,6 +372,7 @@ export async function getHotels(query) {
     requestBody.sortParams.sortMode = sort;
 
   try {
+    console.log(JSON.stringify(requestBody));
     const response = await apiClient.post("getHotels?currency=USD", requestBody);
     return response["data"];
   }

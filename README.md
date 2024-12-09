@@ -1,23 +1,30 @@
-# TravelM8 
+# TravelM8
 
 ## Motivation
-The reason behind pursuing such a project was to build and implement a comprehensive travel platform to facilitate vacation and travel explorations and bookings for tourists. 
+
+The reason behind pursuing such a project was to build and implement a comprehensive travel platform to facilitate vacation and travel explorations and bookings for tourists.
 
 ## Build Status
+
 Our project includes no bugs/errors, sometimes when building the project for the first time, "npm install" command must be ran in the terminal so all libraries and dependencies are installed in order for the project to work properly and smoothly.
+
 ## Code Style
+
 This project follows consistent coding conventions to ensure readability and maintainability. The following guidelines and tools are used:
+
 - Language: JavaScript/React for the frontend, with adherence to ES6+ syntax and best practices.
 - Frameworks/Library: React components with functional programming patterns, leveraging React hooks like useState, useEffect, and custom hooks for reusable logic.
 - Styling: UI elements are styled using Tailwind CSS, shadcn and component-based design principles.
 - Backend: Node.js with Express for APIs, adhering to RESTful conventions.
 - Linting/Formatting:
--- ESLint: Ensures consistent code formatting and catches potential issues.
--- Prettier: Enforces a standardized code format for better readability.
+  -- ESLint: Ensures consistent code formatting and catches potential issues.
+  -- Prettier: Enforces a standardized code format for better readability.
 
 ## Screenshots
+
 A visual portrayal of our project can grasped through the following snapshots:
-1. ![LandingPage](./frontend/src/assets/screenshot1.png) 
+
+1. ![LandingPage](./frontend/src/assets/screenshot1.png)
 2. ![SignUp](./frontend/src/assets/screenshot2.png)
 3. ![Steps](./frontend/src/assets/screenshot3.png)
 4. ![Payment](./frontend/src/assets/screenshot4.png)
@@ -25,34 +32,39 @@ A visual portrayal of our project can grasped through the following snapshots:
 6. ![RideBooking](./frontend/src/assets/screenshot6.png)
 7. ![Products](./frontend/src/assets/screenshot7.png)
 
-
 ## Tech/ Framework Used
-The technologies, libraries, and frameworks  used in the project, categorized based on their purpose:
+
+The technologies, libraries, and frameworks used in the project, categorized based on their purpose:
 
 - Frontend
--- React.js: JavaScript library for building user interfaces. Used to create a dynamic and interactive user experience for managing promo codes.
--- Lucide-React: Icon library used for adding visually appealing icons like Plus, Search, Edit, and Trash.
--- Toastify/Toast Component: Provides notifications for actions like creating or deleting promo codes, enhancing user feedback.
--- Custom UI Components:
--- Dialog: Used for creating modals (e.g., the Create Promo Code dialog).
-Button, Input, Label: Styled UI components for consistent and clean design.
+  -- React.js: JavaScript library for building user interfaces. Used to create a dynamic and interactive user experience for managing promo codes.
+  -- Lucide-React: Icon library used for adding visually appealing icons like Plus, Search, Edit, and Trash.
+  -- Toastify/Toast Component: Provides notifications for actions like creating or deleting promo codes, enhancing user feedback.
+  -- Custom UI Components:
+  -- Dialog: Used for creating modals (e.g., the Create Promo Code dialog).
+  Button, Input, Label: Styled UI components for consistent and clean design.
 - Backend
--- Node.js: runtime environment for executing JavaScript code on the server.
--- Express.js: Web framework used for building RESTful APIs for CRUD operations on promo codes.
+  -- Node.js: runtime environment for executing JavaScript code on the server.
+  -- Express.js: Web framework used for building RESTful APIs for CRUD operations on promo codes.
 - Database
--- MongoDB Cloud (Atlas): NoSQL database used for storing promo code data, ensuring flexibility and scalability.
+  -- MongoDB Cloud (Atlas): NoSQL database used for storing promo code data, ensuring flexibility and scalability.
 - API and Data Handling
--- Axios: A promise-based HTTP client for making API requests to the backend.
--- RESTful API: For consistent, scalable, and resource-oriented API design.
+  -- Axios: A promise-based HTTP client for making API requests to the backend.
+  -- RESTful API: For consistent, scalable, and resource-oriented API design.
 - Utilities
--- ESLint: For enforcing consistent code style and catching errors early.
--- Prettier: To ensure that all contributors follow a consistent formatting style.
+  -- ESLint: For enforcing consistent code style and catching errors early.
+  -- Prettier: To ensure that all contributors follow a consistent formatting style.
 
-## Features 
+## Features
+
 In this project, what makes it stand out is its seemingless usage and design to make it user-friendly is that, for example, once the user signs up and accesses his/her account for the first time, guidance steps are distinguished as a simple and helpful walkthrough of the webpage, showcasing what each component on the webpage is for (search boxes and sorting options for instance). We have also used shadcn to enhance the UI.
+
 ## Code Examples
+
 Illustrating the central functionality of our project and how it addresses the needs of users, one of the first and the most vital utility is user authentication/login.
+
 1. Users enter their username and password into input fields.Upon clicking the Login button, the form triggers the handleSubmit function, which sends the username and password to the authentication API endpoint. The server returns a JWT token upon successful authentication, which is stored in localStorage for maintaining the session. Based on the user's role (e.g., Tourist, Admin, or Advertiser), the application redirects them to the appropriate dashboard or page.If the login fails, a user-friendly error message is displayed, describing the issue.
+
 ```sh
 const { token, role, needsPreferences } = response.data;
 localStorage.setItem('token', token);
@@ -91,8 +103,10 @@ console.log("pref: ", needsPreferences);
   setErrorMessage(error.response?.data?.msg || "Login failed. Please try again.");
 }
 };
-  ```
+```
+
 2. User (if tourist), is trying to book an activity/itinerary, activities that are available for booking and user can sort them based on various criteria such as relevance or rating and price currencies.
+
 ```sh
 const fetchActivities = useDebouncedCallback(async () => {
     setLoading(true); // Set loading to true when starting the fetch
@@ -104,8 +118,10 @@ const fetchActivities = useDebouncedCallback(async () => {
       const fetchedActivities = (
         await getActivities(`?${queryParams.toString()}`)
       ).filter((a) => a.isBookingOpen);
-  ```
+```
+
 3. As for an admin user for example, they have the abibility to manage pending users (tourists,advertisers, tour guides) by approving or rejecting their requests to sign up on the website.
+
 ```sh
 const handleReject = async (userId) => {
     try {
@@ -151,40 +167,51 @@ const handleReject = async (userId) => {
       toast("There was an issue approving the user.");
     }
   };
-  ```
- 4. As for advertiser, a new activity can be created by adding its necessary fields; title, description, date, address, price, category,etc.
- ```sh
+```
+
+4.  As for advertiser, a new activity can be created by adding its necessary fields; title, description, date, address, price, category,etc.
+
+```sh
 response = await fetch("http://localhost:5001/api/activities", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(formData),
-        });
-      }
-   ```
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+           Authorization: `Bearer ${token}`
+         },
+         body: JSON.stringify(formData),
+       });
+     }
+```
+
 ## Installation
+
 Follow these steps to install and set up the **TravelM8** project on your local machine:
+
 #### Prerequisites
+
 Ensure you have the following installed on your system:
+
 - [Node.js](https://nodejs.org/) (v16 or later)
 - [MongoDB](https://www.mongodb.com/) (v5.0 or later)
+
 ### Steps to Install
+
 1. **Clone the Repository**:
    Clone the repository from GitHub to your local machine:
    git clone https://github.com/Advanced-computer-lab-2024/TravelM8.git
    cd travelm8
-Install Dependencies: Install the necessary dependencies for both the backend and frontend:
+   Install Dependencies: Install the necessary dependencies for both the backend and frontend:
 
 #### Navigate to the backend folder and install dependencies
+
 cd backend
 npm install
 
 #### Navigate to the frontend folder and install dependencies
+
 cd ../frontend
 npm install
-*after installing the dependencies*
+_after installing the dependencies_
 **Run the backend development server:**
 cd backend
 nodemon server.js
@@ -196,23 +223,26 @@ npm run dev
 Access the Application:
 Open your browser and go to http://localhost:5173 to view the frontend.
 The backend API will be available at http://localhost:5001.
+
 ## API References
-| Method   | Route | 	Description.
-- | GET, POST | /api/placetag | 	Fetch or create place tags.
+
+| Method | Route | Description.
+
+- | GET, POST | /api/placetag | Fetch or create place tags.
 - | POST, GET, PUT, DELETE | /api/activity-categories | Manage activity categories.
 - | POST | /api/admins/register | Register a new admin user
 - | DELETE | /api/users | Delete a user account.
 - | GET | /api/getallusers | Retrieve all users.
 - | GET | /api/admins | Get a list of all admins
 - | POST | /api/admins/changepassword | Allow admins to change their password.
-- | GET | /api/pending-user-documents | 	View pending user document submissions.
-- | GET | /api/Allrequests | 	Fetch all deletion requests.
+- | GET | /api/pending-user-documents | View pending user document submissions.
+- | GET | /api/Allrequests | Fetch all deletion requests.
 - | GET | /api/usersReport | Fetch users reports
 - | DELETE | /api/usersOnly | Delete a user account without affecting related data.
 - | POST, GET, PUT, DELETE | /api/preference-tags | Manage user preference tags
-- | POST, GET | /api/tourism-governors |  Add or fetch tourism governors.
+- | POST, GET | /api/tourism-governors | Add or fetch tourism governors.
 - | POST | /api/tourism-governors/changepassword | Change the password for a tourism governor.
-- | GET, POST | /api/activities | 	Retrieve a list of activities or create a new activity
+- | GET, POST | /api/activities | Retrieve a list of activities or create a new activity
 - | GET, PUT, DELETE | /api/activities/:id | Retrieve, update, or delete a specific activity by its ID
 - | GET | /api/myActivities | Retrieve activities associated with the logged-in user
 - | PUT | /api/activities/:id/flag | Flag a specific activity as inappropriate
@@ -272,7 +302,7 @@ The backend API will be available at http://localhost:5001.
 - | POST | /api/itineraries/rate | Submit a rating for a specific itinerary
 - | GET | /api/sales-report | Generate a sales report for itineraries or related bookings
 - | POST | /api/itineraries/:id/notify-flag | Notify the owner of an itinerary that it has been flagged.
-- | PUT | /api/itineraries/:id/unflag | 	Unflag a previously flagged itinerary.
+- | PUT | /api/itineraries/:id/unflag | Unflag a previously flagged itinerary.
 - | GET, POST | /api/pending-users | Retrieve a list of pending user accounts or create a new pending user
 - | PATCH, DELETE | /api/pending-users/:id | Approve or delete a specific pending user by his ID.
 - | DELETE | /api/pending-users-documents/:id | Delete the documents associated with a specific pending user by ID
@@ -304,8 +334,8 @@ The backend API will be available at http://localhost:5001.
 - | PUT | /api/tourists/orders/update-status/:id | Update the status of a specific order by its ID
 - | PUT | /api/tourists/orders/cancel-order/:id | Cancel a specific order by its ID
 - | GET | /api/ordersReport | retrieve a report of all orders
-- | POST, GET | /api/bookmarks | 	Add or retrieve bookmarks for specific items
-- | DELETE | /api/bookmarks/:id | 	Remove a specific bookmark by its ID.
+- | POST, GET | /api/bookmarks | Add or retrieve bookmarks for specific items
+- | DELETE | /api/bookmarks/:id | Remove a specific bookmark by its ID.
 - | POST | /api/deleteRequests | Submit a request to delete an account
 - | DELETE | /api/delete-request | Delete a previously submitted account deletion request
 - | GET, DELETE | /api/notifications | Retrieve or delete notifications for the logged-in user
@@ -314,9 +344,10 @@ The backend API will be available at http://localhost:5001.
 - | POST | /api/auth/request-password-reset | Request a password reset for an account
 - | POST | /api/auth/reset-password | Reset the password for an account
 - | POST | /api/auth/verify-OTP | Verify an OTP (One-Time Password) for authentication
-- | POST | /api/send-birthday-promo-codes | Send birthday promotional codes 
+- | POST | /api/send-birthday-promo-codes | Send birthday promotional codes
 
 This list provides a comprehensive overview of all available endpoints in the API, including the HTTP methods used for each endpoint and their respective paths.
+
 ## Tests
 
 For TravelM8, we used Postman to manually test the API endpoints to ensure proper functionality and data flow between the backend and frontend. Below is an example of how we tested the GET route for fetching activities using Postman:
@@ -336,6 +367,7 @@ This section outlines how to use Postman to test our travel API, focusing on the
 - Description: Retrieves a list of all admins
 
 Steps:
+
 1. Create a new request in your "Travel API Tests" collection
 2. Set the request method to GET
 3. Enter the URL: `http://localhost:5001/api/admins`
@@ -344,9 +376,11 @@ Steps:
 6. Check that the response body contains an array of admin objects containing a unique id and name for every admin
 
 ##### 2. Delete activity
+
 - Method: DELETE
 - URL: `http://localhost:5001/api/activities/:id`
 - Description: Delete an activity
+
 1. Create a new request in your Postman collection
 2. Set the request method to DELETE
 3. Enter the URL: `http://localhost:5001/api/activities/{activityId}` (replace `{activityId}` with an actual activity ID)
@@ -355,6 +389,7 @@ Steps:
 6. Check that the response body contains a success message and the details of the deleted activity
 
 Example response:
+
 ```sh
 {
   "message": "Activity deleted successfully",
@@ -367,8 +402,10 @@ Example response:
     "location": "Mountain Trail"
     }
 }
-  ```
+```
+
 Note: If the activity with the specified ID is not found, you will receive a 404 Not Found status.
+
 ##### 3. Create a New PlaceTag (POST)
 
 - Method: POST
@@ -376,6 +413,7 @@ Note: If the activity with the specified ID is not found, you will receive a 404
 - Description: Creates a new place tag
 
 Steps:
+
 1. Create a new request in your "Travel API Tests" collection
 2. Set the request method to POST
 3. Enter the URL: `http://localhost:5001/api/placetag`
@@ -386,53 +424,63 @@ Steps:
      "type": "Monument",
      "historicalPeriod": "Renaissance"
    }
+   ```
 6. Click "Send" to execute the request
 7. Verify that the response status is 200 OK
+   The provided link
+
+A comprehensive Postman collection containing some of the tests we conducted for APIs is available https://www.postman.com/travelm8/workspace/malak-salma/collection/38567298-a8eb462b-c9d2-47ea-89f7-9294c632a99d?action=share&creator=38567298
 
 ## How to Use?
+
 - If you're a new user, click the "Sign Up" button and fill in the required details to create an account.
 - Existing users can log in by entering their username and password
-- *For Tourguides*:
+- _For Tourguides_:
   1- Dashboard Access:
+
   - After logging in, navigate to your Tour Guide Dashboard to view key insights.
   - Navigate to itineraries tab to Access and manage your created itineraries, including editing,deleting them or archiving/unarchiving them.
   - Navigate to Sales Report tab so that you can View Sales Reports to monitor earnings from itineraries.
   - Navigate to Tourist Report tab so that you can View Tourist Reports for insights into audience preferences and engagement.
-  - Check the Notification Bell Icon to  Stay informed about important update, changes or announcemets related to your itineraries
-  
+  - Check the Notification Bell Icon to Stay informed about important update, changes or announcemets related to your itineraries
+
   2-Profile Management:
+
   - Navigate to profile icon in the navigation bar and clicking on edit profile you can:
-    -  Navigate to  Account info tab so that you can Update your profile information to keep your store details accurate and up-to-date.
-    - Navigate to Security and Settings tab to Change your password so that you can  maintain account security.
+    - Navigate to Account info tab so that you can Update your profile information to keep your store details accurate and up-to-date.
+    - Navigate to Security and Settings tab to Change your password so that you can maintain account security.
     - Navigate to Delete My Account tab so that you can Submit a request to delete your account.
-- *For Advertisers*:
-   1-Dashboard Access:
+
+- _For Advertisers_:
+  1-Dashboard Access:
+
   - After logging in, navigate to your Advertiser Dashboard to access and manage key features:
-  - Navigate to activities tab to Manage your created activities, including editing or removing     them as needed.
+  - Navigate to activities tab to Manage your created activities, including editing or removing them as needed.
   - Navigate to Sales Report tab so that you can View Sales Reports to monitor earnings from advertisements and activities.
   - Navigate to Tourist Report tab so that you can View Tourist Reports for insights into audience preferences and engagement.
-  -  Check the Notification Bell Icon to  Stay informed about important update, changes or announcemets related to your activities.
-  
+  - Check the Notification Bell Icon to Stay informed about important update, changes or announcemets related to your activities.
+
   2-Profile Management:
+
   - Navigate to profile icon in the navigation bar and clicking on edit profile you can:
-    -  Navigate to  Account info tab so that you can Update your profile information to keep your store details accurate and up-to-date.
-    - Navigate to Security and Settings tab to Change your password so that you can  maintain account security.
+    - Navigate to Account info tab so that you can Update your profile information to keep your store details accurate and up-to-date.
+    - Navigate to Security and Settings tab to Change your password so that you can maintain account security.
     - Navigate to Delete My Account tab so that you can Submit a request to delete your account.
- - *For Seller*
- 1-Dashboard Access:
-   -  After logging in, navigate to your Seller Dashboard to access and manage key features:
-   - Navigate to products tab you can Manage your listed products, including editing, removing products and archiving/unarchiving products .
-   - Navigate to SalesReport tab View Sales Reports to track earnings from product sales.
-   - Check the Notification Bell Icon to  Stay informed about important updates, promotions, or changes related to your products.
-   
-   2-Profile Management:
-   - On clicking on the profile icon in the navigation bar and clicking on edit profile you can:
-    - Navigate to  Account info tab so that you can Update your profile information to keep your store details accurate and up-to-date.
-     - Navigate to Security and Settings tab to Change your password so that you can  maintain account security.
-     -  Navigate to Delete My Account tab to Submit a request to delete your account.
-     
-- *For Admin*
-1- Dashboard Access:
+
+- _For Seller_
+  1-Dashboard Access:
+  - After logging in, navigate to your Seller Dashboard to access and manage key features:
+  - Navigate to products tab you can Manage your listed products, including editing, removing products and archiving/unarchiving products .
+  - Navigate to SalesReport tab View Sales Reports to track earnings from product sales.
+  - Check the Notification Bell Icon to Stay informed about important updates, promotions, or changes related to your products.
+  2-Profile Management:
+  - On clicking on the profile icon in the navigation bar and clicking on edit profile you can:
+  - Navigate to Account info tab so that you can Update your profile information to keep your store details accurate and up-to-date.
+  - Navigate to Security and Settings tab to Change your password so that you can maintain account security.
+  - Navigate to Delete My Account tab to Submit a request to delete your account.
+- _For Admin_
+  1- Dashboard Access:
+
   - After logging in, navigate to your Admin Dashboard to access and manage key features:
   - Navigate to the Users card that displays the number of users and their types (tourists, advertisers, sellers,tour guides, tourism governers) which can also be filtered according to year and month selection.
   - Navigate/ analyze precise numercial values of revenues (activities, itineraries, products).
@@ -448,15 +496,16 @@ Steps:
   - Navigate to Products to manage available products that are for sale or rent.
   - Navigate to Complaints to handle and resolve user complaints.
   - Navigate to Promo Codes to create, edit, search, or delete promo codes in the system.
-  
+
     2-Profile Management:
+
     - Click on Change Password so you can enter your old and confirm your new password.
     - Click on the bell icon to display your notifications.
- 
-- *For Tourist*
-1- Dashboard Access
+
+- _For Tourist_
+  1- Dashboard Access
   - Tourists can enhance their experience by using various features within the Activities tab. They can bookmark activities by clicking on the bookmark icon, saving them to their Wishlist for later access. To stay informed about any changes or updates, tourists can click on the Notify Me button to receive alerts, such as availability or time adjustments. Additionally, they can seamlessly book activities by clicking the Book Activity button, filling in the required details, and confirming their booking for a hassle-free planning experience
-  -  Tourists can enhance their experience by using various features within the itineraries tab. They can bookmark itineraries by clicking on the bookmark icon, saving them to their Wishlist for later access. To stay informed about any changes or updates, tourists can click on the Notify Me button to receive alerts, such as availability or time adjustments. Additionally, they can seamlessly book itineraries by clicking the Book button, filling in the required details, and confirming their booking for a hassle-free planning experience
+  - Tourists can enhance their experience by using various features within the itineraries tab. They can bookmark itineraries by clicking on the bookmark icon, saving them to their Wishlist for later access. To stay informed about any changes or updates, tourists can click on the Notify Me button to receive alerts, such as availability or time adjustments. Additionally, they can seamlessly book itineraries by clicking the Book button, filling in the required details, and confirming their booking for a hassle-free planning experience
   - In the Products section, tourists can explore a wide range of items available for purchase. They can click on the View Details button to access detailed information about each product, including its pricing , seller of the product and review and comments about it. If they decide to purchase a product, they can conveniently add it to their cart by clicking the Add to Cart button, streamlining their shopping experience for a smooth checkout process.
   - In the Places section, tourists can browse through various locations and view essential details such as the price and associated tags that categorize the place. This allows users to quickly assess the historical places and their attributes without additional navigation
   - The Flights feature allows tourists to search for and compare various flight options tailored to their needs. By entering your departure location, destination, and travel dates, you can quickly find relevant flight options. Use filters such as price range, the number of stops, and departure or arrival times to narrow down your choices. Once you've reviewed the flight details, including duration, stops, and price, you can proceed to book your preferred flight by clicking the "Select" button.
@@ -465,21 +514,24 @@ Steps:
   - In the Products section, tourists can explore a wide range of items available for purchase. Browse through the collection, view product details, and check specifications and pricing. If you find something you like, you can easily add it to your cart by clicking the "Add to Cart" button. This ensures a seamless shopping experience during your trip planning process
   - The Notifications feature, represented by the bell icon on the dashboard, allows tourists to stay informed about important alerts. By clicking on the notification bell, you can access updates and critical information relevant to your travel plans
   - By clicking on the cart icon, tourists can view all the items they have added before proceeding to checkout, providing a convenient way to review their selections
-  
   2-Profile Management
   - By clicking on the My Profile section, tourists can manage their account effectively through various features. They can view and edit their personal details under Account Info, check all past and upcoming Bookings, and track their Orders. Users can also review and redeem their accumulated Loyalty Points, submit and monitor Complaints, and update their Security & Settings, such as changing passwords. Additionally, users have the option to request account deletion through the Delete My Account feature, ensuring their data is removed after approval. This profile section provides a comprehensive overview and management of their account and activities on the platform
   - The Wishlist section allows users to view all the products and items they have liked and saved for future reference
   - The Bookmarks section allows users to keep track of their favorite activities and itineraries. By bookmarking these items, users can easily revisit them without searching again
   - When you click on the Preferences section, you are presented with an interface to select your travel preferences. This includes options like nightlife, nature, museums, historical landmarks, sports, and more
+
 ## Contribute
 
 We welcome contributions to improve **TravelM8**! Whether you’re fixing bugs, adding features, enhancing the documentation, or optimizing code, your input is highly valued.
 
 ### How to Contribute
+
 1. **Fork the Repository**:
+
    - Click the "Fork" button at the top of this repository to create your own copy.
 
 2. **Clone Your Fork**:
+
    - Clone your fork to your local machine:
      ```sh
      git clone https://github.com/Advanced-computer-lab-2024/TravelM8.git
@@ -487,20 +539,24 @@ We welcome contributions to improve **TravelM8**! Whether you’re fixing bugs, 
      ```
 
 3. **Create a New Branch**:
+
    - Create a branch for your feature or fix:
      ```sh
      git checkout -b travelm8-contribute
      ```
 
 4. **Make Your Changes**:
+
    - Make the necessary changes in your branch.
    - Follow the project’s coding style and conventions.
 
 5. **Run Tests**:
+
    - Ensure that all changes pass existing tests and add new tests if applicable.
    - Use Postman to validate API endpoints or run unit tests if Jest is used.
 
 6. **Commit Your Changes**:
+
    - Write a clear and descriptive commit message:
      ```sh
      git add .
@@ -508,6 +564,7 @@ We welcome contributions to improve **TravelM8**! Whether you’re fixing bugs, 
      ```
 
 7. **Push to Your Fork**:
+
    - Push your branch to your GitHub fork:
      ```sh
      git push origin feature-or-bugfix-name
@@ -517,39 +574,38 @@ We welcome contributions to improve **TravelM8**! Whether you’re fixing bugs, 
    - Open a pull request to the main repository, describing your changes and linking to any related issues.
 
 ### Reporting Bugs or Requesting Features
+
 - **Bugs**: Open an issue and include details such as steps to reproduce the bug, screenshots, and error messages.
 - **Features**: Submit a feature request by opening an issue and explaining why it would benefit the project.
+
 ---
 
 We appreciate your contributions!
 
 ## Credits
+
 This project was made possible with the help and inspiration of numerous open-source projects, tutorials, and resources. We are grateful to the following:
 Open Source Libraries:
+
 - [node.js] : evented I/O for the backend
 - [Express] : fast node.js network app framework [@tjholowaychuk]
 - [Stripe] : For enabling secure payment integration
 - [Shadcn] : A modern, customizable component library built with TailwindCSS for accessible designs.
-Tutorials and Videos:
--[Set Up Payments with Nodejs and Stripe] - [Accept Payments Using Stripe] : For a clear and practical guide to integrating Stripe payments.
--[Nodejs Crash Course Tutorial] - [Express Crash Course] : A comprehensive introduction to building REST APIs with Node.js and Express.
--[React Axios] : A promise-based HTTP client for making API requests.
--[Folders Structuring of Mern Project]: A guide to organizing and structuring folders effectively in a MERN stack project for better scalability and maintainability
--[Mern Stack Tutorial]  : A step-by-step guide to building MERN stack applications, combining React, Node.js, Express, and MongoDB.
+  Tutorials and Videos: -[Set Up Payments with Nodejs and Stripe] - [Accept Payments Using Stripe] : For a clear and practical guide to integrating Stripe payments. -[Nodejs Crash Course Tutorial] - [Express Crash Course] : A comprehensive introduction to building REST APIs with Node.js and Express. -[React Axios] : A promise-based HTTP client for making API requests. -[Folders Structuring of Mern Project]: A guide to organizing and structuring folders effectively in a MERN stack project for better scalability and maintainability -[Mern Stack Tutorial] : A step-by-step guide to building MERN stack applications, combining React, Node.js, Express, and MongoDB.
 
 ## License
- This project is licensed under a dual-license model. You may choose to use the project under either the MIT License or the Apache License 2.0, depending on your needs. For example, if you are integrating payment functionality using Stripe, which is licensed under Apache 2.0, you can choose the Apache License for compatibility. On the other hand, if your use case aligns with projects like React, which uses the MIT License, you can opt for the MIT License. For the full text of both licenses, see the LICENSE file in this repository.
 
-[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
-   [node.js]: <http://nodejs.org>
-   [express]: <http://expressjs.com>
-   [stripe]: <https://youtu.be/1r-F3FIONl8>
-   [shadcn]:<https://ui.shadcn.com/>
-   [Set Up Payments with Nodejs and Stripe]:<https://www.youtube.com/watch?v=mI_-1tbIXQI&t=2130s&pp=ygUVc3RyaXBlIHBheW1lbnQgbm9kZWpz>
-   [Accept Payments Using Stripe]:<https://www.youtube.com/watch?v=1r-F3FIONl8&t=2s&pp=ygUVc3RyaXBlIHBheW1lbnQgbm9kZWpz>
-[Nodejs Crash Course Tutorial]:<https://www.youtube.com/watch?v=zb3Qk8SG5Ms&list=PL4cUxeGkcC9jsz4LDYc6kv3ymONOKxwBU>
-[React Axios]:<https://www.youtube.com/watch?v=12l6lkW6JhE&t=29s&pp=ygULcmVhY3QgYXhpb3M%3D>
-[Mern Stack Tutorial]:<https://www.youtube.com/watch?v=O3BUHwfHf84&t=9s&pp=ygUSbWVybiBzdGFjayBkZXBsb3kg>
-[Folders Structuring of Mern Project]:<https://www.youtube.com/watch?v=R9GZx_MYuV8&t=29s&pp=ygUqaG93IHRvIHN0cnVjdHVyZSBhIGZvbGRlcnMgb2YgbWVybiBwcm9qZWN0>
+This project is licensed under a dual-license model. You may choose to use the project under either the MIT License or the Apache License 2.0, depending on your needs. For example, if you are integrating payment functionality using Stripe, which is licensed under Apache 2.0, you can choose the Apache License for compatibility. On the other hand, if your use case aligns with projects like React, which uses the MIT License, you can opt for the MIT License. For the full text of both licenses, see the LICENSE file in this repository.
 
-   [Express Crash Course]: <https://youtu.be/CnH3kAXSrmU>
+[//]: # "These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax"
+[node.js]: http://nodejs.org
+[express]: http://expressjs.com
+[stripe]: https://youtu.be/1r-F3FIONl8
+[shadcn]: https://ui.shadcn.com/
+[Set Up Payments with Nodejs and Stripe]: https://www.youtube.com/watch?v=mI_-1tbIXQI&t=2130s&pp=ygUVc3RyaXBlIHBheW1lbnQgbm9kZWpz
+[Accept Payments Using Stripe]: https://www.youtube.com/watch?v=1r-F3FIONl8&t=2s&pp=ygUVc3RyaXBlIHBheW1lbnQgbm9kZWpz
+[Nodejs Crash Course Tutorial]: https://www.youtube.com/watch?v=zb3Qk8SG5Ms&list=PL4cUxeGkcC9jsz4LDYc6kv3ymONOKxwBU
+[React Axios]: https://www.youtube.com/watch?v=12l6lkW6JhE&t=29s&pp=ygULcmVhY3QgYXhpb3M%3D
+[Mern Stack Tutorial]: https://www.youtube.com/watch?v=O3BUHwfHf84&t=9s&pp=ygUSbWVybiBzdGFjayBkZXBsb3kg
+[Folders Structuring of Mern Project]: https://www.youtube.com/watch?v=R9GZx_MYuV8&t=29s&pp=ygUqaG93IHRvIHN0cnVjdHVyZSBhIGZvbGRlcnMgb2YgbWVybiBwcm9qZWN0
+[Express Crash Course]: https://youtu.be/CnH3kAXSrmU
