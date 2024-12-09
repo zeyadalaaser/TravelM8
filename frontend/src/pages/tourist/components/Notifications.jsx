@@ -8,8 +8,6 @@ import { getActivityBookings, getItineraryBookings } from "../api/apiService";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Prefernces.css';
-import { buttonActionService } from '../api/buttonActionService';
-import { DialogDescription } from "@/components/ui/dialog";
 
 export default function NotificationSidebar({change}) {
   const [notifications, setNotifications] = useState([]);
@@ -48,44 +46,32 @@ export default function NotificationSidebar({change}) {
     setLoading(true);
     setError(null);
     try {
-      const [activityBookings, itineraryBookings] = await Promise.all([
-        getActivityBookings(),
-        getItineraryBookings()
-      ]);
-
-      console.log('Fetched bookings:', { activityBookings, itineraryBookings });
-
+      const [activityBookings, itineraryBookings] = await Promise.all([getActivityBookings(), getItineraryBookings()]);
       const notifications = [
-        ...activityBookings
-          .filter(booking => booking.activityId && booking.status === 'Paid')
-          .map(booking => ({
-            id: booking._id,
-            type: 'activity',
-            status: booking.status,
-            title: booking.activityId?.title,
-            location: booking.activityId?.location,
-            eventDate: booking.activityId?.date,
-            read: false,
-            message: `Your booked activity "${booking.activityId?.title}" is coming up soon!`
-          })),
-        ...itineraryBookings
-          .filter(booking => booking.itinerary && booking.completionStatus === 'Paid')
-          .map(booking => ({
-            id: booking._id,
-            type: 'itinerary',
-            status: booking.completionStatus,
-            title: booking.itinerary?.name,
-            location: booking.itinerary?.historicalSites?.join(', '),
-            eventDate: booking.tourDate,
-            read: false,
-            message: `Your booked itinerary "${booking.itinerary?.name}" is coming up soon!`
-          }))
-      ].sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
+        ...activityBookings.filter(booking => booking.activityId).map(booking => ({
+          id: booking._id,
+          type: 'activity',
+          status: booking.status,
+          title: booking.activityId?.title,
+          location: `${booking.activityId?.location?.lat}, ${booking.activityId?.location?.lng}`,
+          eventDate: booking.activityId?.date,
+          read: booking.status !== 'booked'
+        })),
+        ...itineraryBookings.filter(booking => booking.itinerary).map(booking => ({
+          id: booking._id,
+          type: 'itinerary',
+          status: booking.completionStatus,
+          title: booking.itinerary?.name,
+          location: booking.itinerary?.historicalSites?.join(', '),
+          eventDate: booking.tourDate,
+          read: booking.completionStatus !== 'Pending'
+        }))
+      ]
+        .filter(notification => notification.status === 'Paid')
+        .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
-      console.log('Processed notifications:', notifications);
-      
       setNotifications(notifications);
-      setUnreadCount(notifications.filter(n => !n.read).length);
+      setUnreadCount(notifications.filter(n => !n.read).length); // Update unread count
     } catch (error) {
       console.error('Error fetching notifications:', error);
       setError('Failed to fetch notifications');
@@ -95,96 +81,28 @@ export default function NotificationSidebar({change}) {
   };
 
   const fetchNotifications2 = async () => {
-    setGeneralLoading(true);
+    setGeneralLoading(true);  // Set loading state to true when fetching data
     try {
-      const token = localStorage.getItem('token');
-      
-      const [notificationsResponse, buttonActionsResponse] = await Promise.all([
-        axios.get('http://localhost:5001/api/notifications', {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }),
-        axios.get('http://localhost:5001/api/button-actions/user', {
-          headers: { 
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-      ]);
-
-      const regularNotifications = notificationsResponse.data?.notifications || [];
-      const buttonActions = buttonActionsResponse.data?.actions || [];
-
-      const buttonActionNotifications = buttonActions
-        .filter(action => action.actionType === 'NOTIFY' && action.status === true)
-        .map(action => {
-          console.log('Processing action:', action);
-          return {
-            _id: action._id,
-            message: formatNotificationMessage({
-              type: 'button_action',
-              itemId: action.itemId,
-              itemType: action.itemType
-            }),
-            createdAt: action.createdAt,
-            isRead: false,
-            type: 'button_action',
-            itemId: action.itemId,
-            itemType: action.itemType,
-            status: action.status,
-            upcomingDate: action.itemId?.upcomingDate
-          };
-        })
-        .sort((a, b) => {
-          // Sort by upcoming date if available
-          if (a.upcomingDate && b.upcomingDate) {
-            return new Date(a.upcomingDate) - new Date(b.upcomingDate);
-          }
-          // If no upcoming dates, sort by creation date
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        });
-
-      const allNotifications = [...regularNotifications, ...buttonActionNotifications]
-        .sort((a, b) => {
-          // Prioritize upcoming notifications
-          if (a.upcomingDate && !b.upcomingDate) return -1;
-          if (!a.upcomingDate && b.upcomingDate) return 1;
-          if (a.upcomingDate && b.upcomingDate) {
-            return new Date(a.upcomingDate) - new Date(b.upcomingDate);
-          }
-          // Then sort by creation date
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        });
-
-      setNotifications(allNotifications);
-      setUnreadCount(buttonActionNotifications.length);
+      const response = await axios.get('http://localhost:5001/api/notifications', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setNotifications(response.data.notifications || []);
+      setUnreadCount(response.data.notifications.filter(n => !n.isRead).length);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
       setNotifications([]);
     } finally {
-      setGeneralLoading(false);
+      setGeneralLoading(false);  // Set loading state to false when fetching completes
     }
   };
 
   const formatNotificationMessage = (notification) => {
-    if (notification.type === 'button_action') {
-      if (notification.itemType === 'Activity') {
-        const activity = notification.itemId;
-        if (activity?.upcomingDate) {
-          return `Your booked activity "${activity.title}" is coming up soon!`;
-        }
-        return `The activity "${activity?.title}" is now open for booking!`;
-      } else if (notification.itemType === 'Itinerary') {
-        const itinerary = notification.itemId;
-        if (itinerary?.upcomingDate) {
-          return `Your booked itinerary "${itinerary.name}" is coming up soon!`;
-        }
-        return `The itinerary "${itinerary?.name}" is now open for booking!`;
-      }
+    const timeLeft = calculateTimeLeft(notification.eventDate);
+    if (notification.type === 'activity') {
+      return `Don't forget! Your activity "${notification.title}" - ${timeLeft}`;
+    } else {
+      return `Don't forget! Your itinerary "${notification.title}" - ${timeLeft}`;
     }
-    return notification.message || 'New notification received';
   };
 
   const markAsRead = (notificationId) => {
@@ -198,24 +116,14 @@ export default function NotificationSidebar({change}) {
     setUnreadCount(prevCount => prevCount - 1);
   };
 
-  const markAsRead2 = async (notification) => {
+  const markAsRead2 = async (notificationId) => {
     try {
-      if (notification.type === 'button_action') {
-        // Handle button action notification
-        await axios.patch(`http://localhost:5001/api/button-actions/${notification._id}`, 
-          { status: false },
-          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }}
-        );
-      } else {
-        // Handle regular notification
-        await axios.patch(`http://localhost:5001/api/notifications/${notification._id}/read`, {}, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
-      }
-
+      await axios.patch(`http://localhost:5001/api/notifications/${notificationId}/read`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
       setNotifications(prevNotifications =>
-        prevNotifications.map(n =>
-          n._id === notification._id ? { ...n, isRead: true } : n
+        prevNotifications.map(notification =>
+          notification._id === notificationId ? { ...notification, isRead: true } : notification
         )
       );
       setUnreadCount(prevCount => prevCount - 1);
@@ -258,24 +166,13 @@ export default function NotificationSidebar({change}) {
       console.error("Invalid notification ID");
       return;
     }
-    markAsRead2(notification);
+    markAsRead2(notification._id);
   };
 
   const getStatusColor = (status) => {
-    // If status is a boolean, convert it to string
-    const statusString = typeof status === 'boolean' 
-      ? (status ? 'active' : 'inactive')
-      : String(status);
-
-    switch (statusString.toLowerCase()) {
-      case 'active':
-      case 'true':
+    switch (status?.toLowerCase()) {
+      case 'paid':
         return 'bg-green-500';
-      case 'pending':
-        return 'bg-yellow-500';
-      case 'inactive':
-      case 'false':
-        return 'bg-red-500';
       default:
         return 'bg-gray-500';
     }
@@ -300,9 +197,6 @@ export default function NotificationSidebar({change}) {
       <SheetContent side="right" className="w-[400px]">
         <SheetHeader>
           <SheetTitle>Notifications</SheetTitle>
-          <DialogDescription className="text-sm text-gray-500">
-            Your notifications and updates will appear here.
-          </DialogDescription>
         </SheetHeader>
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
@@ -322,9 +216,7 @@ export default function NotificationSidebar({change}) {
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
-                      className={`p-4 rounded-lg border shadow-sm hover:bg-gray-50 cursor-pointer transition-colors ${
-                        !notification.read ? 'bg-blue-50' : 'bg-white'
-                      }`}
+                      className={`p-4 rounded-lg border shadow-sm hover:bg-gray-50 cursor-pointer transition-colors ${!notification.read ? 'bg-blue-50' : 'bg-white'}`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -339,12 +231,9 @@ export default function NotificationSidebar({change}) {
                         </div>
                       </div>
                       <p className="text-sm text-gray-600 mb-2">
-                        {notification.message}
+                        {formatNotificationMessage(notification)}
                       </p>
-                      <div className="flex justify-between items-center text-xs mt-2">
-                        <span className="text-gray-400">
-                          {notification.location && `Location: ${notification.location}`}
-                        </span>
+                      <div className="flex justify-end items-center text-xs mt-2">
                         <span className="text-gray-400">
                           {new Date(notification.eventDate).toLocaleDateString()}
                         </span>
@@ -354,7 +243,7 @@ export default function NotificationSidebar({change}) {
                 </div>
               ) : (
                 <div className="text-center text-gray-500 py-8">
-                  No upcoming events to display
+                  No notifications to display
                 </div>
               )}
             </ScrollArea>
