@@ -90,7 +90,6 @@ const ForgotPassword = ({ isOpen, onOpenChange, onBackToLogin }) => {
         </DialogHeader>
         <div className="bg-white bg-opacity-80 rounded-xl shadow-2xl p-8">
           <div className="flex justify-center mb-6">
-            <img src="/placeholder.svg?height=60&width=200" alt="TravelM8 Travels Logo" width={200} height={60} />
           </div>
           {step === 1 && (
             <form onSubmit={handleRequestOTP}>

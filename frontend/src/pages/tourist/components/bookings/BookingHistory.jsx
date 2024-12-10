@@ -278,7 +278,13 @@ const BookingHistory = () => {
       } else {
         response = await cancelItineraryBooking(bookingId); // Await the response
       }
-
+      
+      if (response.message.includes("Cancellations are only allowed 48"))
+      {
+        toast(response.message);
+        return;
+      }
+      
       toast(`Booking cancelled successfully! Amount refunded: ${(response.amountRefunded * exchangeRate).formatCurrency(currency)}. New wallet balance: ${(response.newBalance * exchangeRate).formatCurrency(currency)}.`);
 
 
@@ -603,12 +609,11 @@ const BookingHistory = () => {
             {!cancelled && (
               <div className="grid grid-cols-2 gap-4">
                 {itineraryBooking.review && (
-                  <>
-                    {/* First Column - Review */}
+                
                     <div className="flex-col pr-4 border-r-2 border-gray-300">
                     <div className="flex w-fit items-center gap-2 text-sm text-gray-600 mb-2">
                         <span className="font-semibold">Your Itinerary Rating :</span>
-                        <Stars rating={itineraryBooking.review.rating} />
+                        <Stars rating={itineraryBooking.review?.rating} />
                       </div>
                       <div className="gap-2 text-sm flex text-gray-600">
                         <p className="font-semibold">Your Comment :</p>
@@ -616,22 +621,20 @@ const BookingHistory = () => {
                           &quot;{itineraryBooking.review?.comment}&quot;
                         </p>
                       </div>
-                    </div>
-                  
-                    {/* Second Column - Review */}
+                    </div>)}
+                  {itineraryBooking.tourGuideReview && (
                     <div className="flex-col">
                       <div className="flex w-fit items-center gap-2 text-sm text-gray-600 mb-2">
                         <span className="font-semibold">Your Tourguide Rating :</span>
-                        <Stars rating={itineraryBooking.tourGuideReview.rating} />
+                        <Stars rating={itineraryBooking.tourGuideReview?.rating} />
                       </div>
                       <div className="gap-2 text-sm flex text-gray-600">
                         <p className="font-semibold">Your Comment :</p>
                         <p className="italic">
-                          &quot;{itineraryBooking.tourGuideReview.comment}&quot;
+                          &quot;{itineraryBooking.tourGuideReview?.comment}&quot;
                         </p>
                       </div>
                     </div>
-                  </>
                 )}
               </div>
             )}

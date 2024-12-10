@@ -61,10 +61,11 @@ const SellerDashboard = () => {
 
   const toggleArchiveStatus = async (id, product) => {
     try {
-      const newStatus = !product?.isArchived;
+      const isArchived = product?.archived;
+      const newStatus = !product?.archived;
       setProducts((prevProducts) =>
         prevProducts.map((item) =>
-          item._id === id ? { ...item, isArchived: newStatus } : item
+          item._id === id ? { ...item, archived: newStatus } : item
         )
       );
       await fetch(
@@ -399,7 +400,7 @@ const SellerDashboard = () => {
               >
                 <div className="flex-grow p-4">
                   <div className="justify-self-end">
-                    {product.isArchived ? (
+                    {product.archived ? (
                       <Badge className="bg-red-600">Archived</Badge>
                     ) : (
                       <Badge className="bg-green-600">Unarchived</Badge>
@@ -437,24 +438,24 @@ const SellerDashboard = () => {
                 <CardFooter className="flex flex-col mt-auto space-y-2 p-4">
                   <div className="flex items-center space-x-2">
                     <Switch
-                      checked={product.isArchived}
+                      checked={product.archived}
                       onCheckedChange={() =>
                         toggleArchiveStatus(product._id, product)
                       }
                     />
                     <Label>
-                      {product.isArchived ? "Archived" : "Unarchived"}
+                      {product.archived ? "Archived" : "Unarchived"}
                     </Label>
                   </div>
                   <div className="flex justify-between space-x-4">
                     {/* Edit Button */}
-                    <Button variant="outline" size="sm" onClick={() => onEdit(product)}>
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(product)}>
                       <Pencil className="w-4 h-4 mr-2" />
                       Edit
                     </Button>
 
                     {/* Delete Button */}
-                    <Button variant="destructive" size="sm" onClick={() => onDelete(product._id)}>
+                    <Button variant="destructive" size="sm" onClick={() => handleDelete(product._id)}>
                       <Trash2 className="w-4 h-4 mr-2" />
                       Delete
                     </Button>

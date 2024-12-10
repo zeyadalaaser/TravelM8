@@ -327,7 +327,7 @@ export const filterItineraries = async (req, res) => {
       filters.price = { $gte: minPrice, $lte: maxPrice };
     }
 
-    if (language) filters.tourLanguage = language;
+    if (language) filters.tourLanguage = { $regex: language, $options: "i" };
 
     let sortCondition = (sortBy && sortBy !== "tags")
       ? [{ $sort: { [sortBy]: order === "desc" ? -1 : 1 } }]

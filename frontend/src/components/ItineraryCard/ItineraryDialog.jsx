@@ -36,7 +36,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
     tourLanguage: "",
     price: 0,
     timeline: [{ event: "", startTime: "", endTime: "" }],
-    availableSlots: [{ date: "", numberOfBookings: 0 }],
+    availableSlots: [{ date: "", maxNumberOfBookings: 0 }],
     accessibility: "",
     pickUpLocation: "",
     dropOffLocation: "",
@@ -59,8 +59,8 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
         })) || [{ event: "", startTime: "", endTime: "" }],
         availableSlots: itineraryData.availableSlots?.map((slot) => ({
           date: slot.date || "",
-          numberOfBookings: slot.numberOfBookings || 0,
-        })) || [{ date: "", numberOfBookings: 0 }],
+          maxNumberOfBookings: slot.maxNumberOfBookings || 0,
+        })) || [{ date: "", maxNumberOfBookings: 0 }],
         accessibility: itineraryData.accessibility || "",
         pickUpLocation: itineraryData.pickUpLocation || "",
         dropOffLocation: itineraryData.dropOffLocation || "",
@@ -120,7 +120,7 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
     } else if (field === "availableSlots") {
       setFormData({
         ...formData,
-        [field]: [...formData[field], { date: "", numberOfBookings: 0 }],
+        [field]: [...formData[field], { date: "", maxNumberOfBookings: 0 }],
       });
     } else {
       setFormData({ ...formData, [field]: [...formData[field], ""] });
@@ -540,11 +540,11 @@ const CreateItineraryDialog = ({ itineraryData, isEditing, onRefresh }) => {
               />
               <Input
                 type="number"
-                value={slot.numberOfBookings}
+                value={slot.maxNumberOfBookings}
                 onChange={(e) =>
                   handleAvailableSlotsChange(
                     index,
-                    "numberOfBookings",
+                    "maxNumberOfBookings",
                     parseInt(e.target.value)
                   )
                 }

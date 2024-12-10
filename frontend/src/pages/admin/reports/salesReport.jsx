@@ -30,7 +30,7 @@ const SalesReport = () => {
             headers: { Authorization: `Bearer ${token}` },
             params: { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() },
           }),
-          axios.get("http://localhost:5001/api/productsReport", {
+          axios.get("http://localhost:5001/api/ordersReport", {
             headers: { Authorization: `Bearer ${token}` },
             params: { year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() },
           }),
