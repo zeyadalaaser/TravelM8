@@ -30,7 +30,6 @@ A visual portrayal of our project can grasped through the following snapshots:
 2. ![Login](./frontend/src/assets/4.png)
 2. ![SignUp](./frontend/src/assets/5.png)
 6. ![Tourist](./frontend/src/assets/6.png)
-6. ![Tourist1](./frontend/src/assets/7.png)
 6. ![Tourist2](./frontend/src/assets/8.png)
 6. ![TouristNotifications](./frontend/src/assets/9.png)
 6. ![Tourist3](./frontend/src/assets/10.png)
