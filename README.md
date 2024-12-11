@@ -24,13 +24,29 @@ This project follows consistent coding conventions to ensure readability and mai
 
 A visual portrayal of our project can grasped through the following snapshots:
 
-1. ![LandingPage](./frontend/src/assets/screenshot1.png)
-2. ![SignUp](./frontend/src/assets/screenshot2.png)
-3. ![Steps](./frontend/src/assets/screenshot3.png)
-4. ![Payment](./frontend/src/assets/screenshot4.png)
-5. ![Itineraries](./frontend/src/assets/screenshot5.png)
-6. ![RideBooking](./frontend/src/assets/screenshot6.png)
-7. ![Products](./frontend/src/assets/screenshot7.png)
+1. ![LandingPage](./frontend/src/assets/photo1.png)
+2. ![LandingPage2](./frontend/src/assets/2.png)
+2. ![LandingPage3](./frontend/src/assets/3.png)
+2. ![Login](./frontend/src/assets/4.png)
+2. ![SignUp](./frontend/src/assets/5.png)
+6. ![Tourist](./frontend/src/assets/6.png)
+6. ![Tourist1](./frontend/src/assets/7.png)
+6. ![Tourist2](./frontend/src/assets/8.png)
+6. ![TouristNotifications](./frontend/src/assets/9.png)
+6. ![Tourist3](./frontend/src/assets/10.png)
+6. ![Tourist4](./frontend/src/assets/11.png)
+6. ![Tourist5](./frontend/src/assets/12.png)
+6. ![Tourist6](./frontend/src/assets/13.png)
+6. ![BookRide](./frontend/src/assets/14.png)
+6. ![Tourist7](./frontend/src/assets/15.png)
+6. ![Tourist8](./frontend/src/assets/16.png)
+6. ![Admin1](./frontend/src/assets/17.png)
+6. ![Admin2](./frontend/src/assets/18.png)
+6. ![Admin3](./frontend/src/assets/19.png)
+6. ![Admin4](./frontend/src/assets/20.png)
+6. ![Admin5](./frontend/src/assets/21.png)
+
+
 
 ## Tech/ Framework Used
 
