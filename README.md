@@ -25,25 +25,45 @@ This project follows consistent coding conventions to ensure readability and mai
 A visual portrayal of our project can grasped through the following snapshots:
 
  ![LandingPage](./frontend/src/assets/photo1.png)
+
  ![LandingPage2](./frontend/src/assets/2.png)
+
  ![LandingPage3](./frontend/src/assets/3.png)
+ 
  ![Login](./frontend/src/assets/4.png)
+
  ![SignUp](./frontend/src/assets/5.png)
+
  ![Tourist](./frontend/src/assets/6.png)
+
  ![Walkthrough](./frontend/src/assets/screenshot3.png)
+
  ![Tourist2](./frontend/src/assets/8.png)
+
  ![TouristNotifications](./frontend/src/assets/9.png)
+
  ![Tourist3](./frontend/src/assets/10.png)
+
  ![Tourist4](./frontend/src/assets/11.png)
+
  ![Tourist5](./frontend/src/assets/12.png)
+
  ![Tourist6](./frontend/src/assets/13.png)
+
  ![BookRide](./frontend/src/assets/14.png)
+
  ![Tourist7](./frontend/src/assets/15.png)
+
  ![Tourist8](./frontend/src/assets/16.png)
+
  ![Admin1](./frontend/src/assets/17.png)
+
  ![Admin2](./frontend/src/assets/18.png)
+
  ![Admin3](./frontend/src/assets/19.png)
+
  ![Admin4](./frontend/src/assets/20.png)
+ 
  ![Admin5](./frontend/src/assets/21.png)
 
 
