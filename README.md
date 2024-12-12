@@ -63,7 +63,19 @@ A visual portrayal of our project can grasped through the following snapshots:
  ![Admin3](./frontend/src/assets/19.png)
 
  ![Admin4](./frontend/src/assets/20.png)
- 
+
+  ![Admin4](./frontend/src/assets/pic1.png)
+
+  ![Admin4](./frontend/src/assets/pic2.png)
+
+  ![Admin4](./frontend/src/assets/pic3.png)
+
+  ![Admin4](./frontend/src/assets/pic4.png)
+
+  ![Admin4](./frontend/src/assets/pic5.png)
+
+![Admin4](./frontend/src/assets/pic6.png)
+
  ![Admin5](./frontend/src/assets/21.png)
 
 
