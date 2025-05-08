@@ -12,7 +12,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { useEffect, useRef, useState } from "react"
 
 interface DateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
     name: string;
@@ -27,21 +26,11 @@ export function Date({
     onSelect,
 }: DateProps) {
 
-    const buttonRef = useRef<HTMLButtonElement | null>(null);
-    const [buttonWidth, setButtonWidth] = useState("");
-
-    useEffect(() => {
-        if (buttonRef.current) {
-            setButtonWidth(buttonRef.current.offsetWidth.toString());
-        }
-    }, []);
-
     return (
         <Popover>
             <PopoverTrigger asChild>
                 <div className={cn("relative", className)}>
                     <Button
-                        ref={buttonRef}
                         id="date"
                         variant={"outline"}
                         className={cn("w-[294px] justify-start text-left font-normal space-x-4", className, className && "w-full")}

@@ -9,7 +9,7 @@ import {
   Star,
   SeparatorHorizontal,
 } from "lucide-react";
-import { Separator } from "@/components/ui/Separator";
+import { Separator } from "@/components/ui/separator";
 import { Stars } from "@/components/Stars.jsx";
 import { Button } from "@/components/ui/button";
 import {
